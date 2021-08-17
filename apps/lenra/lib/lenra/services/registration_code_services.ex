@@ -5,13 +5,11 @@ defmodule Lenra.RegistrationCodeServices do
 
   alias Lenra.{RegistrationCode, User}
 
-  @spec delete(RegistrationCode.t()) :: any
   def delete(%RegistrationCode{} = registration_code) do
     Ecto.Multi.new()
     |> Ecto.Multi.delete(:deleted_registration_code, registration_code)
   end
 
-  @spec registration_code_changeset(User.t()) :: Ecto.Changeset.t()
   def registration_code_changeset(%User{} = user) do
     Ecto.build_assoc(user, :registration_code)
     |> RegistrationCode.changeset(%{code: generate_code()})

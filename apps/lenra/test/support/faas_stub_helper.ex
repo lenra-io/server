@@ -30,21 +30,6 @@ defmodule Lenra.FaasStub do
     expect_once("GET", bypass, result)
   end
 
-  def expect_get_app_resource_once(bypass, app_name, result) do
-    lenra_env = Application.fetch_env!(:lenra, :lenra_env)
-    url = "/function/#{lenra_env}-#{app_name}-1"
-
-    Bypass.expect_once(bypass, :post, url, fn conn ->
-      case result do
-        {:error, code, message} ->
-          Plug.Conn.resp(conn, code, message)
-
-        any ->
-          Plug.Conn.resp(conn, 200, Jason.encode!(any))
-      end
-    end)
-  end
-
   def expect_deploy_app_once(bypass, result) do
     expect_once("POST", bypass, result)
   end
