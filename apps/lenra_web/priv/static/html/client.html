@@ -1,0 +1,180 @@
+<script src="../js/jsonpatch.min.js"></script>
+<script src="../js/phoenix.min.js"></script>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+</style>
+<script>
+    var applications = ['Counter', 'Todo', 'Authentification', 'Calculette', 'Mail', 'MineSweeper', 'PlusOuMoins'];
+    var inited = false;
+    var socket;
+    var channel;
+    var menu;
+    var main;
+
+    var done = false;
+    var ui = {}
+
+    document.onreadystatechange = function () {
+        socket = new Socket('/socket', {});
+        socket.connect();
+
+        if (inited)
+            return;
+        menu = document.createElement("select");
+        menu.appendChild(document.createElement("option"));
+        applications.forEach(app => {
+            var opt = document.createElement("option");
+            opt.value = opt.innerText = app;
+            menu.appendChild(opt);
+        });
+        menu.onchange = function (e) {
+            if (menu.value) {
+                openSocket(menu.value);
+            }
+        };
+
+        main = document.createElement("main");
+
+        document.body.appendChild(menu);
+        document.body.appendChild(main);
+
+        document.body.style.textAlign = 'center';
+
+        inited = true;
+    }
+
+    function openSocket(application) {
+        if (channel) {
+            channel.leave()
+        }
+        channel = socket.channel('app', {
+            app: application
+        });
+
+        channel.join()
+            .receive("ok", resp => { console.log("Join successfully", resp) })
+            .receive("error", resp => { console.log("Unable to join", resp) });
+
+        channel.on('ui', (data) => {
+            // console.log('ui', data);
+            ui = data;
+            updateUI();
+        })
+
+        channel.on('patchUi', (data) => {
+            // console.log("ui-patch : ", data);
+            ui = jsonpatch.apply_patch(ui, data.patch);
+            updateUI();
+        })
+
+        channel.on('test', (data) => {
+            console.log("test : ", data);
+        })
+
+        // channel.push("test", {});
+    }
+
+    function runListener(code, event) {
+        console.log("Run Listener")
+        channel.push('run', {
+            code: code,
+            event: event
+        });
+    }
+
+    function updateUI() {
+        var focused = document.activeElement;
+        // récupération du sélecteur de l'élément qui a le focus actuellement
+        var focusSelector = "";
+        while (focused && focused.parentElement && focused != main) {
+            var type = focused.nodeName;
+            var sameType = [].filter.apply(focused.parentElement.children, [el => el.nodeName == type]);
+            var pos = sameType.indexOf(focused) + 1;
+            focusSelector = `${focused.nodeName}:nth-of-type(${pos})${focusSelector ? ' > ' + focusSelector : ''}`;
+            focused = focused.parentElement;
+        }
+        main.innerHTML = '';
+        main.appendChild(createComponent(ui.root));
+        // si l'élément existe toujours, lui redonner le focus
+        // console.log("selector", focusSelector);
+        focused = main.querySelector(focusSelector);
+        if (focused)
+            focused.focus();
+    }
+
+    function createComponent(data, parent) {
+        switch (data.type) {
+            case 'container':
+                let ctn = document.createElement("div");
+                ctn.style.padding = "0 8px";
+                if (!parent)
+                    ctn.style.height = '100%';
+                if (data.menu) {
+                    let menu = createComponent(data.menu, ctn);
+                    menu.style.float = 'left';
+                    menu.style.height = '100%';
+                    menu.style.borderRight = '1px solid';
+                    menu.style.marginRight = '8px';
+                    ctn.appendChild(menu);
+                }
+                data.children.forEach(c => ctn.appendChild(createComponent(c, ctn)));
+                return ctn;
+            case 'text':
+                let p = document.createElement("p");
+                p.innerText = data.value;
+                p.style.textAlign = 'left';
+                return p;
+            case 'textfield':
+                let input = document.createElement("input");
+                input.value = data.value;
+                if (data.obscureText)
+                    input.type = "password";
+                if (data.listeners && data.listeners.onChange)
+                    input.onchange = e => runListener(data.listeners.onChange.code, { value: e.currentTarget.value });
+                if (data.label) {
+                    input = createLabel(data.label, input);
+                }
+                return input;
+            case 'checkbox':
+                let checkbox = document.createElement("input");
+                checkbox.type = 'checkbox';
+                checkbox.checked = data.value == 'true';
+                if (data.listeners && data.listeners.onChange)
+                    checkbox.onchange = e => runListener(data.listeners.onChange.code, { value: e.currentTarget.checked });
+                if (data.label) {
+                    checkbox = createLabel(data.label, checkbox);
+                }
+                return checkbox;
+            case 'button':
+                let btn = document.createElement("button");
+                btn.innerText = data.value;
+                btn.style.minWidth = "29px";
+                btn.style.minHeight = "22px";
+                if (data.listeners && data.listeners.onClick)
+                    btn.onclick = e => runListener(data.listeners.onClick.code, {});
+                return btn;
+            default:
+                console.error("Composant non géré", data);
+                let error = document.createElement("p");
+                error.style.color = "red";
+                error.innerText = "Composant non géré : " + data.type;
+                return error;
+        }
+    }
+
+    function createLabel(text, component) {
+        let label = document.createElement("label");
+        component.id = "check-" + Math.random();
+        label.for = component.id;
+        label.innerText = text;
+        label.appendChild(component);
+        label.style.display = 'block';
+        label.style.textAlign = 'left';
+        label.style.marginBottom = '8px';
+        label.style.clear = 'both';
+        component.style.float = 'right';
+        return label;
+    }
+</script>
