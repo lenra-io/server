@@ -3,15 +3,14 @@ on: push
 
 jobs:
   checks:
-    # Service containers to run with `container-job`
     services:
-      # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres:12.2-alpine
-        # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: postgres
+        # Start in localhost
+        ports:
+          - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -48,7 +47,7 @@ jobs:
       - name: Run tests
         run: mix test
         env:
-          POSTGRES_PASSWORD: "postgres"
-          POSTGRES_HOST: "postgres"
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
       - name: Run dialyzer
         run: mix dialyzer --format short
