@@ -3,6 +3,21 @@ on: push
 
 jobs:
   checks:
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:12.2-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       GH_PERSONNAL_TOKEN: ${{secrets.GH_PERSONNAL_TOKEN}}
     name: Checks
@@ -32,5 +47,8 @@ jobs:
         run: mix credo --strict
       - name: Run tests
         run: mix test
+        env:
+          POSTGRES_PASSWORD: "postgres"
+          POSTGRES_HOST: "postgres"
       - name: Run dialyzer
         run: mix dialyzer --format short
