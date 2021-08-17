@@ -26,16 +26,7 @@ defmodule Lenra.Openfaas do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_action(%Action{
-          :action_logs_uuid => :string,
-          :action_name => :string,
-          :app_name => :string,
-          :build_number => :integer,
-          :event => :string,
-          :old_data => :string,
-          :props => :string,
-          :user_id => :integer
-        }) :: {:ok, map}
+  @spec run_action(Action.t()) :: {:ok, map}
   def run_action(action)
       when is_binary(action.app_name) and is_binary(action.action_name) and
              is_map(%{data: action.old_data, props: action.props, event: action.event}) do
@@ -144,10 +135,6 @@ defmodule Lenra.Openfaas do
 
   defp response({:ok, %Finch.Response{status: 200, body: body}}, :get_apps) do
     {:ok, Jason.decode!(body)}
-  end
-
-  defp response({:ok, %Finch.Response{status: 200, body: body}}, :get_resource) do
-    {:ok, body}
   end
 
   defp response({:ok, %Finch.Response{status: status_code}}, :deploy_app)

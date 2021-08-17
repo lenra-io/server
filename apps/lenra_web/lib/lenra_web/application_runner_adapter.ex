@@ -7,23 +7,29 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
 
   alias Lenra.{LenraApplicationServices, DatastoreServices, Openfaas}
 
-  @impl ApplicationRunner.AdapterBehavior
+  @impl true
   def run_action(action) do
     Openfaas.run_action(action)
   end
 
-  @impl ApplicationRunner.AdapterBehavior
+  @impl true
   def get_data(action) do
     with {:ok, application} <-
-           LenraApplicationServices.fetch_by([service_name: action.app_name], {:error, :no_such_application}) do
+           LenraApplicationServices.fetch_by(
+             [service_name: action.app_name],
+             {:error, :no_such_application}
+           ) do
       DatastoreServices.assign_old_data(action, application.id)
     end
   end
 
-  @impl ApplicationRunner.AdapterBehavior
+  @impl true
   def save_data(action, data) do
     with {:ok, application} <-
-           LenraApplicationServices.fetch_by([service_name: action.app_name], {:error, :no_such_application}) do
+           LenraApplicationServices.fetch_by(
+             [service_name: action.app_name],
+             {:error, :no_such_application}
+           ) do
       DatastoreServices.upsert_data(action.user_id, application.id, data)
     end
   end

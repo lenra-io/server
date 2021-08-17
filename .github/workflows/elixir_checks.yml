@@ -3,6 +3,20 @@ on: push
 
 jobs:
   checks:
+    services:
+      postgres:
+        image: postgres:12.2-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Start in localhost
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       GH_PERSONNAL_TOKEN: ${{secrets.GH_PERSONNAL_TOKEN}}
     name: Checks
@@ -32,5 +46,8 @@ jobs:
         run: mix credo --strict
       - name: Run tests
         run: mix test
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
       - name: Run dialyzer
         run: mix dialyzer --format short
