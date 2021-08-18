@@ -5,7 +5,7 @@ defmodule Lenra.LenraApplication do
 
   use Ecto.Schema
   import Ecto.Changeset
-  alias Lenra.{User, Datastore, LenraApplication, Environment, Build, ApplicationMainEnv, ActionLogs}
+  alias Lenra.{User, Datastore, LenraApplication, Environment, Build, ApplicationMainEnv, AppUserSession}
 
   @hex_regex ~r/[0-9A-Fa-f]{6}/
 
@@ -22,7 +22,7 @@ defmodule Lenra.LenraApplication do
     has_many(:environments, Environment, foreign_key: :application_id)
     has_many(:builds, Build, foreign_key: :application_id)
     has_one(:main_env, ApplicationMainEnv, foreign_key: :application_id)
-    has_many(:app_user_session, ActionLogs, foreign_key: :application_id)
+    has_many(:app_user_session, AppUserSession, foreign_key: :application_id)
     timestamps()
   end
 

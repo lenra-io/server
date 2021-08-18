@@ -24,6 +24,7 @@ defmodule Lenra.AppUserSession do
     |> cast(params, [:uuid, :user_id, :application_id, :build_number])
     |> validate_required([:uuid, :user_id, :application_id, :build_number])
     |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:application_id)
   end
 
   def new(params) do
