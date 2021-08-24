@@ -3,10 +3,10 @@
 
 Requirement : 
   * Start database with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
-  * Create the database and start migration `mix setup`. this equals to run these commands : 
+  * Create the database and start migration `mix setup`. This is equivalent to running the following commands : 
     * `mix deps.get` to install the dependencies
     * `mix ecto.create` to create database
-    * `mix ecto.migrate` to start all migration and got have an up-to-date database
+    * `mix ecto.migrate` to start all migration and have an up-to-date database
     * `mix run priv/repo/seeds.exs` to fill database with default values
 
 Now you can start the server with this command `mix phx.server`
@@ -14,7 +14,7 @@ Now you can start the server with this command `mix phx.server`
 The server is started at `localhost:4000`
 
 Code quality check : 
-  * formatting code with `mix format`
+  * Code formatting with `mix format`
   * Syntax verification/Code rules `mix credo --strict`
   * security check `mix sobelow`
   * run tests `mix test`
@@ -30,11 +30,11 @@ Code quality check :
   * Source: https://github.com/phoenixframework/phoenix
 
 
-## To respect the layer model, some rules 
-Use 3 layer : 
+## Some rules to respect the layer model 
+Use 3 layers : 
  - The Controller to manage the conn object, call the service and handle errors. He’s the only one who resolves the transactions.
- - The Entity Model to manage object changes added/modify and database associations.
- - the Service to managec business logic. He’s the only one with direct access to the database.
+ - The Entity Model to manage changes on the object such as add/modify and database associations.
+ - The Service to manage business logic. He’s the only one with direct access to the database.
 
 For the naming, we use a singular name then we derive it (User, UserController, UserServices)
 
@@ -43,7 +43,7 @@ For the naming, we use a singular name then we derive it (User, UserController, 
 - It can call several services only if their combination does not involve business logic.
 - Execute the "final" transaction and handle potential errors.
 - Assign data/error as required.
-- Finish by "reply" to terminate the request and send the result to client.
+- Ends by "reply" to terminate the request and send the result to the client.
 
 #### Exemple
 Simplified example of a "basic" controller: : 
@@ -107,12 +107,12 @@ end
 ### The Entity Model
 It allows the creation/update of a data structure with help functions.
 - A UNIQUE changeset function allow integrity verification of entity during creation/update.
-- A new function that allows the creation of the structure that deals with creating possible associations (foreign key)
-  - This function takes in parameters "params" and if necessary the other entities to be linked to.
+- A 'new' function that allows the creation of the structure that deals with creating possible associations (foreign key)
+  - This function takes as parameters "params" and if necessary the other entities to be linked to.
   - This function itself calls the "changeset" function to validate the integrity of the parameters.
   - This function can define default values.
-- A update function that allow object update (and eventually these associations)
-  - This function take in parameter one entity of same type, "params" and if needed the others entitys to modify the association.
+- An 'update' function that allow object update (and eventually these associations)
+  - This function take as parameter one entity of same type, "params" and if needed the others entities to modify the association.
   - This function itself calls the "changeset" function to validate the integrity of the parameters.
 
 #### Exemple
@@ -151,7 +151,7 @@ end
 ```
 
 ### The Service
-It is he who contains the business logic. It assumes that its entries have been verified.
+It contains the business logic. It assumes that its entries have been verified.
 There are 2 main types of basic operation, reading and writing.
 - A reading does not require Ecto.Multi
 - A writing is ALWAYS done with an Ecto.Multi
@@ -160,7 +160,7 @@ There are 2 main types of basic operation, reading and writing.
 - This means that we never insert/delete from other services but we call these services there.
 - To create an entity, use the new function of the model (ex : User.new(params)) then we insert it in the database (with Ecto.Multi).
 - To combine multiple calls to Ecto.Multi services, use Ecto.Multi.merge
-- Si besoin, créer des services "haut niveau" pour preload la donnée et combiner plusieurs opération simple. 
+- If needed, create "high level" services to preload the data and combine it with multiple simple operations. 
   - Example, when validating a user with their code : 
 ```elixir
 def validate_user(id, code) do
