@@ -1,52 +1,52 @@
 
 # Lenra Server
 
-Prerequis : 
-  * Démarrer la base de donnée avec docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
-  * Créer la db et démarrer la migration `mix setup`. Cela équivaux à lancer les commandes suivantes : 
-    * `mix deps.get` pour installer les dépendances
-    * `mix ecto.create` pour créer la base de donnée
-    * `mix ecto.migrate` pour démarrer toutes les migrations et avoir une base de donnée à jour
-    * `mix run priv/repo/seeds.exs` pour alimenter la base de donnée avec les valeurs par défaut
+Requirement : 
+  * Start database with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
+  * Create the database and start migration `mix setup`. This is equivalent to running the following commands : 
+    * `mix deps.get` to install the dependencies
+    * `mix ecto.create` to create database
+    * `mix ecto.migrate` to start all migration and have an up-to-date database
+    * `mix run priv/repo/seeds.exs` to fill database with default values
 
-Vous pouvez à présent démarrer votre serveur avec la commande `mix phx.server`
+Now you can start the server with this command `mix phx.server`
 
-Le serveur est démarré à l'adresse `localhost:4000`
+The server is started at `localhost:4000`
 
-Vérification de qualité de code : 
-  * formattage du code avec `mix format`
-  * Vérification de syntaxe/règles de code `mix credo --strict`
-  * Vérification de sécurité `mix sobelow`
-  * lancer les tests `mix test`
-  * Test + couverture de code `mix coveralls [--umbrella]`
-  * Test + couverture de code + rapport html `mix coveralls.html [--umbrella]`
+Code quality check : 
+  * Code formatting with `mix format`
+  * Syntax verification/Code rules `mix credo --strict`
+  * security check `mix sobelow`
+  * run tests `mix test`
+  * test + code coverage `mix coveralls [--umbrella]`
+  * test + code coverage + html report `mix coveralls.html [--umbrella]`
 
-## Liens utiles
+## Links
 
-  * Site officiel: https://www.phoenixframework.org/
+  * Official website: https://www.phoenixframework.org/
   * Guides: https://hexdocs.pm/phoenix/overview.html
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
 
 
-## Pour respecter le modèle en couche, quelques règles 
-Utiliser 3 couches : 
- - Le Controlleur pour gérer l'objet conn, appeler le service et gérer les erreurs. Il est le seul à résoudre les transactions.
- - Le Model entité pour gérer les changements sur l'objet ajouté/modifier et les associations en base de donnée.
- - Le Service pour gérer la logique métier. C'est le seul à accéder directement à la base.
+## Some rules to respect the layer model 
+Use 3 layers : 
+ - The Controller to manage the conn object, call the service and handle errors. He’s the only one who resolves the transactions.
+ - The Entity Model to manage changes on the object such as add/modify and database associations.
+ - The Service to manage business logic. He’s the only one with direct access to the database.
 
-Pour le nommage, on utilise un nom singulier puis on le dérive (User, UserController, UserServices)
+For the naming, we use a singular name then we derive it (User, UserController, UserServices)
 
-### Le Controlleur 
-- Point d'entrée pour la requête.
-- Il peut appeler plusieurs services seulement si leur combinaison n'implique pas de logique métier.
-- Exécute la transaction "finale" et gère les erreurs potentielles
-- Assign data/error selon les besoins
-- fini par "reply" pour mettre fin à la requête et renvoyer les résultat au client.
+### The Controller 
+- Entry point for the request.
+- It can call several services only if their combination does not involve business logic.
+- Execute the "final" transaction and handle potential errors.
+- Assign data/error as required.
+- Ends by "reply" to terminate the request and send the result to the client.
 
 #### Exemple
-Exemple simplifié d'un controlleur "de base" : 
+Simplified example of a "basic" controller: : 
 ```elixir
 defmodule LenraWeb.PostController do
   use LenraWeb, :controller
@@ -104,19 +104,19 @@ defmodule LenraWeb.PostController do
   end
 end
 ```
-### Le Model entité
-Il permet la création/update d'une structure de donnée via des fonction d'aide.
-- une fonction changeset UNIQUE permet de vérifier l'integrité de l'entité lors de création/update.
-- une fonction new qui permet la création de la structure qui s'occupe de créer les possibles associations (clé étrangères)
-  - Cette fonction prends en paramètres "params" et si besoin les autres entité auquel se lier.
-  - Cette fonction appelle elle même la fonction "changeset" pour valider l'integrité des params.
-  - Cette fonction peut définir des valeur par défaut.
-- une fonction update qui permet la mise à jour de l'objet (et éventuellement de ses associations)
-  - Cette fonction prends en paramètres une entité du même type, "params" et si besoin les autres entité pour modifier l'association.
-  - Cette fonction appelle elle même la fonction "changeset" pour valider l'integrité des params.
+### The Entity Model
+It allows the creation/update of a data structure with help functions.
+- A UNIQUE changeset function allow integrity verification of entity during creation/update.
+- A 'new' function that allows the creation of the structure that deals with creating possible associations (foreign key)
+  - This function takes as parameters "params" and if necessary the other entities to be linked to.
+  - This function itself calls the "changeset" function to validate the integrity of the parameters.
+  - This function can define default values.
+- An 'update' function that allow object update (and eventually these associations)
+  - This function take as parameter one entity of same type, "params" and if needed the others entities to modify the association.
+  - This function itself calls the "changeset" function to validate the integrity of the parameters.
 
 #### Exemple
-Exemple simplifié de Model "de base" : 
+Simplified example of "basic" model : 
 ```elixir
 defmodule Post do
   use Ecto.Schema
@@ -150,18 +150,18 @@ defmodule Post do
 end
 ```
 
-### Le Service
-C'est lui qui contient la logique métier. Il part du principe que ses entrées ont été vérifiés.
-Il existe 2 grand type d'opération en base, les lecture et les écritures.
-- Une lecture ne nécessite pas de Ecto.Multi
-- Une écriture est TOUJOURS fait via un Ecto.Multi
+### The Service
+It contains the business logic. It assumes that its entries have been verified.
+There are 2 main types of basic operation, reading and writing.
+- A reading does not require Ecto.Multi
+- A writing is ALWAYS done with an Ecto.Multi
 
-- On implémente toujours la base CRUD qui sera la base appelé par d'autres fonctions de services.
-- Cela veut dire qu'on ne fait jamais d'insert/delete depuis d'autres services mais on appel ces services là.
-- Pour créer une entité, on fait appel à la fonction new du model (ex : User.new(params)) puis on l'insert dans la base (avec Ecto.Multi).
-- Pour combiner plusieurs appels aux à des services Ecto.Multi, utiliser Ecto.Multi.merge
-- Si besoin, créer des services "haut niveau" pour preload la donnée et combiner plusieurs opération simple. 
-  - Exemple, lors de la validation d'un utilisateur avec son code : 
+- We always implement the CRUD database which will be the database called by other service functions.
+- This means that we never insert/delete from other services but we call these services there.
+- To create an entity, use the new function of the model (ex : User.new(params)) then we insert it in the database (with Ecto.Multi).
+- To combine multiple calls to Ecto.Multi services, use Ecto.Multi.merge
+- If needed, create "high level" services to preload the data and combine it with multiple simple operations. 
+  - Example, when validating a user with their code : 
 ```elixir
 def validate_user(id, code) do
   user = UserService.get(id) |> Repo.preload(:registration_code) # Chargement de l'utilisateur + preload
