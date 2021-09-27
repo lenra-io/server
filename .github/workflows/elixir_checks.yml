@@ -21,7 +21,7 @@ jobs:
       GH_PERSONNAL_TOKEN: ${{secrets.GH_PERSONNAL_TOKEN}}
     name: Checks
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: webfactory/ssh-agent@v0.5.3
         with:
