@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.COMPONENTS_API_SSH }}
       - uses: actions/checkout@v2
       - name: Set up Elixir
         uses: erlef/setup-elixir@885971a72ed1f9240973bd92ab57af8c1aa68f24
