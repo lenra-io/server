@@ -54,7 +54,7 @@ defmodule LenraWeb.MixProject do
         name: :application_runner,
         host: "github.com",
         project: "lenra-io/application-runner.git",
-        tag: "v1.0.0-beta.1",
+        tag: "v1.0.0-beta.3",
         credentials: "nesqwik:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       )
     ]
@@ -69,10 +69,10 @@ defmodule LenraWeb.MixProject do
 
     case System.get_env("CI") do
       "true" ->
-        {name, git: "https://#{credentials}@#{host}/#{project}", tag: tag}
+        {name, git: "https://#{credentials}@#{host}/#{project}", tag: tag, submodules: true}
 
       _ ->
-        {name, git: "git@#{host}:#{project}", tag: tag}
+        {name, git: "git@#{host}:#{project}", tag: tag, submodules: true}
     end
   end
 end
