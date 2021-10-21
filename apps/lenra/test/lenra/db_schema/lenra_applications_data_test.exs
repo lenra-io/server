@@ -34,8 +34,13 @@ defmodule Lenra.LenraApplicationDataTest do
 
       {:ok, app_data} = Repo.fetch_by(ApplicationsData, %{id: inserted_app_data.id})
 
-      application_id = application.id
-      assert %{application_id: application_id, json_data: %{"test" => "test"}} = app_data
+      with %{id: application_id} <- application,
+           %{application_id: app_data_id, json_data: app_data_json} <- app_data do
+        assert application_id == app_data_id
+        assert %{"test" => "test"} == app_data_json
+      else
+        _ -> assert false
+      end
     end
 
     test "new/2 with invalid data should failed", %{
