@@ -10,8 +10,7 @@ defmodule Lenra.LenraDatastoreUsersTest do
   defp create_application do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    {:ok, %{inserted_application: app}} =
-      ApplicationTestHelper.register_minesweeper(user.id)
+    {:ok, %{inserted_application: app}} = ApplicationTestHelper.register_minesweeper(user.id)
 
     %{application: app, user_uuid: user.id}
   end

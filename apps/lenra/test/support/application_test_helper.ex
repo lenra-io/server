@@ -6,18 +6,18 @@ defmodule ApplicationTestHelper do
   alias Lenra.{LenraApplicationServices}
 
   @minesweeper_app_params %{
-    "name": "mine-sweeper",
-    "service_name": "mine-sweeper",
-    "color": "FFFFFF",
-    "icon": "60189"
+    name: "mine-sweeper",
+    service_name: "mine-sweeper",
+    color: "FFFFFF",
+    icon: "60189"
   }
 
   def param_app(idx) do
     %{
-      "name": "mine-sweeper-#{idx}",
-      "service_name": "mine-sweeper-#{idx}",
-      "color": "FFFFFF",
-      "icon": "60189"
+      name: "mine-sweeper-#{idx}",
+      service_name: "mine-sweeper-#{idx}",
+      color: "FFFFFF",
+      icon: "60189"
     }
   end
 
@@ -35,4 +35,3 @@ defmodule ApplicationTestHelper do
     |> register_app(user_id)
   end
 end
-

@@ -27,5 +27,4 @@ defmodule Lenra.DatastoreUsers do
     %DatastoreUsers{datastore_id: app_id, user_id: user_id}
     |> changeset()
   end
-
 end
