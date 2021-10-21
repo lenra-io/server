@@ -16,7 +16,7 @@ defmodule Lenra.User do
     Environment,
     Deployment,
     DevCode,
-    ApplicationsUsersData
+    DatastoreUsers
   }
 
   @email_regex ~r/[^@]+@[^\.]+\..+/
@@ -41,7 +41,7 @@ defmodule Lenra.User do
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
-    has_many(:application_user_data, ApplicationsUsersData)
+    has_many(:datastore_users, DatastoreUsers)
     has_one(:dev_code, DevCode)
     timestamps()
   end
