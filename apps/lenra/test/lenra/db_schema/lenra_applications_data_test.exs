@@ -7,7 +7,7 @@ defmodule Lenra.LenraApplicationDataTest do
     {:ok, data: create_application()}
   end
 
-  defp create_application() do
+  defp create_application do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
     params = %{
