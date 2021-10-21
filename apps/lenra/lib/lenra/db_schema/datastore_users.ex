@@ -8,7 +8,7 @@ defmodule Lenra.DatastoreUsers do
 
   alias Lenra.{Datastore, User, DatastoreUsers}
 
-  schema "applications_users_data" do
+  schema "datastore_users" do
     belongs_to(:user, User)
     belongs_to(:datastore, Datastore)
 
