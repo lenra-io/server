@@ -46,39 +46,42 @@ defmodule LenraServers.DatastoreServicesTest do
     test "datastore", %{app: app} do
       DatastoreServices.upsert_data(app.creator_id, app.id, %{"foo" => "bar"})
 
-      assert (%Datastore{} = datastore) = DatastoreServices.get_by(user_id: app.creator_id, application_id: app.id)
+      datastore = Repo.get(Datastore, last_inserted_id)
 
-      assert datastore.user_id == app.creator_id
+      assert datastore.owner_id == app.creator_id
       assert datastore.application_id == app.id
       assert datastore.data == %{"foo" => "bar"}
-    end
-
-    test "datastore but does not exist", %{app: app} do
-      assert nil == DatastoreServices.get_by(user_id: app.creator_id, application_id: app.id)
     end
   end
 
   describe "insert" do
     test "data", %{app: app} do
-      assert {:ok,
-              %Datastore{
-                data: %{"data" => "test data"}
-              }} = DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test data"})
+      {:ok, %Datastore{id: last_inserted_id}} =
+        DatastoreServices.insert_data(app.creator_id, app.id, %{"test" => "test data"})
 
-      assert (%Datastore{} = datastore) = Repo.get_by(Datastore, owner_id: app.creator_id, application_id: app.id)
+      %Datastore{
+        data: %{"test" => "test data"}
+      } = Repo.get(Datastore, last_inserted_id)
 
-      assert datastore.data == %{"data" => "test data"}
+      DatastoreServices.update_data(last_inserted_id, %{data: %{"test" => "test data"}})
+
+      datastore = Repo.get(Datastore, last_inserted_id)
+
+      assert datastore.data == %{"test" => "test data"}
     end
 
     test "and check updated data", %{app: app} do
-      DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test data"})
+      {:ok, %Datastore{id: last_inserted_id}} =
+        DatastoreServices.insert_data(app.creator_id, app.id, %{"test" => "test data"})
 
-      assert {:ok, %Datastore{data: %{"data" => "test new data"}}} =
-               DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test new data"})
+      DatastoreServices.update_data(last_inserted_id, %{data: %{"test" => "test new data"}})
 
-      assert (%Datastore{} = datastore) = Repo.get_by(Datastore, owner_id: app.creator_id, application_id: app.id)
+      datastore = Repo.get(Datastore, last_inserted_id)
 
-      assert datastore.data == %{"data" => "test new data"}
+      assert app.creator_id == datastore.owner_id
+      assert app.id == datastore.application_id
+
+      assert datastore.data == %{"test" => "test new data"}
     end
   end
 end

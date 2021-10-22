@@ -19,9 +19,9 @@ defmodule Lenra.LenraDatastoreUsersTest do
     test "new/2 create datastore for user", %{
       data: %{application: application, user_uuid: owner_id}
     } do
-      {:ok, inserted_app_data} = Repo.insert(Datastore.new(owner_id, application.id, %{data: %{test: "test"}}))
+      {:ok, inserted_app_data} = Repo.insert(Datastore.new(owner_id, application.id, %{test: "test"}))
 
-      {:ok, app_data} = Repo.fetch_by(Datastore, %{id: inserted_app_data.id})
+      app_data = Repo.get_by(Datastore, %{id: inserted_app_data.id})
 
       with %{id: application_id} <- application,
            %{application_id: app_data_id, data: app_data_json} <- app_data do
@@ -33,10 +33,10 @@ defmodule Lenra.LenraDatastoreUsersTest do
     end
 
     test "new/2 with invalid data should failed", %{
-      data: %{application: application, user_uuid: owner_id}
+      data: %{user_uuid: owner_id}
     } do
-      app_data = Repo.insert(Datastore.new(owner_id, application.id, %{json_data: %{test: "test"}}))
-      assert {:error, %{errors: [data: _error_message]}} = app_data
+      app_data = Repo.insert(Datastore.new(owner_id, -1, %{ "test" => "test"}))
+      assert {:error, %{errors: [application_id: _error_message]}} = app_data
     end
   end
 end

@@ -20,13 +20,12 @@ defmodule Lenra.Datastore do
     datastore
     |> cast(params, [:data])
     |> validate_required([:data])
-    |> unique_constraint(:user_application_unique, name: :datastores_user_id_application_id_index)
     |> foreign_key_constraint(:owner_id)
     |> foreign_key_constraint(:application_id) 
   end
 
   def new(owner_id, application_id, data) do
-    %Datastore{owner_id: owner_id, application_id: application_id}
-    |> Datastore.changeset(data)
+    %Datastore{owner_id: owner_id, application_id: application_id, data: data}
+    |> Datastore.changeset()
   end
 end

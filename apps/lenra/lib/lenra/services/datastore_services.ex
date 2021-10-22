@@ -4,7 +4,7 @@ defmodule Lenra.DatastoreServices do
   """
   require Logger
 
-  alias Lenra.{Repo, Datastore}
+  alias Lenra.{Repo, Datastore, DatastoreServices}
 
   @doc """
     Gets the datastore.
@@ -32,11 +32,14 @@ defmodule Lenra.DatastoreServices do
   Returns `{:ok, struct}` if the data was successfully inserted or updated.
   Returns `{:error, changeset}` if the data could not be inserted or updated.
   """
-  def upsert_data(owner_id, application_id, data) do
+  def insert_data(owner_id, application_id, data) do
     Datastore.new(owner_id, application_id, data)
-    |> Repo.insert(
-      on_conflict: [set: [data: data]],
-      conflict_target: [:owner_id, :application_id]
-    )
+    |> Repo.insert()
+  end
+
+  def update_data(id, data) do
+    Repo.get(Datastore, id)
+    |> Ecto.Changeset.change(data)
+    |> Repo.update()
   end
 end
