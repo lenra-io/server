@@ -22,7 +22,7 @@ defmodule ApplicationTestHelper do
   end
 
   def register_app(params, user_id) do
-    LenraApplicationServices.register(user_id, params)
+    LenraApplicationServices.create(user_id, params)
   end
 
   def register_app_nb(user_id, idx) do

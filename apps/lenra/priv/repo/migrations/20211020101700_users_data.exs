@@ -16,8 +16,10 @@ defmodule Lenra.Repo.Migrations.UserData do
       "INSERT INTO datastores(user_id) SELECT user_id FROM datastore_users WHERE datastore_users.datastores_id = datastores.id;"
     )
 
-    alter table(:datastores) do
-      remove(:user_id, references(:users))
-    end
+    execute(
+      "ALTER TABLE datastores rename column user_id TO owner_id",
+      "ALTER TABLE datastores rename column owner_id TO user_id"
+    )
+
   end
 end

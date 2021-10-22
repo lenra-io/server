@@ -65,7 +65,7 @@ defmodule LenraServers.DatastoreServicesTest do
                 data: %{"data" => "test data"}
               }} = DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test data"})
 
-      assert (%Datastore{} = datastore) = Repo.get_by(Datastore, user_id: app.creator_id, application_id: app.id)
+      assert (%Datastore{} = datastore) = Repo.get_by(Datastore, owner_id: app.creator_id, application_id: app.id)
 
       assert datastore.data == %{"data" => "test data"}
     end
@@ -76,7 +76,7 @@ defmodule LenraServers.DatastoreServicesTest do
       assert {:ok, %Datastore{data: %{"data" => "test new data"}}} =
                DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test new data"})
 
-      assert (%Datastore{} = datastore) = Repo.get_by(Datastore, user_id: app.creator_id, application_id: app.id)
+      assert (%Datastore{} = datastore) = Repo.get_by(Datastore, owner_id: app.creator_id, application_id: app.id)
 
       assert datastore.data == %{"data" => "test new data"}
     end

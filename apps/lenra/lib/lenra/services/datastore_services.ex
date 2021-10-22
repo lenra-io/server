@@ -32,11 +32,11 @@ defmodule Lenra.DatastoreServices do
   Returns `{:ok, struct}` if the data was successfully inserted or updated.
   Returns `{:error, changeset}` if the data could not be inserted or updated.
   """
-  def upsert_data(user_id, application_id, data) do
-    Datastore.new(user_id, application_id, data)
+  def upsert_data(owner_id, application_id, data) do
+    Datastore.new(owner_id, application_id, data)
     |> Repo.insert(
       on_conflict: [set: [data: data]],
-      conflict_target: [:user_id, :application_id]
+      conflict_target: [:owner_id, :application_id]
     )
   end
 end
