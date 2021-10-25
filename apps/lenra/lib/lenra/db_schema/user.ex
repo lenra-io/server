@@ -41,7 +41,7 @@ defmodule Lenra.User do
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
-    has_many(:datastore_users, DatastoreUsers)
+    has_many(:datastore_users, DatastoreUsers, foreign_key: :owner_id)
     has_one(:dev_code, DevCode)
     timestamps()
   end

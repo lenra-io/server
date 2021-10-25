@@ -21,7 +21,7 @@ defmodule Lenra.Datastore do
     |> cast(params, [:data])
     |> validate_required([:data])
     |> foreign_key_constraint(:owner_id)
-    |> foreign_key_constraint(:application_id) 
+    |> foreign_key_constraint(:application_id)
   end
 
   def new(owner_id, application_id, data) do

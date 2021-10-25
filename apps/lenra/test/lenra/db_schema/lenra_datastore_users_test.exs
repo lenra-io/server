@@ -35,7 +35,7 @@ defmodule Lenra.LenraDatastoreUsersTest do
     test "new/2 with invalid data should failed", %{
       data: %{user_uuid: owner_id}
     } do
-      app_data = Repo.insert(Datastore.new(owner_id, -1, %{ "test" => "test"}))
+      app_data = Repo.insert(Datastore.new(owner_id, -1, %{"test" => "test"}))
       assert {:error, %{errors: [application_id: _error_message]}} = app_data
     end
   end

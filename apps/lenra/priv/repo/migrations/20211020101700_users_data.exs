@@ -21,7 +21,6 @@ defmodule Lenra.Repo.Migrations.UserData do
       "ALTER TABLE datastores rename column owner_id TO user_id"
     )
 
-
-    drop index(:datastores, [:user_id, :application_id], name: :datastores_user_id_application_id_index)
+    drop(index(:datastores, [:user_id, :application_id], name: :datastores_user_id_application_id_index))
   end
 end
