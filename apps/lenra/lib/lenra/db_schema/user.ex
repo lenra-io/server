@@ -15,8 +15,7 @@ defmodule Lenra.User do
     Build,
     Environment,
     Deployment,
-    DevCode,
-    DatastoreUsers
+    DevCode
   }
 
   @email_regex ~r/[^@]+@[^\.]+\..+/
@@ -36,12 +35,11 @@ defmodule Lenra.User do
     field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)
     has_many(:applications, LenraApplication, foreign_key: :creator_id)
-    has_many(:datastores, Datastore)
+    has_many(:datastores, Datastore, foreign_key: :owner_id)
     has_one(:password_code, PasswordCode)
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
-    has_many(:datastore_users, DatastoreUsers, foreign_key: :owner_id)
     has_one(:dev_code, DevCode)
     timestamps()
   end

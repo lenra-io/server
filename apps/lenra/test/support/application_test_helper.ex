@@ -26,7 +26,7 @@ defmodule ApplicationTestHelper do
   end
 
   def register_app_nb(user_id, idx) do
-    LenraApplicationServices.register(user_id, param_app(idx))
+    LenraApplicationServices.create(user_id, param_app(idx))
   end
 
   def register_minesweeper(user_id, changes \\ %{}) do

@@ -1,27 +1,30 @@
 defmodule LenraServers.DatastoreServicesTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Repo, Datastore, DatastoreServices, LenraApplicationServices, LenraApplication}
+  alias Lenra.{Repo, Datastore, DatastoreServices, LenraApplicationServices, LenraApplication, Dataspace}
 
   @moduledoc """
     Test the datastore services
   """
 
   setup do
-    {:ok, app: create_and_return_application()}
+    {:ok, data: create_and_return_dataspace()}
   end
 
-  defp create_and_return_application do
+  defp create_and_return_dataspace do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    LenraApplicationServices.create(user.id, %{
-      name: "mine-sweeper",
-      service_name: "mine-sweeper",
-      color: "FFFFFF",
-      icon: "60189"
-    })
+    {:ok, %{inserted_application: app}} =
+      LenraApplicationServices.create(user.id, %{
+        name: "mine-sweeper",
+        service_name: "mine-sweeper",
+        color: "FFFFFF",
+        icon: "60189"
+      })
 
-    Enum.at(Repo.all(LenraApplication), 0)
+    {:ok, dataspace} = Repo.insert(Dataspace.new(app.id, "test"))
+
+    %{dataspace: dataspace, user: user}
   end
 
   describe "get" do
@@ -55,9 +58,9 @@ defmodule LenraServers.DatastoreServicesTest do
   end
 
   describe "insert" do
-    test "data", %{app: app} do
+    test "data", %{data: %{dataspace: dataspace, user: user}} do
       {:ok, %Datastore{id: last_inserted_id}} =
-        DatastoreServices.insert_data(app.creator_id, app.id, %{"test" => "test data"})
+        DatastoreServices.insert_data(user.id, dataspace.id, %{"test" => "test data"})
 
       %Datastore{
         data: %{"test" => "test data"}
@@ -70,16 +73,16 @@ defmodule LenraServers.DatastoreServicesTest do
       assert datastore.data == %{"test" => "test data"}
     end
 
-    test "and check updated data", %{app: app} do
+    test "and check updated data", %{data: %{dataspace: dataspace, user: user}} do
       {:ok, %Datastore{id: last_inserted_id}} =
-        DatastoreServices.insert_data(app.creator_id, app.id, %{"test" => "test data"})
+        DatastoreServices.insert_data(user.id, dataspace.id, %{"test" => "test data"})
 
       DatastoreServices.update_data(last_inserted_id, %{data: %{"test" => "test new data"}})
 
       datastore = Repo.get(Datastore, last_inserted_id)
 
-      assert app.creator_id == datastore.owner_id
-      assert app.id == datastore.application_id
+      assert user.id == datastore.owner_id
+      assert dataspace.id == datastore.dataspace_id
 
       assert datastore.data == %{"test" => "test new data"}
     end
