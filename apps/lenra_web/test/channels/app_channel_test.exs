@@ -40,31 +40,28 @@ defmodule LenraWeb.AppChannelTest do
   @data %{"user" => %{"name" => "World"}}
   @data2 %{"user" => %{"name" => "Bob"}}
 
-  @listeners %{"onChange" => %{"action" => @listener_name}}
-  @transformed_listeners %{"onChange" => %{"code" => @listener_code}}
-
   @textfield %{
     "type" => "textfield",
     "value" => "Hello World",
-    "listeners" => @listeners
+    "onChange" => %{"action" => @listener_name}
   }
 
   @textfield2 %{
     "type" => "textfield",
     "value" => "Hello Bob",
-    "listeners" => @listeners
+    "onChange" => %{"action" => @listener_name}
   }
 
   @transformed_textfield %{
     "type" => "textfield",
     "value" => "Hello World",
-    "listeners" => @transformed_listeners
+    "onChange" => %{"code" => @listener_code}
   }
 
-  @ui %{"root" => %{"type" => "container", "children" => [@textfield]}}
-  @ui2 %{"root" => %{"type" => "container", "children" => [@textfield2]}}
+  @ui %{"root" => %{"type" => "flex", "children" => [@textfield]}}
+  @ui2 %{"root" => %{"type" => "flex", "children" => [@textfield2]}}
 
-  @expected_ui %{"root" => %{"type" => "container", "children" => [@transformed_textfield]}}
+  @expected_ui %{"root" => %{"type" => "flex", "children" => [@transformed_textfield]}}
   @expected_patch_ui %{
     patch: [%{"op" => "replace", "path" => "/root/children/0/value", "value" => "Hello Bob"}]
   }

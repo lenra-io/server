@@ -55,7 +55,7 @@ config :phoenix, :json_library, Jason
 # library working is by defining the remote_schema_resolver in the config.
 # The config cannot be read from the ApplicationRunner library's config directly so it has to be set here.
 # See https://github.com/jonasschmidt/ex_json_schema#loading-remote-schemata
-config :ex_json_schema,
+config :ex_component_schema,
        :remote_schema_resolver,
        {ApplicationRunner.JsonSchemata, :read_schema}
 
