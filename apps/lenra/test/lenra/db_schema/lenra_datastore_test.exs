@@ -3,42 +3,56 @@ defmodule Lenra.LenraDatastoreTest do
 
   alias Lenra.{Datastore, Dataspace}
 
+  # setup do
+  #  {:ok, data: create_dataspace()}
+  # end
+
+  # defp create_dataspace do
+  #  {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+  #
+  #  {:ok, %{inserted_application: app}} = ApplicationTestHelper.register_minesweeper(user.id)
+  #
+  #  {:ok, dataspace} = Repo.insert(Dataspace.new(app.id, "test"))
+  #
+  #  %{dataspace: dataspace, user_uuid: user.id}
+  # end
+
   setup do
-    {:ok, data: create_dataspace()}
+    {:ok, data: create_application()}
   end
 
-  defp create_dataspace do
+  defp create_application do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
     {:ok, %{inserted_application: app}} = ApplicationTestHelper.register_minesweeper(user.id)
 
-    {:ok, dataspace} = Repo.insert(Dataspace.new(app.id, "test"))
-
-    %{dataspace: dataspace, user_uuid: user.id}
+    %{app: app}
   end
 
   describe "lenra_datastore" do
-    test "new/2 create datastore for user", %{
-      data: %{dataspace: dataspace, user_uuid: owner_id}
+    test "new/2 create datastore", %{
+      data: %{app: app}
     } do
-      {:ok, inserted_datastore} = Repo.insert(Datastore.new(owner_id, dataspace.id, %{test: "test"}))
+      temp = Datastore.new(app.id, "users")
+      IO.puts(inspect(temp))
+      {:ok, inserted_datastore} = Repo.insert(temp)
 
       datastore = Repo.get_by(Datastore, %{id: inserted_datastore.id})
 
-      with %{id: dataspace_id} <- dataspace,
-           %{dataspace_id: datastore_dataspace_id, data: datastore_json} <- datastore do
-        assert dataspace_id == datastore_dataspace_id
-        assert %{"test" => "test"} == datastore_json
+      with %{id: app_id} <- app,
+           %{application_id: datastore_app_id, name: datastore_name} <- datastore do
+        assert app_id == datastore_app_id
+        assert "users" == datastore_name
       else
         _ -> assert false
       end
     end
 
     test "new/2 with invalid data should failed", %{
-      data: %{user_uuid: owner_id}
+      data: %{app: app}
     } do
-      app_data = Repo.insert(Datastore.new(owner_id, -1, %{"test" => "test"}))
-      assert {:error, %{errors: [dataspace_id: _error_message]}} = app_data
+      datastore = Repo.insert(Datastore.new(-1, "test"))
+      assert {:error, %{errors: [application_id: _error_message]}} = datastore
     end
   end
 end

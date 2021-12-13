@@ -6,25 +6,26 @@ defmodule Lenra.Datastore do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{User, Datastore, Dataspace}
+  alias Lenra.{Datastore, Data, LenraApplication}
 
   schema "datastores" do
-    belongs_to(:owner, User)
-    belongs_to(:dataspace, Dataspace)
-    field(:data, :map)
+    # belongs_to(:owner, User)
+    # belongs_to(:dataspace, Dataspace)
+    has_one(:data, Data)
+    belongs_to(:application_id, LenraApplication)
+    field(:name, :string)
     timestamps()
   end
 
   def changeset(datastore, params \\ %{}) do
     datastore
-    |> cast(params, [:data])
-    |> validate_required([:data, :dataspace_id])
-    |> foreign_key_constraint(:owner_id)
-    |> foreign_key_constraint(:dataspace_id)
+    |> cast(params, [])
+    |> validate_required([:name, :application_id])
+    |> foreign_key_constraint(:application_id)
   end
 
-  def new(owner_id, dataspace_id, data) do
-    %Datastore{owner_id: owner_id, dataspace_id: dataspace_id, data: data}
+  def new(application_id, name) do
+    %Datastore{application_id: application_id, name: name}
     |> Datastore.changeset()
   end
 end
