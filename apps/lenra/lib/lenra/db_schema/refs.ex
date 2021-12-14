@@ -17,14 +17,14 @@ defmodule Lenra.Refs do
 
   def changeset(datastore, params \\ %{}) do
     datastore
-    |> cast(params, [:referencer, :referenced])
-    |> validate_required([:referencer, :referenced])
-    |> foreign_key_constraint(:referencer)
-    |> foreign_key_constraint(:referenced)
+    |> cast(params, [])
+    |> validate_required([:referencer_id, :referenced_id])
+    |> foreign_key_constraint(:referencer_id)
+    |> foreign_key_constraint(:referenced_id)
   end
 
-  def new(params) do
-    %Refs{}
-    |> Refs.changeset(params)
+  def new(referencer, referenced) do
+    %Refs{referenced_id: referenced, referencer_id: referencer}
+    |> Refs.changeset()
   end
 end

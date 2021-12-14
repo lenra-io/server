@@ -12,7 +12,7 @@ defmodule Lenra.Datastore do
     # belongs_to(:owner, User)
     # belongs_to(:dataspace, Dataspace)
     has_one(:data, Data)
-    belongs_to(:application_id, LenraApplication)
+    belongs_to(:application, LenraApplication)
     field(:name, :string)
     timestamps()
   end

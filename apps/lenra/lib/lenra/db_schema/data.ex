@@ -20,14 +20,13 @@ defmodule Lenra.Data do
 
   def changeset(dataspace, params \\ %{}) do
     dataspace
-    |> cast(params, [:data])
+    |> cast(params, [])
     |> validate_required([:data])
     |> foreign_key_constraint(:datastore_id)
   end
 
-  @spec new(any, :invalid | %{optional(:__struct__) => none, optional(atom | binary) => any}) :: Ecto.Changeset.t()
-  def new(datastore_id, params \\ %{}) do
-    %Data{datastore_id: datastore_id}
-    |> Data.changeset(params)
+  def new(datastore_id, data) do
+    %Data{datastore_id: datastore_id, data: data}
+    |> Data.changeset()
   end
 end

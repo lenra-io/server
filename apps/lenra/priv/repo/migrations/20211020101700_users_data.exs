@@ -25,8 +25,8 @@ defmodule Lenra.Repo.Migrations.UserData do
     end
 
     create table(:refs) do
-      add(:referencer, references(:datas), null: false)
-      add(:referenced, references(:datas), null: false)
+      add(:referencer_id, references(:datas), null: false)
+      add(:referenced_id, references(:datas), null: false)
 
       timestamps()
     end
