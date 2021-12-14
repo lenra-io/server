@@ -35,7 +35,6 @@ defmodule Lenra.User do
     field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)
     has_many(:applications, LenraApplication, foreign_key: :creator_id)
-    # has_many(:datastores, Datastore, foreign_key: :owner_id)
     has_one(:password_code, PasswordCode)
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
