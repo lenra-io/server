@@ -12,9 +12,10 @@ defmodule Lenra.LenraApplication do
     Environment,
     Build,
     ApplicationMainEnv,
-    AppUserSession,
-    Datastore
+    AppUserSession
   }
+
+  alias ApplicationRunner.{Datastore}
 
   @hex_regex ~r/[0-9A-Fa-f]{6}/
 
@@ -27,7 +28,6 @@ defmodule Lenra.LenraApplication do
     field(:repository, :string)
 
     belongs_to(:creator, User)
-    # has_many(:dataspace, Dataspace, foreign_key: :application_id)
     has_one(:datastore, Datastore, foreign_key: :application_id)
     has_many(:environments, Environment, foreign_key: :application_id)
     has_many(:builds, Build, foreign_key: :application_id)

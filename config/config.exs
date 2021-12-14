@@ -28,6 +28,11 @@ config :guardian, Guardian.DB,
   token_types: ["refresh"],
   sweep_interval: 60
 
+# Configure Application Runner
+config :application_runner,
+  lenra_application_schema: Lenra.LenraApplication,
+  repo: Lenra.Repo
+
 # Configure bamboo
 config :lenra, Lenra.Mailer,
   hackney_opts: [
