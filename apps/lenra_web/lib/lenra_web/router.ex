@@ -58,6 +58,15 @@ defmodule LenraWeb.Router do
     get "/apps/:service_name/resources/:resource", ResourcesController, :get_app_resource
   end
 
+  scope "/query", LenraWeb do
+    # Add token ?
+    pipe_through :api
+    post "/data", QueryController, :insert
+    post "/datastore", QueryController, :insert_datastore
+    put "/data", QueryController, :update
+    delete "/data", QueryController, :delete
+  end
+
   scope "/", LenraWeb do
     get("/health", HealthController, :index)
   end

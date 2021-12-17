@@ -50,13 +50,16 @@ defmodule LenraWeb.MixProject do
         tag: "v1.0.0",
         credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       ),
-      private_git(
-        name: :application_runner,
-        host: "github.com",
-        project: "lenra-io/application-runner.git",
-        tag: "v1.0.0-beta.17",
-        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
-      )
+
+      #private_git(
+      #  name: :application_runner,
+      #  host: "github.com",
+      #  project: "lenra-io/application-runner.git",
+      #  tag: "v1.0.0-beta.11",
+      #  credentials: "nesqwik:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+      #),
+      {:application_runner, path: "/home/emric/Documents/Lenra/application-runner"}
+
     ]
   end
 
