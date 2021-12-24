@@ -2,17 +2,23 @@ defmodule LenraWeb.QueryController do
   use LenraWeb, :controller
 
   def insert(conn, params) do
-    with {:ok, inserted_data} <- ApplicationRunner.Query.insert(params) do
-      IO.puts(inspect(inserted_data))
+    # get app_id from conn
+    app_id = conn.app.id
 
+    with {:ok, inserted_data} <- ApplicationRunner.Query.insert(app_id, params) do
       conn
       |> assign_data(:inserted, inserted_data)
       |> reply
+    else
+      err -> IO.inspect(err)
     end
   end
 
   def insert_datastore(conn, params) do
-    with {:ok, %{inserted_datastore: datastore}} <- ApplicationRunner.Query.insert(params) do
+    # get app_id from conn
+    app_id = conn.app.id
+
+    with {:ok, %{inserted_datastore: datastore}} <- ApplicationRunner.Query.create_table(app_id, params) do
       conn
       |> assign_data(:inserted_datastore, datastore)
       |> reply

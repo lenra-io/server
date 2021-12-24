@@ -10,7 +10,6 @@ defmodule Lenra.User do
     Password,
     RegistrationCode,
     LenraApplication,
-    # Datastore,
     PasswordCode,
     Build,
     Environment,

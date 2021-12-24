@@ -17,7 +17,7 @@ defmodule Lenra.Repo.Migrations.UserData do
       add(:name, :string)
     end
 
-    create table(:datas) do
+    create table(:data) do
       add(:datastore_id, references(:datastores), null: false)
       add(:data, :map, null: false)
 
@@ -25,8 +25,8 @@ defmodule Lenra.Repo.Migrations.UserData do
     end
 
     create table(:refs) do
-      add(:referencer_id, references(:datas), null: false)
-      add(:referenced_id, references(:datas), null: false)
+      add(:referencer_id, references(:data), null: false)
+      add(:referenced_id, references(:data), null: false)
 
       timestamps()
     end
