@@ -1,7 +1,7 @@
 FROM elixir:1.12-alpine AS build
 
 ARG CI
-ARG CI_JOB_TOKEN
+ARG GH_PERSONNAL_TOKEN
 
 # prepare build dir
 WORKDIR /app
