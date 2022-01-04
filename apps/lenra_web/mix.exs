@@ -48,7 +48,7 @@ defmodule LenraWeb.MixProject do
         host: "github.com",
         project: "lenra-io/bouncer.git",
         tag: "v1.0.0",
-        credentials: "nesqwik:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       ),
       private_git(
         name: :application_runner,
