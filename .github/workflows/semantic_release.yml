@@ -22,4 +22,5 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCKER_IMAGE: lenra/server
         run: npx semantic-release
