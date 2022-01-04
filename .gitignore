@@ -35,3 +35,5 @@ lenra_server-*.tar
 # /priv/static/
 
 .env_release
+
+.DS_Store
