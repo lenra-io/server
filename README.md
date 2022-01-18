@@ -3,6 +3,7 @@
 
 Requirement : 
   * Start database with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
+  * Install erlang in version 24.2 and elixir in version 1.12.3 otp-24
   * Create the database and start migration `mix setup`. This is equivalent to running the following commands : 
     * `mix deps.get` to install the dependencies
     * `mix ecto.create` to create database
@@ -20,6 +21,11 @@ Code quality check :
   * run tests `mix test`
   * test + code coverage `mix coveralls [--umbrella]`
   * test + code coverage + html report `mix coveralls.html [--umbrella]`
+
+## Troubleshooting
+  * An error occurs when you have elixir or erlang in the wrong version and you can't launch the server.
+  To install the correct version of erlang and elixir you can use the package asdf to install and manage all
+  the versions of the packages you want. Documentation to use asdf : https://asdf-vm.com/guide/getting-started.html
 
 ## Links
 
