@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: "14"
       - name: Setup node deps
-        run: npm i conventional-changelog-conventionalcommits@4 -D
+        run: npm i conventional-changelog-conventionalcommits@4 @semantic-release/exec @semantic-release/git -D
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
