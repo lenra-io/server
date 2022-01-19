@@ -1,11 +1,10 @@
-defmodule Lenra.Openfaas do
+defmodule Lenra.OpenfaasServices do
   @moduledoc """
     The service that manage calls to an Openfaas action with `run_action/3`
   """
   require Logger
 
-  alias Lenra.{Telemetry, DeploymentServices}
-  alias ApplicationRunner.Action
+  alias Lenra.{DeploymentServices, Environment, LenraApplication}
 
   defp get_http_context do
     base_url = Application.fetch_env!(:lenra, :faas_url)
@@ -26,51 +25,83 @@ defmodule Lenra.Openfaas do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_action(Action.t()) :: {:ok, map}
-  def run_action(action)
-      when is_binary(action.app_name) and is_binary(action.action_name) and
-             is_map(%{data: action.old_data, props: action.props, event: action.event}) do
+  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map()) ::
+          {:ok, map()} | {:error, any()}
+  def run_listener(%LenraApplication{} = application, %Environment{} = environment, action, data, props, event) do
     {base_url, headers} = get_http_context()
-    function_name = get_function_name(action.app_name, action.build_number)
+    function_name = get_function_name(application.name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
+    headers = [{"Content-Type", "application/json"} | headers]
+    body = Jason.encode!(%{action: action, data: data, props: props, event: event})
 
     Logger.debug("Call to Openfaas : #{function_name}")
+    Logger.info("Run app #{application.name}[#{environment.deployed_build.build_number}] with action #{action}")
 
+    # start_time = Telemetry.start(:openfaas_run_listener)
+
+    Finch.build(:post, url, headers, body)
+    |> Finch.request(FaasHttp)
+    |> response(:decode)
+    |> case do
+      {:ok, %{"data" => data}} -> {:ok, data}
+      err -> err
+    end
+
+    # docker_telemetry(response, action.action_logs_uuid)
+
+    # Telemetry.stop(:openfaas_run_listener, start_time, %{
+    #   user_id: action.user_id,
+    #   uuid: action.action_logs_uuid
+    # })
+  end
+
+  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) :: {:ok, map()} | {:error, any()}
+  def fetch_widget(%LenraApplication{} = application, %Environment{} = environment, widget_name, data, props) do
+    {base_url, headers} = get_http_context()
+    function_name = get_function_name(application.name, environment.deployed_build.build_number)
+
+    url = "#{base_url}/function/#{function_name}"
     headers = [{"Content-Type", "application/json"} | headers]
-    params = Map.put(%{data: action.old_data, props: action.props, event: action.event}, :action, action.action_name)
-    body = Jason.encode!(params)
+    body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
-    Logger.info("Run app #{action.app_name}[#{action.build_number}] with action #{action.action_name}")
-
-    start_time = Telemetry.start(:openfaas_runaction)
-
-    response =
-      Finch.build(:post, url, headers, body)
-      |> Finch.request(FaasHttp)
-      |> response(:get_apps)
-
-    docker_telemetry(response, action.action_logs_uuid)
-
-    Telemetry.stop(:openfaas_runaction, start_time, %{
-      user_id: action.user_id,
-      uuid: action.action_logs_uuid
-    })
-
-    response
+    Finch.build(:post, url, headers, body)
+    |> Finch.request(FaasHttp)
+    |> response(:decode)
+    |> case do
+      {:ok, %{"widget" => widget}} -> {:ok, widget}
+      err -> err
+    end
   end
 
-  defp docker_telemetry({:ok, %{"stats" => %{"listeners" => listeners, "ui" => ui}}}, uuid) do
-    Telemetry.event(:docker_run, %{uuid: uuid}, %{
-      uiDuration: ui,
-      listenersTime: listeners
-    })
+  @spec fetch_manifest(LenraApplication.t(), Environment.t()) :: {:ok, map()} | {:error, any()}
+  def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
+    {base_url, headers} = get_http_context()
+    function_name = get_function_name(application.name, environment.deployed_build.build_number)
+
+    url = "#{base_url}/function/#{function_name}"
+    headers = [{"Content-Type", "application/json"} | headers]
+
+    Finch.build(:post, url, headers)
+    |> Finch.request(FaasHttp)
+    |> response(:decode)
+    |> case do
+      {:ok, %{"manifest" => manifest}} -> {:ok, manifest}
+      err -> err
+    end
   end
 
-  defp docker_telemetry(_response, _uuid) do
-    # credo:disable-for-next-line
-    # TODO: manage error case
-  end
+  # defp docker_telemetry({:ok, %{"stats" => %{"listeners" => listeners, "ui" => ui}}}, uuid) do
+  #   Telemetry.event(:docker_run, %{uuid: uuid}, %{
+  #     uiDuration: ui,
+  #     listenersTime: listeners
+  #   })
+  # end
+
+  # defp docker_telemetry(_response, _uuid) do
+  #   # credo:disable-for-next-line
+  #   # TODO: manage error case
+  # end
 
   @doc """
   Gets a resource from an app using a stream.
@@ -133,7 +164,7 @@ defmodule Lenra.Openfaas do
     |> response(:delete_app)
   end
 
-  defp response({:ok, %Finch.Response{status: 200, body: body}}, :get_apps) do
+  defp response({:ok, %Finch.Response{status: 200, body: body}}, :decode) do
     {:ok, Jason.decode!(body)}
   end
 
