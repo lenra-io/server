@@ -127,19 +127,22 @@ defmodule Lenra.OpenfaasServices do
   def deploy_app(service_name, build_number) do
     {base_url, headers} = get_http_context()
 
-    Logger.debug("Deploy Openfaas application")
-
     url = "#{base_url}/system/functions"
 
-    Finch.build(
-      :post,
-      url,
-      headers,
+    body =
       Jason.encode!(%{
         "image" => DeploymentServices.image_name(service_name, build_number),
         "service" => get_function_name(service_name, build_number),
         "secrets" => Application.fetch_env!(:lenra, :faas_secrets)
       })
+
+    Logger.debug("Deploy Openfaas application \n#{url} : \n#{body}")
+
+    Finch.build(
+      :post,
+      url,
+      headers,
+      body
     )
     |> Finch.request(FaasHttp)
     |> response(:deploy_app)

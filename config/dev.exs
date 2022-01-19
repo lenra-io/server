@@ -64,15 +64,20 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :lenra,
-  faas_url: System.get_env("FAAS_URL", "http://localhost:8080"),
-  faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46M2kwREc4NTdLWlVaODQ3R0pheW5qMXAwbQ=="),
+  faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
+  faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
   runner_callback_url: System.get_env("LOCAL_TUNNEL_URL"),
   lenra_env: "dev",
   gitlab_api_url: System.get_env("GITLAB_API_URL", "https://gitlab.com/api/v4"),
   gitlab_api_token: System.get_env("GITLAB_API_TOKEN", "Zuz-dZc834q3CtU-bnX5"),
   gitlab_project_id: System.get_env("GITLAB_PROJECT_ID", "26231009"),
-  runner_secret: System.get_env("RUNNER_SECRET", "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"),
+  gitlab_ci_ref: System.get_env("GITLAB_CI_REF", "widgets"),
+  runner_secret:
+    System.get_env(
+      "RUNNER_SECRET",
+      "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
+    ),
   faas_secrets: ["gitlab-registry"]
 
 config :peerage,

@@ -24,7 +24,7 @@ defmodule LenraWeb.AppChannel do
            ),
          %LenraApplication{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]) do
-      %Environment{} = environment = select_env(app)
+      %Environment{} = environment = select_env(application)
 
       # Monitor this channel to log when the socker disconnect.
       # AppChannelMonitor.monitor(self(), %{

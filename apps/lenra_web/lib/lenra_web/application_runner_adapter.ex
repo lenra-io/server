@@ -49,6 +49,10 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
     OpenfaasServices.fetch_manifest(application, environment)
   end
 
+  def get_manifest(env) do
+    raise "Woops, env not good #{inspect(env)}"
+  end
+
   @impl true
   def get_data(%SessionState{
         assigns: %{
