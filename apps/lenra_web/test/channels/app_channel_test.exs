@@ -43,19 +43,19 @@ defmodule LenraWeb.AppChannelTest do
   @textfield %{
     "type" => "textfield",
     "value" => "Hello World",
-    "onChange" => %{"action" => @listener_name}
+    "onChanged" => %{"action" => @listener_name}
   }
 
   @textfield2 %{
     "type" => "textfield",
     "value" => "Hello Bob",
-    "onChange" => %{"action" => @listener_name}
+    "onChanged" => %{"action" => @listener_name}
   }
 
   @transformed_textfield %{
     "type" => "textfield",
     "value" => "Hello World",
-    "onChange" => %{"code" => @listener_code}
+    "onChanged" => %{"code" => @listener_code}
   }
 
   @ui %{"root" => %{"type" => "flex", "children" => [@textfield]}}
