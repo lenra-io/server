@@ -60,7 +60,7 @@ config :ex_component_schema,
        {ApplicationRunner.JsonSchemata, :read_schema}
 
 config :application_runner,
-  adapter: DevTool.ApplicationRunnerAdapter,
+  adapter: LenraWeb.ApplicationRunnerAdapter,
   app_loader: ApplicationRunner.AppLoaderImpl,
   # 10 min
   session_inactivity_timeout: 1000 * 60 * 10,
