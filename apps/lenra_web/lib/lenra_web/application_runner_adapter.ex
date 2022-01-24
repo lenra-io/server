@@ -5,7 +5,9 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   """
   @behaviour ApplicationRunner.AdapterBehavior
 
-  alias Lenra.{DatastoreServices, OpenfaasServices, User, LenraApplication}
+  require require Logger
+
+  alias Lenra.{DatastoreServices, OpenfaasServices, User, LenraApplication, Datastore}
   alias ApplicationRunner.{EnvState, SessionState}
 
   @impl true
@@ -21,6 +23,7 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         props,
         event
       ) do
+    Logger.info("Run listener for action #{action}")
     OpenfaasServices.run_listener(application, environment, action, data, props, event)
   end
 
@@ -36,6 +39,7 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         data,
         props
       ) do
+    Logger.info("Get widget #{widget_name}")
     OpenfaasServices.fetch_widget(application, environment, widget_name, data, props)
   end
 
@@ -46,6 +50,8 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
           application: application
         }
       }) do
+    Logger.info("Get manifest")
+
     OpenfaasServices.fetch_manifest(application, environment)
   end
 
@@ -60,7 +66,10 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
           user: %User{} = user
         }
       }) do
-    DatastoreServices.get_old_data(user.id, application.id)
+    case DatastoreServices.get_old_data(user.id, application.id) do
+      nil -> {:ok, %{}}
+      %Datastore{} = datastore -> {:ok, datastore.data}
+    end
   end
 
   @impl true
@@ -73,7 +82,10 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         },
         data
       ) do
-    DatastoreServices.upsert_data(user.id, application.id, data)
+    case DatastoreServices.upsert_data(user.id, application.id, data) do
+      {:ok, _} -> :ok
+      {:error, _} -> {:error, :cannot_save_data}
+    end
   end
 
   @impl true

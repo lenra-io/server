@@ -16,7 +16,9 @@ defmodule Lenra.OpenfaasServices do
 
   defp get_function_name(service_name, build_number) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
+
     "#{lenra_env}-#{service_name}-#{build_number}"
+    |> String.downcase()
   end
 
   @doc """
@@ -36,7 +38,7 @@ defmodule Lenra.OpenfaasServices do
     body = Jason.encode!(%{action: action, data: data, props: props, event: event})
 
     Logger.debug("Call to Openfaas : #{function_name}")
-    Logger.info("Run app #{application.name}[#{environment.deployed_build.build_number}] with action #{action}")
+    Logger.debug("Run app #{application.name}[#{environment.deployed_build.build_number}] with action #{action}")
 
     # start_time = Telemetry.start(:openfaas_run_listener)
 
@@ -86,8 +88,13 @@ defmodule Lenra.OpenfaasServices do
     |> Finch.request(FaasHttp)
     |> response(:decode)
     |> case do
-      {:ok, %{"manifest" => manifest}} -> {:ok, manifest}
-      err -> err
+      {:ok, %{"manifest" => manifest}} ->
+        Logger.debug("Got manifest : #{inspect(manifest)}")
+        {:ok, manifest}
+
+      err ->
+        Logger.error("Error while getting manifest : #{inspect(err)}")
+        err
     end
   end
 

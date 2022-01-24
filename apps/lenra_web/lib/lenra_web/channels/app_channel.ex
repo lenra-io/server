@@ -14,7 +14,7 @@ defmodule LenraWeb.AppChannel do
     session_id = Ecto.UUID.generate()
     user = socket.assigns.user
 
-    Logger.info("Join channel for app : #{app_name}")
+    Logger.debug("Joining channel for app : #{app_name}")
 
     with {:ok, app} <-
            LenraApplicationServices.fetch_by(
@@ -25,6 +25,8 @@ defmodule LenraWeb.AppChannel do
          %LenraApplication{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]) do
       %Environment{} = environment = select_env(application)
+
+      Logger.debug("Environment selected is #{environment.name}")
 
       # Monitor this channel to log when the socker disconnect.
       # AppChannelMonitor.monitor(self(), %{
@@ -84,11 +86,14 @@ defmodule LenraWeb.AppChannel do
   end
 
   def handle_info({:send, :ui, ui}, socket) do
+    Logger.debug("send ui #{inspect(ui)}")
     push(socket, "ui", ui)
     {:noreply, socket}
   end
 
   def handle_info({:send, :patches, patches}, socket) do
+    Logger.debug("send patchUi  #{inspect(%{patch: patches})}")
+
     push(socket, "patchUi", %{patch: patches})
     {:noreply, socket}
   end
@@ -103,8 +108,10 @@ defmodule LenraWeb.AppChannel do
 
   defp handle_run(socket, code, event \\ %{}) do
     %{
-      session_id: session_id
+      session_pid: session_pid
     } = socket.assigns
+
+    Logger.debug("Handle run #{code}")
 
     # Telemetry.event(:action_logs, %{
     #   uuid: Ecto.UUID.generate(),
@@ -112,7 +119,7 @@ defmodule LenraWeb.AppChannel do
     #   action: code
     # })
 
-    SessionManager.run_listener(session_id, code, event)
+    SessionManager.run_listener(session_pid, code, event)
 
     {:noreply, socket}
   end
