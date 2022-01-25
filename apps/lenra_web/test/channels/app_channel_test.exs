@@ -22,7 +22,7 @@ defmodule LenraWeb.AppChannelTest do
   @listener_name "HiBob"
   @listener_code ListenersCache.generate_listeners_key(@listener_name, %{})
 
-  @manifest %{"manifest" => %{"entrypoint" => "test"}}
+  @manifest %{"manifest" => %{"rootWidget" => "test"}}
 
   @data %{"data" => %{"user" => %{"name" => "World"}}}
   @data2 %{"data" => %{"user" => %{"name" => "Bob"}}}
