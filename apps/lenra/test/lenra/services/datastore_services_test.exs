@@ -26,48 +26,31 @@ defmodule LenraServers.DatastoreServicesTest do
 
   describe "get" do
     test "data from datastore but datastore does not exist", %{app: app} do
-      assert {:ok, %{}} =
-               DatastoreServices.assign_old_data(
-                 %ApplicationRunner.Action{
-                   app_name: "test",
-                   build_number: 42,
-                   action_logs_uuid: "92846b3e-e85a-431d-9138-8b7ddaf05f66",
-                   user_id: app.creator_id
-                 },
+      assert nil ==
+               DatastoreServices.get_old_data(
+                 app.creator_id,
                  app.id
                )
     end
 
     test "data from existing datastore", %{app: app} do
-      DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test data"})
+      DatastoreServices.upsert_data(app.creator_id, app.id, %{"foo" => "bar"})
 
-      assert {:ok,
-              %ApplicationRunner.Action{
-                app_name: "test",
-                build_number: 42,
-                action_logs_uuid: "92846b3e-e85a-431d-9138-8b7ddaf05f66",
-                old_data: %{"data" => "test data"},
-                user_id: app.creator_id
-              }} ==
-               DatastoreServices.assign_old_data(
-                 %ApplicationRunner.Action{
-                   app_name: "test",
-                   build_number: 42,
-                   action_logs_uuid: "92846b3e-e85a-431d-9138-8b7ddaf05f66",
-                   user_id: app.creator_id
-                 },
+      assert %Datastore{data: %{"foo" => "bar"}} =
+               DatastoreServices.get_old_data(
+                 app.creator_id,
                  app.id
                )
     end
 
     test "datastore", %{app: app} do
-      DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test data"})
+      DatastoreServices.upsert_data(app.creator_id, app.id, %{"foo" => "bar"})
 
       assert (%Datastore{} = datastore) = DatastoreServices.get_by(user_id: app.creator_id, application_id: app.id)
 
       assert datastore.user_id == app.creator_id
       assert datastore.application_id == app.id
-      assert datastore.data == %{"data" => "test data"}
+      assert datastore.data == %{"foo" => "bar"}
     end
 
     test "datastore but does not exist", %{app: app} do

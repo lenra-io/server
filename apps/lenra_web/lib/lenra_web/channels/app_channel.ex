@@ -94,7 +94,7 @@ defmodule LenraWeb.AppChannel do
   def handle_info({:send, :patches, patches}, socket) do
     Logger.debug("send patchUi  #{inspect(%{patch: patches})}")
 
-    push(socket, "patchUi", %{patch: patches})
+    push(socket, "patchUi", %{"patch" => patches})
     {:noreply, socket}
   end
 

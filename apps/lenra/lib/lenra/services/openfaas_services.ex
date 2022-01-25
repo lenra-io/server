@@ -27,18 +27,22 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map()) ::
+  @spec run_listener(%LenraApplication{}, %Environment{}, String.t(), map(), map(), map()) ::
           {:ok, map()} | {:error, any()}
   def run_listener(%LenraApplication{} = application, %Environment{} = environment, action, data, props, event) do
     {base_url, headers} = get_http_context()
-    function_name = get_function_name(application.name, environment.deployed_build.build_number)
+    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
+
     headers = [{"Content-Type", "application/json"} | headers]
     body = Jason.encode!(%{action: action, data: data, props: props, event: event})
 
     Logger.debug("Call to Openfaas : #{function_name}")
-    Logger.debug("Run app #{application.name}[#{environment.deployed_build.build_number}] with action #{action}")
+
+    Logger.debug(
+      "Run app #{application.service_name}[#{environment.deployed_build.build_number}] with action #{action}"
+    )
 
     # start_time = Telemetry.start(:openfaas_run_listener)
 
@@ -58,10 +62,10 @@ defmodule Lenra.OpenfaasServices do
     # })
   end
 
-  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) :: {:ok, map()} | {:error, any()}
+  @spec fetch_widget(%LenraApplication{}, %Environment{}, String.t(), map(), map()) :: {:ok, map()} | {:error, any()}
   def fetch_widget(%LenraApplication{} = application, %Environment{} = environment, widget_name, data, props) do
     {base_url, headers} = get_http_context()
-    function_name = get_function_name(application.name, environment.deployed_build.build_number)
+    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
     headers = [{"Content-Type", "application/json"} | headers]
@@ -76,10 +80,10 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec fetch_manifest(LenraApplication.t(), Environment.t()) :: {:ok, map()} | {:error, any()}
+  @spec fetch_manifest(%LenraApplication{}, %Environment{}) :: {:ok, map()} | {:error, any()}
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
     {base_url, headers} = get_http_context()
-    function_name = get_function_name(application.name, environment.deployed_build.build_number)
+    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
     headers = [{"Content-Type", "application/json"} | headers]
