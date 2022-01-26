@@ -72,7 +72,7 @@ config :lenra,
   gitlab_api_url: System.get_env("GITLAB_API_URL", "https://gitlab.com/api/v4"),
   gitlab_api_token: System.get_env("GITLAB_API_TOKEN", "Zuz-dZc834q3CtU-bnX5"),
   gitlab_project_id: System.get_env("GITLAB_PROJECT_ID", "26231009"),
-  gitlab_ci_ref: System.get_env("GITLAB_CI_REF", "widgets"),
+  gitlab_ci_ref: System.get_env("GITLAB_CI_REF", "master"),
   runner_secret:
     System.get_env(
       "RUNNER_SECRET",

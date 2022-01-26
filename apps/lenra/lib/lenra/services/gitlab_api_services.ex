@@ -21,7 +21,7 @@ defmodule Lenra.GitlabApiServices do
     gitlab_api_token = Application.fetch_env!(:lenra, :gitlab_api_token)
     gitlab_project_id = Application.fetch_env!(:lenra, :gitlab_project_id)
     runner_secret = Application.fetch_env!(:lenra, :runner_secret)
-    gitlab_ref = Application.get_env(:lenra, :gitlab_ci_ref, "master")
+    gitlab_ref = Application.fetch_env!(:lenra, :gitlab_ci_ref)
 
     url = "#{gitlab_api_url}/projects/#{gitlab_project_id}/pipeline"
 
