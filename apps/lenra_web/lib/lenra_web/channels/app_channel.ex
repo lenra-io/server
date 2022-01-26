@@ -28,21 +28,6 @@ defmodule LenraWeb.AppChannel do
 
       Logger.debug("Environment selected is #{environment.name}")
 
-      # Monitor this channel to log when the socker disconnect.
-      # AppChannelMonitor.monitor(self(), %{
-      #   user_id: user.id,
-      #   app_user_session_uuid: session_id,
-      #   app_name: app_name,
-      #   build_number: environment.deployed_build.build_number
-      # })
-
-      # Send telemetry event for logging
-      # Telemetry.event(:action_logs, %{
-      #   uuid: action_logs_uuid,
-      #   app_user_session_uuid: session_id,
-      #   action: "InitData"
-      # })
-
       # Assign the session_id to the socket for future usage
       socket = assign(socket, session_id: session_id)
 
@@ -112,13 +97,6 @@ defmodule LenraWeb.AppChannel do
     } = socket.assigns
 
     Logger.debug("Handle run #{code}")
-
-    # Telemetry.event(:action_logs, %{
-    #   uuid: Ecto.UUID.generate(),
-    #   app_user_session_uuid: session_id,
-    #   action: code
-    # })
-
     SessionManager.run_listener(session_pid, code, event)
 
     {:noreply, socket}

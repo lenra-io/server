@@ -44,8 +44,6 @@ defmodule Lenra.OpenfaasServices do
       "Run app #{application.service_name}[#{environment.deployed_build.build_number}] with action #{action}"
     )
 
-    # start_time = Telemetry.start(:openfaas_run_listener)
-
     Finch.build(:post, url, headers, body)
     |> Finch.request(FaasHttp)
     |> response(:decode)
@@ -53,13 +51,6 @@ defmodule Lenra.OpenfaasServices do
       {:ok, %{"data" => data}} -> {:ok, data}
       err -> err
     end
-
-    # docker_telemetry(response, action.action_logs_uuid)
-
-    # Telemetry.stop(:openfaas_run_listener, start_time, %{
-    #   user_id: action.user_id,
-    #   uuid: action.action_logs_uuid
-    # })
   end
 
   @spec fetch_widget(%LenraApplication{}, %Environment{}, String.t(), map(), map()) :: {:ok, map()} | {:error, any()}
@@ -101,18 +92,6 @@ defmodule Lenra.OpenfaasServices do
         err
     end
   end
-
-  # defp docker_telemetry({:ok, %{"stats" => %{"listeners" => listeners, "ui" => ui}}}, uuid) do
-  #   Telemetry.event(:docker_run, %{uuid: uuid}, %{
-  #     uiDuration: ui,
-  #     listenersTime: listeners
-  #   })
-  # end
-
-  # defp docker_telemetry(_response, _uuid) do
-  #   # credo:disable-for-next-line
-  #   # TODO: manage error case
-  # end
 
   @doc """
   Gets a resource from an app using a stream.
