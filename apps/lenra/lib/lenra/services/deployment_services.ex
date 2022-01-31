@@ -4,7 +4,7 @@ defmodule Lenra.DeploymentServices do
   """
   require Logger
 
-  alias Lenra.{Repo, Deployment, Build, BuildServices, EnvironmentServices, Openfaas}
+  alias Lenra.{Repo, Deployment, Build, BuildServices, EnvironmentServices, OpenfaasServices}
 
   def get(deployment_id) do
     Repo.get(Deployment, deployment_id)
@@ -38,7 +38,7 @@ defmodule Lenra.DeploymentServices do
     )
     |> Ecto.Multi.run(:openfaas_deploy, fn _repo, _ ->
       # a faire: check if this build is already deployed on another env
-      Openfaas.deploy_app(build.application.service_name, build.build_number)
+      OpenfaasServices.deploy_app(build.application.service_name, build.build_number)
     end)
     |> Repo.transaction()
   end

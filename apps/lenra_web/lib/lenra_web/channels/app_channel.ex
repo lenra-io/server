@@ -6,58 +6,49 @@ defmodule LenraWeb.AppChannel do
 
   require Logger
 
-  alias Lenra.{Repo, LenraApplicationServices, Telemetry}
-  alias ApplicationRunner.{ActionBuilder, Action}
+  alias Lenra.{Repo, LenraApplicationServices, LenraApplication, Environment}
+  alias ApplicationRunner.{SessionManagers, SessionManager}
 
   def join("app", %{"app" => app_name}, socket) do
-    action_logs_uuid = Ecto.UUID.generate()
-    app_user_session_uuid = Ecto.UUID.generate()
+    # action_logs_uuid = Ecto.UUID.generate()
+    session_id = Ecto.UUID.generate()
+    user = socket.assigns.user
 
-    Logger.info("Join channel for app : #{app_name}")
+    Logger.debug("Joining channel for app : #{app_name}")
 
     with {:ok, app} <-
            LenraApplicationServices.fetch_by(
              service_name: app_name,
-             creator_id: socket.assigns.user.id
+             # This restrict to "owner" app only
+             creator_id: user.id
            ),
-         loaded_app <- Repo.preload(app, main_env: [environment: [:deployed_build]]) do
-      build_number = loaded_app.main_env.environment.deployed_build.build_number
+         %LenraApplication{} = application <-
+           Repo.preload(app, main_env: [environment: [:deployed_build]]) do
+      %Environment{} = environment = select_env(application)
 
-      AppChannelMonitor.monitor(self(), %{
-        user_id: socket.assigns.user.id,
-        app_user_session_uuid: app_user_session_uuid,
-        app_name: app_name,
-        build_number: build_number
-      })
+      Logger.debug("Environment selected is #{environment.name}")
 
-      socket =
-        assign(socket,
-          app_name: app_name,
-          build_number: build_number,
-          app_user_session_uuid: app_user_session_uuid,
-          action_logs_uuid: action_logs_uuid
-        )
+      # Assign the session_id to the socket for future usage
+      socket = assign(socket, session_id: session_id)
 
-      Telemetry.event(:action_logs, %{
-        uuid: action_logs_uuid,
-        app_user_session_uuid: app_user_session_uuid,
-        action: "InitData"
-      })
+      # prepare the assigns to the session/environment
+      session_assigns = %{
+        user: user,
+        application: application,
+        environment: environment,
+        socket_pid: self()
+      }
 
-      case ActionBuilder.first_run(%Action{
-             action_logs_uuid: action_logs_uuid,
-             user_id: socket.assigns.user.id,
-             app_name: app_name,
-             build_number: build_number
-           }) do
-        {:ok, ui} ->
-          send(self(), {:send_ui, ui})
+      env_assigns = %{application: application, environment: environment}
 
+      with {:ok, session_pid} <-
+             start_session(environment.id, session_id, session_assigns, env_assigns),
+           :ok <- SessionManager.init_data(session_pid) do
+        {:ok, assign(socket, session_pid: session_pid)}
+      else
         {:error, reason} ->
-          Logger.error(inspect(reason))
+          {:error, %{reason: reason}}
       end
-
-      {:ok, socket}
     else
       _err -> {:error, %{reason: "No app found"}}
     end
@@ -67,49 +58,46 @@ defmodule LenraWeb.AppChannel do
     {:error, %{reason: "No App Name"}}
   end
 
-  def handle_info({:send_ui, ui}, socket) do
+  defp select_env(%LenraApplication{} = app) do
+    app.main_env.environment
+  end
+
+  defp start_session(env_id, session_id, session_assigns, env_assigns) do
+    case SessionManagers.start_session(session_id, env_id, session_assigns, env_assigns) do
+      {:ok, session_pid} -> {:ok, session_pid}
+      {:error, {:already_started, session_pid}} -> {:ok, session_pid}
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  def handle_info({:send, :ui, ui}, socket) do
+    Logger.debug("send ui #{inspect(ui)}")
     push(socket, "ui", ui)
     {:noreply, socket}
   end
 
-  def handle_in("run", %{"code" => action_key, "event" => event}, socket) do
-    handle_run(socket, action_key, event)
+  def handle_info({:send, :patches, patches}, socket) do
+    Logger.debug("send patchUi  #{inspect(%{patch: patches})}")
+
+    push(socket, "patchUi", %{"patch" => patches})
+    {:noreply, socket}
   end
 
-  def handle_in("run", %{"code" => action_key}, socket) do
-    handle_run(socket, action_key)
+  def handle_in("run", %{"code" => code, "event" => event}, socket) do
+    handle_run(socket, code, event)
   end
 
-  defp handle_run(socket, action_key, event \\ %{}) do
+  def handle_in("run", %{"code" => code}, socket) do
+    handle_run(socket, code)
+  end
+
+  defp handle_run(socket, code, event \\ %{}) do
     %{
-      app_name: app_name,
-      user: user,
-      build_number: build_number,
-      app_user_session_uuid: app_user_session_uuid
+      session_pid: session_pid
     } = socket.assigns
 
-    uuid = Ecto.UUID.generate()
-
-    Telemetry.event(:action_logs, %{
-      uuid: uuid,
-      app_user_session_uuid: app_user_session_uuid,
-      action: action_key
-    })
-
-    case ApplicationRunner.ActionBuilder.listener_run(%Action{
-           action_logs_uuid: uuid,
-           user_id: user.id,
-           app_name: app_name,
-           build_number: build_number,
-           action_key: action_key,
-           event: event
-         }) do
-      {:ok, patch} ->
-        push(socket, "patchUi", %{patch: patch})
-
-      {:error, reason} ->
-        Logger.error(reason)
-    end
+    Logger.debug("Handle run #{code}")
+    SessionManager.run_listener(session_pid, code, event)
 
     {:noreply, socket}
   end

@@ -19,14 +19,11 @@ defmodule Lenra.DatastoreServices do
   @doc """
     Gets the datastore data
 
-    Returns `%{:ok, action}` with :old_data nil if the datastore does not exist.
-    Returns a `%{:ok, action}` with data assign to :old_data if the datastore exists.
+    Returns the data.
+    data is nil if the data does not exists for this user/app
   """
-  def assign_old_data(action, application_id) do
-    case get_by(user_id: action.user_id, application_id: application_id) do
-      nil -> {:ok, action}
-      datastore -> {:ok, %{action | old_data: datastore.data}}
-    end
+  def get_old_data(user_id, application_id) do
+    get_by(user_id: user_id, application_id: application_id)
   end
 
   @doc """

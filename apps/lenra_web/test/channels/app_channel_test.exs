@@ -2,7 +2,7 @@ defmodule LenraWeb.AppChannelTest do
   @moduledoc """
     Test the `LenraWeb.AppChannel` module
   """
-  use LenraWeb.ChannelCase
+  use LenraWeb.ChannelCase, async: false
   alias LenraWeb.UserSocket
   alias Lenra.FaasStub, as: AppStub
 
@@ -12,33 +12,20 @@ defmodule LenraWeb.AppChannelTest do
     Build,
     Environment,
     ApplicationMainEnv,
-    Deployment,
-    ActionLogsService,
-    AppUserSessionService
+    Deployment
   }
 
-  setup do
-    {:ok, %{inserted_user: user}} = register_john_doe()
-    socket = socket(UserSocket, "socket_id", %{user: user})
+  alias ApplicationRunner.ListenersCache
 
-    owstub = AppStub.create_faas_stub()
-
-    %{socket: socket, owstub: owstub, user: user}
-  end
-
-  test "No app called, should return an error", %{socket: socket} do
-    res = my_subscribe_and_join(socket)
-    assert {:error, %{reason: "No App Name"}} == res
-    refute_push("ui", _)
-  end
-
-  @app_name "Counter"
+  @service_name "hello-world"
   @build_number 1
   @listener_name "HiBob"
-  @listener_code "#{@listener_name}:{}"
+  @listener_code ListenersCache.generate_listeners_key(@listener_name, %{})
 
-  @data %{"user" => %{"name" => "World"}}
-  @data2 %{"user" => %{"name" => "Bob"}}
+  @manifest %{"manifest" => %{"rootWidget" => "test"}}
+
+  @data %{"data" => %{"user" => %{"name" => "World"}}}
+  @data2 %{"data" => %{"user" => %{"name" => "Bob"}}}
 
   @textfield %{
     "type" => "textfield",
@@ -58,13 +45,30 @@ defmodule LenraWeb.AppChannelTest do
     "onChanged" => %{"code" => @listener_code}
   }
 
-  @ui %{"root" => %{"type" => "flex", "children" => [@textfield]}}
-  @ui2 %{"root" => %{"type" => "flex", "children" => [@textfield2]}}
+  @widget %{"widget" => %{"type" => "flex", "children" => [@textfield]}}
+  @widget2 %{"widget" => %{"type" => "flex", "children" => [@textfield2]}}
 
   @expected_ui %{"root" => %{"type" => "flex", "children" => [@transformed_textfield]}}
   @expected_patch_ui %{
-    patch: [%{"op" => "replace", "path" => "/root/children/0/value", "value" => "Hello Bob"}]
+    "patch" => [%{"op" => "replace", "path" => "/root/children/0/value", "value" => "Hello Bob"}]
   }
+
+  setup do
+    {:ok, %{inserted_user: user}} = register_john_doe()
+    socket = socket(UserSocket, "socket_id", %{user: user})
+
+    owstub =
+      AppStub.create_faas_stub()
+      |> AppStub.stub_app(@service_name, @build_number)
+
+    %{socket: socket, owstub: owstub, user: user}
+  end
+
+  test "No app called, should return an error", %{socket: socket} do
+    res = my_subscribe_and_join(socket)
+    assert {:error, %{reason: "No App Name"}} == res
+    refute_push("ui", _)
+  end
 
   test "Base use case with simple app", %{socket: socket, owstub: owstub, user: user} do
     # owstub
@@ -75,7 +79,7 @@ defmodule LenraWeb.AppChannelTest do
       :inserted_application,
       LenraApplication.new(user.id, %{
         name: "Counter",
-        service_name: @app_name,
+        service_name: @service_name,
         color: "FFFFFF",
         icon: "60189"
       })
@@ -100,37 +104,19 @@ defmodule LenraWeb.AppChannelTest do
     # Base use case. Call InitData then MainUI then call the listener
     # and the next MainUI should not be called but taken from cache instead
     owstub
-    |> AppStub.stub_app(@app_name, @build_number)
-    |> AppStub.stub_action_once("InitData", %{
-      "data" => @data,
-      "ui" => @ui,
-      "stats" => %{"listeners" => 111_111, "ui" => 111_111}
-    })
-    |> AppStub.stub_action_once(@listener_name, %{
-      "data" => @data2,
-      "ui" => @ui2,
-      "stats" => %{"listeners" => 111_111, "ui" => 111_111}
-    })
+    |> AppStub.stub_request_once(@manifest)
+    |> AppStub.stub_request_once(@data)
+    |> AppStub.stub_request_once(@widget)
+    |> AppStub.stub_request_once(@data2)
+    |> AppStub.stub_request_once(@widget2)
 
     # Join the channel
-    {:ok, _, socket} = my_subscribe_and_join(socket, %{"app" => @app_name})
+    {:ok, _, socket} = my_subscribe_and_join(socket, %{"app" => @service_name})
 
-    # check that action_logs_uuid & app_user_session_uuid are valid
-    action_logs = ActionLogsService.get_by(%{uuid: socket.assigns.action_logs_uuid})
-
-    assert is_nil(action_logs) == false
-
-    app_user_session = AppUserSessionService.get_by(%{uuid: socket.assigns.app_user_session_uuid})
-
-    assert is_nil(app_user_session) == false
     # Check that the correct data is stored into the socket
-    assert socket.assigns == %{
-             app_name: @app_name,
-             user: user,
-             build_number: @build_number,
-             action_logs_uuid: socket.assigns.action_logs_uuid,
-             app_user_session_uuid: socket.assigns.app_user_session_uuid
-           }
+    assert %{
+             user: ^user
+           } = socket.assigns
 
     # Check that we receive a "ui" event with the final UI
     assert_push("ui", @expected_ui)

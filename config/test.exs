@@ -18,7 +18,8 @@ config :lenra,
   gitlab_api_url: "http://localhost:4567",
   gitlab_api_token: "none",
   gitlab_project_id: "26231009",
-  runner_secret: "test_secret"
+  runner_secret: "test_secret",
+  gitlab_ci_ref: "master"
 
 config :lenra, Lenra.Repo,
   username: "postgres",
