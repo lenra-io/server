@@ -49,7 +49,7 @@ defmodule Lenra.MixProject do
         host: "github.com",
         project: "lenra-io/event-queue.git",
         tag: "v1.0.0",
-        credentials: "nesqwik:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       )
     ]
   end
