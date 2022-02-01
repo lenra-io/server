@@ -23,4 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_IMAGE: lenra/server
-        run: npx semantic-release@18
+        run: |
+          sudo chown $USER:$USER .github/release.sh
+          sudo chmod +x .github/release.sh
+          npx semantic-release@18
