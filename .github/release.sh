@@ -59,6 +59,6 @@ docker buildx build \
   ${tag} \
   --build-arg CI=true \
   --build-arg GH_PERSONNAL_TOKEN="${GITHUB_TOKEN}" \
-  --cache-from type=registry,ref=${DOCKER_IMAGE}:buildcache \
-  --cache-to type=registry,ref=${DOCKER_IMAGE}:buildcache,mode=max \
+  --cache-from type=registry,ref=${DOCKER_IMAGE}-buildcache \
+  --cache-to type=registry,ref=${DOCKER_IMAGE}-buildcache,mode=max \
   .
