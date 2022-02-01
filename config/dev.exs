@@ -85,4 +85,7 @@ config :peerage,
   node_list: [:"lenra@127.0.0.1"],
   log_results: false
 
-config :lenra, Lenra.Mailer, sandbox: true
+config :lenra, Lenra.Mailer,
+  adapter: Bamboo.SendGridAdapter,
+  api_key: "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",
+  hackney_opts: [recv_timeout: :timer.minutes(1)]
