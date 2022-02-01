@@ -39,8 +39,6 @@ RUN mix do compile, release lenra
 # prepare release image
 FROM erlang:24-alpine
 
-RUN apk add openssh
-
 WORKDIR /app
 COPY --from=build /app/_build/prod/rel/lenra .
 
