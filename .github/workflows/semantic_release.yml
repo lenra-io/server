@@ -38,7 +38,7 @@ jobs:
           key: ${{ runner.os }}-docker
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PERSONNAL_TOKEN }}
           DOCKER_IMAGE: lenra/server
         run: |
           sudo chown $USER:$USER .github/release.sh
