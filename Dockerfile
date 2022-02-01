@@ -20,7 +20,15 @@ ENV MIX_ENV=prod
 COPY . .
 
 # install mix dependencies
-RUN mix do deps.get, deps.compile
+# Change token for application_runner/component-api submodule
+RUN mix do deps.get \
+ || [[ "${CI}" == "true" ]] \
+ && cd deps/application_runner \
+ && git config submodule."priv/components-api".url "https://shiipou:${GH_PERSONNAL_TOKEN}@github.com/lenra-io/components-api.git" \
+ && cd ../.. \
+ && mix do deps.get
+
+RUN mix do deps.compile --force
 
 # build assets
 RUN mix phx.digest
