@@ -5,9 +5,9 @@ set -xe # Show output on the logs
 function get_tag {
   version="$1" # Get version tag
   DOCKER_IMAGE="$2"
-  
+
   regex='([0-9]+.[0-9]+.[0-9]+)(-([a-z]+).([0-9]+))?'
-  
+
   if [[ $version =~ $regex ]]; then
     v="${BASH_REMATCH[1]}"
     channel="${BASH_REMATCH[3]}"
@@ -55,10 +55,10 @@ fi
 # build the docker image
 docker buildx build \
   --output type=image,push=true \
-  --platform "amd64,arm64,arm" \
+  --platform "linux/amd64,linux/arm64,linux/arm" \
   ${tag} \
   --build-arg CI=true \
   --build-arg GH_PERSONNAL_TOKEN="${GITHUB_TOKEN}" \
-  --cache-from type=local,src=~/.docker-cache \
-  --cache-to type=local,dest=~/.docker-cache \
+  --cache-from type=registry,ref=${DOCKER_IMAGE}-buildcache \
+  --cache-to type=registry,ref=${DOCKER_IMAGE}-buildcache,mode=max \
   .
