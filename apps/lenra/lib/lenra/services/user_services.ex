@@ -4,7 +4,7 @@ defmodule Lenra.UserServices do
   """
   import Ecto.Query, only: [from: 2]
 
-  alias Lenra.{Repo, User, Password, DevCode, RegistrationCodeServices}
+  alias Lenra.{Repo, User, Password, DevCode, RegistrationCodeServices, EmailWorker}
 
   @doc """
     Register a new user, save him to the database. The email must be unique. The password is hashed before inserted to the database.
@@ -26,7 +26,7 @@ defmodule Lenra.UserServices do
       end
     )
     # send verification email disabled
-    # |> Ecto.Multi.run(:add_event, &add_registration_events/2)
+    |> Ecto.Multi.run(:add_event, &add_registration_events/2)
     |> Repo.transaction()
   end
 
@@ -35,12 +35,12 @@ defmodule Lenra.UserServices do
   end
 
   # send verification email disabled
-  # defp add_registration_events(_repo, %{
-  #       inserted_registration_code: registration_code,
-  #       inserted_user: user
-  #     }) do
-  #  EmailWorker.add_email_verification_event(user, registration_code.code)
-  # end
+  defp add_registration_events(_repo, %{
+         inserted_registration_code: registration_code,
+         inserted_user: user
+       }) do
+    EmailWorker.add_email_verification_event(user, registration_code.code)
+  end
 
   def update(user, params) do
     Ecto.Multi.new()
