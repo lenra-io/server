@@ -19,6 +19,8 @@ defmodule Lenra.Repo.Migrations.UserData do
       add(:environment_id, references(:environments), null: false)
     end
 
+    create(unique_index(:datastores, [:name, :environment_id], name: :datastores_name_application_id_index))
+
     create table(:data) do
       add(:datastore_id, references(:datastores), null: false)
       add(:data, :map, null: false)
