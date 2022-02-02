@@ -31,7 +31,8 @@ config :guardian, Guardian.DB,
 # Configure Application Runner
 config :application_runner,
   lenra_environement_schema: Lenra.Environement,
-  repo: Lenra.Repo
+  repo: Lenra.Repo,
+  adapter: LenraWeb.ApplicationRunnerAdapter
 
 # Configure bamboo
 config :lenra, Lenra.Mailer,
@@ -63,9 +64,6 @@ config :phoenix, :json_library, Jason
 config :ex_component_schema,
        :remote_schema_resolver,
        {ApplicationRunner.JsonSchemata, :read_schema}
-
-config :application_runner,
-  adapter: LenraWeb.ApplicationRunnerAdapter
 
 config :lenra,
   faas_secrets: []

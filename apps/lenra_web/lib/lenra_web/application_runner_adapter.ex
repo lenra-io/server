@@ -7,8 +7,8 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
 
   require require Logger
 
-  alias Lenra.{DatastoreServices, OpenfaasServices, User, LenraApplication, Datastore}
-  alias ApplicationRunner.{EnvState, SessionState}
+  alias Lenra.{DatastoreServices, OpenfaasServices, User, LenraApplication}
+  alias ApplicationRunner.{EnvState, SessionState, Datastore}
 
   @impl true
   def run_listener(

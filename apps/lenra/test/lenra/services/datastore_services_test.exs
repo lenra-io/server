@@ -1,7 +1,8 @@
 defmodule LenraServers.DatastoreServicesTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Repo, Datastore, DatastoreServices, LenraApplicationServices, LenraApplication, Dataspace}
+  alias Lenra.{Repo, DatastoreServices, LenraApplicationServices, LenraApplication, Dataspace}
+  alias ApplicationRunner.{Datastore}
 
   @moduledoc """
     Test the datastore services
