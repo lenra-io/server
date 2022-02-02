@@ -30,6 +30,7 @@ config :guardian, Guardian.DB,
 
 # Configure bamboo
 config :lenra, Lenra.Mailer,
+  adapter: Bamboo.SendGridAdapter,
   hackney_opts: [
     recv_timeout: :timer.minutes(1),
     connect_timeout: :timer.minutes(1)
