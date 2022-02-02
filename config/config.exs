@@ -30,7 +30,7 @@ config :guardian, Guardian.DB,
 
 # Configure Application Runner
 config :application_runner,
-  lenra_application_schema: Lenra.LenraApplication,
+  lenra_environement_schema: Lenra.Environement,
   repo: Lenra.Repo
 
 # Configure bamboo
