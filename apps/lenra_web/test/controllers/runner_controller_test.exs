@@ -30,9 +30,6 @@ defmodule LenraWeb.RunnerControllerTest do
 
     @tag auth_user: :dev
     test "set state failure", %{conn: conn, build: build} do
-      AppStub.create_faas_stub()
-      |> AppStub.expect_deploy_app_once(%{"ok" => "200"})
-
       conn =
         put(conn, Routes.runner_path(conn, :update_build, build["id"], %{"secret" => "test_secret"}), %{
           "status" => "failure"
