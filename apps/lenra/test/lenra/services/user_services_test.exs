@@ -1,6 +1,7 @@
 defmodule UserServicesTest do
   use Lenra.RepoCase, async: true
   alias Lenra.{User, DevCode, UserServices}
+  use Bamboo.Test
 
   test "register user should succeed" do
     {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
@@ -11,6 +12,25 @@ defmodule UserServicesTest do
     assert user.role == :unverified_user
 
     assert String.length(registration_code.code) == 8
+  end
+
+  test "send email after registration" do
+    {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
+    email = Lenra.EmailService.create_welcome_email(user.email, registration_code.code)
+    Lenra.Mailer.deliver_now(email)
+    assert_delivered_email(email)
+
+    Lenra.EmailWorker.email_verification(user, registration_code.code)
+
+    user_email = email.to
+    text_body = email.text_body
+
+    assert_delivered_email_matches(%{
+      to: [{_, ^user_email}],
+      from: {_, "subscription@lenra.me"},
+      subject: "Bienvenue!",
+      text_body: ^text_body
+    })
   end
 
   test "register should fail if email already exists" do
