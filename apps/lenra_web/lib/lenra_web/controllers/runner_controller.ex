@@ -17,6 +17,8 @@ defmodule LenraWeb.RunnerController do
     with {:ok, build} <- BuildServices.fetch(build_id),
          {:ok, _} <- BuildServices.update(build, %{status: status}) do
       conn
+      |> put_status(:bad_request)
+      |> add_error(:build_fail)
       |> reply
     end
   end
