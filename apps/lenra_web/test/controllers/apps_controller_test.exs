@@ -91,7 +91,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       assert %{"success" => true, "data" => %{"app" => app}} = json_response(conn, 200)
 
-      conn = delete(conn, Routes.apps_path(conn, :delete, app["service_name"]))
+      conn = delete(conn, Routes.apps_path(conn, :delete, app["id"]))
 
       assert %{"success" => true} == json_response(conn, 200)
 
@@ -100,7 +100,7 @@ defmodule LenraWeb.AppsControllerTest do
 
     @tag auth_user: :dev
     test "apps controller authenticated but app does not exist", %{conn: conn} do
-      route = Routes.apps_path(conn, :delete, "test")
+      route = Routes.apps_path(conn, :delete, "42")
 
       conn = delete(conn, route)
 
@@ -133,21 +133,21 @@ defmodule LenraWeb.AppsControllerTest do
     test "delete app not same user", %{users: [conn1, conn2]} do
       conn1 = create_app_test(conn1)
 
-      assert %{"success" => true} = json_response(conn1, 200)
+      assert %{"success" => true, "data" => %{"app" => %{"id" => id}}} = json_response(conn1, 200)
 
-      conn2 = delete(conn2, Routes.apps_path(conn2, :delete, "test"))
+      conn2 = delete(conn2, Routes.apps_path(conn2, :delete, id))
       assert %{"success" => false, "errors" => [%{"code" => 403, "message" => "Forbidden"}]} = json_response(conn2, 403)
 
-      conn1 = delete(conn1, Routes.apps_path(conn1, :delete, "test"))
+      conn1 = delete(conn1, Routes.apps_path(conn1, :delete, id))
       assert %{"success" => true} = json_response(conn1, 200)
     end
 
     @tag auth_users: [:dev, :admin]
     test "delete app not same user but is admin", %{users: [conn1, conn2]} do
       conn1 = create_app_test(conn1)
-      assert %{"success" => true} = json_response(conn1, 200)
+      assert %{"success" => true, "data" => %{"app" => app}} = json_response(conn1, 200)
 
-      conn2 = delete(conn2, Routes.apps_path(conn2, :delete, "test"))
+      conn2 = delete(conn2, Routes.apps_path(conn2, :delete, app["id"]))
       assert %{"success" => true} = json_response(conn2, 200)
     end
   end
