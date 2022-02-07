@@ -16,7 +16,7 @@ defmodule UserServicesTest do
 
   test "send email after registration" do
     {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
-    email = Lenra.EmailService.create_welcome_email(user.email, registration_code.code)
+    email = Lenra.EmailService.create_welcome_email(user.email, registration_code.code, user.first_name)
     Lenra.Mailer.deliver_now(email)
     assert_delivered_email(email)
 
@@ -35,7 +35,7 @@ defmodule UserServicesTest do
 
   test "send email for a password recovery" do
     {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
-    email = Lenra.EmailService.create_recovery_email(user.email, registration_code.code)
+    email = Lenra.EmailService.create_recovery_email(user.email, registration_code.code, user.first_name)
     Lenra.Mailer.deliver_now(email)
     assert_delivered_email(email)
 

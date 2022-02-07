@@ -85,4 +85,4 @@ config :peerage,
   node_list: [:"lenra@127.0.0.1"],
   log_results: false
 
-config :lenra, Lenra.Mailer, api_key: "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"
+config :lenra, Lenra.Mailer, sandbox: true
