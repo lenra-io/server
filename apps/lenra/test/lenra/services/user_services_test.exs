@@ -28,7 +28,6 @@ defmodule UserServicesTest do
     assert_delivered_email_matches(%{
       to: [{_, ^user_email}],
       from: {_, "no-reply@lenra.io"},
-      subject: "Bienvenue!",
       text_body: ^text_body
     })
   end
@@ -47,7 +46,6 @@ defmodule UserServicesTest do
     assert_delivered_email_matches(%{
       to: [{_, ^user_email}],
       from: {_, "no-reply@lenra.io"},
-      subject: "Votre code de vérification!",
       text_body: ^text_body
     })
   end
