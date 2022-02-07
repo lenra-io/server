@@ -9,8 +9,8 @@ defmodule Lenra.EmailService do
     new_email()
     |> to(email_address)
     |> from("no-reply@lenra.io")
-    |> subject("Bienvenue!")
     |> SendGridHelper.with_template("d-bd160809d9a04b07ac6925a823f8f61c")
+    |> SendGridHelper.add_dynamic_field("subject", "Bienvenue !")
     |> SendGridHelper.add_dynamic_field(
       "body_hello",
       "Bonjour " <> name <> ",<br />Merci pour votre inscription! Vous rejoignez une communauté incroyable"
@@ -26,8 +26,8 @@ defmodule Lenra.EmailService do
     new_email()
     |> to(email_address)
     |> from("no-reply@lenra.io")
-    |> subject("Votre code de vérification!")
     |> SendGridHelper.with_template("d-bd160809d9a04b07ac6925a823f8f61c")
+    |> SendGridHelper.add_dynamic_field("subject", "Votre code de vérification")
     |> SendGridHelper.add_dynamic_field(
       "body_hello",
       "Bonjour " <> name <> ",<br />Modifiez votre mot de passe à l'aide du code suivant"
