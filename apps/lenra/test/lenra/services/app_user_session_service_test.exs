@@ -14,9 +14,7 @@ defmodule Lenra.AppUserSessionServiceTest do
   end
 
   defp create_app(user_id) do
-    Repo.insert(
-      LenraApplication.new(user_id, %{name: "test", service_name: Ecto.UUID.generate(), color: "FF0000", icon: 0xEB09})
-    )
+    Repo.insert(LenraApplication.new(user_id, %{name: "test", color: "FF0000", icon: 0xEB09}))
   end
 
   describe "AppUserSessionService.create_1/1" do

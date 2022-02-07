@@ -17,7 +17,7 @@ defmodule LenraWeb.AppChannelTest do
 
   alias ApplicationRunner.ListenersCache
 
-  @service_name Ecto.UUID.generate()
+  @service_name "Counter"
   @build_number 1
   @listener_name "HiBob"
   @listener_code ListenersCache.generate_listeners_key(@listener_name, %{})
@@ -57,11 +57,7 @@ defmodule LenraWeb.AppChannelTest do
     {:ok, %{inserted_user: user}} = register_john_doe()
     socket = socket(UserSocket, "socket_id", %{user: user})
 
-    owstub =
-      AppStub.create_faas_stub()
-      |> AppStub.stub_app(@service_name, @build_number)
-
-    %{socket: socket, owstub: owstub, user: user}
+    %{socket: socket, user: user}
   end
 
   test "No app called, should return an error", %{socket: socket} do
@@ -70,7 +66,7 @@ defmodule LenraWeb.AppChannelTest do
     refute_push("ui", _)
   end
 
-  test "Base use case with simple app", %{socket: socket, owstub: owstub, user: user} do
+  test "Base use case with simple app", %{socket: socket, user: user} do
     # owstub
     # |> AppStub.expect_deploy_app_once(%{"ok" => "200"})
 
@@ -79,7 +75,6 @@ defmodule LenraWeb.AppChannelTest do
       :inserted_application,
       LenraApplication.new(user.id, %{
         name: "Counter",
-        service_name: @service_name,
         color: "FFFFFF",
         icon: "60189"
       })
@@ -101,6 +96,12 @@ defmodule LenraWeb.AppChannelTest do
     end)
     |> Repo.transaction()
 
+    app = Repo.get_by(LenraApplication, name: "Counter")
+
+    owstub =
+      AppStub.create_faas_stub()
+      |> AppStub.stub_app(app.service_name, @build_number)
+
     # Base use case. Call InitData then MainUI then call the listener
     # and the next MainUI should not be called but taken from cache instead
     owstub
@@ -111,7 +112,7 @@ defmodule LenraWeb.AppChannelTest do
     |> AppStub.stub_request_once(@widget2)
 
     # Join the channel
-    {:ok, _, socket} = my_subscribe_and_join(socket, %{"app" => @service_name})
+    {:ok, _, socket} = my_subscribe_and_join(socket, %{"app" => app.service_name})
 
     # Check that the correct data is stored into the socket
     assert %{

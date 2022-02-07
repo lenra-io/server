@@ -10,7 +10,6 @@ defmodule Lenra.OpenfaasServicesTest do
 
   @john_doe_application %LenraApplication{
     name: "stubapp",
-    service_name: "test_service",
     color: "FFFFFF",
     icon: 1
   }

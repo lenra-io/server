@@ -18,10 +18,7 @@ defmodule Lenra.DockerRunMeasurementServicesTest do
     action_logs_uuid = Ecto.UUID.generate()
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    {:ok, app} =
-      Repo.insert(
-        LenraApplication.new(user.id, %{name: "test", service_name: Ecto.UUID.generate(), color: "FF0000", icon: 0xEB09})
-      )
+    {:ok, app} = Repo.insert(LenraApplication.new(user.id, %{name: "test", color: "FF0000", icon: 0xEB09}))
 
     AppUserSessionService.create(user.id, %{
       service_name: app.service_name,
