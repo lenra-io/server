@@ -18,7 +18,7 @@ defmodule Lenra.EmailWorker do
         %User{} = user,
         code
       ) do
-    EmailService.create_welcome_email(user.email, code)
+    EmailService.create_welcome_email(user.email, code, user.first_name)
     |> Mailer.deliver_now()
   end
 
@@ -26,7 +26,7 @@ defmodule Lenra.EmailWorker do
         %User{} = user,
         code
       ) do
-    EmailService.create_recovery_email(user.email, code)
+    EmailService.create_recovery_email(user.email, code, user.first_name)
     |> Mailer.deliver_now()
   end
 end
