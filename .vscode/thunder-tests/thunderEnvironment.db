@@ -1,0 +1,2 @@
+{"default":true,"data":[{"name":"endpoint","value":"http://localhost:4000"},{"name":"runner_secret","value":"sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"}],"sortNum":10000,"name":"Lenra Dev","created":"2022-02-07T13:10:08.908Z","modified":"2022-02-07T14:46:42.383Z","_id":"0c89a782-7e41-4fad-ba7b-cac56b2296f1"}
+{"default":false,"data":[],"sortNum":-2,"name":"(Local Env)","created":"2022-02-07T13:34:47.273Z","modified":"2022-02-07T13:34:47.273Z","_id":"f78c019e-5e38-4ae7-8730-093c45b70cf0","global":true,"local":true}

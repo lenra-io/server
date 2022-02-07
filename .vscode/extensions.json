@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "jakebecker.elixir-ls"
+        "jakebecker.elixir-ls",
+        "rangav.vscode-thunder-client"
     ]
 }
