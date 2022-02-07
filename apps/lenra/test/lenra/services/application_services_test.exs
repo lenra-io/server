@@ -1,4 +1,4 @@
-defmodule LenraServers.ApplicationServicesTest do
+defmodule Lenra.ApplicationServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.LenraApplicationServices
