@@ -28,8 +28,8 @@ defmodule LenraWeb.AppsController do
     end
   end
 
-  def delete(conn, %{"name" => app_name}) do
-    with {:ok, app} <- LenraApplicationServices.fetch_by(name: app_name),
+  def delete(conn, %{"id" => app_id}) do
+    with {:ok, app} <- LenraApplicationServices.fetch(app_id),
          :ok <- allow(conn, app),
          {:ok, _} <- LenraApplicationServices.delete(app) do
       reply(conn)
