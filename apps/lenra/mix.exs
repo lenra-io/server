@@ -44,29 +44,8 @@ defmodule Lenra.MixProject do
       {:argon2_elixir, "~> 2.0"},
       {:sentry, "~> 8.0"},
       {:bypass, "~> 2.0", only: :test},
-      private_git(
-        name: :event_queue,
-        host: "github.com",
-        project: "lenra-io/event-queue.git",
-        tag: "v1.0.0",
-        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
-      )
+      {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"}
     ]
   end
 
-  defp private_git(opts) do
-    name = Keyword.fetch!(opts, :name)
-    host = Keyword.fetch!(opts, :host)
-    project = Keyword.fetch!(opts, :project)
-    tag = Keyword.fetch!(opts, :tag)
-    credentials = Keyword.get(opts, :credentials)
-
-    case System.get_env("CI") do
-      "true" ->
-        {name, git: "https://#{credentials}@#{host}/#{project}", tag: tag}
-
-      _ ->
-        {name, git: "git@#{host}:#{project}", tag: tag}
-    end
-  end
 end
