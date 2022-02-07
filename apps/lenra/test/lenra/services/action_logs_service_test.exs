@@ -11,13 +11,19 @@ defmodule Lenra.ActionLogsServiceTest do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
     {:ok, app} = create_app(user.id)
 
-    AppUserSessionService.create(user.id, %{app_name: app.service_name, uuid: app_session_uuid, build_number: 1})
+    AppUserSessionService.create(user.id, %{
+      service_name: app.service_name,
+      uuid: app_session_uuid,
+      build_number: 1
+    })
 
     app_session_uuid
   end
 
   defp create_app(user_id) do
-    Repo.insert(LenraApplication.new(user_id, %{name: "test", service_name: "test", color: "FF0000", icon: 0xEB09}))
+    Repo.insert(
+      LenraApplication.new(user_id, %{name: "test", service_name: Ecto.UUID.generate(), color: "FF0000", icon: 0xEB09})
+    )
   end
 
   describe "ActionLogsService.create_1/1" do

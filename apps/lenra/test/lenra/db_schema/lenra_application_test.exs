@@ -3,7 +3,13 @@ defmodule Lenra.LenraApplicationTest do
 
   alias Lenra.{LenraApplication, AppUserSession}
 
-  @valide_data %{name: "Test", service_name: "test", color: "FF0000", icon: 1111, repository: "repository"}
+  @valide_data %{
+    name: "Test",
+    service_name: Ecto.UUID.generate(),
+    color: "FF0000",
+    icon: 1111,
+    repository: "repository"
+  }
   @invalide_data %{name: nil, service_name: nil, color: nil, icon: nil, repository: nil}
 
   describe "lenra_appliaction" do

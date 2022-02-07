@@ -73,7 +73,7 @@ defmodule Lenra.Monitor do
   def handle_event([:lenra, :app_user_session, :start], _measurements, metadata, _config) do
     AppUserSessionService.create(metadata.user_id, %{
       uuid: metadata.app_user_session_uuid,
-      app_name: metadata.app_name,
+      service_name: metadata.service_name,
       build_number: metadata.build_number
     })
   end

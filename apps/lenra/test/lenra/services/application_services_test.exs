@@ -11,7 +11,7 @@ defmodule LenraServers.ApplicationServicesTest do
   test "fetch app", %{user: user} do
     params = %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
+      service_name: Ecto.UUID.generate(),
       color: "FFFFFF",
       icon: "60189"
     }
@@ -27,7 +27,7 @@ defmodule LenraServers.ApplicationServicesTest do
   test "fetch app by", %{user: user} do
     params = %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
+      service_name: Ecto.UUID.generate(),
       color: "FFFFFF",
       icon: "60189"
     }
@@ -43,7 +43,7 @@ defmodule LenraServers.ApplicationServicesTest do
   test "delete app", %{user: user} do
     params = %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
+      service_name: Ecto.UUID.generate(),
       color: "FFFFFF",
       icon: "60189"
     }
