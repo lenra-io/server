@@ -28,7 +28,7 @@ defmodule Lenra.LenraApplication do
 
   def changeset(application, params \\ %{}) do
     application
-    |> cast(params, [:name, :service_name, :color, :icon, :repository])
+    |> cast(params, [:name, :color, :icon, :repository])
     |> validate_required([:name, :service_name, :color, :icon, :creator_id])
     |> unique_constraint(:name)
     |> unique_constraint(:service_name)

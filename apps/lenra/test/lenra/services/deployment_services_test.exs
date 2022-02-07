@@ -28,7 +28,6 @@ defmodule Lenra.DeploymentServicesTest do
 
     LenraApplicationServices.create(user.id, %{
       name: "mine-sweeper",
-      service_name: Ecto.UUID.generate(),
       color: "FFFFFF",
       icon: "60189"
     })
@@ -96,7 +95,6 @@ defmodule Lenra.DeploymentServicesTest do
       {:ok, %{inserted_main_env: wrong_env}} =
         LenraApplicationServices.create(app.creator_id, %{
           name: "wrong_app",
-          service_name: Ecto.UUID.generate(),
           color: "FFFFFF",
           icon: "60189"
         })
