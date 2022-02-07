@@ -1,4 +1,4 @@
-defmodule LenraServers.OpenfaasMeasurementServicesTest do
+defmodule Lenra.OpenfaasMeasurementServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.{

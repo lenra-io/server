@@ -1,4 +1,4 @@
-defmodule LenraServers.EnvironmentServicesTest do
+defmodule Lenra.EnvironmentServicesTest do
   @moduledoc """
     Test the environment services
   """

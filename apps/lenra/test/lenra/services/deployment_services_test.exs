@@ -1,4 +1,4 @@
-defmodule LenraServers.DeploymentServicesTest do
+defmodule Lenra.DeploymentServicesTest do
   @moduledoc """
     Test the deployment services
   """

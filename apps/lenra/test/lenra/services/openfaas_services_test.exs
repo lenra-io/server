@@ -1,4 +1,4 @@
-defmodule LenraServers.OpenfaasServicesTest do
+defmodule Lenra.OpenfaasServicesTest do
   @moduledoc """
     Test the Errors for some routes
   """

@@ -1,4 +1,4 @@
-defmodule LenraServers.SocketAppMeasurementServicesTest do
+defmodule Lenra.SocketAppMeasurementServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.{SocketAppMeasurement, SocketAppMeasurementServices, LenraApplication, AppUserSessionService}
