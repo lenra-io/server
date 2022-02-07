@@ -25,7 +25,6 @@ defmodule Lenra.UserServices do
         RegistrationCodeServices.registration_code_changeset(user)
       end
     )
-    # send verification email disabled
     |> Ecto.Multi.run(:add_event, &add_registration_events/2)
     |> Repo.transaction()
   end
@@ -34,7 +33,6 @@ defmodule Lenra.UserServices do
     Repo.get(User, id)
   end
 
-  # send verification email disabled
   defp add_registration_events(_repo, %{
          inserted_registration_code: registration_code,
          inserted_user: user
