@@ -8,11 +8,12 @@ defmodule Lenra.LenraApplication do
   alias Lenra.{User, Datastore, LenraApplication, Environment, Build, ApplicationMainEnv, AppUserSession}
 
   @hex_regex ~r/[0-9A-Fa-f]{6}/
+  @faas_regex ~r/^[0-9a-z-]{2,64}$/
 
   @derive {Jason.Encoder, only: [:id, :name, :service_name, :icon, :color, :creator_id, :repository]}
   schema "applications" do
     field(:name, :string)
-    field(:service_name, :string)
+    field(:service_name, Ecto.UUID)
     field(:color, :string)
     field(:icon, :integer)
     field(:repository, :string)
@@ -33,12 +34,12 @@ defmodule Lenra.LenraApplication do
     |> unique_constraint(:name)
     |> unique_constraint(:service_name)
     |> validate_format(:color, @hex_regex)
+    |> validate_format(:service_name, @faas_regex)
     |> validate_length(:name, min: 2, max: 64)
-    |> validate_length(:service_name, min: 2, max: 64)
   end
 
   def new(creator_id, params) do
-    %LenraApplication{creator_id: creator_id}
+    %LenraApplication{creator_id: creator_id, service_name: Ecto.UUID.generate()}
     |> changeset(params)
   end
 
