@@ -4,10 +4,18 @@ defmodule LenraWeb.RunnerController do
 
   alias Lenra.{BuildServices, DeploymentServices}
 
-  def update_build(conn, %{"id" => build_id, "status" => status}) do
+  def update_build(conn, %{"id" => build_id, "status" => status}) when status == "success" do
     with {:ok, build} <- BuildServices.fetch(build_id),
          {:ok, _} <- BuildServices.update(build, %{status: status}),
          {:ok, _} <- DeploymentServices.deploy_in_main_env(build) do
+      conn
+      |> reply
+    end
+  end
+
+  def update_build(conn, %{"id" => build_id, "status" => status}) when status == "failure" do
+    with {:ok, build} <- BuildServices.fetch(build_id),
+         {:ok, _} <- BuildServices.update(build, %{status: status}) do
       conn
       |> reply
     end
