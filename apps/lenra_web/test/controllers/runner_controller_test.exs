@@ -35,7 +35,7 @@ defmodule LenraWeb.RunnerControllerTest do
           "status" => "failure"
         })
 
-      assert %{"success" => false} = json_response(conn, 400)
+      assert %{"success" => true} = json_response(conn, 200)
     end
 
     @tag auth_user: :dev
@@ -55,7 +55,7 @@ defmodule LenraWeb.RunnerControllerTest do
     test "set state non working", %{conn: conn, build: build} do
       conn =
         put(conn, Routes.runner_path(conn, :update_build, build["id"], %{"secret" => "test_secret"}), %{
-          "status" => "failure"
+          "status" => "error"
         })
 
       assert %{"success" => false} = json_response(conn, 400)

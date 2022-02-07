@@ -4,22 +4,20 @@ defmodule LenraWeb.RunnerController do
 
   alias Lenra.{BuildServices, DeploymentServices}
 
-  def update_build(conn, %{"id" => build_id, "status" => status}) when status == "success" do
+  defp maybe_deploy_in_main_env(build, "success"), do: DeploymentServices.deploy_in_main_env(build)
+
+  defp maybe_deploy_in_main_env(_build, "failure"), do: {:ok, :not_deployed}
+
+  def update_build(conn, %{"id" => build_id, "status" => status}) when status in ["success", "failure"] do
     with {:ok, build} <- BuildServices.fetch(build_id),
          {:ok, _} <- BuildServices.update(build, %{status: status}),
-         {:ok, _} <- DeploymentServices.deploy_in_main_env(build) do
+         {:ok, _} <- maybe_deploy_in_main_env(build, status) do
       conn
       |> reply
     end
   end
 
-  def update_build(conn, %{"id" => build_id, "status" => status}) when status == "failure" do
-    with {:ok, build} <- BuildServices.fetch(build_id),
-         {:ok, _} <- BuildServices.update(build, %{status: status}) do
-      conn
-      |> put_status(:bad_request)
-      |> add_error(:build_fail)
-      |> reply
-    end
+  def update_build(_conn, _) do
+    {:error, :invalid_build_status}
   end
 end
