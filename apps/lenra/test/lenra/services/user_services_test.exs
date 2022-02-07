@@ -27,8 +27,27 @@ defmodule UserServicesTest do
 
     assert_delivered_email_matches(%{
       to: [{_, ^user_email}],
-      from: {_, "subscription@lenra.me"},
+      from: {_, "no-reply@lenra.io"},
       subject: "Bienvenue!",
+      text_body: ^text_body
+    })
+  end
+
+  test "send email for a password recovery" do
+    {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
+    email = Lenra.EmailService.create_recovery_email(user.email, registration_code.code)
+    Lenra.Mailer.deliver_now(email)
+    assert_delivered_email(email)
+
+    Lenra.EmailWorker.email_password_lost(user, registration_code.code)
+
+    user_email = email.to
+    text_body = email.text_body
+
+    assert_delivered_email_matches(%{
+      to: [{_, ^user_email}],
+      from: {_, "no-reply@lenra.io"},
+      subject: "Votre code de vérification!",
       text_body: ^text_body
     })
   end

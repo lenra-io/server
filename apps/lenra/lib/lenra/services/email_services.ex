@@ -2,7 +2,6 @@ defmodule Lenra.EmailService do
   @moduledoc false
 
   import Bamboo.Email
-  alias Lenra.Mailer
   alias Bamboo.SendGridHelper
 
   def create_welcome_email(email_address, code) do
