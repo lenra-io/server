@@ -39,11 +39,13 @@ RUN mix do compile, release lenra
 # prepare release image
 FROM erlang:24-alpine
 
-WORKDIR /app
-COPY --from=build /app/_build/prod/rel/lenra .
+RUN adduser -D lenra
 
-RUN adduser -D lenra && chown -R lenra:lenra .
 USER lenra
+
+WORKDIR /app
+
+COPY --from=build --chown=lenra /app/_build/prod/rel/lenra .
 
 ENTRYPOINT [ "bin/lenra" ]
 CMD ["start"]
