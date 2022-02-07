@@ -17,7 +17,7 @@ defmodule LenraWeb.AppChannelTest do
 
   alias ApplicationRunner.ListenersCache
 
-  @service_name "hello-world"
+  @service_name Ecto.UUID.generate()
   @build_number 1
   @listener_name "HiBob"
   @listener_code ListenersCache.generate_listeners_key(@listener_name, %{})

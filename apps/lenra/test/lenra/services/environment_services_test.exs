@@ -15,7 +15,7 @@ defmodule LenraServers.EnvironmentServicesTest do
 
     LenraApplicationServices.create(user.id, %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
+      service_name: Ecto.UUID.generate(),
       color: "FFFFFF",
       icon: "60189"
     })

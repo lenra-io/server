@@ -16,10 +16,12 @@ defmodule LenraServers.SocketAppMeasurementServicesTest do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
     {:ok, app} =
-      Repo.insert(LenraApplication.new(user.id, %{name: "test", service_name: "test", color: "FF0000", icon: 0xEB09}))
+      Repo.insert(
+        LenraApplication.new(user.id, %{name: "test", service_name: Ecto.UUID.generate(), color: "FF0000", icon: 0xEB09})
+      )
 
     AppUserSessionService.create(user.id, %{
-      app_name: app.service_name,
+      service_name: app.service_name,
       uuid: app_session_uuid,
       build_number: 1
     })
