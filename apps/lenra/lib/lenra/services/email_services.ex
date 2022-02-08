@@ -4,7 +4,7 @@ defmodule Lenra.EmailService do
   import Bamboo.Email
   alias Bamboo.SendGridHelper
 
-  def create_welcome_email(email_address, code, name) do
+  def create_welcome_email(email_address, code) do
     # base template ID : d-bd160809d9a04b07ac6925a823f8f61c
     new_email()
     |> to(email_address)
@@ -13,7 +13,7 @@ defmodule Lenra.EmailService do
     |> SendGridHelper.add_dynamic_field("subject", "Bienvenue !")
     |> SendGridHelper.add_dynamic_field(
       "body_hello",
-      "Bonjour " <> name <> ",<br />Merci pour votre inscription! Vous rejoignez une communauté incroyable"
+      "Bonjour " <> email_address <> ",<br />Merci pour votre inscription! Vous rejoignez une communauté incroyable"
     )
     |> SendGridHelper.add_dynamic_field("code", code)
     |> SendGridHelper.add_dynamic_field(
@@ -22,7 +22,7 @@ defmodule Lenra.EmailService do
     )
   end
 
-  def create_recovery_email(email_address, code, name) do
+  def create_recovery_email(email_address, code) do
     new_email()
     |> to(email_address)
     |> from("no-reply@lenra.io")
@@ -30,7 +30,7 @@ defmodule Lenra.EmailService do
     |> SendGridHelper.add_dynamic_field("subject", "Votre code de vérification")
     |> SendGridHelper.add_dynamic_field(
       "body_hello",
-      "Bonjour " <> name <> ",<br />Modifiez votre mot de passe à l'aide du code suivant"
+      "Bonjour " <> email_address <> ",<br />Modifiez votre mot de passe à l'aide du code suivant"
     )
     |> SendGridHelper.add_dynamic_field("code", code)
     |> SendGridHelper.add_dynamic_field(
