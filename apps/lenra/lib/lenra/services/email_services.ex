@@ -4,6 +4,7 @@ defmodule Lenra.EmailService do
   import Bamboo.Email
   alias Bamboo.SendGridHelper
 
+  @spec create_welcome_email(String.t(), String.t()) :: Bamboo.Email.t()
   def create_welcome_email(email_address, code) do
     # base template ID : d-bd160809d9a04b07ac6925a823f8f61c
     new_email()
@@ -22,6 +23,7 @@ defmodule Lenra.EmailService do
     )
   end
 
+  @spec create_recovery_email(String.t(), String.t()) :: Bamboo.Email.t()
   def create_recovery_email(email_address, code) do
     new_email()
     |> to(email_address)
