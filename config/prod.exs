@@ -26,5 +26,3 @@ config :lenra,
 # Edit to allow only wanted sources
 config :cors_plug,
   origin: []
-
-config :lenra, Lenra.Mailer, adapter: Bamboo.SendGridAdapter
