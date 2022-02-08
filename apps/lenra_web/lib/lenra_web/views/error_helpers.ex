@@ -22,6 +22,8 @@ defmodule LenraWeb.ErrorHelpers do
     invalid_uuid: %{code: 13, message: "The code is not a valid UUID"},
     invalid_code: %{code: 14, message: "The code is invalid"},
     invalid_build_status: %{code: 15, message: "The build status should be success or failure."},
+    openfass_not_recheable: %{code: 16, message: "Openfaas could not be reached. It should not happen."},
+    application_not_found: %{code: 17, message: "The application was not found in Openfaas. It should not happen."},
     environement_not_build: %{code: 22, message: "This application was not yet build."},
     error_404: %{code: 404, message: "Not Found."},
     error_500: %{code: 500, message: "Internal server error."},

@@ -186,11 +186,7 @@ defmodule Lenra.OpenfaasServices do
   end
 
   defp response({:ok, %Finch.Response{status: status_code}}, :delete_app)
-       when status_code in [200, 202, 404] do
-    if status_code == 404 do
-      Logger.error("The application was not found in Openfaas. It should not happen.")
-    end
-
+       when status_code in [200, 202] do
     {:ok, status_code}
   end
 
@@ -198,12 +194,17 @@ defmodule Lenra.OpenfaasServices do
     raise "Openfaas could not delete the application. It should not happen."
   end
 
-  defp response({:error, %Mint.TransportError{reason: _reason}}, _action) do
-    raise "Openfaas could not be reached. It should not happen."
+  defp response({:error, %Mint.TransportError{reason: _}}, _) do
+    Logger.error("Openfaas could not be reached. It should not happen.")
+    {:error, :openfass_not_recheable}
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, _action)
        when status_code not in [200, 202] do
-    raise "Openfaas error (#{status_code}) #{body}"
+    case status_code do
+      404 ->
+        Logger.error(body)
+        {:error, :application_not_found}
+    end
   end
 end

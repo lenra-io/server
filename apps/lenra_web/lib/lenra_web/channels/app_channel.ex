@@ -5,6 +5,8 @@ defmodule LenraWeb.AppChannel do
   use Phoenix.Channel
   alias ApplicationRunner.{SessionManager, SessionManagers}
   alias Lenra.{Environment, LenraApplication, LenraApplicationServices, Repo}
+  alias LenraWeb.{ErrorHelpers}
+
   require Logger
 
   def join("app", %{"app" => app_name}, socket) do
@@ -45,7 +47,7 @@ defmodule LenraWeb.AppChannel do
         {:ok, assign(socket, session_pid: session_pid)}
       else
         {:error, reason} ->
-          {:error, %{reason: reason}}
+          {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
       _err -> {:error, %{reason: "No app found"}}
@@ -63,7 +65,7 @@ defmodule LenraWeb.AppChannel do
   defp start_session(env_id, session_id, session_assigns, env_assigns) do
     case SessionManagers.start_session(session_id, env_id, session_assigns, env_assigns) do
       {:ok, session_pid} -> {:ok, session_pid}
-      {:error, {:already_started, session_pid}} -> {:ok, session_pid}
+      # {:error, {:already_started, session_pid}} -> {:ok, session_pid}
       {:error, message} -> {:error, message}
     end
   end
