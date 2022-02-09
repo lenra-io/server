@@ -18,8 +18,7 @@ defmodule Lenra.LenraApplication do
 
   @hex_regex ~r/[0-9A-Fa-f]{6}/
 
-  @derive {Jason.Encoder,
-           only: [:id, :name, :service_name, :icon, :color, :creator_id, :repository]}
+  @derive {Jason.Encoder, only: [:id, :name, :service_name, :icon, :color, :creator_id, :repository]}
   schema "applications" do
     field(:name, :string)
     field(:service_name, Ecto.UUID)

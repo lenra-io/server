@@ -79,8 +79,7 @@ defmodule Lenra.OpenfaasServicesTest do
 
       FaasStub.stub_resource_once(app, "download.jpeg", %{})
 
-      {:ok, res} =
-        OpenfaasServices.get_app_resource(@john_doe_application.service_name, 1, "download.jpeg")
+      {:ok, res} = OpenfaasServices.get_app_resource(@john_doe_application.service_name, 1, "download.jpeg")
 
       assert Keyword.get(res, :data) == "{}"
     end

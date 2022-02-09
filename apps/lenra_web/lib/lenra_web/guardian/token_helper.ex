@@ -34,8 +34,7 @@ defmodule LenraWeb.TokenHelper do
   end
 
   def create_access_token(refresh_token) do
-    {:ok, _, {access_token, _new_claims}} =
-      Lenra.Guardian.exchange(refresh_token, "refresh", "access")
+    {:ok, _, {access_token, _new_claims}} = Lenra.Guardian.exchange(refresh_token, "refresh", "access")
 
     access_token
   end

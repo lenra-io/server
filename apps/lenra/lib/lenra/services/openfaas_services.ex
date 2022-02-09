@@ -37,8 +37,7 @@ defmodule Lenra.OpenfaasServices do
       ) do
     {base_url, base_headers} = get_http_context()
 
-    function_name =
-      get_function_name(application.service_name, environment.deployed_build.build_number)
+    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
 
@@ -71,8 +70,7 @@ defmodule Lenra.OpenfaasServices do
       ) do
     {base_url, base_headers} = get_http_context()
 
-    function_name =
-      get_function_name(application.service_name, environment.deployed_build.build_number)
+    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
     headers = [{"Content-Type", "application/json"} | base_headers]
@@ -91,8 +89,7 @@ defmodule Lenra.OpenfaasServices do
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
     {base_url, base_headers} = get_http_context()
 
-    function_name =
-      get_function_name(application.service_name, environment.deployed_build.build_number)
+    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
     headers = [{"Content-Type", "application/json"} | base_headers]

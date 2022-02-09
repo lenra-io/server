@@ -111,8 +111,7 @@ defmodule LenraWeb.BuildControllerTest do
       assert %{"success" => true, "data" => %{"build" => _}} = json_response(creator!, 200)
       assert %{"success" => true, "data" => %{"build" => _}} = json_response(admin, 200)
 
-      assert %{"success" => false, "errors" => [%{"code" => 403, "message" => "Forbidden"}]} =
-               json_response(user, 403)
+      assert %{"success" => false, "errors" => [%{"code" => 403, "message" => "Forbidden"}]} = json_response(user, 403)
 
       assert %{"success" => false, "errors" => [%{"code" => 403, "message" => "Forbidden"}]} =
                json_response(other_dev, 403)
@@ -137,8 +136,7 @@ defmodule LenraWeb.BuildControllerTest do
 
       assert %{"build_number" => 1} = build
 
-      assert %{"success" => true, "data" => %{"build" => %{"build_number" => 2}}} =
-               json_response(conn!, 200)
+      assert %{"success" => true, "data" => %{"build" => %{"build_number" => 2}}} = json_response(conn!, 200)
     end
 
     @tag auth_user: :dev
