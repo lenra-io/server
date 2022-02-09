@@ -82,8 +82,8 @@ defmodule LenraWeb.UserController do
 
   def password_lost_modification(conn, params) do
     with {:ok, user} <- get_user_with_email(params["email"]),
-         {:ok, _} <- PasswordServices.check_password_code_valid(user, params["code"]),
-         {:ok, _password} <- PasswordServices.update_lost_password(user, params) do
+         {:ok, password_code} <- PasswordServices.check_password_code_valid(user, params["code"]),
+         {:ok, _password} <- PasswordServices.update_lost_password(user, password_code, params) do
       reply(conn)
     end
   end
@@ -94,6 +94,9 @@ defmodule LenraWeb.UserController do
       _error -> nil
     end
 
+    # This is an intended behavior.
+    # If the email does not exists, we should not return an error to the client.
+    # Otherwise it gives an information to hackers and allow brutforce
     reply(conn)
   end
 end
