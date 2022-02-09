@@ -11,7 +11,6 @@ defmodule LenraWeb.BuildControllerTest do
   defp create_app(conn) do
     post(conn, Routes.apps_path(conn, :create), %{
       "name" => "test",
-      "service_name" => "test",
       "color" => "ffffff",
       "icon" => 12
     })

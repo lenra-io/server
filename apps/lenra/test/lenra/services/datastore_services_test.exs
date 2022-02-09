@@ -1,4 +1,4 @@
-defmodule LenraServers.DatastoreServicesTest do
+defmodule Lenra.DatastoreServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.{Repo, Datastore, DatastoreServices, LenraApplicationServices, LenraApplication}
@@ -16,7 +16,6 @@ defmodule LenraServers.DatastoreServicesTest do
 
     LenraApplicationServices.create(user.id, %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     })

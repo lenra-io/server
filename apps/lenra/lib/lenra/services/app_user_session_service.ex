@@ -11,7 +11,7 @@ defmodule Lenra.AppUserSessionService do
   end
 
   def create(user_id, params) do
-    case LenraApplicationServices.fetch_by(%{service_name: params.app_name}) do
+    case LenraApplicationServices.fetch_by(%{service_name: params.service_name}) do
       {:ok, app} ->
         Repo.insert(AppUserSession.new(Enum.into(params, %{user_id: user_id, application_id: app.id})))
 

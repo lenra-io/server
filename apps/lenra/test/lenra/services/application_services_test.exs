@@ -1,4 +1,4 @@
-defmodule LenraServers.ApplicationServicesTest do
+defmodule Lenra.ApplicationServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.LenraApplicationServices
@@ -11,7 +11,6 @@ defmodule LenraServers.ApplicationServicesTest do
   test "fetch app", %{user: user} do
     params = %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     }
@@ -27,7 +26,6 @@ defmodule LenraServers.ApplicationServicesTest do
   test "fetch app by", %{user: user} do
     params = %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     }
@@ -43,7 +41,6 @@ defmodule LenraServers.ApplicationServicesTest do
   test "delete app", %{user: user} do
     params = %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     }

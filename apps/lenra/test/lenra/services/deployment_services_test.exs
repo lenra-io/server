@@ -1,4 +1,4 @@
-defmodule LenraServers.DeploymentServicesTest do
+defmodule Lenra.DeploymentServicesTest do
   @moduledoc """
     Test the deployment services
   """
@@ -28,7 +28,6 @@ defmodule LenraServers.DeploymentServicesTest do
 
     LenraApplicationServices.create(user.id, %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     })
@@ -96,7 +95,6 @@ defmodule LenraServers.DeploymentServicesTest do
       {:ok, %{inserted_main_env: wrong_env}} =
         LenraApplicationServices.create(app.creator_id, %{
           name: "wrong_app",
-          service_name: "wrong_app",
           color: "FFFFFF",
           icon: "60189"
         })

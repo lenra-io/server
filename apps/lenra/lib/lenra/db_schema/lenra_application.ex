@@ -12,7 +12,7 @@ defmodule Lenra.LenraApplication do
   @derive {Jason.Encoder, only: [:id, :name, :service_name, :icon, :color, :creator_id, :repository]}
   schema "applications" do
     field(:name, :string)
-    field(:service_name, :string)
+    field(:service_name, Ecto.UUID)
     field(:color, :string)
     field(:icon, :integer)
     field(:repository, :string)
@@ -28,17 +28,16 @@ defmodule Lenra.LenraApplication do
 
   def changeset(application, params \\ %{}) do
     application
-    |> cast(params, [:name, :service_name, :color, :icon, :repository])
+    |> cast(params, [:name, :color, :icon, :repository])
     |> validate_required([:name, :service_name, :color, :icon, :creator_id])
     |> unique_constraint(:name)
     |> unique_constraint(:service_name)
     |> validate_format(:color, @hex_regex)
     |> validate_length(:name, min: 2, max: 64)
-    |> validate_length(:service_name, min: 2, max: 64)
   end
 
   def new(creator_id, params) do
-    %LenraApplication{creator_id: creator_id}
+    %LenraApplication{creator_id: creator_id, service_name: Ecto.UUID.generate()}
     |> changeset(params)
   end
 

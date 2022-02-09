@@ -12,7 +12,6 @@ defmodule LenraWeb.AppsControllerTest do
       conn,
       Routes.apps_path(conn, :create, %{
         "name" => "test",
-        "service_name" => "test",
         "color" => "ffffff",
         "icon" => 31
       })
@@ -36,12 +35,15 @@ defmodule LenraWeb.AppsControllerTest do
 
       conn = get(conn, Routes.apps_path(conn, :index))
 
+      [app | _] = conn.assigns.data.apps
+      app_service_name = app.service_name
+
       assert %{
                "data" => %{
                  "apps" => [
                    %{
                      "name" => "test",
-                     "service_name" => "test",
+                     "service_name" => app_service_name,
                      "color" => "ffffff",
                      "icon" => 31,
                      "id" => _
@@ -61,11 +63,13 @@ defmodule LenraWeb.AppsControllerTest do
 
       user_id = Guardian.Plug.current_resource(conn).id
 
+      app_service_name = app["service_name"]
+
       assert %{
                "color" => "ffffff",
                "icon" => 31,
                "name" => "test",
-               "service_name" => "test",
+               "service_name" => app_service_name,
                "creator_id" => ^user_id
              } = app
     end
@@ -90,7 +94,6 @@ defmodule LenraWeb.AppsControllerTest do
       conn = create_app_test(conn)
 
       assert %{"success" => true, "data" => %{"app" => app}} = json_response(conn, 200)
-
       conn = delete(conn, Routes.apps_path(conn, :delete, app["id"]))
 
       assert %{"success" => true} == json_response(conn, 200)

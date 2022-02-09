@@ -1,4 +1,4 @@
-defmodule LenraServers.OpenfaasServicesTest do
+defmodule Lenra.OpenfaasServicesTest do
   @moduledoc """
     Test the Errors for some routes
   """
@@ -10,7 +10,6 @@ defmodule LenraServers.OpenfaasServicesTest do
 
   @john_doe_application %LenraApplication{
     name: "stubapp",
-    service_name: "test_service",
     color: "FFFFFF",
     icon: 1
   }

@@ -1,4 +1,4 @@
-defmodule LenraServers.EnvironmentServicesTest do
+defmodule Lenra.EnvironmentServicesTest do
   @moduledoc """
     Test the environment services
   """
@@ -15,7 +15,6 @@ defmodule LenraServers.EnvironmentServicesTest do
 
     LenraApplicationServices.create(user.id, %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     })

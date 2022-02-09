@@ -1,4 +1,4 @@
-defmodule LenraServers.OpenfaasMeasurementServicesTest do
+defmodule Lenra.OpenfaasMeasurementServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.{
@@ -21,11 +21,10 @@ defmodule LenraServers.OpenfaasMeasurementServicesTest do
     action_logs_uuid = Ecto.UUID.generate()
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    {:ok, app} =
-      Repo.insert(LenraApplication.new(user.id, %{name: "test", service_name: "test", color: "FF0000", icon: 0xEB09}))
+    {:ok, app} = Repo.insert(LenraApplication.new(user.id, %{name: "test", color: "FF0000", icon: 0xEB09}))
 
     AppUserSessionService.create(user.id, %{
-      app_name: app.service_name,
+      service_name: app.service_name,
       uuid: app_session_uuid,
       build_number: 1
     })

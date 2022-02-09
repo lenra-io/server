@@ -14,7 +14,6 @@ defmodule LenraWeb.RunnerControllerTest do
       conn =
         post(conn, Routes.apps_path(conn, :create), %{
           "name" => "test",
-          "service_name" => "test",
           "color" => "ffffff",
           "icon" => 12,
           "repository" => "https://gitlab.com/myname/test.git"

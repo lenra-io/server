@@ -1,4 +1,4 @@
-defmodule LenraServers.BuildServicesTest do
+defmodule Lenra.BuildServicesTest do
   @moduledoc """
     Test the build services
   """
@@ -17,7 +17,6 @@ defmodule LenraServers.BuildServicesTest do
 
     LenraApplicationServices.create(user.id, %{
       name: "mine-sweeper",
-      service_name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     })
