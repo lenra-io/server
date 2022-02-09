@@ -17,7 +17,6 @@ defmodule LenraWeb.AppChannelTest do
 
   alias ApplicationRunner.ListenersCache
 
-  @service_name "Counter"
   @build_number 1
   @listener_name "HiBob"
   @listener_code ListenersCache.generate_listeners_key(@listener_name, %{})

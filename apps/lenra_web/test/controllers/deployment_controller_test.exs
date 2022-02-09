@@ -27,7 +27,6 @@ defmodule LenraWeb.DeploymentControllerTest do
       conn =
         post(conn, Routes.apps_path(conn, :create), %{
           "name" => "test",
-          "service_name" => Ecto.UUID.generate(),
           "color" => "ffffff",
           "icon" => 12
         })
@@ -69,7 +68,6 @@ defmodule LenraWeb.DeploymentControllerTest do
       conn =
         post(conn, Routes.apps_path(conn, :create), %{
           "name" => "test",
-          "service_name" => Ecto.UUID.generate(),
           "color" => "ffffff",
           "icon" => 12
         })
@@ -79,7 +77,6 @@ defmodule LenraWeb.DeploymentControllerTest do
       conn =
         post(conn, Routes.apps_path(conn, :create), %{
           "name" => "testtest",
-          "service_name" => Ecto.UUID.generate(),
           "color" => "ffffff",
           "icon" => 12
         })

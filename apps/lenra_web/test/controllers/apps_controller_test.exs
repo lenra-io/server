@@ -12,7 +12,6 @@ defmodule LenraWeb.AppsControllerTest do
       conn,
       Routes.apps_path(conn, :create, %{
         "name" => "test",
-        "service_name" => Ecto.UUID.generate(),
         "color" => "ffffff",
         "icon" => 31
       })
