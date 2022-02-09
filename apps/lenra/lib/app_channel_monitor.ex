@@ -11,11 +11,11 @@ defmodule AppChannelMonitor do
     GenServer.call(__MODULE__, {:monitor, pid, metadata})
   end
 
-  def start_link(_) do
+  def start_link(_opts) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def init(_) do
+  def init(_opts) do
     {:ok, %{}}
   end
 

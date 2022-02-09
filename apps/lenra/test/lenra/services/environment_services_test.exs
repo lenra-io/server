@@ -4,7 +4,14 @@ defmodule Lenra.EnvironmentServicesTest do
   """
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Repo, User, Environment, LenraApplication, EnvironmentServices, LenraApplicationServices}
+  alias Lenra.{
+    Environment,
+    EnvironmentServices,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo,
+    User
+  }
 
   setup do
     {:ok, app: create_and_return_application()}
@@ -73,7 +80,8 @@ defmodule Lenra.EnvironmentServicesTest do
     test "environment successfully", %{app: _app} do
       assert {:ok, env} = EnvironmentServices.fetch_by(name: "live")
 
-      EnvironmentServices.delete(env)
+      env
+      |> EnvironmentServices.delete()
       |> Repo.transaction()
 
       assert {:error, :error_404} == EnvironmentServices.fetch_by(name: "live")

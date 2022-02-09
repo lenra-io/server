@@ -6,7 +6,7 @@ defmodule Lenra.Datastore do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{User, LenraApplication, Datastore}
+  alias Lenra.{Datastore, LenraApplication, User}
 
   schema "datastores" do
     belongs_to(:user, User)

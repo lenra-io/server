@@ -13,7 +13,7 @@ defmodule LenraWeb.BaseView do
     }
   end
 
-  def render("success.json", _) do
+  def render("success.json", _no_data) do
     %{
       "success" => true
     }

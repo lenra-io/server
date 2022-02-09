@@ -1,11 +1,16 @@
 defmodule Lenra.SocketAppMeasurementServicesTest do
+  @moduledoc """
+  Test the client app measurement services
+  """
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{SocketAppMeasurement, SocketAppMeasurementServices, LenraApplication, AppUserSessionService}
+  alias Lenra.{
+    AppUserSessionService,
+    LenraApplication,
+    SocketAppMeasurement,
+    SocketAppMeasurementServices
+  }
 
-  @moduledoc """
-    Test the client app measurement services
-  """
   setup do
     {:ok, app_session: create_app_user_session()}
   end
@@ -15,7 +20,8 @@ defmodule Lenra.SocketAppMeasurementServicesTest do
 
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    {:ok, app} = Repo.insert(LenraApplication.new(user.id, %{name: "test", color: "FF0000", icon: 0xEB09}))
+    {:ok, app} =
+      Repo.insert(LenraApplication.new(user.id, %{name: "test", color: "FF0000", icon: 0xEB09}))
 
     AppUserSessionService.create(user.id, %{
       service_name: app.service_name,

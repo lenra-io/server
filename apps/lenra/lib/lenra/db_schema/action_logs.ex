@@ -6,7 +6,12 @@ defmodule Lenra.ActionLogs do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{ActionLogs, AppUserSession, OpenfaasRunActionMeasurement, DockerRunMeasurement}
+  alias Lenra.{
+    ActionLogs,
+    AppUserSession,
+    DockerRunMeasurement,
+    OpenfaasRunActionMeasurement
+  }
 
   schema "action_logs" do
     field(:uuid, :binary_id, primary_key: true)

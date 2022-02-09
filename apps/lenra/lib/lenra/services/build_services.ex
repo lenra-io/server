@@ -2,11 +2,17 @@ defmodule Lenra.BuildServices do
   @moduledoc """
     The service that manages the different possible actions on a build.
   """
-  require Logger
-
   import Ecto.Query
 
-  alias Lenra.{Repo, Build, LenraApplication, GitlabApiServices, LenraApplicationServices}
+  alias Lenra.{
+    Build,
+    GitlabApiServices,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo
+  }
+
+  require Logger
 
   def all(app_id) do
     Repo.all(from(b in Build, where: b.application_id == ^app_id))
@@ -26,9 +32,14 @@ defmodule Lenra.BuildServices do
 
   defp create(creator_id, app_id, params) do
     Ecto.Multi.new()
-    |> Ecto.Multi.run(:build_number, fn repo, _ ->
+    |> Ecto.Multi.run(:build_number, fn repo, _result ->
       {:ok,
-       repo.one(from(b in Build, select: (max(b.build_number) |> coalesce(0)) + 1, where: b.application_id == ^app_id))}
+       repo.one(
+         from(b in Build,
+           select: (b.build_number |> max() |> coalesce(0)) + 1,
+           where: b.application_id == ^app_id
+         )
+       )}
     end)
     |> Ecto.Multi.insert(:inserted_build, fn %{build_number: build_number} ->
       Build.new(creator_id, app_id, build_number, params)
@@ -37,9 +48,15 @@ defmodule Lenra.BuildServices do
 
   def create_and_trigger_pipeline(creator_id, app_id, params) do
     with {:ok, %LenraApplication{} = app} <- LenraApplicationServices.fetch(app_id) do
-      create(creator_id, app.id, params)
+      creator_id
+      |> create(app.id, params)
       |> Ecto.Multi.run(:gitlab_pipeline, fn _repo, %{inserted_build: %Build{} = build} ->
-        GitlabApiServices.create_pipeline(app.service_name, app.repository, build.id, build.build_number)
+        GitlabApiServices.create_pipeline(
+          app.service_name,
+          app.repository,
+          build.id,
+          build.build_number
+        )
       end)
       |> Repo.transaction()
     end

@@ -2,9 +2,8 @@ defmodule Lenra.OpenfaasServices do
   @moduledoc """
     The service that manage calls to an Openfaas action with `run_action/3`
   """
-  require Logger
-
   alias Lenra.{DeploymentServices, Environment, LenraApplication}
+  require Logger
 
   defp get_http_context do
     base_url = Application.fetch_env!(:lenra, :faas_url)
@@ -17,8 +16,7 @@ defmodule Lenra.OpenfaasServices do
   defp get_function_name(service_name, build_number) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 
-    "#{lenra_env}-#{service_name}-#{build_number}"
-    |> String.downcase()
+    String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
   end
 
   @doc """
@@ -29,13 +27,22 @@ defmodule Lenra.OpenfaasServices do
   """
   @spec run_listener(%LenraApplication{}, %Environment{}, String.t(), map(), map(), map()) ::
           {:ok, map()} | {:error, any()}
-  def run_listener(%LenraApplication{} = application, %Environment{} = environment, action, data, props, event) do
-    {base_url, headers} = get_http_context()
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
+  def run_listener(
+        %LenraApplication{} = application,
+        %Environment{} = environment,
+        action,
+        data,
+        props,
+        event
+      ) do
+    {base_url, base_headers} = get_http_context()
+
+    function_name =
+      get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
 
-    headers = [{"Content-Type", "application/json"} | headers]
+    headers = [{"Content-Type", "application/json"} | base_headers]
     body = Jason.encode!(%{action: action, data: data, props: props, event: event})
 
     Logger.debug("Call to Openfaas : #{function_name}")
@@ -53,13 +60,22 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec fetch_widget(%LenraApplication{}, %Environment{}, String.t(), map(), map()) :: {:ok, map()} | {:error, any()}
-  def fetch_widget(%LenraApplication{} = application, %Environment{} = environment, widget_name, data, props) do
-    {base_url, headers} = get_http_context()
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
+  @spec fetch_widget(%LenraApplication{}, %Environment{}, String.t(), map(), map()) ::
+          {:ok, map()} | {:error, any()}
+  def fetch_widget(
+        %LenraApplication{} = application,
+        %Environment{} = environment,
+        widget_name,
+        data,
+        props
+      ) do
+    {base_url, base_headers} = get_http_context()
+
+    function_name =
+      get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
-    headers = [{"Content-Type", "application/json"} | headers]
+    headers = [{"Content-Type", "application/json"} | base_headers]
     body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
     Finch.build(:post, url, headers, body)
@@ -73,11 +89,13 @@ defmodule Lenra.OpenfaasServices do
 
   @spec fetch_manifest(%LenraApplication{}, %Environment{}) :: {:ok, map()} | {:error, any()}
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
-    {base_url, headers} = get_http_context()
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
+    {base_url, base_headers} = get_http_context()
+
+    function_name =
+      get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
-    headers = [{"Content-Type", "application/json"} | headers]
+    headers = [{"Content-Type", "application/json"} | base_headers]
 
     Finch.build(:post, url, headers)
     |> Finch.request(FaasHttp)
@@ -99,12 +117,12 @@ defmodule Lenra.OpenfaasServices do
   Returns an `Enum`.
   """
   def get_app_resource(app_name, build_number, resource) do
-    {base_url, headers} = get_http_context()
+    {base_url, base_headers} = get_http_context()
     function_name = get_function_name(app_name, build_number)
 
     url = "#{base_url}/function/#{function_name}"
 
-    headers = [{"Content-Type", "application/json"} | headers]
+    headers = [{"Content-Type", "application/json"} | base_headers]
     params = Map.put(%{}, :resource, resource)
     body = Jason.encode!(params)
 
@@ -179,11 +197,11 @@ defmodule Lenra.OpenfaasServices do
     raise "Openfaas could not delete the application. It should not happen."
   end
 
-  defp response({:error, %Mint.TransportError{reason: _}}, _) do
+  defp response({:error, %Mint.TransportError{reason: _reason}}, _action) do
     raise "Openfaas could not be reached. It should not happen."
   end
 
-  defp response({:ok, %Finch.Response{status: status_code, body: body}}, _)
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, _action)
        when status_code not in [200, 202] do
     raise "Openfaas error (#{status_code}) #{body}"
   end

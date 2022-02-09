@@ -1,8 +1,8 @@
 defmodule LenraWeb.ResourcesController do
   use LenraWeb, :controller
 
-  alias Lenra.ResourcesServices
   alias Lenra.Guardian.Plug
+  alias Lenra.ResourcesServices
 
   def get_app_resource(conn, %{"service_name" => service_name, "resource" => resource_name}) do
     user = Plug.current_resource(conn)
@@ -15,16 +15,12 @@ defmodule LenraWeb.ResourcesController do
       |> put_resp_header("Content-Type", "application/octet-stream")
       |> send_chunked(200)
 
-    resource_stream
-    |> Enum.reduce(conn, fn
+    Enum.reduce(resource_stream, conn, fn
       {:data, data}, conn ->
-        {:ok, conn_res} =
-          conn
-          |> chunk(data)
-
+        {:ok, conn_res} = chunk(conn, data)
         conn_res
 
-      _, conn ->
+      _no_data, conn ->
         conn
     end)
   end

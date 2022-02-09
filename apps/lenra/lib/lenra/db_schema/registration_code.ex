@@ -26,7 +26,8 @@ defmodule Lenra.RegistrationCode do
   end
 
   def new(user, code) do
-    Ecto.build_assoc(user, :registration_code)
+    user
+    |> Ecto.build_assoc(:registration_code)
     |> changeset(%{code: code})
   end
 end

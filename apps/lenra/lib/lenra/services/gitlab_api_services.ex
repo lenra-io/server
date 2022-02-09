@@ -4,9 +4,8 @@ defmodule Lenra.GitlabApiServices do
   Curently only support the request to create a new pipeline.
   """
 
-  require Logger
-
   alias Lenra.DeploymentServices
+  require Logger
 
   @doc """
   Create a new pipeline to build the app.
@@ -34,7 +33,10 @@ defmodule Lenra.GitlabApiServices do
       Jason.encode!(%{
         "ref" => gitlab_ref,
         "variables" => [
-          %{"key" => "IMAGE_NAME", "value" => DeploymentServices.image_name(service_name, build_number)},
+          %{
+            "key" => "IMAGE_NAME",
+            "value" => DeploymentServices.image_name(service_name, build_number)
+          },
           %{
             "key" => "CALLBACK_URL",
             "value" => "#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}"

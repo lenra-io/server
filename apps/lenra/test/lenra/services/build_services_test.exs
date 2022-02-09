@@ -4,7 +4,14 @@ defmodule Lenra.BuildServicesTest do
   """
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Repo, LenraApplication, Build, BuildServices, LenraApplicationServices, GitlabStubHelper}
+  alias Lenra.{
+    Build,
+    BuildServices,
+    GitlabStubHelper,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo
+  }
 
   setup do
     GitlabStubHelper.create_gitlab_stub()
@@ -93,7 +100,8 @@ defmodule Lenra.BuildServicesTest do
       assert [] != Repo.all(Build)
       build = Enum.at(Repo.all(Build), 0)
 
-      BuildServices.delete(build)
+      build
+      |> BuildServices.delete()
       |> Repo.transaction()
 
       assert [] == Repo.all(Build)

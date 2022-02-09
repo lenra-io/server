@@ -5,9 +5,8 @@ defmodule Lenra.Guardian do
 
   use Guardian, otp_app: :lenra
 
-  require Logger
-
   alias Lenra.UserServices
+  require Logger
 
   def subject_for_token(user, _claims) do
     {:ok, to_string(user.id)}
@@ -23,7 +22,7 @@ defmodule Lenra.Guardian do
     end
   end
 
-  def resource_from_claims(_), do: {:error, [:unhandled_resource_type]}
+  def resource_from_claims(_claims), do: {:error, [:unhandled_resource_type]}
 
   def after_encode_and_sign(resource, claims, token, _options) do
     with {:ok, _} <- Guardian.DB.after_encode_and_sign(resource, claims["typ"], claims, token) do

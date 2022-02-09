@@ -26,12 +26,10 @@ defmodule Lenra.DevCode do
   end
 
   def update(dev_code, params) do
-    dev_code
-    |> changeset(params)
+    changeset(dev_code, params)
   end
 
   def new(params) do
-    %DevCode{}
-    |> changeset(params)
+    changeset(%DevCode{}, params)
   end
 end

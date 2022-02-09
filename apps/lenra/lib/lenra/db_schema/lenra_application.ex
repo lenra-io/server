@@ -5,11 +5,21 @@ defmodule Lenra.LenraApplication do
 
   use Ecto.Schema
   import Ecto.Changeset
-  alias Lenra.{User, Datastore, LenraApplication, Environment, Build, ApplicationMainEnv, AppUserSession}
+
+  alias Lenra.{
+    ApplicationMainEnv,
+    AppUserSession,
+    Build,
+    Datastore,
+    Environment,
+    LenraApplication,
+    User
+  }
 
   @hex_regex ~r/[0-9A-Fa-f]{6}/
 
-  @derive {Jason.Encoder, only: [:id, :name, :service_name, :icon, :color, :creator_id, :repository]}
+  @derive {Jason.Encoder,
+           only: [:id, :name, :service_name, :icon, :color, :creator_id, :repository]}
   schema "applications" do
     field(:name, :string)
     field(:service_name, Ecto.UUID)
@@ -42,7 +52,6 @@ defmodule Lenra.LenraApplication do
   end
 
   def update(app, params) do
-    app
-    |> changeset(params)
+    changeset(app, params)
   end
 end

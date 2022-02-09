@@ -11,7 +11,10 @@ defmodule Lenra.GitlabStubHelper do
     gitlab_project_id = Application.fetch_env!(:lenra, :gitlab_project_id)
     url = "projects/#{gitlab_project_id}/pipeline"
 
-    Bypass.open(port: 4567)
+    opts = [port: 4567]
+
+    opts
+    |> Bypass.open()
     |> Bypass.stub("POST", url, &handle_resp/1)
   end
 

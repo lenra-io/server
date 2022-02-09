@@ -3,11 +3,9 @@ defmodule LenraWeb.AppChannel do
     `LenraWeb.AppChannel` handle the app channel to run app and listeners and push to the user the resulted UI or Patch
   """
   use Phoenix.Channel
-
+  alias ApplicationRunner.{SessionManager, SessionManagers}
+  alias Lenra.{Environment, LenraApplication, LenraApplicationServices, Repo}
   require Logger
-
-  alias Lenra.{Repo, LenraApplicationServices, LenraApplication, Environment}
-  alias ApplicationRunner.{SessionManagers, SessionManager}
 
   def join("app", %{"app" => app_name}, socket) do
     # action_logs_uuid = Ecto.UUID.generate()

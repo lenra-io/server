@@ -3,11 +3,10 @@ if Code.ensure_loaded?(Plug) do
     @moduledoc """
       Looks for and validates a token found in the `token` query parameter.
     """
-    alias Guardian.Plug.Pipeline
+    @behaviour Plug
 
     import Plug.Conn
-
-    @behaviour Plug
+    alias Guardian.Plug.Pipeline
 
     @impl Plug
     def init(default), do: default
@@ -34,7 +33,7 @@ if Code.ensure_loaded?(Plug) do
           |> apply(:auth_error, [conn, {:invalid_token, reason}, opts])
           |> Guardian.Plug.maybe_halt(opts)
 
-        _ ->
+        _error ->
           conn
       end
     end

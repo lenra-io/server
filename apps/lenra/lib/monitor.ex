@@ -28,11 +28,11 @@ defmodule Lenra.Monitor do
   """
 
   alias Lenra.{
-    OpenfaasRunActionMeasurementServices,
-    SocketAppMeasurementServices,
-    DockerRunMeasurementServices,
     ActionLogsService,
-    AppUserSessionService
+    AppUserSessionService,
+    DockerRunMeasurementServices,
+    OpenfaasRunActionMeasurementServices,
+    SocketAppMeasurementServices
   }
 
   def setup do
@@ -85,6 +85,6 @@ defmodule Lenra.Monitor do
     })
   end
 
-  def handle_event(_, _measurements, _metadata, _config) do
+  def handle_event(_event, _measurements, _metadata, _config) do
   end
 end

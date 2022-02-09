@@ -6,16 +6,16 @@ defmodule Lenra.User do
   import Ecto.Changeset
 
   alias Lenra.{
-    User,
-    Password,
-    RegistrationCode,
-    LenraApplication,
-    Datastore,
-    PasswordCode,
     Build,
-    Environment,
+    Datastore,
     Deployment,
-    DevCode
+    DevCode,
+    Environment,
+    LenraApplication,
+    Password,
+    PasswordCode,
+    RegistrationCode,
+    User
   }
 
   @email_regex ~r/[^@]+@[^\.]+\..+/

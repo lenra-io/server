@@ -26,6 +26,7 @@ defmodule LenraWeb.ConnCase do
       import LenraWeb.ConnCase
       import UserTestHelper
 
+      # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias LenraWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
@@ -40,11 +41,10 @@ defmodule LenraWeb.ConnCase do
       Sandbox.mode(Lenra.Repo, {:shared, self()})
     end
 
-    map = %{conn: Phoenix.ConnTest.build_conn()}
-
-    map = auth_user(map, tags)
-
-    map = auth_users(map, tags)
+    map =
+      %{conn: Phoenix.ConnTest.build_conn()}
+      |> auth_user(tags)
+      |> auth_users(tags)
 
     {:ok, map}
   end
@@ -52,7 +52,7 @@ defmodule LenraWeb.ConnCase do
   defp auth_users(map, tags) do
     case tags[:auth_users] do
       roles when is_list(roles) -> Map.put(map, :users, auth_users(roles))
-      _ -> Map.put(map, :users, [])
+      _roles -> Map.put(map, :users, [])
     end
   end
 

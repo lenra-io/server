@@ -2,11 +2,16 @@ defmodule Lenra.LenraApplicationServices do
   @moduledoc """
     The service that manages possible actions on a lenra application.
   """
-  require Logger
-
   import Ecto.Query
 
-  alias Lenra.{Repo, LenraApplication, Environment, ApplicationMainEnv}
+  alias Lenra.{
+    ApplicationMainEnv,
+    Environment,
+    LenraApplication,
+    Repo
+  }
+
+  require Logger
 
   def all do
     Repo.all(LenraApplication)
@@ -30,7 +35,10 @@ defmodule Lenra.LenraApplicationServices do
     |> Ecto.Multi.insert(:inserted_main_env, fn %{inserted_application: app} ->
       Environment.new(app.id, user_id, nil, %{name: "live", is_ephemeral: false})
     end)
-    |> Ecto.Multi.insert(:application_main_env, fn %{inserted_application: app, inserted_main_env: env} ->
+    |> Ecto.Multi.insert(:application_main_env, fn %{
+                                                     inserted_application: app,
+                                                     inserted_main_env: env
+                                                   } ->
       ApplicationMainEnv.new(app.id, env.id)
     end)
     |> Repo.transaction()

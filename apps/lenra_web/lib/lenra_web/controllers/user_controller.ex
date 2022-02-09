@@ -2,8 +2,8 @@ defmodule LenraWeb.UserController do
   use LenraWeb, :controller
 
   alias Lenra.Guardian.Plug
+  alias Lenra.{PasswordServices, Repo, User, UserServices}
   alias LenraWeb.TokenHelper
-  alias Lenra.{Repo, User, UserServices, PasswordServices}
 
   def register(conn, params) do
     with {:ok, %{inserted_user: user}} <- UserServices.register(params) do
@@ -91,7 +91,7 @@ defmodule LenraWeb.UserController do
   def password_lost_code(conn, params) do
     case get_user_with_email(params["email"]) do
       {:ok, user} -> PasswordServices.send_password_code(user)
-      _ -> nil
+      _error -> nil
     end
 
     reply(conn)

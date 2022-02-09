@@ -1,6 +1,11 @@
 defmodule Lenra.AppUserSessionServiceTest do
   use Lenra.RepoCase, async: true
-  alias Lenra.{AppUserSessionService, AppUserSession, LenraApplication}
+
+  alias Lenra.{
+    AppUserSession,
+    AppUserSessionService,
+    LenraApplication
+  }
 
   setup do
     {:ok, create_user()}

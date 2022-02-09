@@ -24,9 +24,10 @@ defmodule LenraWeb do
       import LenraWeb.ControllerHelpers
       import Plug.Conn
 
+      # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias LenraWeb.Router.Helpers, as: Routes
-      plug :put_view, LenraWeb.BaseView
-      action_fallback LenraWeb.FallbackController
+      plug(:put_view, LenraWeb.BaseView)
+      action_fallback(LenraWeb.FallbackController)
     end
   end
 
@@ -64,8 +65,9 @@ defmodule LenraWeb do
     quote do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
-
       import LenraWeb.ErrorHelpers
+
+      # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias LenraWeb.Router.Helpers, as: Routes
     end
   end
@@ -127,8 +129,8 @@ defmodule LenraWeb.Policy.Default do
       @behaviour Bouncer.Policy
 
       @impl Bouncer.Policy
-      def authorize(_, %Lenra.User{role: :admin}, _), do: true
-      def authorize(_, _, _), do: false
+      def authorize(_action, %Lenra.User{role: :admin}, _data), do: true
+      def authorize(_action, _user, _data), do: false
 
       defoverridable authorize: 3
     end

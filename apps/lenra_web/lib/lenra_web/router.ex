@@ -1,7 +1,11 @@
 defmodule LenraWeb.Router do
   use LenraWeb, :router
 
-  alias Lenra.Guardian.{EnsureAuthenticatedPipeline, RefreshPipeline, EnsureAuthenticatedQueryParamsPipeline}
+  alias Lenra.Guardian.{
+    EnsureAuthenticatedPipeline,
+    EnsureAuthenticatedQueryParamsPipeline,
+    RefreshPipeline
+  }
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -69,6 +73,7 @@ defmodule LenraWeb.Router do
   # If your application does not have an admins-only section yet,
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
+  # credo:disable-for-next-line Credo.Check.Warning.MixEnv
   if Mix.env() in [:dev, :test] do
     import Phoenix.LiveDashboard.Router
 

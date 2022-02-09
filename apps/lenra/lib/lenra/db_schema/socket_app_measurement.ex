@@ -6,7 +6,7 @@ defmodule Lenra.SocketAppMeasurement do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{SocketAppMeasurement, AppUserSession}
+  alias Lenra.{AppUserSession, SocketAppMeasurement}
 
   schema "socket_app_measurements" do
     field(:duration, :integer)

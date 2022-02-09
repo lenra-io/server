@@ -5,7 +5,7 @@ defmodule LenraWeb.UserControllerTest do
   use LenraWeb.ConnCase
   use Bamboo.Test, shared: true
 
-  alias Lenra.{Repo, User, PasswordCode}
+  alias Lenra.{PasswordCode, Repo, User}
 
   @john_doe_user_params %{
     "first_name" => "John",
@@ -105,12 +105,12 @@ defmodule LenraWeb.UserControllerTest do
     assert Map.has_key?(data, "access_token")
   end
 
-  test "logout test", %{conn: conn} do
-    conn = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+  test "logout test", %{conn: conn!} do
+    conn! = post(conn!, Routes.user_path(conn!, :register, @john_doe_user_params))
 
-    conn = post(conn, Routes.user_path(conn, :logout))
+    conn! = post(conn!, Routes.user_path(conn!, :logout))
 
-    assert %{"success" => true} = json_response(conn, 200)
+    assert %{"success" => true} = json_response(conn!, 200)
   end
 
   # send verification email disabled
@@ -133,12 +133,12 @@ defmodule LenraWeb.UserControllerTest do
   #  assert Map.has_key?(data, "access_token")
   # end
 
-  test "code verification error test", %{conn: conn} do
-    conn = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+  test "code verification error test", %{conn: conn!} do
+    conn! = post(conn!, Routes.user_path(conn!, :register, @john_doe_user_params))
 
-    conn = post(conn, Routes.user_path(conn, :validate_user, %{"code" => "12345678"}))
+    conn! = post(conn!, Routes.user_path(conn!, :validate_user, %{"code" => "12345678"}))
 
-    assert %{"errors" => [%{"code" => 5, "message" => "No such registration code"}]} = json_response(conn, 400)
+    assert %{"errors" => [%{"code" => 5, "message" => "No such registration code"}]} = json_response(conn!, 400)
   end
 
   @tag :auth_user
@@ -191,13 +191,13 @@ defmodule LenraWeb.UserControllerTest do
   end
 
   @tag :auth_user
-  test "change lost password test", %{conn: conn} do
+  test "change lost password test", %{conn: conn!} do
     new_password = "New@password"
 
-    conn =
+    conn! =
       post(
-        conn,
-        Routes.user_path(conn, :password_lost_code, %{
+        conn!,
+        Routes.user_path(conn!, :password_lost_code, %{
           "email" => @john_doe_user_params["email"]
         })
       )
@@ -205,10 +205,10 @@ defmodule LenraWeb.UserControllerTest do
     user = Repo.get_by(User, email: @john_doe_user_params["email"])
     password_code = Repo.get_by(PasswordCode, user_id: user.id)
 
-    conn =
+    conn! =
       put(
-        conn,
-        Routes.user_path(conn, :password_lost_modification, %{
+        conn!,
+        Routes.user_path(conn!, :password_lost_modification, %{
           "email" => @john_doe_user_params["email"],
           "code" => password_code.code,
           "password" => new_password,
@@ -216,16 +216,16 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    conn =
+    conn! =
       post(
-        conn,
-        Routes.user_path(conn, :login, %{
+        conn!,
+        Routes.user_path(conn!, :login, %{
           "email" => @john_doe_user_params["email"],
           "password" => new_password
         })
       )
 
-    assert %{"data" => data, "success" => true} = json_response(conn, 200)
+    assert %{"data" => data, "success" => true} = json_response(conn!, 200)
     assert Map.has_key?(data, "access_token")
   end
 
@@ -287,61 +287,61 @@ defmodule LenraWeb.UserControllerTest do
   end
 
   @tag :auth_user
-  test "change password code 4 time with password 1 test", %{conn: conn} do
+  test "change password code 4 time with password 1 test", %{conn: conn!} do
     new_password = "Newpassword@"
     new_password_2 = "Newpassword@2"
     new_password_3 = "Newpassword@3"
 
-    conn =
+    conn! =
       put(
-        conn,
-        Routes.user_path(conn, :password_modification, %{
+        conn!,
+        Routes.user_path(conn!, :password_modification, %{
           "old_password" => "johndoethefirst",
           "password" => new_password,
           "password_confirmation" => new_password
         })
       )
 
-    conn =
+    conn! =
       put(
-        conn,
-        Routes.user_path(conn, :password_modification, %{
+        conn!,
+        Routes.user_path(conn!, :password_modification, %{
           "old_password" => new_password,
           "password" => new_password_2,
           "password_confirmation" => new_password_2
         })
       )
 
-    conn =
+    conn! =
       put(
-        conn,
-        Routes.user_path(conn, :password_modification, %{
+        conn!,
+        Routes.user_path(conn!, :password_modification, %{
           "old_password" => new_password_2,
           "password" => new_password_3,
           "password_confirmation" => new_password_3
         })
       )
 
-    conn =
+    conn! =
       put(
-        conn,
-        Routes.user_path(conn, :password_modification, %{
+        conn!,
+        Routes.user_path(conn!, :password_modification, %{
           "old_password" => new_password_3,
           "password" => "Johndoe@thefirst",
           "password_confirmation" => "Johndoe@thefirst"
         })
       )
 
-    conn =
+    conn! =
       post(
-        conn,
-        Routes.user_path(conn, :login, %{
+        conn!,
+        Routes.user_path(conn!, :login, %{
           "email" => "john.doe@lenra.fr",
           "password" => "Johndoe@thefirst"
         })
       )
 
-    assert %{"data" => data, "success" => true} = json_response(conn, 200)
+    assert %{"data" => data, "success" => true} = json_response(conn!, 200)
     assert Map.has_key?(data, "access_token")
   end
 

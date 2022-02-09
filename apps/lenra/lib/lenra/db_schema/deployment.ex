@@ -6,7 +6,12 @@ defmodule Lenra.Deployment do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Environment, Build, User, Deployment}
+  alias Lenra.{
+    Build,
+    Deployment,
+    Environment,
+    User
+  }
 
   @derive {Jason.Encoder, only: [:id, :application_id, :environment_id, :build_id, :publisher_id]}
 

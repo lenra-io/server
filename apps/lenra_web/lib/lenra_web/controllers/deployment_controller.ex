@@ -20,10 +20,11 @@ defmodule LenraWeb.DeploymentsController do
 end
 
 defmodule LenraWeb.DeploymentsController.Policy do
-  alias Lenra.{User, Environment}
+  alias Lenra.{Environment, User}
 
   @impl Bouncer.Policy
   def authorize(:create, %User{id: user_id}, %Environment{creator_id: user_id}), do: true
 
+  # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
 end

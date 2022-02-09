@@ -6,7 +6,13 @@ defmodule Lenra.AppUserSession do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{AppUserSession, User, SocketAppMeasurement, ActionLogs, LenraApplication}
+  alias Lenra.{
+    ActionLogs,
+    AppUserSession,
+    LenraApplication,
+    SocketAppMeasurement,
+    User
+  }
 
   schema "app_user_session" do
     field(:uuid, :binary_id, primary_key: true)
