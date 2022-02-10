@@ -101,7 +101,7 @@ defmodule Lenra.DeploymentServicesTest do
       build = Enum.at(Repo.all(Build), 0)
       error = DeploymentServices.create(wrong_env.id, build.id, app.creator_id)
 
-      assert {:error, :inserted_deployment, _, _} = error
+      assert {:error, :inserted_deployment, _failed_value, _changes_so_far} = error
       assert nil == Enum.at(Repo.all(Deployment), 0)
     end
   end

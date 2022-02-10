@@ -83,7 +83,7 @@ defmodule Lenra.FaasStub do
   end
 
   defp handle_resource(conn, app_name) do
-    {:ok, body, _} = Plug.Conn.read_body(conn)
+    {:ok, body, _conn} = Plug.Conn.read_body(conn)
     %{"resource" => resource_name} = Jason.decode!(body)
 
     {stored_resource_name, result} = pop(app_name)

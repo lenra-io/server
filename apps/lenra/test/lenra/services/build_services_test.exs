@@ -59,7 +59,7 @@ defmodule Lenra.BuildServicesTest do
 
   describe "create" do
     test "build but invalid params", %{app: app} do
-      assert {:error, :inserted_build, _, _} =
+      assert {:error, :inserted_build, _failed_value, _changes_so_far} =
                BuildServices.create_and_trigger_pipeline(app.creator_id, app.id, %{
                  commit_hash: 12
                })

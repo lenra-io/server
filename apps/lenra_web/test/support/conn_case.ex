@@ -81,7 +81,7 @@ defmodule LenraWeb.ConnCase do
   end
 
   defp conn_user(conn, user) do
-    {:ok, jwt, _} = Lenra.Guardian.encode_and_sign(user, %{typ: "access"})
+    {:ok, jwt, _claims} = Lenra.Guardian.encode_and_sign(user, %{typ: "access"})
 
     conn
     |> Plug.Conn.put_req_header("accept", "application/json")

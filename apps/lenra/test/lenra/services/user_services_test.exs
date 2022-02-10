@@ -38,9 +38,9 @@ defmodule UserServicesTest do
   end
 
   test "register should fail if email already exists" do
-    {:ok, _} = register_john_doe()
+    {:ok, _value} = register_john_doe()
 
-    {:error, _step, changeset, _} = register_john_doe()
+    {:error, _step, changeset, _changes_so_far} = register_john_doe()
 
     assert not changeset.valid?
 
@@ -50,7 +50,7 @@ defmodule UserServicesTest do
   end
 
   test "register should fail if email malformated" do
-    {:error, _step, changeset, _} = register_john_doe(%{"email" => "johnlenra.fr"})
+    {:error, _step, changeset, _changes_so_far} = register_john_doe(%{"email" => "johnlenra.fr"})
 
     assert not changeset.valid?
 
@@ -60,7 +60,7 @@ defmodule UserServicesTest do
   end
 
   test "register should fail if email not specified" do
-    {:error, _step, changeset, _} = register_john_doe(%{"email" => ""})
+    {:error, _step, changeset, _changes_so_far} = register_john_doe(%{"email" => ""})
 
     assert not changeset.valid?
 

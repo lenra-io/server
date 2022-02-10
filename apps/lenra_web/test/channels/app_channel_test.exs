@@ -115,7 +115,7 @@ defmodule LenraWeb.AppChannelTest do
     |> FaasStub.stub_request_once(@widget2)
 
     # Join the channel
-    {:ok, _, socket} = my_subscribe_and_join(socket, %{"app" => app.service_name})
+    {:ok, _reply, socket} = my_subscribe_and_join(socket, %{"app" => app.service_name})
 
     # Check that the correct data is stored into the socket
     assert %{
