@@ -1,7 +1,15 @@
 defmodule UserServicesTest do
   use Lenra.RepoCase, async: false
-  alias Lenra.{User, DevCode, UserServices, PasswordServices, EmailService, PasswordCode}
   use Bamboo.Test, shared: true
+
+  alias Lenra.{
+    DevCode,
+    EmailService,
+    PasswordCode,
+    PasswordServices,
+    User,
+    UserServices
+  }
 
   test "register user should succeed" do
     {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()

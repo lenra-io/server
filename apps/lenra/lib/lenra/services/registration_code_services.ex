@@ -11,7 +11,8 @@ defmodule Lenra.RegistrationCodeServices do
   end
 
   def registration_code_changeset(%User{} = user) do
-    Ecto.build_assoc(user, :registration_code)
+    user
+    |> Ecto.build_assoc(:registration_code)
     |> RegistrationCode.changeset(%{code: generate_code()})
   end
 
@@ -28,12 +29,11 @@ defmodule Lenra.RegistrationCodeServices do
     end
   end
 
-  @chars "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" |> String.split("", trim: true)
+  @chars String.split("123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", "", trim: true)
   @code_length 8
   def generate_code do
-    Enum.reduce(1..@code_length, [], fn _i, acc ->
-      [Enum.random(@chars) | acc]
-    end)
+    1..@code_length
+    |> Enum.reduce([], fn _i, acc -> [Enum.random(@chars) | acc] end)
     |> Enum.join("")
   end
 end

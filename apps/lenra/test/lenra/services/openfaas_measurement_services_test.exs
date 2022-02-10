@@ -1,17 +1,17 @@
 defmodule Lenra.OpenfaasMeasurementServicesTest do
-  use Lenra.RepoCase, async: true
-
-  alias Lenra.{
-    OpenfaasRunActionMeasurement,
-    OpenfaasRunActionMeasurementServices,
-    LenraApplication,
-    AppUserSessionService,
-    ActionLogsService
-  }
-
   @moduledoc """
     Test the openfaas measurement services
   """
+  use Lenra.RepoCase, async: true
+
+  alias Lenra.{
+    ActionLogsService,
+    AppUserSessionService,
+    LenraApplication,
+    OpenfaasRunActionMeasurement,
+    OpenfaasRunActionMeasurementServices
+  }
+
   setup do
     {:ok, action_logs_uuid: create_app_user_session()}
   end
@@ -29,14 +29,21 @@ defmodule Lenra.OpenfaasMeasurementServicesTest do
       build_number: 1
     })
 
-    ActionLogsService.create(%{uuid: action_logs_uuid, app_user_session_uuid: app_session_uuid, action: "Test"})
+    ActionLogsService.create(%{
+      uuid: action_logs_uuid,
+      app_user_session_uuid: app_session_uuid,
+      action: "Test"
+    })
 
     action_logs_uuid
   end
 
   describe "get" do
     test "measurement successfully", %{action_logs_uuid: action_logs_uuid} do
-      OpenfaasRunActionMeasurementServices.create(%{action_logs_uuid: action_logs_uuid, duration: 1})
+      OpenfaasRunActionMeasurementServices.create(%{
+        action_logs_uuid: action_logs_uuid,
+        duration: 1
+      })
 
       tmp_measurement = Enum.at(Repo.all(OpenfaasRunActionMeasurement), 0)
 
@@ -56,7 +63,10 @@ defmodule Lenra.OpenfaasMeasurementServicesTest do
 
   describe "get_by" do
     test "measurement succesfully", %{action_logs_uuid: action_logs_uuid} do
-      OpenfaasRunActionMeasurementServices.create(%{action_logs_uuid: action_logs_uuid, duration: 1})
+      OpenfaasRunActionMeasurementServices.create(%{
+        action_logs_uuid: action_logs_uuid,
+        duration: 1
+      })
 
       tmp_measurement = Enum.at(Repo.all(OpenfaasRunActionMeasurement), 0)
       measurement = OpenfaasRunActionMeasurementServices.get_by(duration: 1)
@@ -75,7 +85,10 @@ defmodule Lenra.OpenfaasMeasurementServicesTest do
 
   describe "create" do
     test "measurement successfully", %{action_logs_uuid: action_logs_uuid} do
-      OpenfaasRunActionMeasurementServices.create(%{action_logs_uuid: action_logs_uuid, duration: 1})
+      OpenfaasRunActionMeasurementServices.create(%{
+        action_logs_uuid: action_logs_uuid,
+        duration: 1
+      })
 
       measurement = Enum.at(Repo.all(OpenfaasRunActionMeasurement), 0)
 

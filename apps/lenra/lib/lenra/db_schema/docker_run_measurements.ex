@@ -24,7 +24,6 @@ defmodule Lenra.DockerRunMeasurement do
   end
 
   def new(params) do
-    %DockerRunMeasurement{}
-    |> DockerRunMeasurement.changeset(params)
+    DockerRunMeasurement.changeset(%DockerRunMeasurement{}, params)
   end
 end

@@ -25,7 +25,7 @@ defmodule Lenra.Plug.SimpleVerifyCookie do
         |> apply(:auth_error, [conn, {:invalid_token, reason}, opts])
         |> Guardian.Plug.maybe_halt(opts)
 
-      _ ->
+      _error ->
         conn
     end
   end

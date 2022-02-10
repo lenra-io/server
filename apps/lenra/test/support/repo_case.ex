@@ -29,10 +29,7 @@ defmodule Lenra.RepoCase do
       Sandbox.mode(Lenra.Repo, {:shared, self()})
     end
 
-    resp = %{}
-    resp = register_user(tags, resp)
-
-    resp
+    register_user(tags, %{})
   end
 
   defp register_user(tags, resp) do

@@ -1,11 +1,10 @@
 defmodule Lenra.Repo do
-  require Logger
-
   use Ecto.Repo,
     otp_app: :lenra,
     adapter: Ecto.Adapters.Postgres
 
   alias Lenra.Repo
+  require Logger
 
   def migrate do
     Logger.info("Migrating...")

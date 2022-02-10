@@ -2,9 +2,8 @@ defmodule Lenra.ActionLogsService do
   @moduledoc """
     The service that manages the openfaas measurements.
   """
+  alias Lenra.{ActionLogs, Repo}
   require Logger
-
-  alias Lenra.{Repo, ActionLogs}
 
   def get_by(clauses) do
     Repo.get_by(ActionLogs, clauses)

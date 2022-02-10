@@ -4,18 +4,17 @@ defmodule Lenra.DeploymentServicesTest do
   """
   use Lenra.RepoCase, async: true
 
-  alias Lenra.FaasStub, as: AppStub
-
   alias Lenra.{
-    Repo,
     Build,
-    Environment,
-    Deployment,
-    LenraApplication,
     BuildServices,
-    LenraApplicationServices,
+    Deployment,
     DeploymentServices,
-    GitlabStubHelper
+    Environment,
+    FaasStub,
+    GitlabStubHelper,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo
   }
 
   setup do
@@ -47,8 +46,8 @@ defmodule Lenra.DeploymentServicesTest do
     end
 
     test "existing deployment", %{app: app} do
-      AppStub.create_faas_stub()
-      |> AppStub.expect_deploy_app_once(%{"ok" => "200"})
+      FaasStub.create_faas_stub()
+      |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
 
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
@@ -63,8 +62,8 @@ defmodule Lenra.DeploymentServicesTest do
 
   describe "get by" do
     test "env_id and build_id", %{app: app} do
-      AppStub.create_faas_stub()
-      |> AppStub.expect_deploy_app_once(%{"ok" => "200"})
+      FaasStub.create_faas_stub()
+      |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
 
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
@@ -79,8 +78,8 @@ defmodule Lenra.DeploymentServicesTest do
 
   describe "create" do
     test "deployment successfully", %{app: app} do
-      AppStub.create_faas_stub()
-      |> AppStub.expect_deploy_app_once(%{"ok" => "200"})
+      FaasStub.create_faas_stub()
+      |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
 
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
@@ -109,8 +108,8 @@ defmodule Lenra.DeploymentServicesTest do
 
   describe "delete" do
     test "deployment successfully", %{app: app} do
-      AppStub.create_faas_stub()
-      |> AppStub.expect_deploy_app_once(%{"ok" => "200"})
+      FaasStub.create_faas_stub()
+      |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
 
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
@@ -121,7 +120,8 @@ defmodule Lenra.DeploymentServicesTest do
 
       assert nil != deployment
 
-      DeploymentServices.delete(deployment)
+      deployment
+      |> DeploymentServices.delete()
       |> Repo.transaction()
 
       assert nil == Enum.at(Repo.all(Deployment), 0)

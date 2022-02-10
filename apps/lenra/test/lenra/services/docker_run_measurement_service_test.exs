@@ -2,11 +2,11 @@ defmodule Lenra.DockerRunMeasurementServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.{
+    ActionLogsService,
+    AppUserSessionService,
     DockerRunMeasurement,
     DockerRunMeasurementServices,
-    LenraApplication,
-    AppUserSessionService,
-    ActionLogsService
+    LenraApplication
   }
 
   setup do

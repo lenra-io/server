@@ -4,10 +4,10 @@ defmodule LenraWeb.AppsController do
   use LenraWeb.Policy,
     module: LenraWeb.AppsController.Policy
 
-  require(Logger)
-
-  alias Lenra.LenraApplicationServices
   alias Lenra.Guardian.Plug
+  alias Lenra.LenraApplicationServices
+
+  require Logger
 
   def index(conn, _params) do
     with :ok <- allow(conn),
@@ -48,13 +48,14 @@ defmodule LenraWeb.AppsController do
 end
 
 defmodule LenraWeb.AppsController.Policy do
-  alias Lenra.{User, LenraApplication}
+  alias Lenra.{LenraApplication, User}
 
   @impl Bouncer.Policy
-  def authorize(:index, _, _), do: true
-  def authorize(:create, %User{role: :dev}, _), do: true
+  def authorize(:index, _user, _data), do: true
+  def authorize(:create, %User{role: :dev}, _data), do: true
   def authorize(:delete, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
-  def authorize(:get_user_apps, %User{role: :dev}, _), do: true
+  def authorize(:get_user_apps, %User{role: :dev}, _data), do: true
 
+  # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
 end

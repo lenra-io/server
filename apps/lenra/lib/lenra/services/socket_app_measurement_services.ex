@@ -2,9 +2,8 @@ defmodule Lenra.SocketAppMeasurementServices do
   @moduledoc """
     The service that manages the client's applications measurements.
   """
-  require Logger
-
   alias Lenra.{Repo, SocketAppMeasurement}
+  require Logger
 
   def get(id) do
     Repo.get(SocketAppMeasurement, id)

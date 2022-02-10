@@ -2,9 +2,8 @@ defmodule Lenra.AppUserSessionService do
   @moduledoc """
     The service that manages the client's applications measurements.
   """
+  alias Lenra.{AppUserSession, LenraApplicationServices, Repo}
   require Logger
-
-  alias Lenra.{Repo, AppUserSession, LenraApplicationServices}
 
   def get_by(clauses) do
     Repo.get_by(AppUserSession, clauses)

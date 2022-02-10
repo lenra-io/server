@@ -61,8 +61,7 @@ defmodule Lenra.Seeds do
       "b5e0178b-72e4-4531-836b-aa2d7c19d80f"
     ]
 
-    dev_codes
-    |> Enum.map(fn
+    Enum.map(dev_codes, fn
       uuid_bin ->
         Lenra.Repo.insert(
           %Lenra.DevCode{

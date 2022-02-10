@@ -6,7 +6,11 @@ defmodule Lenra.ApplicationMainEnv do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Environment, ApplicationMainEnv, LenraApplication}
+  alias Lenra.{
+    ApplicationMainEnv,
+    Environment,
+    LenraApplication
+  }
 
   @derive {Jason.Encoder, only: [:id, :application_id, :environment_id]}
   schema "application_main_environment" do

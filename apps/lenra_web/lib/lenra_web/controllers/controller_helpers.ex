@@ -4,7 +4,8 @@ defmodule LenraWeb.ControllerHelpers do
   """
 
   def assign_error(%Plug.Conn{} = conn, error) do
-    case error do
+    error
+    |> case do
       %Ecto.Changeset{valid?: false} ->
         Plug.Conn.put_status(conn, 400)
 
@@ -17,7 +18,7 @@ defmodule LenraWeb.ControllerHelpers do
       :forbidden ->
         Plug.Conn.put_status(conn, 403)
 
-      _ ->
+      _error ->
         Plug.Conn.put_status(conn, 400)
     end
     |> add_error(error)
@@ -34,12 +35,10 @@ defmodule LenraWeb.ControllerHelpers do
   end
 
   def reply(%Plug.Conn{assigns: %{errors: _}} = conn) do
-    conn
-    |> Phoenix.Controller.render("error.json")
+    Phoenix.Controller.render(conn, "error.json")
   end
 
   def reply(%Plug.Conn{} = conn) do
-    conn
-    |> Phoenix.Controller.render("success.json")
+    Phoenix.Controller.render(conn, "success.json")
   end
 end

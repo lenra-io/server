@@ -2,9 +2,8 @@ defmodule Lenra.EmailWorker do
   @moduledoc """
     Worker to use for send email
   """
+  alias Lenra.{EmailService, Mailer, User}
   require Logger
-
-  alias Lenra.{User, EmailService, Mailer}
 
   def add_email_verification_event(user, code) do
     EventQueue.add_event(:email_verification, [user, code])
@@ -18,7 +17,8 @@ defmodule Lenra.EmailWorker do
         %User{} = user,
         code
       ) do
-    EmailService.create_welcome_email(user.email, code)
+    user.email
+    |> EmailService.create_welcome_email(code)
     |> Mailer.deliver_now()
   end
 
@@ -26,7 +26,8 @@ defmodule Lenra.EmailWorker do
         %User{} = user,
         code
       ) do
-    EmailService.create_recovery_email(user.email, code)
+    user.email
+    |> EmailService.create_recovery_email(code)
     |> Mailer.deliver_now()
   end
 end

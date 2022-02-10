@@ -3,19 +3,19 @@ defmodule LenraWeb.AppChannelTest do
     Test the `LenraWeb.AppChannel` module
   """
   use LenraWeb.ChannelCase, async: false
-  alias LenraWeb.UserSocket
-  alias Lenra.FaasStub, as: AppStub
+  alias ApplicationRunner.ListenersCache
 
   alias Lenra.{
-    Repo,
-    LenraApplication,
-    Build,
-    Environment,
     ApplicationMainEnv,
-    Deployment
+    Build,
+    Deployment,
+    Environment,
+    FaasStub,
+    LenraApplication,
+    Repo
   }
 
-  alias ApplicationRunner.ListenersCache
+  alias LenraWeb.UserSocket
 
   @build_number 1
   @listener_name "HiBob"
@@ -67,7 +67,7 @@ defmodule LenraWeb.AppChannelTest do
 
   test "Base use case with simple app", %{socket: socket, user: user} do
     # owstub
-    # |> AppStub.expect_deploy_app_once(%{"ok" => "200"})
+    # |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
 
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
@@ -90,7 +90,11 @@ defmodule LenraWeb.AppChannelTest do
     |> Ecto.Multi.update(:updated_env, fn %{inserted_env: env, inserted_build: build} ->
       Ecto.Changeset.change(env, deployed_build_id: build.id)
     end)
-    |> Ecto.Multi.insert(:inserted_deployment, fn %{inserted_application: app, inserted_env: env, inserted_build: build} ->
+    |> Ecto.Multi.insert(:inserted_deployment, fn %{
+                                                    inserted_application: app,
+                                                    inserted_env: env,
+                                                    inserted_build: build
+                                                  } ->
       Deployment.new(app.id, env.id, build.id, user.id, %{})
     end)
     |> Repo.transaction()
@@ -98,17 +102,17 @@ defmodule LenraWeb.AppChannelTest do
     app = Repo.get_by(LenraApplication, name: "Counter")
 
     owstub =
-      AppStub.create_faas_stub()
-      |> AppStub.stub_app(app.service_name, @build_number)
+      FaasStub.create_faas_stub()
+      |> FaasStub.stub_app(app.service_name, @build_number)
 
     # Base use case. Call InitData then MainUI then call the listener
     # and the next MainUI should not be called but taken from cache instead
     owstub
-    |> AppStub.stub_request_once(@manifest)
-    |> AppStub.stub_request_once(@data)
-    |> AppStub.stub_request_once(@widget)
-    |> AppStub.stub_request_once(@data2)
-    |> AppStub.stub_request_once(@widget2)
+    |> FaasStub.stub_request_once(@manifest)
+    |> FaasStub.stub_request_once(@data)
+    |> FaasStub.stub_request_once(@widget)
+    |> FaasStub.stub_request_once(@data2)
+    |> FaasStub.stub_request_once(@widget2)
 
     # Join the channel
     {:ok, _, socket} = my_subscribe_and_join(socket, %{"app" => app.service_name})

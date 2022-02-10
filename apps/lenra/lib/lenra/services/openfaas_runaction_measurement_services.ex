@@ -2,9 +2,8 @@ defmodule Lenra.OpenfaasRunActionMeasurementServices do
   @moduledoc """
     The service that manages the openfaas measurements.
   """
+  alias Lenra.{OpenfaasRunActionMeasurement, Repo}
   require Logger
-
-  alias Lenra.{Repo, OpenfaasRunActionMeasurement}
 
   def get(id) do
     Repo.get(OpenfaasRunActionMeasurement, id)

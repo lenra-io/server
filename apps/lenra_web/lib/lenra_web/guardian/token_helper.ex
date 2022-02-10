@@ -2,10 +2,9 @@ defmodule LenraWeb.TokenHelper do
   @moduledoc """
     The TokenService module handle the refresh_token and access_token operations
   """
+  alias Lenra.Guardian.{ErrorHandler, Plug}
 
   @token_key "guardian_default_token"
-
-  alias Lenra.Guardian.{ErrorHandler, Plug}
 
   def assign_access_and_refresh_token(conn, user) do
     conn = create_refresh_and_store_cookie(conn, user)
@@ -22,7 +21,7 @@ defmodule LenraWeb.TokenHelper do
   def get_cookie_from_resp(conn) do
     case conn.resp_cookies do
       %{@token_key => %{value: token}} -> {:ok, token}
-      _ -> {:unauthenticated, :no_token_found}
+      _cookies -> {:unauthenticated, :no_token_found}
     end
   end
 

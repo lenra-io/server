@@ -4,7 +4,15 @@ defmodule Lenra.PasswordServices do
   """
   import Ecto.Query, only: [from: 2]
 
-  alias Lenra.{Repo, User, Password, PasswordCode, UserServices, RegistrationCodeServices, EmailWorker}
+  alias Lenra.{
+    EmailWorker,
+    Password,
+    PasswordCode,
+    RegistrationCodeServices,
+    Repo,
+    User,
+    UserServices
+  }
 
   @doc """
     Create a new password.

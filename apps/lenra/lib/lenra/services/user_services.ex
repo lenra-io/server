@@ -4,7 +4,14 @@ defmodule Lenra.UserServices do
   """
   import Ecto.Query, only: [from: 2]
 
-  alias Lenra.{Repo, User, Password, DevCode, RegistrationCodeServices, EmailWorker}
+  alias Lenra.{
+    DevCode,
+    EmailWorker,
+    Password,
+    RegistrationCodeServices,
+    Repo,
+    User
+  }
 
   @doc """
     Register a new user, save him to the database. The email must be unique. The password is hashed before inserted to the database.
@@ -54,11 +61,13 @@ defmodule Lenra.UserServices do
     loaded_user = Repo.preload(user, :registration_code)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.run(:check_valid, fn _, _ ->
+    |> Ecto.Multi.run(:check_valid, fn _repo, _changes ->
       RegistrationCodeServices.check_valid(loaded_user.registration_code, code)
     end)
-    |> Ecto.Multi.merge(fn _ -> RegistrationCodeServices.delete(loaded_user.registration_code) end)
-    |> Ecto.Multi.merge(fn _ -> update_role(loaded_user, :user) end)
+    |> Ecto.Multi.merge(fn _changed ->
+      RegistrationCodeServices.delete(loaded_user.registration_code)
+    end)
+    |> Ecto.Multi.merge(fn _changed -> update_role(loaded_user, :user) end)
     |> Repo.transaction()
   end
 
@@ -82,10 +91,10 @@ defmodule Lenra.UserServices do
   end
 
   defp check_dev_code_unused(%DevCode{user_id: nil}), do: :ok
-  defp check_dev_code_unused(_), do: {:error, :dev_code_already_used}
+  defp check_dev_code_unused(_devcode), do: {:error, :dev_code_already_used}
 
   defp check_simple_user(%User{role: role}) when role in [:user, :unverified_user], do: :ok
-  defp check_simple_user(_), do: {:error, :already_dev}
+  defp check_simple_user(_user), do: {:error, :already_dev}
 
   @doc """
     check if the user exists in the database and compare the hashed password.
@@ -102,10 +111,9 @@ defmodule Lenra.UserServices do
   def check_password(%User{} = user, password) do
     user = Repo.preload(user, [password: from(p in Password, order_by: [desc: p.id])], force: true)
 
-    user_password = user.password |> hd
+    user_password = hd(user.password)
 
-    Argon2.verify_pass(password, user_password.password)
-    |> case do
+    case Argon2.verify_pass(password, user_password.password) do
       false -> {:error, :email_or_password_incorrect}
       true -> {:ok, user}
     end

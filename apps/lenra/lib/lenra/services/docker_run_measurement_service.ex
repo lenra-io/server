@@ -2,9 +2,8 @@ defmodule Lenra.DockerRunMeasurementServices do
   @moduledoc """
     The service that manages the client's applications measurements.
   """
+  alias Lenra.{DockerRunMeasurement, Repo}
   require Logger
-
-  alias Lenra.{Repo, DockerRunMeasurement}
 
   def get(id) do
     Repo.get(DockerRunMeasurement, id)

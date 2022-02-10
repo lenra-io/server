@@ -2,9 +2,16 @@ defmodule Lenra.DeploymentServices do
   @moduledoc """
     The service that manages the different possible actions on a deployment.
   """
-  require Logger
+  alias Lenra.{
+    Build,
+    BuildServices,
+    Deployment,
+    EnvironmentServices,
+    OpenfaasServices,
+    Repo
+  }
 
-  alias Lenra.{Repo, Deployment, Build, BuildServices, EnvironmentServices, OpenfaasServices}
+  require Logger
 
   def get(deployment_id) do
     Repo.get(Deployment, deployment_id)
@@ -23,7 +30,8 @@ defmodule Lenra.DeploymentServices do
 
   def create(environment_id, build_id, publisher_id, params \\ %{}) do
     build =
-      BuildServices.get(build_id)
+      build_id
+      |> BuildServices.get()
       |> Repo.preload(:application)
 
     env = EnvironmentServices.get(environment_id)
@@ -36,7 +44,7 @@ defmodule Lenra.DeploymentServices do
       :inserted_deployment,
       Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
     )
-    |> Ecto.Multi.run(:openfaas_deploy, fn _repo, _ ->
+    |> Ecto.Multi.run(:openfaas_deploy, fn _repo, _result ->
       # a faire: check if this build is already deployed on another env
       OpenfaasServices.deploy_app(build.application.service_name, build.build_number)
     end)

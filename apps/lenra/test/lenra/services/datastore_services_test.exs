@@ -1,11 +1,16 @@
 defmodule Lenra.DatastoreServicesTest do
-  use Lenra.RepoCase, async: true
-
-  alias Lenra.{Repo, Datastore, DatastoreServices, LenraApplicationServices, LenraApplication}
-
   @moduledoc """
     Test the datastore services
   """
+  use Lenra.RepoCase, async: true
+
+  alias Lenra.{
+    Datastore,
+    DatastoreServices,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo
+  }
 
   setup do
     {:ok, app: create_and_return_application()}

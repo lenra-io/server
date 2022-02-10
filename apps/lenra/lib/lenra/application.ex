@@ -3,8 +3,8 @@ defmodule Lenra.Application do
   # for more information on OTP Applications
   @moduledoc false
 
-  require Logger
   use Application
+  require Logger
 
   def start(_type, _args) do
     Lenra.MigrationHelper.migrate()

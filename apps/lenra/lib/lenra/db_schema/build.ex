@@ -6,9 +6,18 @@ defmodule Lenra.Build do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.{User, Build, LenraApplication}
+  alias Lenra.{Build, LenraApplication, User}
 
-  @derive {Jason.Encoder, only: [:id, :commit_hash, :build_number, :status, :creator_id, :application_id, :inserted_at]}
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :commit_hash,
+             :build_number,
+             :status,
+             :creator_id,
+             :application_id,
+             :inserted_at
+           ]}
   schema "builds" do
     field(:commit_hash, :string)
     field(:build_number, :integer)
@@ -29,12 +38,16 @@ defmodule Lenra.Build do
   end
 
   def update(build, params) do
-    build
-    |> changeset(params)
+    changeset(build, params)
   end
 
   def new(creator_id, application_id, build_number, params) do
-    %Build{creator_id: creator_id, application_id: application_id, build_number: build_number, status: :pending}
+    %Build{
+      creator_id: creator_id,
+      application_id: application_id,
+      build_number: build_number,
+      status: :pending
+    }
     |> Build.changeset(params)
   end
 end

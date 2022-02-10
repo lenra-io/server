@@ -29,7 +29,8 @@ defmodule Lenra.PasswordCode do
   end
 
   def new(user, code) do
-    Ecto.build_assoc(user, :password_code)
+    user
+    |> Ecto.build_assoc(:password_code)
     |> changeset(%{code: code})
   end
 end

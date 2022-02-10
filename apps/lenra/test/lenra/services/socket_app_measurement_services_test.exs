@@ -1,11 +1,16 @@
 defmodule Lenra.SocketAppMeasurementServicesTest do
+  @moduledoc """
+  Test the client app measurement services
+  """
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{SocketAppMeasurement, SocketAppMeasurementServices, LenraApplication, AppUserSessionService}
+  alias Lenra.{
+    AppUserSessionService,
+    LenraApplication,
+    SocketAppMeasurement,
+    SocketAppMeasurementServices
+  }
 
-  @moduledoc """
-    Test the client app measurement services
-  """
   setup do
     {:ok, app_session: create_app_user_session()}
   end

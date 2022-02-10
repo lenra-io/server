@@ -4,7 +4,7 @@ defmodule LenraWeb.BuildsController do
   use LenraWeb.Policy,
     module: LenraWeb.BuildsController.Policy
 
-  alias Lenra.{LenraApplicationServices, BuildServices}
+  alias Lenra.{BuildServices, LenraApplicationServices}
 
   def index(conn, %{"app_id" => app_id}) do
     with {:ok, app} <- LenraApplicationServices.fetch(app_id),
@@ -20,7 +20,8 @@ defmodule LenraWeb.BuildsController do
          user <- Guardian.Plug.current_resource(conn),
          {:ok, app} <- LenraApplicationServices.fetch(app_id),
          :ok <- allow(conn, app),
-         {:ok, %{inserted_build: build}} <- BuildServices.create_and_trigger_pipeline(user.id, app.id, params) do
+         {:ok, %{inserted_build: build}} <-
+           BuildServices.create_and_trigger_pipeline(user.id, app.id, params) do
       conn
       |> assign_data(:build, build)
       |> reply
@@ -29,12 +30,13 @@ defmodule LenraWeb.BuildsController do
 end
 
 defmodule LenraWeb.BuildsController.Policy do
-  alias Lenra.{User, Build, LenraApplication}
+  alias Lenra.{Build, LenraApplication, User}
 
   @impl Bouncer.Policy
   def authorize(:index, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
   def authorize(:create, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
   def authorize(:update, %User{id: user_id}, %Build{creator_id: user_id}), do: true
 
+  # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
 end

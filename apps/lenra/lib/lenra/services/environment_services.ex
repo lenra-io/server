@@ -2,11 +2,9 @@ defmodule Lenra.EnvironmentServices do
   @moduledoc """
     The service that manages the different possible actions on an environment.
   """
-  require Logger
-
   import Ecto.Query
-
-  alias Lenra.{Repo, Environment}
+  alias Lenra.{Environment, Repo}
+  require Logger
 
   def all(app_id) do
     Repo.all(from(e in Environment, where: e.application_id == ^app_id))
