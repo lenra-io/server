@@ -235,7 +235,7 @@ defmodule LenraWeb.UserControllerTest do
     new_password2 = "New@password1337"
 
     # Ask for a lost password code
-    conn =
+    conn! =
       post(
         conn,
         Routes.user_path(conn, :password_lost_code, %{
@@ -248,10 +248,10 @@ defmodule LenraWeb.UserControllerTest do
     password_code = Repo.get_by(PasswordCode, user_id: user.id)
 
     # Change password first time
-    conn =
+    conn! =
       put(
-        conn,
-        Routes.user_path(conn, :password_lost_modification, %{
+        conn!,
+        Routes.user_path(conn!, :password_lost_modification, %{
           "email" => @john_doe_user_params["email"],
           "code" => password_code.code,
           "password" => new_password,
@@ -260,13 +260,13 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     # First one should succeed
-    assert %{"success" => true} = json_response(conn, 200)
+    assert %{"success" => true} = json_response(conn!, 200)
 
     # Change password a second time with another password but the same code
-    conn =
+    conn! =
       put(
-        conn,
-        Routes.user_path(conn, :password_lost_modification, %{
+        conn!,
+        Routes.user_path(conn!, :password_lost_modification, %{
           "email" => @john_doe_user_params["email"],
           "code" => password_code.code,
           "password" => new_password2,
@@ -275,7 +275,7 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     # Second one should fail
-    assert %{"success" => false} = json_response(conn, 400)
+    assert %{"success" => false} = json_response(conn!, 400)
   end
 
   test "change lost password wrong email test", %{conn: conn} do
