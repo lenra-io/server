@@ -101,7 +101,7 @@ defmodule Lenra.UserServices do
     Returns {:ok, user} if the email exists and password is correct.
     Otherwise, returns {:error, :email_or_password_incorrect}
   """
-  @spec login(binary(), binary()) :: {:ok, %User{}} | {:error, :email_or_password_incorrect}
+  @spec login(binary(), binary()) :: {:ok, User.t()} | {:error, :email_or_password_incorrect}
   def login(email, password) do
     User
     |> Repo.get_by(email: String.downcase(email))

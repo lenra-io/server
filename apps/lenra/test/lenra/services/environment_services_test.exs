@@ -72,7 +72,7 @@ defmodule Lenra.EnvironmentServicesTest do
           is_ephemeral: "yes"
         })
 
-      assert {:error, :inserted_env, _, _} = error
+      assert {:error, :inserted_env, _failed_value, _changes_so_far} = error
     end
   end
 

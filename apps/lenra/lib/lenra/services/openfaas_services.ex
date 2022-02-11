@@ -25,7 +25,7 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_listener(%LenraApplication{}, %Environment{}, String.t(), map(), map(), map()) ::
+  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map()) ::
           {:ok, map()} | {:error, any()}
   def run_listener(
         %LenraApplication{} = application,
@@ -59,7 +59,7 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec fetch_widget(%LenraApplication{}, %Environment{}, String.t(), map(), map()) ::
+  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::
           {:ok, map()} | {:error, any()}
   def fetch_widget(
         %LenraApplication{} = application,
@@ -85,7 +85,7 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec fetch_manifest(%LenraApplication{}, %Environment{}) :: {:ok, map()} | {:error, any()}
+  @spec fetch_manifest(LenraApplication.t(), Environment.t()) :: {:ok, map()} | {:error, any()}
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
     {base_url, base_headers} = get_http_context()
 
