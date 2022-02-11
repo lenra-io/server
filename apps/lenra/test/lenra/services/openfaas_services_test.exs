@@ -54,16 +54,15 @@ defmodule Lenra.OpenfaasServicesTest do
     test "Openfaas correctly handle 404 not found", %{app: app} do
       FaasStub.stub_action_once(app, "InitData", {:error, 404, "Not Found"})
 
-      assert_raise(RuntimeError, "Openfaas error (404) Not Found", fn ->
-        OpenfaasServices.run_listener(
-          @john_doe_application,
-          @john_doe_environment,
-          "InitData",
-          %{},
-          %{},
-          %{}
-        )
-      end)
+      assert {:error, :application_not_found} ==
+               OpenfaasServices.run_listener(
+                 @john_doe_application,
+                 @john_doe_environment,
+                 "InitData",
+                 %{},
+                 %{},
+                 %{}
+               )
     end
   end
 
@@ -79,7 +78,8 @@ defmodule Lenra.OpenfaasServicesTest do
 
       FaasStub.stub_resource_once(app, "download.jpeg", %{})
 
-      {:ok, res} = OpenfaasServices.get_app_resource(@john_doe_application.service_name, 1, "download.jpeg")
+      {:ok, res} =
+        OpenfaasServices.get_app_resource(@john_doe_application.service_name, 1, "download.jpeg")
 
       assert Keyword.get(res, :data) == "{}"
     end
@@ -87,12 +87,11 @@ defmodule Lenra.OpenfaasServicesTest do
 
   describe "deploy" do
     test "app but openfaas unreachable" do
-      assert_raise(RuntimeError, "Openfaas could not be reached. It should not happen.", fn ->
-        OpenfaasServices.deploy_app(
-          @john_doe_application.service_name,
-          @john_doe_build.build_number
-        )
-      end)
+      assert {:error, :openfass_not_recheable} ==
+               OpenfaasServices.deploy_app(
+                 @john_doe_application.service_name,
+                 @john_doe_build.build_number
+               )
     end
 
     test "app and openfaas reachable" do
@@ -127,16 +126,11 @@ defmodule Lenra.OpenfaasServicesTest do
       FaasStub.create_faas_stub()
       |> FaasStub.expect_delete_app_once({:error, 400, "Bad request"})
 
-      assert_raise(
-        RuntimeError,
-        "Openfaas could not delete the application. It should not happen.",
-        fn ->
-          OpenfaasServices.delete_app_openfaas(
-            @john_doe_application.service_name,
-            @john_doe_build.build_number
-          )
-        end
-      )
+      assert {:error, :openfaas_delete_error} ==
+               OpenfaasServices.delete_app_openfaas(
+                 @john_doe_application.service_name,
+                 @john_doe_build.build_number
+               )
     end
 
     @tag capture_log: true
@@ -150,7 +144,7 @@ defmodule Lenra.OpenfaasServicesTest do
           @john_doe_build.build_number
         )
 
-      assert res == {:ok, 404}
+      assert res == {:error, :openfaas_delete_error}
     end
   end
 

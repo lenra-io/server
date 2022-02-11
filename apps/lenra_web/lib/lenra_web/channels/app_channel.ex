@@ -83,6 +83,13 @@ defmodule LenraWeb.AppChannel do
     {:noreply, socket}
   end
 
+  def handle_info({:send, :error, reason}, socket) do
+    Logger.debug("send error  #{inspect(%{patch: reason})}")
+
+    push(socket, "error", %{"error" => ErrorHelpers.translate_error(reason)})
+    {:noreply, socket}
+  end
+
   def handle_in("run", %{"code" => code, "event" => event}, socket) do
     handle_run(socket, code, event)
   end

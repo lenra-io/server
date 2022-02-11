@@ -191,7 +191,8 @@ defmodule Lenra.OpenfaasServices do
   end
 
   defp response({:ok, %Finch.Response{}}, :delete_app) do
-    raise "Openfaas could not delete the application. It should not happen."
+    Logger.error("Openfaas could not delete the application. It should not happen.")
+    {:error, :openfaas_delete_error}
   end
 
   defp response({:error, %Mint.TransportError{reason: _}}, _) do
@@ -205,6 +206,10 @@ defmodule Lenra.OpenfaasServices do
       404 ->
         Logger.error(body)
         {:error, :application_not_found}
+
+      504 ->
+        # Logger.error(body)
+        {:error, :timeout}
     end
   end
 end
