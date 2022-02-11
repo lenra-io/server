@@ -30,10 +30,14 @@ defmodule Lenra.PasswordServices do
 
   def update_lost_password(
         %User{} = user,
+        %PasswordCode{} = password_code,
         params
       ) do
     with :ok <- check_old_password(user, params) do
-      Repo.insert(Password.new(user, params))
+      Ecto.Multi.new()
+      |> Ecto.Multi.insert(:new_password, Password.new(user, params))
+      |> Ecto.Multi.delete(:delete_password_code, password_code)
+      |> Repo.transaction()
     end
   end
 
@@ -74,25 +78,19 @@ defmodule Lenra.PasswordServices do
   end
 
   def check_password_code_valid(%User{} = user, code) do
-    password_code =
-      Repo.all(
-        from(u in User,
-          join: p in assoc(u, :password_code),
-          where: p.code == ^code,
-          select: p
-        )
-      )
+    user = Repo.preload(user, [:password_code])
 
-    with true <- not is_nil(List.first(password_code)),
-         true <- date_difference(password_code) do
-      {:ok, user}
+    with true <- not is_nil(user.password_code),
+         true <- user.password_code.code == code,
+         true <- date_difference(user.password_code) do
+      {:ok, user.password_code}
     else
       false -> {:error, :no_such_password_code}
     end
   end
 
   @validity_time 3600
-  def date_difference([password_code | _tail]) do
+  def date_difference(password_code) do
     if NaiveDateTime.diff(NaiveDateTime.utc_now(), password_code.inserted_at) <= @validity_time and
          NaiveDateTime.diff(NaiveDateTime.utc_now(), password_code.inserted_at) >= 0 do
       true
