@@ -30,15 +30,14 @@ defmodule Lenra.Environment do
     belongs_to(:application, LenraApplication)
     belongs_to(:creator, User)
     belongs_to(:deployed_build, Build)
-    has_many(:shared_with, User)
-
+    many_to_many(:shared_with, User, join_through: "users_environments_access")
     timestamps()
   end
 
   def changeset(environment, params \\ %{}) do
     environment
     |> cast(params, [:name, :is_ephemeral, :is_public])
-    |> validate_required([:name, :is_ephemeral, :application_id, :creator_id, :shared_with])
+    |> validate_required([:name, :is_ephemeral, :application_id, :creator_id])
     |> unique_constraint([:name, :application_id])
     |> validate_length(:name, min: 2, max: 32)
     |> foreign_key_constraint(:application_id)
