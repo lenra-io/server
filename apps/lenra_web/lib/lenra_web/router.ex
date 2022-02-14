@@ -49,6 +49,7 @@ defmodule LenraWeb.Router do
     pipe_through [:api, :ensure_auth]
     resources "/apps", AppsController, only: [:index, :create, :delete]
     resources "/apps/:app_id/environments", EnvsController, only: [:index, :create]
+    post "/apps/:app_id/environments/:env_id/invite", EnvsController, :invite
     resources "/apps/:app_id/builds", BuildsController, only: [:index, :create]
 
     resources "/apps/deployments", DeploymentsController, only: [:create]

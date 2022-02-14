@@ -41,6 +41,7 @@ defmodule Lenra.User do
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
     has_one(:dev_code, DevCode)
+    has_many(:environment_access, Environment)
     timestamps()
   end
 

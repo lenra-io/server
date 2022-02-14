@@ -28,6 +28,12 @@ defmodule Lenra.EnvironmentServices do
     |> Repo.transaction()
   end
 
+  def update(env_id, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:updated_env, Environment.update(env_id, params))
+    |> Repo.transaction()
+  end
+
   def delete(env) do
     Ecto.Multi.new()
     |> Ecto.Multi.delete(:deleted_env, env)

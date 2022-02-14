@@ -31,6 +31,15 @@ defmodule LenraWeb.EnvsController do
       |> reply
     end
   end
+
+  def invite(conn, %{"env_id" => env_id, "user_id" => user_id}) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, %{updated_env: env}} <- EnvironmentServices.update(env_id, %{"user_id" => user_id}) do
+      conn
+      |> assign_data(:updated_env, env)
+      |> reply
+    end
+  end
 end
 
 defmodule LenraWeb.EnvsController.Policy do
