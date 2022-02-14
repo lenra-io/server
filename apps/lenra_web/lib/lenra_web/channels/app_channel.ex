@@ -16,7 +16,8 @@ defmodule LenraWeb.AppChannel do
 
     Logger.debug("Joining channel for app : #{app_name}")
 
-    with {:ok, app} <-
+    with true <- String.match?(app_name, ~r/\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/),
+         {:ok, app} <-
            LenraApplicationServices.fetch_by(
              service_name: app_name,
              # This restrict to "owner" app only
@@ -50,12 +51,12 @@ defmodule LenraWeb.AppChannel do
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
-      _err -> {:error, %{reason: "No app found"}}
+      _err -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
     end
   end
 
   def join("app", _any, _socket) do
-    {:error, %{reason: "No App Name"}}
+    {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
   end
 
   defp select_env(%LenraApplication{} = app) do
@@ -86,7 +87,11 @@ defmodule LenraWeb.AppChannel do
   def handle_info({:send, :error, reason}, socket) do
     Logger.debug("send error  #{inspect(%{patch: reason})}")
 
-    push(socket, "error", %{"error" => ErrorHelpers.translate_error(reason)})
+    case is_atom(reason) do
+      true -> push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
+      false -> push(socket, "error", %{"errors" => reason})
+    end
+
     {:noreply, socket}
   end
 

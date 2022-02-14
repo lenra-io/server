@@ -27,6 +27,7 @@ defmodule LenraWeb.ErrorHelpers do
     listeners_not_found: %{code: 18, message: "No listener found in app manifest. It should not happen."},
     openfaas_delete_error: %{code: 19, message: "Openfaas could not delete the application. It should not happen."},
     timeout: %{code: 20, message: "Openfaas timeout. It should not happen."},
+    no_app_found: %{code: 21, message: "No application found for the current link."},
     environement_not_build: %{code: 22, message: "This application was not yet build."},
     error_404: %{code: 404, message: "Not Found."},
     error_500: %{code: 500, message: "Internal server error."},

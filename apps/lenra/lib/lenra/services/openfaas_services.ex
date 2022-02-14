@@ -93,22 +93,28 @@ defmodule Lenra.OpenfaasServices do
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
     {base_url, base_headers} = get_http_context()
 
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
+    case environment.deployed_build do
+      nil ->
+        {:error, :environement_not_build}
 
-    url = "#{base_url}/function/#{function_name}"
-    headers = [{"Content-Type", "application/json"} | base_headers]
+      _ ->
+        function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
-    Finch.build(:post, url, headers)
-    |> Finch.request(FaasHttp)
-    |> response(:decode)
-    |> case do
-      {:ok, %{"manifest" => manifest}} ->
-        Logger.debug("Got manifest : #{inspect(manifest)}")
-        {:ok, manifest}
+        url = "#{base_url}/function/#{function_name}"
+        headers = [{"Content-Type", "application/json"} | base_headers]
 
-      err ->
-        Logger.error("Error while getting manifest : #{inspect(err)}")
-        err
+        Finch.build(:post, url, headers)
+        |> Finch.request(FaasHttp)
+        |> response(:decode)
+        |> case do
+          {:ok, %{"manifest" => manifest}} ->
+            Logger.debug("Got manifest : #{inspect(manifest)}")
+            {:ok, manifest}
+
+          err ->
+            Logger.error("Error while getting manifest : #{inspect(err)}")
+            err
+        end
     end
   end
 
@@ -200,15 +206,22 @@ defmodule Lenra.OpenfaasServices do
     {:error, :openfass_not_recheable}
   end
 
-  defp response({:ok, %Finch.Response{status: status_code, body: body}}, _action)
+  defp response(
+         {:ok, %Finch.Response{status: status_code, body: body}},
+         _action
+       )
        when status_code not in [200, 202] do
     case status_code do
       404 ->
         Logger.error(body)
-        {:error, :application_not_found}
+        {:error, :ressource_not_found}
+
+      500 ->
+        Logger.error(body)
+        {:error, body}
 
       504 ->
-        # Logger.error(body)
+        Logger.error(body)
         {:error, :timeout}
     end
   end
