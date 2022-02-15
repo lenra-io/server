@@ -47,7 +47,11 @@ defmodule LenraWeb.AppChannel do
            :ok <- SessionManager.init_data(session_pid) do
         {:ok, assign(socket, session_pid: session_pid)}
       else
-        {:error, reason} ->
+        # Application error
+        {:error, reason} when is_bitstring(reason) ->
+          {:error, %{reason: [%{code: 0, message: reason}]}}
+
+        {:error, reason} when is_atom(reason) ->
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
@@ -66,7 +70,6 @@ defmodule LenraWeb.AppChannel do
   defp start_session(env_id, session_id, session_assigns, env_assigns) do
     case SessionManagers.start_session(session_id, env_id, session_assigns, env_assigns) do
       {:ok, session_pid} -> {:ok, session_pid}
-      # {:error, {:already_started, session_pid}} -> {:ok, session_pid}
       {:error, message} -> {:error, message}
     end
   end
@@ -85,11 +88,12 @@ defmodule LenraWeb.AppChannel do
   end
 
   def handle_info({:send, :error, reason}, socket) do
-    Logger.debug("send error  #{inspect(%{patch: reason})}")
+    Logger.debug("send error  #{inspect(%{error: reason})}")
 
     case is_atom(reason) do
       true -> push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
-      false -> push(socket, "error", %{"errors" => reason})
+      # Application error
+      false -> push(socket, "error", %{"errors" => [%{code: 0, message: reason}]})
     end
 
     {:noreply, socket}
