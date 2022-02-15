@@ -54,7 +54,7 @@ defmodule Lenra.OpenfaasServicesTest do
     test "Openfaas correctly handle 404 not found", %{app: app} do
       FaasStub.stub_action_once(app, "InitData", {:error, 404, "Not Found"})
 
-      assert {:error, :application_not_found} ==
+      assert {:error, :ressource_not_found} ==
                OpenfaasServices.run_listener(
                  @john_doe_application,
                  @john_doe_environment,

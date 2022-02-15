@@ -61,7 +61,7 @@ defmodule LenraWeb.AppChannelTest do
 
   test "No app called, should return an error", %{socket: socket} do
     res = my_subscribe_and_join(socket)
-    assert {:error, %{reason: "No App Name"}} == res
+    assert {:error, %{reason: [%{code: 21, message: "No application found for the current link."}]}} == res
     refute_push("ui", _)
   end
 
