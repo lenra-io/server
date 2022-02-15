@@ -97,7 +97,7 @@ defmodule Lenra.OpenfaasServices do
       nil ->
         {:error, :environement_not_build}
 
-      _ ->
+      _deployed_build ->
         function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
         url = "#{base_url}/function/#{function_name}"
@@ -201,7 +201,7 @@ defmodule Lenra.OpenfaasServices do
     {:error, :openfaas_delete_error}
   end
 
-  defp response({:error, %Mint.TransportError{reason: _}}, _) do
+  defp response({:error, %Mint.TransportError{reason: _reason}}, _action) do
     Logger.error("Openfaas could not be reached. It should not happen.")
     {:error, :openfass_not_recheable}
   end

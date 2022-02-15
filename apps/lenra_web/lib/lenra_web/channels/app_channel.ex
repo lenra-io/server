@@ -5,7 +5,7 @@ defmodule LenraWeb.AppChannel do
   use Phoenix.Channel
   alias ApplicationRunner.{SessionManager, SessionManagers}
   alias Lenra.{Environment, LenraApplication, LenraApplicationServices, Repo}
-  alias LenraWeb.{ErrorHelpers}
+  alias LenraWeb.ErrorHelpers
 
   require Logger
 
