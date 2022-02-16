@@ -10,7 +10,8 @@ defmodule Lenra.Environment do
     Build,
     Environment,
     LenraApplication,
-    User
+    User,
+    UserEnvironmentAccess
   }
 
   @derive {Jason.Encoder,
@@ -29,7 +30,7 @@ defmodule Lenra.Environment do
     belongs_to(:application, LenraApplication)
     belongs_to(:creator, User)
     belongs_to(:deployed_build, Build)
-    many_to_many(:shared_with, User, join_through: "users_environments_access")
+    many_to_many(:shared_with, User, join_through: UserEnvironmentAccess)
     timestamps()
   end
 

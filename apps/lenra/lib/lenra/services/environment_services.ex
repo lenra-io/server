@@ -3,7 +3,7 @@ defmodule Lenra.EnvironmentServices do
     The service that manages the different possible actions on an environment.
   """
   import Ecto.Query
-  alias Lenra.{Environment, Repo}
+  alias Lenra.{Environment, Repo, UserEnvironmentAccess}
   require Logger
 
   def all(app_id) do
@@ -34,9 +34,9 @@ defmodule Lenra.EnvironmentServices do
     |> Repo.transaction()
   end
 
-  def invite(env_id, params) do
+  def add_user_access(env_id, %{"user_id" => user_id} = params) do
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:updated_env, Environment.update(env_id, params))
+    |> Ecto.Multi.insert(:inserted_user_access, UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{user_id: user_id, environment_id: env_id}))
     |> Repo.transaction()
   end
 
