@@ -26,7 +26,6 @@ defmodule Lenra.Environment do
   schema "environments" do
     field(:name, :string)
     field(:is_ephemeral, :boolean)
-    field(:is_public, :boolean)
     belongs_to(:application, LenraApplication)
     belongs_to(:creator, User)
     belongs_to(:deployed_build, Build)
@@ -36,7 +35,7 @@ defmodule Lenra.Environment do
 
   def changeset(environment, params \\ %{}) do
     environment
-    |> cast(params, [:name, :is_ephemeral, :is_public])
+    |> cast(params, [:name, :is_ephemeral])
     |> validate_required([:name, :is_ephemeral, :application_id, :creator_id])
     |> unique_constraint([:name, :application_id])
     |> validate_length(:name, min: 2, max: 32)
