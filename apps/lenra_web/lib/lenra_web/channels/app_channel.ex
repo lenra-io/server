@@ -93,7 +93,7 @@ defmodule LenraWeb.AppChannel do
     case is_atom(reason) do
       true -> push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
       # Application error
-      false -> push(socket, "error", %{"errors" => [%{code: 0, message: reason}]})
+      false -> push(socket, "error", %{"errors" => [%{code: -1, message: reason}]})
     end
 
     {:noreply, socket}
