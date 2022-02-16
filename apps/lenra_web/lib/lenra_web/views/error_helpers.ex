@@ -24,7 +24,7 @@ defmodule LenraWeb.ErrorHelpers do
     invalid_build_status: %{code: 15, message: "The build status should be success or failure."},
     openfass_not_recheable: %{code: 16, message: "Openfaas could not be reached. It should not happen."},
     application_not_found: %{code: 17, message: "The application was not found in Openfaas. It should not happen."},
-    listeners_not_found: %{code: 18, message: "No listener found in app manifest. It should not happen."},
+    listener_not_found: %{code: 18, message: "No listener found in app manifest. It should not happen."},
     openfaas_delete_error: %{code: 19, message: "Openfaas could not delete the application. It should not happen."},
     timeout: %{code: 20, message: "Openfaas timeout. It should not happen."},
     no_app_found: %{code: 21, message: "No application found for the current link."},
