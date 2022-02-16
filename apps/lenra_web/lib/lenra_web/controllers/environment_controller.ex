@@ -33,7 +33,7 @@ defmodule LenraWeb.EnvsController do
   end
 
   def add_user_access(conn, %{"env_id" => env_id, "user_id" => user_id} = params) do
-    with {:ok, app} <- get_app_and_allow(conn, params),
+    with {:ok, _app} <- get_app_and_allow(conn, params),
          {:ok, %{inserted_user_env_access: user_env_access}} <- EnvironmentServices.add_user_access(env_id, %{"user_id" => user_id}) do
       conn
       |> assign_data(:inserted_user_env_access, user_env_access)

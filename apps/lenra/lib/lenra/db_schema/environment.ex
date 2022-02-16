@@ -21,8 +21,7 @@ defmodule Lenra.Environment do
              :is_ephemeral,
              :application_id,
              :creator_id,
-             :deployed_build_id,
-             :shared_with
+             :deployed_build_id
            ]}
   schema "environments" do
     field(:name, :string)
