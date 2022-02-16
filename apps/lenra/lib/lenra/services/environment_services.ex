@@ -34,12 +34,6 @@ defmodule Lenra.EnvironmentServices do
     |> Repo.transaction()
   end
 
-  def add_user_access(env_id, %{"user_id" => user_id} = params) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(:inserted_user_access, UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{user_id: user_id, environment_id: env_id}))
-    |> Repo.transaction()
-  end
-
   def delete(env) do
     Ecto.Multi.new()
     |> Ecto.Multi.delete(:deleted_env, env)
