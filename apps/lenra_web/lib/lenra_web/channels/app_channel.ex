@@ -49,7 +49,7 @@ defmodule LenraWeb.AppChannel do
       else
         # Application error
         {:error, reason} when is_bitstring(reason) ->
-          {:error, %{reason: [%{code: 0, message: reason}]}}
+          {:error, %{reason: [%{code: -1, message: reason}]}}
 
         {:error, reason} when is_atom(reason) ->
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
