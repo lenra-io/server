@@ -8,10 +8,15 @@ defmodule Lenra.UserEnvironmentAccess do
 
   alias Lenra.{User, Environment}
 
+  @derive {Jason.Encoder,
+           only: [
+             :user_id,
+             :environment_id
+           ]}
   @primary_key false
   schema "users_environments_access" do
-    belongs_to :user, User
-    belongs_to :environment, Environment
+    belongs_to(:user, User)
+    belongs_to(:environment, Environment)
 
     timestamps()
   end
