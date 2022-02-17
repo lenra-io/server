@@ -73,57 +73,70 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     end
   end
 
-  # describe "create" do
-  #   @tag auth_users: [:dev, :user, :dev, :admin]
-  #   test "environment controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
-  #     creator! = create_app(creator!)
-  #     assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
+  describe "create" do
+    @tag auth_users: [:dev, :user, :dev, :admin]
+    test "user environment access controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
+      creator! = create_app(creator!)
+      assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
 
-  #     create_env_path = Routes.envs_path(creator!, :create, app["id"])
+      assert %{"data" => %{"envs" => envs}, "success" => true} =
+               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
-  #     creator! =
-  #       post(creator!, create_env_path, %{
-  #         "name" => "test_creator",
-  #         "is_ephemeral" => false
-  #       })
+      env = Enum.at(envs, 0)
 
-  #     admin! =
-  #       post(admin!, create_env_path, %{
-  #         "name" => "test_admin",
-  #         "is_ephemeral" => false
-  #       })
+      create_user_access = Routes.user_environment_access_path(creator!, :create, app["id"], env["id"])
 
-  #     user! =
-  #       post(user!, create_env_path, %{
-  #         "name" => "test_user",
-  #         "is_ephemeral" => false
-  #       })
+      creator! =
+        post(creator!, create_user_access, %{
+          "user_id" => Guardian.Plug.current_resource(creator!).id
+        })
 
-  #     other_dev! =
-  #       post(other_dev!, create_env_path, %{
-  #         "name" => "test_other_dev",
-  #         "is_ephemeral" => false
-  #       })
+      admin! =
+        post(admin!, create_user_access, %{
+          "user_id" => Guardian.Plug.current_resource(creator!).id
+        })
 
-  #     assert %{"success" => true} = json_response(creator!, 200)
-  #     assert %{"success" => true} = json_response(admin!, 200)
-  #     assert %{"success" => false} = json_response(user!, 403)
-  #     assert %{"success" => false} = json_response(other_dev!, 403)
-  #   end
+      user! =
+        post(user!, create_user_access, %{
+          "user_id" => Guardian.Plug.current_resource(creator!).id
+        })
 
-  #   @tag auth_user: :dev
-  #   test "environment controller authenticated but invalid params", %{conn: conn!} do
-  #     conn! = create_app(conn!)
+      other_dev! =
+        post(other_dev!, create_user_access, %{
+          "user_id" => Guardian.Plug.current_resource(creator!).id
+        })
 
-  #     assert %{"success" => true, "data" => %{"app" => app}} = json_response(conn!, 200)
+      assert %{"success" => true} = json_response(creator!, 200)
 
-  #     conn! =
-  #       post(conn!, Routes.envs_path(conn!, :create, app["id"]), %{
-  #         "name" => 1234,
-  #         "is_ephemeral" => "false"
-  #       })
+      assert %{
+               "success" => false,
+               "errors" => [
+                 %{"code" => 0, "message" => "user_id has already been taken"}
+               ]
+             } ==
+               json_response(admin!, 400)
 
-  #     assert %{"errors" => _errors, "success" => false} = json_response(conn!, 400)
-  #   end
-  # end
+      assert %{"success" => false} = json_response(user!, 403)
+      assert %{"success" => false} = json_response(other_dev!, 403)
+    end
+
+    @tag auth_user: :dev
+    test "user environment access controller authenticated but invalid params", %{conn: conn!} do
+      conn! = create_app(conn!)
+
+      assert %{"success" => true, "data" => %{"app" => app}} = json_response(conn!, 200)
+
+      assert %{"data" => %{"envs" => envs}, "success" => true} =
+               json_response(get(conn!, Routes.envs_path(conn!, :index, app["id"])), 200)
+
+      env = Enum.at(envs, 0)
+
+      conn! =
+        post(conn!, Routes.user_environment_access_path(conn!, :create, app["id"], env["id"]), %{
+          "user_id" => "wrong"
+        })
+
+      assert %{"errors" => _errors, "success" => false} = json_response(conn!, 400)
+    end
+  end
 end
