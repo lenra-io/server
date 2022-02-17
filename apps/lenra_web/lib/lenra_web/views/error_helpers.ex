@@ -4,6 +4,7 @@ defmodule LenraWeb.ErrorHelpers do
   """
 
   @errors [
+    unknow_error: %{code: 0, message: "Unknown error"},
     password_not_equals: %{code: 1, message: "Password must be equals."},
     parameters_null: %{code: 2, message: "Parameters can't be null."},
     no_validation_code: %{
