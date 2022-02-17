@@ -25,5 +25,8 @@ defmodule Lenra.UserEnvironmentAccess do
     user
     |> cast(params, [:user_id, :environment_id])
     |> validate_required([:user_id, :environment_id])
+    |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:environment_id)
+    |> unique_constraint([:user_id, :environment_id], name: :users_environments_access_pkey)
   end
 end
