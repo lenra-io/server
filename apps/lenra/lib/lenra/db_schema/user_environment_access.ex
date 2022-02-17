@@ -15,8 +15,8 @@ defmodule Lenra.UserEnvironmentAccess do
            ]}
   @primary_key false
   schema "users_environments_access" do
-    belongs_to(:user, User)
-    belongs_to(:environment, Environment)
+    belongs_to(:user, User, primary_key: true)
+    belongs_to(:environment, Environment, primary_key: true)
 
     timestamps()
   end
