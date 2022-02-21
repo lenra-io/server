@@ -3,7 +3,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
     The service that manages the different possible actions on an environment's user accesses.
   """
   import Ecto.Query
-  alias Lenra.{EnvironmentServices, Repo, UserEnvironmentAccess, UserServices}
+  alias Lenra.{EmailWorker, EnvironmentServices, Repo, UserEnvironmentAccess, UserServices}
   require Logger
 
   def all(env_id) do
@@ -16,9 +16,11 @@ defmodule Lenra.UserEnvironmentAccessServices do
       :inserted_user_access,
       UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{user_id: user_id, environment_id: env_id})
     )
-    |> Ecto.Multi.run(:add_invitation_event, fn _repo, %{inserted_user_access: _} ->
-      {:ok, env} = EnvironmentServices.get(env_id)
-      {:ok, user} = UserServices.get(user_id)
+    |> Ecto.Multi.run(:add_invitation_event, fn repo, %{inserted_user_access: _} ->
+      env = EnvironmentServices.get(env_id)
+      user = UserServices.get(user_id)
+
+      env = repo.preload(env, :application)
 
       add_invitation_events(user, env.application.name, "TODO")
     end)
