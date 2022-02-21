@@ -78,6 +78,30 @@ defmodule Lenra.EnvironmentServicesTest do
     end
   end
 
+  describe "update" do
+    test "environment successfully", %{app: app} do
+      {:ok, user} = Enum.fetch(Repo.all(User), 0)
+
+      EnvironmentServices.create(app.id, user.id, %{
+        name: "test_env",
+        is_ephemeral: false,
+        is_public: false
+      })
+
+      {:ok, env} = EnvironmentServices.fetch_by(name: "test_env")
+
+      assert env.is_public == false
+
+      EnvironmentServices.update(env, %{
+        is_public: true
+      })
+
+      {:ok, updated_env} = EnvironmentServices.fetch_by(name: "test_env")
+
+      assert updated_env.is_public == true
+    end
+  end
+
   describe "delete" do
     test "environment successfully", %{app: _app} do
       assert {:ok, env} = EnvironmentServices.fetch_by(name: "live")
