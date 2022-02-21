@@ -29,7 +29,7 @@ defmodule LenraWeb.AppChannel do
            LenraApplicationServices.fetch_by(service_name: app_name),
          %LenraApplication{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]),
-         :ok <- get_app_authorization(user.id, app) do
+         :ok <- get_app_authorization(user.id, application) do
       %Environment{} = environment = select_env(application)
 
       Logger.debug("Environment selected is #{environment.name}")
@@ -73,9 +73,9 @@ defmodule LenraWeb.AppChannel do
       select_env(app).is_public ->
         :ok
 
-      {:ok, _access} ==
+      {:ok, access} =
           UserEnvironmentAccessServices.fetch_by(
-            environment_id: app.main_env.environment.id,
+            environment_id: select_env(app).id,
             user_id: user_id
           ) ->
         :ok
