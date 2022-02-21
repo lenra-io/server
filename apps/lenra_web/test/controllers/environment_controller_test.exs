@@ -32,7 +32,8 @@ defmodule LenraWeb.EnvironmentControllerTest do
       creator! =
         post(creator!, Routes.envs_path(creator!, :create, app["id"]), %{
           "name" => "test",
-          "is_ephemeral" => false
+          "is_ephemeral" => false,
+          "is_public" => false
         })
 
       assert %{"success" => true} = json_response(creator!, 200)
@@ -114,25 +115,29 @@ defmodule LenraWeb.EnvironmentControllerTest do
       creator! =
         post(creator!, create_env_path, %{
           "name" => "test_creator",
-          "is_ephemeral" => false
+          "is_ephemeral" => false,
+          "is_public" => false
         })
 
       admin! =
         post(admin!, create_env_path, %{
           "name" => "test_admin",
-          "is_ephemeral" => false
+          "is_ephemeral" => false,
+          "is_public" => false
         })
 
       user! =
         post(user!, create_env_path, %{
           "name" => "test_user",
-          "is_ephemeral" => false
+          "is_ephemeral" => false,
+          "is_public" => false
         })
 
       other_dev! =
         post(other_dev!, create_env_path, %{
           "name" => "test_other_dev",
-          "is_ephemeral" => false
+          "is_ephemeral" => false,
+          "is_public" => false
         })
 
       assert %{"success" => true} = json_response(creator!, 200)
@@ -150,7 +155,8 @@ defmodule LenraWeb.EnvironmentControllerTest do
       conn! =
         post(conn!, Routes.envs_path(conn!, :create, app["id"]), %{
           "name" => 1234,
-          "is_ephemeral" => "false"
+          "is_ephemeral" => "false",
+          "is_public" => false
         })
 
       assert %{"errors" => _errors, "success" => false} = json_response(conn!, 400)
