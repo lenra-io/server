@@ -87,6 +87,7 @@ defmodule LenraWeb.UserController do
       reply(conn)
     else
       {:error, :email_incorrect} -> {:error, :no_such_password_code}
+      error -> error
     end
   end
 
