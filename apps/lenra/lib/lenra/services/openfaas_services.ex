@@ -85,30 +85,32 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  def fetch_manifest(%LenraApplication{} = _application, %Environment{} = environment)
-      when is_nil(environment.deployed_build),
-      do: {:error, :environement_not_build}
-
   @spec fetch_manifest(LenraApplication.t(), Environment.t()) :: {:ok, map()} | {:error, any()}
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
     {base_url, base_headers} = get_http_context()
 
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
+    case environment.deployed_build do
+      nil ->
+        {:error, :environement_not_build}
 
-    url = "#{base_url}/function/#{function_name}"
-    headers = [{"Content-Type", "application/json"} | base_headers]
+      _deployed_build ->
+        function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
-    Finch.build(:post, url, headers)
-    |> Finch.request(FaasHttp)
-    |> response(:decode)
-    |> case do
-      {:ok, %{"manifest" => manifest}} ->
-        Logger.debug("Got manifest : #{inspect(manifest)}")
-        {:ok, manifest}
+        url = "#{base_url}/function/#{function_name}"
+        headers = [{"Content-Type", "application/json"} | base_headers]
 
-      err ->
-        Logger.error("Error while getting manifest : #{inspect(err)}")
-        err
+        Finch.build(:post, url, headers)
+        |> Finch.request(FaasHttp)
+        |> response(:decode)
+        |> case do
+          {:ok, %{"manifest" => manifest}} ->
+            Logger.debug("Got manifest : #{inspect(manifest)}")
+            {:ok, manifest}
+
+          err ->
+            Logger.error("Error while getting manifest : #{inspect(err)}")
+            err
+        end
     end
   end
 
@@ -186,37 +188,24 @@ defmodule Lenra.OpenfaasServices do
   end
 
   defp response({:ok, %Finch.Response{status: status_code}}, :delete_app)
-       when status_code in [200, 202] do
+       when status_code in [200, 202, 404] do
+    if status_code == 404 do
+      Logger.error("The application was not found in Openfaas. It should not happen.")
+    end
+
     {:ok, status_code}
   end
 
   defp response({:ok, %Finch.Response{}}, :delete_app) do
-    Logger.error("Openfaas could not delete the application. It should not happen.")
-    {:error, :openfaas_delete_error}
+    raise "Openfaas could not delete the application. It should not happen."
   end
 
   defp response({:error, %Mint.TransportError{reason: _reason}}, _action) do
-    Logger.error("Openfaas could not be reached. It should not happen.")
-    {:error, :openfass_not_recheable}
+    raise "Openfaas could not be reached. It should not happen."
   end
 
-  defp response(
-         {:ok, %Finch.Response{status: status_code, body: body}},
-         _action
-       )
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, _action)
        when status_code not in [200, 202] do
-    case status_code do
-      404 ->
-        Logger.error(body)
-        {:error, :ressource_not_found}
-
-      500 ->
-        Logger.error(body)
-        {:error, body}
-
-      504 ->
-        Logger.error(body)
-        {:error, :timeout}
-    end
+    raise "Openfaas error (#{status_code}) #{body}"
   end
 end
