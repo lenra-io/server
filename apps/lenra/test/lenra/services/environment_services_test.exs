@@ -57,7 +57,8 @@ defmodule Lenra.EnvironmentServicesTest do
 
       EnvironmentServices.create(app.id, user.id, %{
         name: "test_env",
-        is_ephemeral: false
+        is_ephemeral: false,
+        is_public: false
       })
 
       assert 2 == Enum.count(Repo.all(Environment))
@@ -69,7 +70,8 @@ defmodule Lenra.EnvironmentServicesTest do
       error =
         EnvironmentServices.create(app.id, user.id, %{
           name: 1234,
-          is_ephemeral: "yes"
+          is_ephemeral: "yes",
+          is_public: false
         })
 
       assert {:error, :inserted_env, _failed_value, _changes_so_far} = error
