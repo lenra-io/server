@@ -153,4 +153,16 @@ defmodule Lenra.OpenfaasServicesTest do
       assert res == {:ok, 404}
     end
   end
+
+  describe "fetch manifest" do
+    @tag :register_user
+    test "should return error if app not deployed", %{user: user} do
+      {:ok, app} = Repo.insert(LenraApplication.new(user.id, %{name: "stubapp", color: "FFFFFF", icon: 1}))
+
+      assert {:error, :environement_not_build} ==
+               OpenfaasServices.fetch_manifest(app, %Environment{
+                 deployed_build: nil
+               })
+    end
+  end
 end

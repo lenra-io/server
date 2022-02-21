@@ -85,32 +85,30 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
+  def fetch_manifest(%LenraApplication{} = _application, %Environment{} = environment)
+      when is_nil(environment.deployed_build),
+      do: {:error, :environement_not_build}
+
   @spec fetch_manifest(LenraApplication.t(), Environment.t()) :: {:ok, map()} | {:error, any()}
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
     {base_url, base_headers} = get_http_context()
 
-    case environment.deployed_build do
-      nil ->
-        {:error, :environement_not_build}
+    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
-      _deployed_build ->
-        function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
+    url = "#{base_url}/function/#{function_name}"
+    headers = [{"Content-Type", "application/json"} | base_headers]
 
-        url = "#{base_url}/function/#{function_name}"
-        headers = [{"Content-Type", "application/json"} | base_headers]
+    Finch.build(:post, url, headers)
+    |> Finch.request(FaasHttp)
+    |> response(:decode)
+    |> case do
+      {:ok, %{"manifest" => manifest}} ->
+        Logger.debug("Got manifest : #{inspect(manifest)}")
+        {:ok, manifest}
 
-        Finch.build(:post, url, headers)
-        |> Finch.request(FaasHttp)
-        |> response(:decode)
-        |> case do
-          {:ok, %{"manifest" => manifest}} ->
-            Logger.debug("Got manifest : #{inspect(manifest)}")
-            {:ok, manifest}
-
-          err ->
-            Logger.error("Error while getting manifest : #{inspect(err)}")
-            err
-        end
+      err ->
+        Logger.error("Error while getting manifest : #{inspect(err)}")
+        err
     end
   end
 
