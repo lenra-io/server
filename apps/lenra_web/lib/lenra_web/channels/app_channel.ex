@@ -5,6 +5,8 @@ defmodule LenraWeb.AppChannel do
   use Phoenix.Channel
   alias ApplicationRunner.{SessionManager, SessionManagers}
   alias Lenra.{Environment, LenraApplication, LenraApplicationServices, Repo}
+  alias LenraWeb.ErrorHelpers
+
   require Logger
 
   def join("app", %{"app" => app_name}, socket) do
@@ -44,16 +46,20 @@ defmodule LenraWeb.AppChannel do
            :ok <- SessionManager.init_data(session_pid) do
         {:ok, assign(socket, session_pid: session_pid)}
       else
-        {:error, reason} ->
-          {:error, %{reason: reason}}
+        # Application error
+        {:error, reason} when is_bitstring(reason) ->
+          {:error, %{reason: [%{code: -1, message: reason}]}}
+
+        {:error, reason} when is_atom(reason) ->
+          {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
-      _err -> {:error, %{reason: "No app found"}}
+      _err -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
     end
   end
 
   def join("app", _any, _socket) do
-    {:error, %{reason: "No App Name"}}
+    {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
   end
 
   defp select_env(%LenraApplication{} = app) do
@@ -63,7 +69,6 @@ defmodule LenraWeb.AppChannel do
   defp start_session(env_id, session_id, session_assigns, env_assigns) do
     case SessionManagers.start_session(session_id, env_id, session_assigns, env_assigns) do
       {:ok, session_pid} -> {:ok, session_pid}
-      {:error, {:already_started, session_pid}} -> {:ok, session_pid}
       {:error, message} -> {:error, message}
     end
   end
@@ -78,6 +83,18 @@ defmodule LenraWeb.AppChannel do
     Logger.debug("send patchUi  #{inspect(%{patch: patches})}")
 
     push(socket, "patchUi", %{"patch" => patches})
+    {:noreply, socket}
+  end
+
+  def handle_info({:send, :error, reason}, socket) do
+    Logger.debug("send error  #{inspect(%{error: reason})}")
+
+    case is_atom(reason) do
+      true -> push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
+      # Application error
+      false -> push(socket, "error", %{"errors" => [%{code: -1, message: reason}]})
+    end
+
     {:noreply, socket}
   end
 
