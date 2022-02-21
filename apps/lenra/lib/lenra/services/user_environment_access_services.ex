@@ -22,7 +22,9 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
       env = repo.preload(env, :application)
 
-      add_invitation_events(user, env.application.name, "TODO")
+      app_link = "https://lenra.io/app/#{env.application.service_name}"
+
+      add_invitation_events(user, env.application.name, app_link)
     end)
     |> Repo.transaction()
   end
