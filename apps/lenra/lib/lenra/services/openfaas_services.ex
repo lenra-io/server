@@ -85,6 +85,10 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
+  def fetch_manifest(%LenraApplication{} = _application, %Environment{} = environment)
+      when is_nil(environment.deployed_build),
+      do: {:error, :environement_not_build}
+
   @spec fetch_manifest(LenraApplication.t(), Environment.t()) :: {:ok, map()} | {:error, any()}
   def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
     {base_url, base_headers} = get_http_context()
