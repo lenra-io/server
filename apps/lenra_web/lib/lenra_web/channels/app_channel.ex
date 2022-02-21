@@ -4,7 +4,15 @@ defmodule LenraWeb.AppChannel do
   """
   use Phoenix.Channel
   alias ApplicationRunner.{SessionManager, SessionManagers}
-  alias Lenra.{Environment, LenraApplication, LenraApplicationServices, Repo}
+
+  alias Lenra.{
+    Environment,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo,
+    UserEnvironmentAccessServices
+  }
+
   alias LenraWeb.ErrorHelpers
 
   require Logger
@@ -18,13 +26,10 @@ defmodule LenraWeb.AppChannel do
 
     with {:ok, _uuid} <- Ecto.UUID.cast(app_name),
          {:ok, app} <-
-           LenraApplicationServices.fetch_by(
-             service_name: app_name,
-             # This restrict to "owner" app only
-             creator_id: user.id
-           ),
+           LenraApplicationServices.fetch_by(service_name: app_name),
          %LenraApplication{} = application <-
-           Repo.preload(app, main_env: [environment: [:deployed_build]]) do
+           Repo.preload(app, main_env: [environment: [:deployed_build]]),
+         :ok <- get_app_authorization(user.id, app) do
       %Environment{} = environment = select_env(application)
 
       Logger.debug("Environment selected is #{environment.name}")
@@ -61,6 +66,22 @@ defmodule LenraWeb.AppChannel do
 
   def join("app", _any, _socket) do
     {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
+  end
+
+  defp get_app_authorization(user_id, app) do
+    cond do
+      select_env(app).is_public ->
+        :ok
+
+      {:ok, _access} ==
+          UserEnvironmentAccessServices.fetch_by(
+            environment_id: app.main_env.environment.id,
+            user_id: user_id
+          ) ->
+        :ok
+    end
+
+    :error
   end
 
   defp select_env(%LenraApplication{} = app) do
