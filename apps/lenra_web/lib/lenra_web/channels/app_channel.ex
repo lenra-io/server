@@ -16,8 +16,7 @@ defmodule LenraWeb.AppChannel do
 
     Logger.debug("Joining channel for app : #{app_name}")
 
-    with true <- String.match?(app_name, ~r/\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/),
-         {:ok, app} <-
+    with {:ok, app} <-
            LenraApplicationServices.fetch_by(
              service_name: app_name,
              # This restrict to "owner" app only
