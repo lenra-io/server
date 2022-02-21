@@ -85,6 +85,8 @@ defmodule LenraWeb.UserController do
          {:ok, password_code} <- PasswordServices.check_password_code_valid(user, params["code"]),
          {:ok, _password} <- PasswordServices.update_lost_password(user, password_code, params) do
       reply(conn)
+    else
+      {:error, :email_incorrect} -> {:error, :no_such_password_code}
     end
   end
 
