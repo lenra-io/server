@@ -54,7 +54,7 @@ defmodule Lenra.EmailService do
         application_name <>
         " sur Lenra.<br />Pour y accéder, cliquez sur le lien suivant:"
     )
-    |> SendGridHelper.add_dynamic_field("link", app_link)
+    |> SendGridHelper.add_dynamic_field("code", app_link)
     |> SendGridHelper.add_dynamic_field(
       "body_help",
       "Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
