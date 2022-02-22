@@ -141,7 +141,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
 
       other_dev! =
         patch(other_dev!, update_env_path, %{
-          "is_public" => false
+          "is_public" => true
         })
 
       assert %{"success" => true, "data" => %{"envs" => [%{"is_public" => false}]}} =
