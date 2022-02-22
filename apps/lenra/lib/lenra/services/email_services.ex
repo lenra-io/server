@@ -46,7 +46,7 @@ defmodule Lenra.EmailService do
     new_email()
     |> to(email_address)
     |> from("no-reply@lenra.io")
-    |> SendGridHelper.with_template("d-bd160809d9a04b07ac6925a823f8f61c")
+    |> SendGridHelper.with_template("d-1d702d4b28b94b2da1bb713ac091f9fa")
     |> SendGridHelper.add_dynamic_field("subject", "Invitation à rejoindre une application sur Lenra")
     |> SendGridHelper.add_dynamic_field(
       "body_hello",
@@ -54,11 +54,11 @@ defmodule Lenra.EmailService do
         application_name <>
         " sur Lenra.<br />Pour y accéder, cliquez sur le lien suivant:"
     )
-    |> SendGridHelper.add_dynamic_field("code", app_link)
+    |> SendGridHelper.add_dynamic_field("link", app_link)
     |> SendGridHelper.add_dynamic_field(
       "body_help",
       "Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
     )
-    |> SendGridHelper.add_dynamic_field("goodbye", "A bientôt !<br />L'équipe Lenra")
+    |> SendGridHelper.add_dynamic_field("goodbye", "A bientôt !")
   end
 end
