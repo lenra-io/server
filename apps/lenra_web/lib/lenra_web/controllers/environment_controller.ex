@@ -31,6 +31,16 @@ defmodule LenraWeb.EnvsController do
       |> reply
     end
   end
+
+  def update(conn, %{"env_id" => env_id} = params) do
+    with {:ok, _app} <- get_app_and_allow(conn, params),
+         {:ok, env} <- EnvironmentServices.fetch(env_id),
+         {:ok, %{updated_env: env}} <- EnvironmentServices.update(env, params) do
+      conn
+      |> assign_data(:updated_env, env)
+      |> reply
+    end
+  end
 end
 
 defmodule LenraWeb.EnvsController.Policy do
@@ -39,6 +49,7 @@ defmodule LenraWeb.EnvsController.Policy do
   @impl Bouncer.Policy
   def authorize(:index, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
   def authorize(:create, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
+  def authorize(:update, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
