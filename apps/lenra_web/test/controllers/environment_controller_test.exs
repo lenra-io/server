@@ -104,6 +104,56 @@ defmodule LenraWeb.EnvironmentControllerTest do
     end
   end
 
+  describe "update" do
+    @tag auth_users: [:dev, :user, :dev, :admin]
+    test "environment controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
+      creator! = create_app(creator!)
+      assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
+
+      %{"success" => true, "data" => %{"envs" => [env]}} =
+        json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+
+      update_env_path = Routes.envs_path(creator!, :update, app["id"], env["id"])
+
+      creator! =
+        patch(creator!, update_env_path, %{
+          "is_public" => true
+        })
+
+      assert %{"success" => true, "data" => %{"envs" => [%{"is_public" => true}]}} =
+               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+
+      admin! =
+        patch(admin!, update_env_path, %{
+          "is_public" => false
+        })
+
+      assert %{"success" => true, "data" => %{"envs" => [%{"is_public" => false}]}} =
+               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+
+      user! =
+        patch(user!, update_env_path, %{
+          "is_public" => true
+        })
+
+      assert %{"success" => true, "data" => %{"envs" => [%{"is_public" => false}]}} =
+               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+
+      other_dev! =
+        patch(other_dev!, update_env_path, %{
+          "is_public" => false
+        })
+
+      assert %{"success" => true, "data" => %{"envs" => [%{"is_public" => false}]}} =
+               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+
+      assert %{"success" => true} = json_response(creator!, 200)
+      assert %{"success" => true} = json_response(admin!, 200)
+      assert %{"success" => false} = json_response(user!, 403)
+      assert %{"success" => false} = json_response(other_dev!, 403)
+    end
+  end
+
   describe "create" do
     @tag auth_users: [:dev, :user, :dev, :admin]
     test "environment controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
