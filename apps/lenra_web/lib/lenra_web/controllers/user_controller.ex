@@ -96,6 +96,7 @@ defmodule LenraWeb.UserController do
   def password_lost_code(conn, params) do
     case get_user_with_email(params["email"]) do
       {:ok, user} -> PasswordServices.send_password_code(user)
+      # Here we do not return errors to avoid brute force of error messages
       _error -> nil
     end
 
