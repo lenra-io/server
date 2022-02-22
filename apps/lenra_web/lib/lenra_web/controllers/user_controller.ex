@@ -86,6 +86,8 @@ defmodule LenraWeb.UserController do
          {:ok, _password} <- PasswordServices.update_lost_password(user, password_code, params) do
       reply(conn)
     else
+      # Here we return :no_such_password_code instead of :email_incorrect
+      # to avoid leaking whether an email address exists on Lenra
       {:error, :email_incorrect} -> {:error, :no_such_password_code}
       error -> error
     end
