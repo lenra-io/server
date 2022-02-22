@@ -85,4 +85,4 @@ config :peerage,
   node_list: [:"lenra@127.0.0.1"],
   log_results: false
 
-config :lenra, Lenra.Mailer, sandbox: true
+config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
