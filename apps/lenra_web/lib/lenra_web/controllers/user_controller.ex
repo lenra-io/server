@@ -85,12 +85,18 @@ defmodule LenraWeb.UserController do
          {:ok, password_code} <- PasswordServices.check_password_code_valid(user, params["code"]),
          {:ok, _password} <- PasswordServices.update_lost_password(user, password_code, params) do
       reply(conn)
+    else
+      # Here we return :no_such_password_code instead of :email_incorrect
+      # to avoid leaking whether an email address exists on Lenra
+      {:error, :email_incorrect} -> {:error, :no_such_password_code}
+      error -> error
     end
   end
 
   def password_lost_code(conn, params) do
     case get_user_with_email(params["email"]) do
       {:ok, user} -> PasswordServices.send_password_code(user)
+      # Here we do not return errors to avoid brute force of error messages
       _error -> nil
     end
 
