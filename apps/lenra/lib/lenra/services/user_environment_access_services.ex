@@ -6,6 +6,8 @@ defmodule Lenra.UserEnvironmentAccessServices do
   alias Lenra.{EmailWorker, EnvironmentServices, Repo, UserEnvironmentAccess, UserServices}
   require Logger
 
+  @app_url_prefix Application.compile_env!(:lenra_web, :app_url_prefix)
+
   def all(env_id) do
     Repo.all(from(e in UserEnvironmentAccess, where: e.environment_id == ^env_id))
   end
@@ -22,7 +24,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
       env = repo.preload(env, :application)
 
-      app_link = "#{Application.get_env(:lenra_web, :app_url_prefix)}/#{env.application.service_name}"
+      app_link = "#{@app_url_prefix}/#{env.application.service_name}"
 
       add_invitation_events(user, env.application.name, app_link)
     end)

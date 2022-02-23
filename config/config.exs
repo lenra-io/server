@@ -46,7 +46,7 @@ config :lenra_web, LenraWeb.Endpoint,
   pubsub_server: Lenra.PubSub
 
 config :lenra_web,
-  app_url_prefix: "https://#{System.fetch_env!("APP_HOST")}/app"
+  app_url_prefix: "https://#{System.get_env("APP_HOST", "localhost:#{System.get_env("CLIENT_PORT", "10000")}")}/app"
 
 # Configures Elixir's Logger
 config :logger, :console,
