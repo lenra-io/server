@@ -29,7 +29,7 @@ defmodule LenraWeb.AppChannel do
            LenraApplicationServices.fetch_by(service_name: app_name),
          %LenraApplication{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]),
-         :ok <- get_app_authorization(user.id, application) do
+         {:ok, :authorized} <- get_app_authorization(user.id, application) do
       %Environment{} = environment = select_env(application)
 
       Logger.debug("Environment selected is #{environment.name}")
@@ -60,6 +60,7 @@ defmodule LenraWeb.AppChannel do
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
+      {:error, :not_authorized} -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_authorization)}}
       _err -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
     end
   end
@@ -69,19 +70,17 @@ defmodule LenraWeb.AppChannel do
   end
 
   defp get_app_authorization(user_id, app) do
-    cond do
-      select_env(app).is_public ->
-        :ok
-
-      {:ok, access} =
-          UserEnvironmentAccessServices.fetch_by(
-            environment_id: select_env(app).id,
-            user_id: user_id
-          ) ->
-        :ok
+    if select_env(app).is_public do
+      {:ok, :authorized}
     end
 
-    :error
+    case UserEnvironmentAccessServices.fetch_by(
+           environment_id: select_env(app).id,
+           user_id: user_id
+         ) do
+      {:ok, _access} -> {:ok, :authorized}
+      _ -> {:error, :not_authorized}
+    end
   end
 
   defp select_env(%LenraApplication{} = app) do
