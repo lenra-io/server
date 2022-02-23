@@ -22,7 +22,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
       env = repo.preload(env, :application)
 
-      app_link = "#{Application.get_env(:lenra_web, :app_url_prefix)}#{env.application.service_name}"
+      app_link = "#{Application.get_env(:lenra_web, :app_url_prefix)}/#{env.application.service_name}"
 
       add_invitation_events(user, env.application.name, app_link)
     end)

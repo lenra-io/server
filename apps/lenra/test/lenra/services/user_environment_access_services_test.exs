@@ -63,7 +63,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
       UserEnvironmentAccessServices.create(env.id, %{"user_id" => app.creator_id})
 
       user = UserServices.get(app.creator_id)
-      app_link = "#{Application.get_env(:lenra_web, :app_url_prefix)}#{app.service_name}"
+      app_link = "#{Application.get_env(:lenra_web, :app_url_prefix)}/#{app.service_name}"
 
       email = EmailService.create_invitation_email(user.email, app.name, app_link)
 
