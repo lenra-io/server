@@ -16,6 +16,8 @@ import Config
 config :lenra,
   ecto_repos: [Lenra.Repo]
 
+config :lenra, Lenra.Repo, migration_timestamps: [type: :utc_datetime]
+
 # Configure Guardian
 config :lenra, Lenra.Guardian,
   issuer: "lenra",

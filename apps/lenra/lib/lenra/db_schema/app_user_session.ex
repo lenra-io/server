@@ -3,7 +3,7 @@ defmodule Lenra.AppUserSession do
     The app session measurements schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{

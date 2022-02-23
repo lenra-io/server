@@ -3,7 +3,7 @@ defmodule Lenra.Deployment do
     The deployment schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{

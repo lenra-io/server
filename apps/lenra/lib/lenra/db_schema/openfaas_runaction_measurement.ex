@@ -3,7 +3,7 @@ defmodule Lenra.OpenfaasRunActionMeasurement do
     The openfaas measurements schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{ActionLogs, OpenfaasRunActionMeasurement}

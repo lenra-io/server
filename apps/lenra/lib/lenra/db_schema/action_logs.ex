@@ -3,7 +3,7 @@ defmodule Lenra.ActionLogs do
     The ActionLogs schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{

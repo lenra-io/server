@@ -3,7 +3,7 @@ defmodule Lenra.SocketAppMeasurement do
     The client's applications measurements schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{AppUserSession, SocketAppMeasurement}

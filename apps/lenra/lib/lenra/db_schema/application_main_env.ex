@@ -3,7 +3,7 @@ defmodule Lenra.ApplicationMainEnv do
     The application main env schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{

@@ -3,7 +3,7 @@ defmodule Lenra.UserEnvironmentAccess do
     The user environment access schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{Environment, User}
