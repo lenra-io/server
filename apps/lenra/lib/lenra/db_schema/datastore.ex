@@ -3,7 +3,7 @@ defmodule Lenra.Datastore do
     The datastore schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{Datastore, LenraApplication, User}

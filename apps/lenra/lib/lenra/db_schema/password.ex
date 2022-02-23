@@ -2,7 +2,7 @@ defmodule Lenra.Password do
   @moduledoc """
     The password_save shema.
   """
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
   alias Lenra.User
 

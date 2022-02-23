@@ -2,7 +2,7 @@ defmodule Lenra.RegistrationCode do
   @moduledoc """
     The registration_code schema.
   """
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.User

@@ -4,7 +4,7 @@ defmodule Lenra.DevCode do
   A DevCode is a code used to validate a developper account.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{DevCode, User}

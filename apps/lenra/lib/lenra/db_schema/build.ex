@@ -3,7 +3,7 @@ defmodule Lenra.Build do
     The build schema.
   """
 
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{Build, LenraApplication, User}

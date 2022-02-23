@@ -2,7 +2,7 @@ defmodule Lenra.User do
   @moduledoc """
     The user shema.
   """
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
 
   alias Lenra.{

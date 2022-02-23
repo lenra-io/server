@@ -2,7 +2,7 @@ defmodule Lenra.PasswordCode do
   @moduledoc """
     The password_code schema.
   """
-  use Ecto.Schema
+  use Lenra.Schema
   import Ecto.Changeset
   alias Lenra.User
 
