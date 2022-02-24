@@ -60,8 +60,11 @@ defmodule LenraWeb.AppChannel do
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
-      {:error, :not_authorized} -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_authorization)}}
-      _err -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
+      {:error, :not_authorized} ->
+        {:error, %{reason: ErrorHelpers.translate_error(:no_app_authorization)}}
+
+      _err ->
+        {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
     end
   end
 

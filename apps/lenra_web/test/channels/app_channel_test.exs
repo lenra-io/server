@@ -140,6 +140,33 @@ defmodule LenraWeb.AppChannelTest do
     :timer.sleep(500)
   end
 
+  test "Join app channel with unauthorized user", %{socket: socket, user: user} do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_application,
+      LenraApplication.new(user.id, %{
+        name: "Counter",
+        color: "FFFFFF",
+        icon: "60189"
+      })
+    )
+    |> Ecto.Multi.insert(:inserted_env, fn %{inserted_application: app} ->
+      Environment.new(app.id, user.id, nil, %{name: "live", is_ephemeral: false, is_public: false})
+    end)
+    |> Ecto.Multi.insert(:application_main_env, fn %{inserted_application: app, inserted_env: env} ->
+      ApplicationMainEnv.new(app.id, env.id)
+    end)
+    |> Repo.transaction()
+
+    app = Repo.get_by(LenraApplication, name: "Counter")
+
+    {:ok, %{inserted_user: unauthorized_user}} = register_user_nb(1, :dev)
+    unauthorized_socket = socket(UserSocket, "socket_id", %{user: unauthorized_user})
+
+    assert {:error, %{reason: [%{code: 24, message: "This user is not authorized to join this app."}]}} =
+             my_subscribe_and_join(unauthorized_socket, %{"app" => app.service_name})
+  end
+
   defp my_subscribe_and_join(socket, params \\ %{}) do
     subscribe_and_join(socket, LenraWeb.AppChannel, "app", params)
   end
