@@ -79,7 +79,7 @@ defmodule LenraWeb.AppChannel do
            user_id: user_id
          ) do
       {:ok, _access} -> {:ok, :authorized}
-      _ -> {:error, :not_authorized}
+      _any -> {:error, :not_authorized}
     end
   end
 
