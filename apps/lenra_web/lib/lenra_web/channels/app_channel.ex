@@ -70,16 +70,21 @@ defmodule LenraWeb.AppChannel do
   end
 
   defp get_app_authorization(user_id, app) do
-    if select_env(app).is_public do
-      {:ok, :authorized}
-    end
+    cond do
+      user_id == app.creator_id ->
+        {:ok, :authorized}
 
-    case UserEnvironmentAccessServices.fetch_by(
-           environment_id: select_env(app).id,
-           user_id: user_id
-         ) do
-      {:ok, _access} -> {:ok, :authorized}
-      _any -> {:error, :not_authorized}
+      select_env(app).is_public ->
+        {:ok, :authorized}
+
+      true ->
+        case UserEnvironmentAccessServices.fetch_by(
+               environment_id: select_env(app).id,
+               user_id: user_id
+             ) do
+          {:ok, _access} -> {:ok, :authorized}
+          _any -> {:error, :not_authorized}
+        end
     end
   end
 
