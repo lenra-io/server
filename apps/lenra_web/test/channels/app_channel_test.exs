@@ -140,7 +140,7 @@ defmodule LenraWeb.AppChannelTest do
     :timer.sleep(500)
   end
 
-  test "Join app channel with unauthorized user", %{socket: socket, user: user} do
+  test "Join app channel with unauthorized user", %{socket: _socket, user: user} do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
       :inserted_application,
