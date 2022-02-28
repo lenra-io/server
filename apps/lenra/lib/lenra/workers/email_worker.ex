@@ -13,6 +13,10 @@ defmodule Lenra.EmailWorker do
     EventQueue.add_event(:email_password_lost, [user, code])
   end
 
+  def add_email_invitation_event(user, application_name, app_link) do
+    EventQueue.add_event(:email_invitation, [user, application_name, app_link])
+  end
+
   def email_verification(
         %User{} = user,
         code
@@ -28,6 +32,16 @@ defmodule Lenra.EmailWorker do
       ) do
     user.email
     |> EmailService.create_recovery_email(code)
+    |> Mailer.deliver_now()
+  end
+
+  def email_invitation(
+        %User{} = user,
+        application_name,
+        app_link
+      ) do
+    user.email
+    |> EmailService.create_invitation_email(application_name, app_link)
     |> Mailer.deliver_now()
   end
 end

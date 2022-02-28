@@ -40,4 +40,25 @@ defmodule Lenra.EmailService do
       "Ce code vous permet de modifier votre mot de passe.<br />Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
     )
   end
+
+  @spec create_invitation_email(String.t(), String.t(), String.t()) :: Bamboo.Email.t()
+  def create_invitation_email(email_address, application_name, app_link) do
+    new_email()
+    |> to(email_address)
+    |> from("no-reply@lenra.io")
+    |> SendGridHelper.with_template("d-1d702d4b28b94b2da1bb713ac091f9fa")
+    |> SendGridHelper.add_dynamic_field("subject", "Invitation à rejoindre une application sur Lenra")
+    |> SendGridHelper.add_dynamic_field(
+      "body_hello",
+      "Bonjour,<br />Vous avez été invité à rejoindre " <>
+        application_name <>
+        " sur Lenra.<br />Pour y accéder, cliquez sur le lien suivant:"
+    )
+    |> SendGridHelper.add_dynamic_field("link", app_link)
+    |> SendGridHelper.add_dynamic_field(
+      "body_help",
+      "Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
+    )
+    |> SendGridHelper.add_dynamic_field("goodbye", "A bientôt !")
+  end
 end

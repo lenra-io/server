@@ -45,6 +45,9 @@ config :lenra_web, LenraWeb.Endpoint,
   render_errors: [view: LenraWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Lenra.PubSub
 
+config :lenra_web,
+  app_url_prefix: "https://#{System.get_env("APP_HOST", "localhost:#{System.get_env("CLIENT_PORT", "10000")}")}/app"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

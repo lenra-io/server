@@ -2,15 +2,20 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   @moduledoc """
     Test the user environment access services
   """
-  use Lenra.RepoCase, async: true
+  use Lenra.RepoCase, async: false
+  use Bamboo.Test, shared: true
 
   alias Lenra.{
+    EmailService,
     Environment,
     LenraApplication,
     LenraApplicationServices,
     Repo,
-    UserEnvironmentAccessServices
+    UserEnvironmentAccessServices,
+    UserServices
   }
+
+  @app_url_prefix Application.compile_env!(:lenra_web, :app_url_prefix)
 
   setup do
     {:ok, create_and_return_application()}
@@ -54,6 +59,17 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
 
       assert access.environment_id == env.id
       assert access.user_id == app.creator_id
+    end
+
+    test "send email after invitation", %{app: app, env: env} do
+      UserEnvironmentAccessServices.create(env.id, %{"user_id" => app.creator_id})
+
+      user = UserServices.get(app.creator_id)
+      app_link = "#{@app_url_prefix}/#{app.service_name}"
+
+      email = EmailService.create_invitation_email(user.email, app.name, app_link)
+
+      assert_delivered_email(email)
     end
 
     test "user environment access but already exists", %{app: app, env: env} do
