@@ -53,9 +53,10 @@ if [[ "$exit_code" != "0" ]]; then
 fi
 
 # build the docker image
+## Platform argument for arm image : --platform "linux/amd64,linux/arm64,linux/arm" \
 docker buildx build \
   --output type=image,push=true \
-  --platform "linux/amd64,linux/arm64,linux/arm" \
+  --platform "linux/amd64" \
   ${tag} \
   --build-arg CI=true \
   --build-arg GH_PERSONNAL_TOKEN="${GITHUB_TOKEN}" \
