@@ -11,9 +11,8 @@ defmodule LenraWeb.AppsController do
 
   def index(conn, _params) do
     with :ok <- allow(conn),
-         apps <- LenraApplicationServices.all() do
-
-      # TODO : Pass apps into handler to clean unauthorised apps and app repository field which can be sensible
+         user <- Plug.current_resource(conn),
+         apps <- LenraApplicationServices.all(user.id) do
       conn
       |> assign_data(:apps, apps)
       |> reply
@@ -41,7 +40,7 @@ defmodule LenraWeb.AppsController do
   def get_user_apps(conn, _params) do
     with :ok <- allow(conn),
          user <- Plug.current_resource(conn),
-         apps <- LenraApplicationServices.all(user.id) do
+         apps <- LenraApplicationServices.all_for_user(user.id) do
       conn
       |> assign_data(:apps, apps)
       |> reply

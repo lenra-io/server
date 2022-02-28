@@ -8,16 +8,27 @@ defmodule Lenra.LenraApplicationServices do
     ApplicationMainEnv,
     Environment,
     LenraApplication,
-    Repo
+    Repo,
+    UserEnvironmentAccess
   }
 
   require Logger
 
-  def all do
-    Repo.all(LenraApplication)
+  def all(user_id) do
+    Repo.all(
+      from(a in LenraApplication,
+        join: m in ApplicationMainEnv,
+        on: a.id == m.application_id,
+        join: e in Environment,
+        on: m.environment_id == e.id,
+        left_join: u in UserEnvironmentAccess,
+        on: e.id == u.environment_id and ^user_id == u.user_id,
+        where: a.creator_id == ^user_id or e.is_public or u.user_id == ^user_id
+      )
+    )
   end
 
-  def all(user_id) do
+  def all_for_user(user_id) do
     Repo.all(from(a in LenraApplication, where: a.creator_id == ^user_id))
   end
 
