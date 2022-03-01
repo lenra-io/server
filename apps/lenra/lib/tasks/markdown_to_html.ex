@@ -8,11 +8,15 @@ defmodule Mix.Tasks.Transform do
     case args do
       [] ->
         IO.puts("no argument found. use mix help transform for more information")
+
       [args] ->
-        html = File.read!(args)
-        |> Earmark.as_html!()
+        html =
+          File.read!(args)
+          |> Earmark.as_html!()
+
         path = Path.rootname(args) <> ".html"
         File.write!(path, html)
+
       _ ->
         IO.puts("too much arguments. use mix help transform for more information")
     end
