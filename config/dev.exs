@@ -27,7 +27,7 @@ config :lenra_web, LenraWeb.Endpoint,
 
 config :cors_plug,
   origin: System.get_env("ALLOWED_CLIENT_ORIGINS", "http://localhost:10000") |> String.split(","),
-  methods: ["GET", "POST", "PUT", "OPTION"]
+  methods: ["GET", "POST", "PUT", "PATCH", "OPTION"]
 
 # ## SSL Support
 #
