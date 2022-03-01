@@ -1,9 +1,10 @@
 defmodule Mix.Tasks.Transform do
+  @shortdoc "Task used to transform a markdown file to a html file"
   @moduledoc "The mix transform task\n
   To use : mix transform file_name"
+
   use Mix.Task
 
-  @shortdoc "Task used to transform a markdown file to a html file"
   def run(args) do
     case args do
       [] ->
@@ -17,7 +18,7 @@ defmodule Mix.Tasks.Transform do
         path = Path.rootname(args) <> ".html"
         File.write!(path, html)
 
-      _ ->
+      _foo ->
         IO.puts("too much arguments. use mix help transform for more information")
     end
   end
