@@ -6,7 +6,6 @@ defmodule Mix.Tasks.HashTest do
   @path "/tmp/hash_test"
   describe "mix tasks" do
     test "hash/1 test generating hash with mix hash" do
-
       File.write!(@path, "test")
       hash = capture_io(fn -> Hash.run([@path, "--algo", "sha256"]) end) |> String.trim() |> String.downcase()
 
@@ -15,14 +14,12 @@ defmodule Mix.Tasks.HashTest do
     end
 
     test "hash/1 test mix hash with no argument" do
-
       hash = capture_io(fn -> Hash.run([]) end) |> String.trim() |> String.downcase()
 
       assert hash == "no argument found. use mix help hash for more information"
     end
 
     test "hash/1 test mix hash with too much arguments" do
-
       hash = capture_io(fn -> Hash.run(["test", "test"]) end) |> String.trim() |> String.downcase()
 
       assert hash == "too much arguments. use mix help hash for more information"
