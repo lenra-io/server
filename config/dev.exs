@@ -26,7 +26,7 @@ config :lenra_web, LenraWeb.Endpoint,
   watchers: []
 
 config :cors_plug,
-  origin: System.get_env("CLIENT_ALLOWED_ORIGINS", "http://localhost:10000") |> String.split(","),
+  origin: System.get_env("ALLOWED_CLIENT_ORIGINS", "http://localhost:10000") |> String.split(","),
   methods: ["GET", "POST", "PUT", "OPTION"]
 
 # ## SSL Support
