@@ -1,9 +1,9 @@
 defmodule Mix.Tasks.Transform do
-  @moduledoc "The mix transform task
-  to use : mix transform file_name"
+  @moduledoc "The mix transform task\n
+  To use : mix transform file_name"
   use Mix.Task
 
-  @shortdoc "Task use to transform a markdown file in html file"
+  @shortdoc "Task used to transform a markdown file to a html file"
   def run(args) do
     case args do
       [] ->
