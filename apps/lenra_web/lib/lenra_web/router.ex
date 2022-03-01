@@ -48,6 +48,7 @@ defmodule LenraWeb.Router do
   scope "/api", LenraWeb do
     pipe_through [:api, :ensure_auth]
     resources "/apps", AppsController, only: [:index, :create, :delete]
+    get "/apps/:app_id/main_environment", MainEnvController, only: [:index]
     resources "/apps/:app_id/environments", EnvsController, only: [:index, :create]
     patch "/apps/:app_id/environments/:env_id", EnvsController, :update
     resources "/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create]
