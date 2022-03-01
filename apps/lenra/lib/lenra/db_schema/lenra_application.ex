@@ -25,7 +25,8 @@ defmodule Lenra.LenraApplication do
     field(:color, :string)
     field(:icon, :integer)
 
-    # As long as we do not handle repository link read access, we need to redact it and remove it from the JSON response.
+    # As long as we do not handle repository link read access, we need to redact it
+    # and remove it from the JSON response.
     field(:repository, :string, redact: true)
 
     belongs_to(:creator, User)

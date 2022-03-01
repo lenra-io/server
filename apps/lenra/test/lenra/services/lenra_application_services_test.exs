@@ -1,7 +1,7 @@
 defmodule LenraWeb.LenraApplicationServicesTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{EnvironmentServices, Repo, LenraApplicationServices, UserEnvironmentAccessServices}
+  alias Lenra.{EnvironmentServices, LenraApplicationServices, Repo, UserEnvironmentAccessServices}
 
   setup do
     {:ok, create_applications_and_return_user()}
@@ -47,8 +47,8 @@ defmodule LenraWeb.LenraApplicationServicesTest do
 
     test "random user can see both apps if invited on the private one", %{user: _user, random_user: random_user} do
       {:ok, app} = LenraApplicationServices.fetch_by(name: "private-app")
-      app = Repo.preload(app, main_env: :environment)
-      UserEnvironmentAccessServices.create(app.main_env.environment.id, %{"user_id" => random_user.id})
+      app_preload = Repo.preload(app, main_env: :environment)
+      UserEnvironmentAccessServices.create(app_preload.main_env.environment.id, %{"user_id" => random_user.id})
 
       apps = LenraApplicationServices.all(random_user.id)
       assert length(apps) == 2
@@ -63,7 +63,7 @@ defmodule LenraWeb.LenraApplicationServicesTest do
 
     test "random user can only see his apps if he has any", %{user: _user, random_user: random_user} do
       apps = LenraApplicationServices.all_for_user(random_user.id)
-      assert length(apps) == 0
+      assert apps == []
     end
   end
 end
