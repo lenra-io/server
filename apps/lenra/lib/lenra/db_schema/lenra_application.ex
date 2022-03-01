@@ -18,13 +18,14 @@ defmodule Lenra.LenraApplication do
 
   @hex_regex ~r/[0-9A-Fa-f]{6}/
 
-  @derive {Jason.Encoder, only: [:id, :name, :service_name, :icon, :color, :creator_id, :repository]}
+  @derive {Jason.Encoder, only: [:id, :name, :service_name, :icon, :color, :creator_id]}
   schema "applications" do
     field(:name, :string)
     field(:service_name, Ecto.UUID)
     field(:color, :string)
     field(:icon, :integer)
-    # As long as we do not handle repository link read access, we need to redact it.
+
+    # As long as we do not handle repository link read access, we need to redact it and remove it from the JSON response.
     field(:repository, :string, redact: true)
 
     belongs_to(:creator, User)
