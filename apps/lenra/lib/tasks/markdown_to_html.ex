@@ -12,7 +12,8 @@ defmodule Mix.Tasks.Transform do
 
       [args] ->
         html =
-          File.read!(args)
+          args
+          |> File.read!()
           |> Earmark.as_html!()
 
         path = Path.rootname(args) <> ".html"
