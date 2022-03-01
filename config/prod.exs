@@ -25,4 +25,5 @@ config :lenra,
 
 # Edit to allow only wanted sources
 config :cors_plug,
-  origin: []
+  origin: System.fetch_env!("ALLOWED_CLIENT_ORIGINS") |> String.split(","),
+  methods: ["GET", "POST", "PUT", "PATCH", "OPTION"]
