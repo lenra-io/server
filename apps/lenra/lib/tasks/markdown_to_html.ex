@@ -1,14 +1,18 @@
-defmodule Mix.Tasks.Transform do
-  @shortdoc "Task used to transform a markdown file to a html file"
-  @moduledoc "The mix transform task\n
-  To use : mix transform file_name"
+defmodule Mix.Tasks.Md2html do
+  @shortdoc "Task used to md2html a markdown file to a html file"
+  @moduledoc "The mix md2html task\n
+  To use : mix md2html file_name"
 
   use Mix.Task
+
+  @head_html "<head><meta charset=\"utf-8\"><title>CGU</title></head>"
+  @before_html "<!doctype html><html>"
+  @after_html "</html>"
 
   def run(args) do
     case args do
       [] ->
-        IO.puts("no argument found. use mix help transform for more information")
+        IO.puts("no argument found. use mix help md2html for more information")
 
       [args] ->
         html =
@@ -17,10 +21,11 @@ defmodule Mix.Tasks.Transform do
           |> Earmark.as_html!()
 
         path = Path.rootname(args) <> ".html"
-        File.write!(path, html)
+        full_html = "#{@before_html} #{@head_html} <body> #{html} </body> #{@after_html}"
+        File.write!(path, full_html)
 
       _foo ->
-        IO.puts("too much arguments. use mix help transform for more information")
+        IO.puts("too much arguments. use mix help md2html for more information")
     end
   end
 end
