@@ -1,13 +1,11 @@
-defmodule Lenra.BuildServicesTest do
+defmodule Lenra.ApplicationMainEnvServicesTest do
   @moduledoc """
-    Test the build services
+    Test the application main env services
   """
   use Lenra.RepoCase, async: true
 
   alias Lenra.{
     ApplicationMainEnvServices,
-    Build,
-    BuildServices,
     GitlabStubHelper,
     LenraApplication,
     LenraApplicationServices,
