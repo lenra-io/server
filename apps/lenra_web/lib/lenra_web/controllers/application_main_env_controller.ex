@@ -17,7 +17,7 @@ defmodule LenraWeb.ApplicationMainEnvController do
   def index(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params) do
       conn
-      |> assign_data(:main_env, ApplicationMainEnvServices.fetch(app.id))
+      |> assign_data(:main_env, ApplicationMainEnvServices.get(app.id))
       |> reply
     end
   end
