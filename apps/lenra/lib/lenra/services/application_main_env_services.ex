@@ -2,11 +2,11 @@ defmodule Lenra.ApplicationMainEnvServices do
   @moduledoc """
     The service that manages the different possible actions on an application main environment.
   """
-  import Ecto.Query
-  alias Lenra.{ApplicationMainEnv, Environment, Repo, UserEnvironmentAccess}
+  alias Lenra.{ApplicationMainEnv, Environment, Repo}
   require Logger
 
-  def fetch(app_id) do
-    Repo.fetch(ApplicationMainEnv, app_id)
+  def get(app_id) do
+    main_env = Repo.get_by(ApplicationMainEnv, application_id: app_id)
+    Repo.get_by(Environment, id: main_env.environment_id)
   end
 end
