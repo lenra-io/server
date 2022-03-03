@@ -16,7 +16,8 @@ defmodule LenraWeb.AppChannel do
 
     Logger.debug("Joining channel for app : #{app_name}")
 
-    with {:ok, app} <-
+    with {:ok, _uuid} <- Ecto.UUID.cast(app_name),
+         {:ok, app} <-
            LenraApplicationServices.fetch_by(
              service_name: app_name,
              # This restrict to "owner" app only
