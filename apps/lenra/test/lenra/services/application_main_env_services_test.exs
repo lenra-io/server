@@ -32,7 +32,7 @@ defmodule Lenra.ApplicationMainEnvServicesTest do
 
   describe "get" do
     test "application main env successfully", %{app: app} do
-      main_env = ApplicationMainEnvServices.get(app.id)
+      {:ok, main_env} = ApplicationMainEnvServices.get(app.id)
       assert nil != main_env
       assert main_env.application_id == app.id
     end
