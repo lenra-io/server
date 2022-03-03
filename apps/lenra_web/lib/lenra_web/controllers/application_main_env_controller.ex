@@ -4,7 +4,7 @@ defmodule LenraWeb.ApplicationMainEnvController do
   use LenraWeb.Policy,
     module: LenraWeb.ApplicationMainEnvController.Policy
 
-  alias Lenra.{ApplicationMainEnvServices, EnvironmentServices, LenraApplicationServices}
+  alias Lenra.{ApplicationMainEnvServices, LenraApplicationServices}
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
     with {app_id, _} <- Integer.parse(app_id_str),
