@@ -129,10 +129,14 @@ defmodule LenraWeb.AppChannel do
 end
 
 defmodule LenraWeb.AppChannel.Policy do
+  @moduledoc """
+    This policy defines the rules to join an application.
+    The admin can join any app.
+  """
   @behaviour Bouncer.Policy
 
   @impl true
-  def authorize(_, %Lenra.User{role: :admin}, _), do: true
+  def authorize(_action, %Lenra.User{role: :admin}, _metadata), do: true
 
   def authorize(:join_app, user, app) do
     cond do
@@ -153,5 +157,5 @@ defmodule LenraWeb.AppChannel.Policy do
     end
   end
 
-  def authorize(_, _, _), do: false
+  def authorize(_action, _resource, _metadata), do: false
 end
