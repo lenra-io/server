@@ -3,14 +3,14 @@ defmodule LenraWeb.AppChannel do
     `LenraWeb.AppChannel` handle the app channel to run app and listeners and push to the user the resulted UI or Patch
   """
   use Phoenix.Channel
+
   alias ApplicationRunner.{SessionManager, SessionManagers}
 
   alias Lenra.{
     Environment,
     LenraApplication,
     LenraApplicationServices,
-    Repo,
-    UserEnvironmentAccessServices
+    Repo
   }
 
   alias LenraWeb.ErrorHelpers
@@ -29,7 +29,7 @@ defmodule LenraWeb.AppChannel do
            LenraApplicationServices.fetch_by(service_name: app_name),
          %LenraApplication{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]),
-         {:ok, :authorized} <- get_app_authorization(user.id, application) do
+         :ok <- Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application) do
       %Environment{} = environment = select_env(application)
 
       Logger.debug("Environment selected is #{environment.name}")
@@ -60,7 +60,7 @@ defmodule LenraWeb.AppChannel do
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
-      {:error, :not_authorized} ->
+      {:error, :forbidden} ->
         {:error, %{reason: ErrorHelpers.translate_error(:no_app_authorization)}}
 
       _err ->
@@ -70,25 +70,6 @@ defmodule LenraWeb.AppChannel do
 
   def join("app", _any, _socket) do
     {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
-  end
-
-  defp get_app_authorization(user_id, app) do
-    cond do
-      user_id == app.creator_id ->
-        {:ok, :authorized}
-
-      select_env(app).is_public ->
-        {:ok, :authorized}
-
-      true ->
-        case UserEnvironmentAccessServices.fetch_by(
-               environment_id: select_env(app).id,
-               user_id: user_id
-             ) do
-          {:ok, _access} -> {:ok, :authorized}
-          _any -> {:error, :not_authorized}
-        end
-    end
   end
 
   defp select_env(%LenraApplication{} = app) do
@@ -145,4 +126,32 @@ defmodule LenraWeb.AppChannel do
 
     {:noreply, socket}
   end
+end
+
+defmodule LenraWeb.AppChannel.Policy do
+  @behaviour Bouncer.Policy
+
+  @impl true
+  def authorize(_, %Lenra.User{role: :admin}, _), do: true
+
+  def authorize(:join_app, user, app) do
+    cond do
+      user.id == app.creator_id ->
+        true
+
+      app.main_env.environment.is_public ->
+        true
+
+      true ->
+        case Lenra.UserEnvironmentAccessServices.fetch_by(
+               environment_id: app.main_env.environment.id,
+               user_id: user.id
+             ) do
+          {:ok, _access} -> true
+          _any -> false
+        end
+    end
+  end
+
+  def authorize(_, _, _), do: false
 end
