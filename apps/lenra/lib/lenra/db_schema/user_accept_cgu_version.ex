@@ -15,8 +15,8 @@ defmodule Lenra.UserAcceptCguVersion do
            ]}
   @primary_key false
   schema "user_accept_cgu_version" do
-    belongs_to(:user, User, primary_key: true)
-    belongs_to(:cgu, Cgu, primary_key: true)
+    belongs_to(:user_id, User, primary_key: true)
+    belongs_to(:cgu_id, Cgu, primary_key: true)
 
     timestamps()
   end
