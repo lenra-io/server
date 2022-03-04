@@ -27,6 +27,6 @@ defmodule Lenra.UserAcceptCguVersion do
     |> validate_required([:user_id, :cgu_id])
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:cgu_id)
-    |> unique_constraint([:user_id, :cgu_id], name: :user_accept_cgu_verison_pkey)
+    |> unique_constraint([:user_id, :cgu_id], name: :user_accept_cgu_version_pkey)
   end
 end
