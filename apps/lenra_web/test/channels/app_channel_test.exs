@@ -164,7 +164,7 @@ defmodule LenraWeb.AppChannelTest do
     {:ok, %{inserted_user: unauthorized_user}} = register_user_nb(1, :dev)
     unauthorized_socket = socket(UserSocket, "socket_id", %{user: unauthorized_user})
 
-    assert {:error, %{reason: [%{code: 24, message: "This user is not authorized to join this app."}]}} =
+    assert {:error, %{reason: [%{code: 24, message: "You are not authorized to join this app."}]}} =
              my_subscribe_and_join(unauthorized_socket, %{"app" => app.service_name})
   end
 
