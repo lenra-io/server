@@ -16,8 +16,8 @@ defmodule Lenra.User do
     PasswordCode,
     RegistrationCode,
     User,
-    UserEnvironmentAccess,
-    UserAcceptCguVersion
+    UserAcceptCguVersion,
+    UserEnvironmentAccess
   }
 
   @email_regex ~r/[^@]+@[^\.]+\..+/
