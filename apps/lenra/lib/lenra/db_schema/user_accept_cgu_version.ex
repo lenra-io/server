@@ -6,7 +6,7 @@ defmodule Lenra.UserAcceptCguVersion do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Cgu, User}
+  alias Lenra.{Cgu, User, UserAcceptCguVersion}
 
   @derive {Jason.Encoder,
            only: [
@@ -21,12 +21,17 @@ defmodule Lenra.UserAcceptCguVersion do
     timestamps()
   end
 
-  def changeset(user, params \\ %{}) do
-    user
+  def changeset(user_accept_cgu_version, params \\ %{}) do
+    user_accept_cgu_version
     |> cast(params, [:user_id, :cgu_id])
     |> validate_required([:user_id, :cgu_id])
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:cgu_id)
     |> unique_constraint([:user_id, :cgu_id], name: :user_accept_cgu_version_pkey)
+  end
+
+  def new(params) do
+    %UserAcceptCguVersion{}
+    |> UserAcceptCguVersion.changeset(params)
   end
 end
