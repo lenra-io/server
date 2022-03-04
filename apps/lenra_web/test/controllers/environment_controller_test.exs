@@ -49,6 +49,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                  "envs" => [
                    %{
                      "is_ephemeral" => false,
+                     "is_public" => false,
                      "name" => "live",
                      "application_id" => _,
                      "creator_id" => _,
@@ -57,6 +58,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                    },
                    %{
                      "is_ephemeral" => false,
+                     "is_public" => false,
                      "name" => "test",
                      "application_id" => _,
                      "creator_id" => _,
@@ -73,6 +75,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                  "envs" => [
                    %{
                      "is_ephemeral" => false,
+                     "is_public" => false,
                      "name" => "live",
                      "application_id" => _,
                      "creator_id" => _,
@@ -81,6 +84,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                    },
                    %{
                      "is_ephemeral" => false,
+                     "is_public" => false,
                      "name" => "test",
                      "application_id" => _,
                      "creator_id" => _,
