@@ -16,7 +16,8 @@ defmodule Lenra.User do
     PasswordCode,
     RegistrationCode,
     User,
-    UserEnvironmentAccess
+    UserEnvironmentAccess,
+    UserAcceptCguVersion
   }
 
   @email_regex ~r/[^@]+@[^\.]+\..+/
@@ -43,6 +44,7 @@ defmodule Lenra.User do
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
     has_one(:dev_code, DevCode)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
+    many_to_many(:user_accept_cgu_version, User, join_through: UserAcceptCguVersion)
     timestamps()
   end
 
