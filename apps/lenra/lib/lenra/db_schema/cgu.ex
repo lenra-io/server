@@ -13,10 +13,7 @@ defmodule Lenra.Cgu do
     field(:version, :string)
     field(:hash, :string)
 
-    many_to_many(:users, User,
-      join_through: UserAcceptCguVersion
-      # join_keys: [user_accept_cgu_version: :id, cgu_id: :id]
-    )
+    many_to_many(:users, User, join_through: UserAcceptCguVersion)
 
     timestamps()
   end

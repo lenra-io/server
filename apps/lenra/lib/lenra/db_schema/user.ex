@@ -45,10 +45,7 @@ defmodule Lenra.User do
     has_one(:dev_code, DevCode)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
 
-    many_to_many(:cgu, Lenra.Cgu,
-      join_through: UserAcceptCguVersion
-      # join_keys: [cgu_id: :id, id: :id]
-    )
+    many_to_many(:cgu, Lenra.Cgu, join_through: UserAcceptCguVersion)
 
     timestamps()
   end
