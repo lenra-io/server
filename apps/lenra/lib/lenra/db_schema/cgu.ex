@@ -6,16 +6,16 @@ defmodule Lenra.Cgu do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Cgu, UserAcceptCguVersion}
+  alias Lenra.{Cgu, UserAcceptCguVersion, User}
 
   schema "cgu" do
     field(:link, :string)
     field(:version, :string)
     field(:hash, :string)
 
-    many_to_many(:user_accept_cgu_version, Cgu,
-      join_through: UserAcceptCguVersion,
-      join_keys: [user_accept_cgu_version_id: :id, cgu_id: :id]
+    many_to_many(:users, User,
+      join_through: UserAcceptCguVersion
+      # join_keys: [user_accept_cgu_version: :id, cgu_id: :id]
     )
 
     timestamps()
