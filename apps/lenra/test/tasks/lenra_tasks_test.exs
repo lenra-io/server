@@ -39,5 +39,15 @@ defmodule Mix.Tasks.HashTest do
 
       assert hash1 == "too much arguments. use mix help hash for more information"
     end
+
+    test "hash/1 test mix hash with invlaid path" do
+      hash = capture_io(fn -> Hash.run([@path]) end)
+
+      hash1 =
+        hash
+        |> String.trim()
+
+      assert hash1 == "The file does not exist or the path is invalid"
+    end
   end
 end
