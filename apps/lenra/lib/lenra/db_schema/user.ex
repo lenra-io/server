@@ -16,6 +16,7 @@ defmodule Lenra.User do
     PasswordCode,
     RegistrationCode,
     User,
+    UserAcceptCguVersion,
     UserEnvironmentAccess
   }
 
@@ -43,6 +44,9 @@ defmodule Lenra.User do
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
     has_one(:dev_code, DevCode)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
+
+    many_to_many(:cgus, Lenra.Cgu, join_through: UserAcceptCguVersion)
+
     timestamps()
   end
 
