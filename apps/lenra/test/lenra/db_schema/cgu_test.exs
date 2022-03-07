@@ -14,7 +14,7 @@ defmodule Lenra.CguTest do
       assert cgu.hash == @valid_cgu.hash
     end
 
-    test "new/2 with invalid data creates an invalid cgu" do
+    test "new/1 with invalid data creates an invalid cgu" do
       assert %{changes: _cgu, valid?: false} = Cgu.new(@invalid_cgu)
     end
 
