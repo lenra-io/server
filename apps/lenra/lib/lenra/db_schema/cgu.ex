@@ -6,7 +6,7 @@ defmodule Lenra.Cgu do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Cgu, UserAcceptCguVersion, User}
+  alias Lenra.{Cgu, User, UserAcceptCguVersion}
 
   schema "cgu" do
     field(:link, :string)
