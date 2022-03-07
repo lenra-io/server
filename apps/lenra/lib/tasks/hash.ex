@@ -16,14 +16,18 @@ defmodule Mix.Tasks.Hash do
         IO.puts("no argument found. use mix help hash for more information")
 
       [paths] ->
-        algo = Keyword.get(opts, :algo, "md5")
+        if File.exists?(paths) do
+          algo = Keyword.get(opts, :algo, "md5")
 
-        paths
-        |> File.stream!([], 2048)
-        |> Enum.reduce(:crypto.hash_init(String.to_existing_atom(algo)), &:crypto.hash_update(&2, &1))
-        |> :crypto.hash_final()
-        |> Base.encode16()
-        |> IO.puts()
+          paths
+          |> File.stream!([], 2048)
+          |> Enum.reduce(:crypto.hash_init(String.to_existing_atom(algo)), &:crypto.hash_update(&2, &1))
+          |> :crypto.hash_final()
+          |> Base.encode16()
+          |> IO.puts()
+        else
+          IO.puts("The file does not exist or the path is invalid")
+        end
 
       _foo ->
         IO.puts("too much arguments. use mix help hash for more information")
