@@ -49,5 +49,12 @@ defmodule Mix.Tasks.Md2htmlTest do
 
       assert hash1 == "too much arguments. use mix help md2html for more information"
     end
+
+    test "md2html/1 test mix md2html with an incorrect path" do
+      hash = capture_io(fn -> Md2html.run([@path1]) end)
+      hash1 = hash |> String.trim()
+
+      assert hash1 == "The file does not exist or the path is invalid"
+    end
   end
 end

@@ -15,14 +15,20 @@ defmodule Mix.Tasks.Md2html do
         IO.puts("no argument found. use mix help md2html for more information")
 
       [args] ->
-        html =
-          args
-          |> File.read!()
-          |> Earmark.as_html!()
+        case File.exists?(args) do
+          true ->
+            html =
+              args
+              |> File.read!()
+              |> Earmark.as_html!()
 
-        path = Path.rootname(args) <> ".html"
-        full_html = "#{@before_html} #{@head_html} <body> #{html} </body> #{@after_html}"
-        File.write!(path, full_html)
+            path = Path.rootname(args) <> ".html"
+            full_html = "#{@before_html} #{@head_html} <body> #{html} </body> #{@after_html}"
+            File.write!(path, full_html)
+
+          false ->
+            IO.puts("The file does not exist or the path is invalid")
+        end
 
       _foo ->
         IO.puts("too much arguments. use mix help md2html for more information")
