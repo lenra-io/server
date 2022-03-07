@@ -16,8 +16,8 @@ defmodule Mix.Tasks.Hash do
         IO.puts("no argument found. use mix help hash for more information")
 
       [paths] ->
-        cond do
-          File.exists?(paths) ->
+        case File.exists?(paths) do
+          true ->
             algo = Keyword.get(opts, :algo, "md5")
 
             paths
@@ -27,7 +27,7 @@ defmodule Mix.Tasks.Hash do
             |> Base.encode16()
             |> IO.puts()
 
-          File.exists?(paths) == false ->
+          false ->
             IO.puts("The file does not exist or the path is invalid")
         end
 
