@@ -22,8 +22,3 @@ config :lenra_web, LenraWeb.Endpoint,
 
 config :lenra,
   faas_secrets: ["gitlab-registry"]
-
-# Edit to allow only wanted sources
-config :cors_plug,
-  origin: System.fetch_env!("ALLOWED_CLIENT_ORIGINS") |> String.split(","),
-  methods: ["GET", "POST", "PUT", "PATCH", "OPTION"]

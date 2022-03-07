@@ -43,3 +43,6 @@ config :lenra, Lenra.Guardian, secret_key: System.fetch_env!("GUARDIAN_SECRET_KE
 config :sentry,
   dsn: System.fetch_env!("SENTRY_DSN"),
   environment_name: System.fetch_env!("ENVIRONMENT")
+
+config :cors_plug,
+  origin: System.fetch_env!("ALLOWED_CLIENT_ORIGINS") |> String.split(",")

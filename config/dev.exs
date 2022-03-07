@@ -22,12 +22,10 @@ config :lenra_web, LenraWeb.Endpoint,
   secret_key_base: "FuEn07fjnCLaC53BiDoBagPYdsv/S65QTfxWgusKP1BA5NiaFzXGYMHLZ6JAYxt1",
   debug_errors: false,
   code_reloader: true,
-  check_origin: false,
   watchers: []
 
 config :cors_plug,
-  origin: System.get_env("ALLOWED_CLIENT_ORIGINS", "http://localhost:10000") |> String.split(","),
-  methods: ["GET", "POST", "PUT", "PATCH", "OPTION"]
+  origin: System.get_env("ALLOWED_CLIENT_ORIGINS", "http://localhost:10000") |> String.split(",")
 
 # ## SSL Support
 #
