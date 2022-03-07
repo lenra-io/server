@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Hash do
 
   to use : mix hash file_name
 
-  properties : --algo {desired algo to hash the file}"
+  properties : --algo {desired algorithm to hash the file}"
   use Mix.Task
 
   def run(args) do
