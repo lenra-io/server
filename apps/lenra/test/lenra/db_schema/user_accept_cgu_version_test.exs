@@ -86,7 +86,14 @@ defmodule Lenra.UserAcceptCguVersionTest do
       assert {:ok, %UserAcceptCguVersion{}} =
                %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
 
-      {:ok, %Cgu{} = inserted_cgu1} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
+      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      cgu1 =
+        @valid_cgu1
+        |> Cgu.new()
+        |> Ecto.Changeset.put_change(:inserted_at, date1)
+
+      {:ok, %Cgu{} = inserted_cgu1} = cgu1 |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
                %{user_id: user.id, cgu_id: inserted_cgu1.id} |> UserAcceptCguVersion.new() |> Repo.insert()
