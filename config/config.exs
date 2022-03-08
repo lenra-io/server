@@ -43,7 +43,8 @@ config :lenra_web, LenraWeb.Endpoint,
   url: [host: "localhost"],
   http: [port: {:system, "PORT"}],
   render_errors: [view: LenraWeb.ErrorView, accepts: ~w(json), layout: false],
-  pubsub_server: Lenra.PubSub
+  pubsub_server: Lenra.PubSub,
+  check_origin: false
 
 config :lenra_web,
   app_url_prefix: "https://#{System.get_env("APP_HOST", "localhost:#{System.get_env("CLIENT_PORT", "10000")}")}/app"
