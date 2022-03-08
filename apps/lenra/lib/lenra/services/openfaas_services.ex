@@ -206,6 +206,10 @@ defmodule Lenra.OpenfaasServices do
        )
        when status_code not in [200, 202] do
     case status_code do
+      400 ->
+        Logger.error(body)
+        {:error, :bad_request}
+
       404 ->
         Logger.error(body)
         {:error, :ressource_not_found}
@@ -217,6 +221,10 @@ defmodule Lenra.OpenfaasServices do
       504 ->
         Logger.error(body)
         {:error, :timeout}
+
+      _err ->
+        Logger.error(body)
+        {:error, :unknow_error}
     end
   end
 end
