@@ -73,10 +73,10 @@ defmodule Lenra.UserAcceptCguVersionTest do
       {:ok, %Cgu{} = inserted_cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
-               UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu.id}) |> Repo.insert()
+               %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
 
       assert {:error, %Ecto.Changeset{}} =
-               UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu.id}) |> Repo.insert()
+               %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
     end
 
     test "new/1 can add 2 same cgu_id for 2 different user_id in the database" do
@@ -84,12 +84,12 @@ defmodule Lenra.UserAcceptCguVersionTest do
       {:ok, %Cgu{} = inserted_cgu} = @valid_cgu |> Cgu.new() |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
-               UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu.id}) |> Repo.insert()
+               %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
 
       {:ok, %Cgu{} = inserted_cgu1} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
-               UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu1.id}) |> Repo.insert()
+               %{user_id: user.id, cgu_id: inserted_cgu1.id} |> UserAcceptCguVersion.new() |> Repo.insert()
     end
 
     test "new/1 can add 2 same user_id for 2 different cgu_id in the database" do
@@ -98,10 +98,10 @@ defmodule Lenra.UserAcceptCguVersionTest do
       {:ok, %Cgu{} = inserted_cgu} = @valid_cgu |> Cgu.new() |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
-               UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu.id}) |> Repo.insert()
+               %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
-               UserAcceptCguVersion.new(%{user_id: user1.id, cgu_id: inserted_cgu.id}) |> Repo.insert()
+               %{user_id: user1.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
     end
   end
 end
