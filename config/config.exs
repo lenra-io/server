@@ -16,7 +16,9 @@ import Config
 config :lenra,
   ecto_repos: [Lenra.Repo]
 
-config :lenra, Lenra.Repo, migration_timestamps: [type: :utc_datetime]
+config :lenra, Lenra.Repo,
+  migration_timestamps: [type: :utc_datetime],
+  pool_size: 10
 
 # Configure Guardian
 config :lenra, Lenra.Guardian,
