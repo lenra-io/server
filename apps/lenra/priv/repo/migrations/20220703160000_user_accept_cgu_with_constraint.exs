@@ -5,12 +5,10 @@ defmodule Lenra.Repo.Migrations.UserAcceptCguWithConstraint do
     execute("CREATE OR REPLACE FUNCTION check_version_cgu()
     RETURNS TRIGGER AS $func$
       DECLARE
-        last_version varchar;
-        cgu_version varchar;
+        last_version_id bigint;
       BEGIN
-        SELECT cgu.version into last_version FROM cgu ORDER BY cgu.inserted_at ASC LIMIT 1;
-        SELECT cgu.version into cgu_version FROM cgu WHERE cgu.id = NEW.cgu_id;
-        IF last_version = cgu_version THEN
+        SELECT id into last_version_id FROM cgu ORDER BY inserted_at DESC LIMIT 1;
+        IF last_version_id = NEW.cgu_id THEN
           RETURN NEW;
         ELSE
           RAISE EXCEPTION 'Not latest CGU';
@@ -19,8 +17,8 @@ defmodule Lenra.Repo.Migrations.UserAcceptCguWithConstraint do
     $func$ LANGUAGE plpgsql;")
 
     execute("CREATE TRIGGER check_version_cgu_is_latest
-    BEFORE INSERT ON user_accept_cgu_versions
-    EXECUTE PROCEDURE check_version_cgu();")
+    BEFORE INSERT OR UPDATE ON user_accept_cgu_versions
+    FOR EACH ROW EXECUTE PROCEDURE check_version_cgu();")
   end
 
   def down do

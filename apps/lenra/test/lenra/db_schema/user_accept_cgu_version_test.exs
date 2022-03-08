@@ -26,13 +26,37 @@ defmodule Lenra.UserAcceptCguVersionTest do
 
     test "new/1 check if trigger work" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
-      cgu = Cgu.new(@valid_cgu1)
-      {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
-      cgu1 = Cgu.new(@valid_cgu2)
+
+      {:ok, %Cgu{} = _inserted_cgu} = Repo.insert(Cgu.new(@valid_cgu1))
+
+      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      cgu1 =
+        Cgu.new(@valid_cgu2)
+        |> Ecto.Changeset.put_change(:inserted_at, date1)
+
       {:ok, %Cgu{} = inserted_cgu1} = Repo.insert(cgu1)
 
-      assert %{changes: user_accept_cgu_version, valid?: true} =
+      assert {:ok, %UserAcceptCguVersion{}} =
                Repo.insert(UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu1.id}))
+    end
+
+    test "new/1 check if trigger doesn't work" do
+      {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+
+      {:ok, %Cgu{} = inserted_cgu} = Repo.insert(Cgu.new(@valid_cgu1))
+
+      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      cgu1 =
+        Cgu.new(@valid_cgu2)
+        |> Ecto.Changeset.put_change(:inserted_at, date1)
+
+      {:ok, %Cgu{} = _inserted_cgu1} = Repo.insert(cgu1)
+
+      assert_raise Postgrex.Error,
+                   "ERROR P0001 (raise_exception) Not latest CGU",
+                   fn -> Repo.insert(UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu.id})) end
     end
   end
 end
