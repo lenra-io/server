@@ -57,6 +57,7 @@ defmodule Lenra.UserAcceptCguVersionTest do
 
     test "new/1 can add 2 same user_id for 2 different cgu_id in the database" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+
       {:ok, %{inserted_user: user1}} = UserTestHelper.register_user(@user)
       {:ok, %Cgu{} = inserted_cgu} = @valid_cgu |> Cgu.new() |> Repo.insert()
 
