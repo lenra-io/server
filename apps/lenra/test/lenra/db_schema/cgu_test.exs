@@ -1,7 +1,7 @@
 defmodule Lenra.CguTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Cgu}
+  alias Lenra.Cgu
 
   @valid_cgu %{link: "Test", version: "1.0.0", hash: "test"}
   @cgu_same_hash %{link: "test", version: "1.2.0", hash: "test"}
@@ -42,7 +42,7 @@ defmodule Lenra.CguTest do
     end
 
     test "hash must be unique" do
-      Cgu.new(@valid_cgu) |> Repo.insert()
+      @valid_cgu |> Cgu.new() |> Repo.insert()
 
       assert_raise Ecto.ConstraintError,
                    "constraint error when attempting to insert struct:\n\n    * cgu_hash_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
@@ -50,7 +50,7 @@ defmodule Lenra.CguTest do
     end
 
     test "link must be unique" do
-      Cgu.new(@valid_cgu) |> Repo.insert()
+      @valid_cgu |> Cgu.new() |> Repo.insert()
 
       assert_raise Ecto.ConstraintError,
                    "constraint error when attempting to insert struct:\n\n    * cgu_link_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
@@ -58,7 +58,7 @@ defmodule Lenra.CguTest do
     end
 
     test "version must be unique" do
-      Cgu.new(@valid_cgu) |> Repo.insert()
+      @valid_cgu |> Cgu.new() |> Repo.insert()
 
       assert_raise Ecto.ConstraintError,
                    "constraint error when attempting to insert struct:\n\n    * cgu_version_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
