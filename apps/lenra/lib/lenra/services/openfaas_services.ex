@@ -190,13 +190,13 @@ defmodule Lenra.OpenfaasServices do
     {:ok, status_code}
   end
 
-  defp response({:ok, %Finch.Response{}}, :delete_app) do
-    Logger.error("Openfaas could not delete the application. It should not happen.")
+  defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
+    Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
     {:error, :openfaas_delete_error}
   end
 
-  defp response({:error, %Mint.TransportError{reason: _reason}}, _action) do
-    Logger.error("Openfaas could not be reached. It should not happen.")
+  defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
+    Logger.error("Openfaas could not be reached. It should not happen. \n\t\t reason: #{reason}")
     {:error, :openfass_not_recheable}
   end
 
