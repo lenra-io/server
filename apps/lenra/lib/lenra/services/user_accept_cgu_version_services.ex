@@ -9,7 +9,7 @@ defmodule Lenra.UserAcceptCguVersionServices do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
       :inserted_user_accept_cgu_version,
-      UserAcceptCguVersion.new(%{cgu_id: user.id, user_id: cgu.id})
+      UserAcceptCguVersion.new(%{cgu_id: cgu.id, user_id: user.id})
     )
     |> Repo.transaction()
   end
