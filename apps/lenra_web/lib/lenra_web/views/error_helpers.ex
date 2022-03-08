@@ -31,6 +31,7 @@ defmodule LenraWeb.ErrorHelpers do
     no_app_found: %{code: 21, message: "No application found for the current link."},
     environement_not_build: %{code: 22, message: "This application was not yet build."},
     widget_not_found: %{code: 23, message: "No Widget found in app manifest. This should not happen."},
+    bad_request: %{code: 400, message: "Server cannot understand or process the request due to a client-side error."},
     error_404: %{code: 404, message: "Not Found."},
     error_500: %{code: 500, message: "Internal server error."},
     openfaas_not_reachable: %{code: 1000, message: "Openfaas is not accessible"},
