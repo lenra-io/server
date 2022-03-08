@@ -27,7 +27,7 @@ defmodule LenraWeb.Endpoint do
     at: "/web",
     from: :lenra_web,
     gzip: false,
-    only: ~w(html css fonts images js favicon.ico robots.txt)
+    only: ~w(html css fonts images js favicon.ico robots.txt cgu)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
