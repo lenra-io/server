@@ -29,6 +29,7 @@ defmodule Lenra.Cgu do
     cgu
     |> cast(params, [:link, :version, :hash])
     |> validate_required([:link, :version, :hash])
+    |> unique_constraint([:link, :version, :hash])
   end
 
   def new(params) do

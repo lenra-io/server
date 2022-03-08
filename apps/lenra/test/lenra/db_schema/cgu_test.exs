@@ -4,6 +4,9 @@ defmodule Lenra.CguTest do
   alias Lenra.Cgu
 
   @valid_cgu %{link: "Test", version: "1.0.0", hash: "test"}
+  @cgu_same_hash %{link: "test", version: "1.2.0", hash: "test"}
+  @cgu_same_version %{link: "test", version: "1.0.0", hash: "Test"}
+  @cgu_same_link %{link: "Test", version: "1.2.0", hash: "Test"}
   @invalid_cgu %{link: nil, version: nil, hash: nil}
 
   describe "lenra_cgu" do
@@ -36,6 +39,30 @@ defmodule Lenra.CguTest do
       assert {:error,
               %{errors: [link: {"can't be blank", _}, version: {"can't be blank", _}, hash: {"can't be blank", _}]}} =
                Repo.insert(cgu)
+    end
+
+    test "hash must be unique" do
+      Cgu.new(@valid_cgu) |> Repo.insert()
+
+      assert_raise Ecto.ConstraintError,
+                   "constraint error when attempting to insert struct:\n\n    * cgu_hash_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
+                   fn -> @cgu_same_hash |> Cgu.new() |> Repo.insert() end
+    end
+
+    test "link must be unique" do
+      Cgu.new(@valid_cgu) |> Repo.insert()
+
+      assert_raise Ecto.ConstraintError,
+                   "constraint error when attempting to insert struct:\n\n    * cgu_link_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
+                   fn -> @cgu_same_link |> Cgu.new() |> Repo.insert() end
+    end
+
+    test "version must be unique" do
+      Cgu.new(@valid_cgu) |> Repo.insert()
+
+      assert_raise Ecto.ConstraintError,
+                   "constraint error when attempting to insert struct:\n\n    * cgu_version_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
+                   fn -> @cgu_same_version |> Cgu.new() |> Repo.insert() end
     end
   end
 end
