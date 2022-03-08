@@ -51,7 +51,7 @@ config :lenra_web,
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
+  metadata: [:request_id, :custom]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
@@ -90,7 +90,8 @@ config :logger, backends: [:console, Sentry.LoggerBackend]
 # Ask sentry to log Logger.error messages (not only stacktrace)
 config :logger, Sentry.LoggerBackend,
   level: :error,
-  capture_log_messages: true
+  capture_log_messages: true,
+  metadata: [:custom]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
