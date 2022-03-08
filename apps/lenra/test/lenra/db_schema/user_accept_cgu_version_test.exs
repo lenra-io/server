@@ -27,12 +27,13 @@ defmodule Lenra.UserAcceptCguVersionTest do
     test "new/1 check if trigger work" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-      {:ok, %Cgu{} = _inserted_cgu} = Repo.insert(Cgu.new(@valid_cgu1))
+      {:ok, %Cgu{} = _inserted_cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
 
       cgu1 =
-        Cgu.new(@valid_cgu2)
+        @valid_cgu2
+        |> Cgu.new()
         |> Ecto.Changeset.put_change(:inserted_at, date1)
 
       {:ok, %Cgu{} = inserted_cgu1} = Repo.insert(cgu1)
@@ -44,12 +45,13 @@ defmodule Lenra.UserAcceptCguVersionTest do
     test "new/1 check if trigger doesn't work" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-      {:ok, %Cgu{} = inserted_cgu} = Repo.insert(Cgu.new(@valid_cgu1))
+      {:ok, %Cgu{} = inserted_cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
 
       cgu1 =
-        Cgu.new(@valid_cgu2)
+        @valid_cgu2
+        |> Cgu.new()
         |> Ecto.Changeset.put_change(:inserted_at, date1)
 
       {:ok, %Cgu{} = _inserted_cgu1} = Repo.insert(cgu1)
