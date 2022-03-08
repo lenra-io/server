@@ -15,7 +15,7 @@ defmodule UserAcceptCguServicesTest do
     {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
 
     assert {:ok, %{inserted_user_accept_cgu_version: %UserAcceptCguVersion{}}} =
-             UserAcceptCguVersionServices.acceptCguVersion(user, inserted_cgu)
+             UserAcceptCguVersionServices.accept_cgu_version(user, inserted_cgu)
   end
 
   test "cgu_id have to be the same in the DB and before the insert" do
@@ -23,7 +23,7 @@ defmodule UserAcceptCguServicesTest do
     cgu = Cgu.new(@valid_cgu)
     {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
 
-    UserAcceptCguVersionServices.acceptCguVersion(user, inserted_cgu)
+    UserAcceptCguVersionServices.accept_cgu_version(user, inserted_cgu)
 
     query = from(u in "user_accept_cgu_versions", select: u.cgu_id)
     assert Repo.all(query) == [inserted_cgu.id]
@@ -34,7 +34,7 @@ defmodule UserAcceptCguServicesTest do
     cgu = Cgu.new(@valid_cgu)
     {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
 
-    UserAcceptCguVersionServices.acceptCguVersion(user, inserted_cgu)
+    UserAcceptCguVersionServices.accept_cgu_version(user, inserted_cgu)
 
     query = from(u in "user_accept_cgu_versions", select: u.user_id)
     assert Repo.all(query) == [user.id]
