@@ -12,6 +12,10 @@ defmodule Lenra.UserEnvironmentAccessServices do
     Repo.all(from(e in UserEnvironmentAccess, where: e.environment_id == ^env_id))
   end
 
+  def fetch_by(clauses, error \\ {:error, :error_404}) do
+    Repo.fetch_by(UserEnvironmentAccess, clauses, error)
+  end
+
   def create(env_id, %{"user_id" => user_id}) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(

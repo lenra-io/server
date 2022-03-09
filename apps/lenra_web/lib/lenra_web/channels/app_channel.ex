@@ -3,8 +3,16 @@ defmodule LenraWeb.AppChannel do
     `LenraWeb.AppChannel` handle the app channel to run app and listeners and push to the user the resulted UI or Patch
   """
   use Phoenix.Channel
+
   alias ApplicationRunner.{SessionManager, SessionManagers}
-  alias Lenra.{Environment, LenraApplication, LenraApplicationServices, Repo}
+
+  alias Lenra.{
+    Environment,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo
+  }
+
   alias LenraWeb.ErrorHelpers
 
   require Logger
@@ -18,13 +26,10 @@ defmodule LenraWeb.AppChannel do
 
     with {:ok, _uuid} <- Ecto.UUID.cast(app_name),
          {:ok, app} <-
-           LenraApplicationServices.fetch_by(
-             service_name: app_name,
-             # This restrict to "owner" app only
-             creator_id: user.id
-           ),
+           LenraApplicationServices.fetch_by(service_name: app_name),
          %LenraApplication{} = application <-
-           Repo.preload(app, main_env: [environment: [:deployed_build]]) do
+           Repo.preload(app, main_env: [environment: [:deployed_build]]),
+         :ok <- Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application) do
       %Environment{} = environment = select_env(application)
 
       Logger.debug("Environment selected is #{environment.name}")
@@ -55,7 +60,11 @@ defmodule LenraWeb.AppChannel do
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
-      _err -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
+      {:error, :forbidden} ->
+        {:error, %{reason: ErrorHelpers.translate_error(:no_app_authorization)}}
+
+      _err ->
+        {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
     end
   end
 
@@ -117,4 +126,34 @@ defmodule LenraWeb.AppChannel do
 
     {:noreply, socket}
   end
+end
+
+defmodule LenraWeb.AppChannel.Policy do
+  @moduledoc """
+    This policy defines the rules to join an application.
+    The admin can join any app.
+  """
+  @behaviour Bouncer.Policy
+
+  @impl true
+  def authorize(_action, %Lenra.User{role: :admin}, _metadata), do: true
+
+  def authorize(:join_app, %Lenra.User{id: id}, %Lenra.LenraApplication{creator_id: id}), do: true
+
+  def authorize(:join_app, _user, %Lenra.LenraApplication{
+        main_env: %Lenra.ApplicationMainEnv{environment: %Lenra.Environment{is_public: true}}
+      }),
+      do: true
+
+  def authorize(:join_app, user, app) do
+    case Lenra.UserEnvironmentAccessServices.fetch_by(
+           environment_id: app.main_env.environment.id,
+           user_id: user.id
+         ) do
+      {:ok, _access} -> true
+      _any -> false
+    end
+  end
+
+  def authorize(_action, _resource, _metadata), do: false
 end
