@@ -44,25 +44,19 @@ defmodule Lenra.CguTest do
     test "hash must be unique" do
       @valid_cgu |> Cgu.new() |> Repo.insert()
 
-      assert_raise Ecto.ConstraintError,
-                   "constraint error when attempting to insert struct:\n\n    * cgu_hash_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
-                   fn -> @cgu_same_hash |> Cgu.new() |> Repo.insert() end
+      assert {:error, %Ecto.Changeset{valid?: false}} = @cgu_same_hash |> Cgu.new() |> Repo.insert()
     end
 
     test "link must be unique" do
       @valid_cgu |> Cgu.new() |> Repo.insert()
 
-      assert_raise Ecto.ConstraintError,
-                   "constraint error when attempting to insert struct:\n\n    * cgu_link_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
-                   fn -> @cgu_same_link |> Cgu.new() |> Repo.insert() end
+      assert {:error, %Ecto.Changeset{valid?: false}} = @cgu_same_link |> Cgu.new() |> Repo.insert()
     end
 
     test "version must be unique" do
       @valid_cgu |> Cgu.new() |> Repo.insert()
 
-      assert_raise Ecto.ConstraintError,
-                   "constraint error when attempting to insert struct:\n\n    * cgu_version_index (unique_constraint)\n\nIf you would like to stop this constraint violation from raising an\nexception and instead add it as an error to your changeset, please\ncall `unique_constraint/3` on your changeset with the constraint\n`:name` as an option.\n\nThe changeset defined the following constraints:\n\n    * cgu_link_version_hash_index (unique_constraint)\n",
-                   fn -> @cgu_same_version |> Cgu.new() |> Repo.insert() end
+      assert {:error, %Ecto.Changeset{valid?: false}} = @cgu_same_version |> Cgu.new() |> Repo.insert()
     end
   end
 end
