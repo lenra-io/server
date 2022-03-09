@@ -1,7 +1,7 @@
-defmodule Lenra.CguTest do
+defmodule Lenra.CguSerciceTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Cgu, ServiceGetLatestCgu}
+  alias Lenra.{Cgu, CguService}
 
   @valid_cgu1 %{link: "Test", version: "1.0.0", hash: "test"}
   @valid_cgu2 %{link: "Test1", version: "1.1.0", hash: "Test1"}
@@ -20,7 +20,7 @@ defmodule Lenra.CguTest do
         |> Ecto.Changeset.put_change(:inserted_at, date1)
         |> Repo.insert()
 
-      assert inserted_cgu1 == ServiceGetLatestCgu.get_latest_cgu()
+      assert inserted_cgu1 == CguService.get_latest_cgu()
     end
 
     test "insert 4 cgu and check if the service take the latest" do
@@ -50,7 +50,7 @@ defmodule Lenra.CguTest do
         |> Ecto.Changeset.put_change(:inserted_at, date3)
         |> Repo.insert()
 
-      assert inserted_cgu3 == ServiceGetLatestCgu.get_latest_cgu()
+      assert inserted_cgu3 == CguService.get_latest_cgu()
     end
   end
 end
