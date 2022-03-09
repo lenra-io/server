@@ -5,6 +5,6 @@ defmodule Lenra.ServiceGetLatestCgu do
   alias Lenra.{Cgu, Repo}
 
   def get_latest_cgu do
-    Repo.get_by(Cgu)
+    Cgu |> Ecto.Query.last(:inserted_at) |> Repo.one()
   end
 end
