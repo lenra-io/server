@@ -1,4 +1,4 @@
-defmodule Lenra.ServiceGetLatestCgu do
+defmodule Lenra.CguService do
   @moduledoc """
     The service that get the latest CGU.
   """

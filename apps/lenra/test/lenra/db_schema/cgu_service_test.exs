@@ -1,4 +1,4 @@
-defmodule Lenra.UserAcceptCguVersionTest do
+defmodule Lenra.CguServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.{Cgu, UserAcceptCguVersion}
