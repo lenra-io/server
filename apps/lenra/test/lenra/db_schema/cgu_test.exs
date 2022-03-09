@@ -44,19 +44,22 @@ defmodule Lenra.CguTest do
     test "hash must be unique" do
       @valid_cgu |> Cgu.new() |> Repo.insert()
 
-      assert {:error, %Ecto.Changeset{valid?: false}} = @cgu_same_hash |> Cgu.new() |> Repo.insert()
+      assert {:error, %Ecto.Changeset{errors: [hash: {"has already been taken", _}]}} =
+               @cgu_same_hash |> Cgu.new() |> Repo.insert()
     end
 
     test "link must be unique" do
       @valid_cgu |> Cgu.new() |> Repo.insert()
 
-      assert {:error, %Ecto.Changeset{valid?: false}} = @cgu_same_link |> Cgu.new() |> Repo.insert()
+      assert {:error, %Ecto.Changeset{errors: [link: {"has already been taken", _}]}} =
+               @cgu_same_link |> Cgu.new() |> Repo.insert()
     end
 
     test "version must be unique" do
       @valid_cgu |> Cgu.new() |> Repo.insert()
 
-      assert {:error, %Ecto.Changeset{valid?: false}} = @cgu_same_version |> Cgu.new() |> Repo.insert()
+      assert {:error, %Ecto.Changeset{errors: [version: {"has already been taken", _}]}} =
+               @cgu_same_version |> Cgu.new() |> Repo.insert()
     end
   end
 end
