@@ -138,22 +138,20 @@ defmodule LenraWeb.AppChannel.Policy do
   @impl true
   def authorize(_action, %Lenra.User{role: :admin}, _metadata), do: true
 
+  def authorize(:join_app, %Lenra.User{id: id}, %Lenra.LenraApplication{creator_id: id}), do: true
+
+  def authorize(:join_app, _user, %Lenra.LenraApplication{
+        main_env: %Lenra.ApplicationMainEnv{environment: %Lenra.Environment{is_public: true}}
+      }),
+      do: true
+
   def authorize(:join_app, user, app) do
-    cond do
-      user.id == app.creator_id ->
-        true
-
-      app.main_env.environment.is_public ->
-        true
-
-      true ->
-        case Lenra.UserEnvironmentAccessServices.fetch_by(
-               environment_id: app.main_env.environment.id,
-               user_id: user.id
-             ) do
-          {:ok, _access} -> true
-          _any -> false
-        end
+    case Lenra.UserEnvironmentAccessServices.fetch_by(
+           environment_id: app.main_env.environment.id,
+           user_id: user.id
+         ) do
+      {:ok, _access} -> true
+      _any -> false
     end
   end
 
