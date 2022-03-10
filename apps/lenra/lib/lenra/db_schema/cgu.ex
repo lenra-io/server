@@ -9,11 +9,11 @@ defmodule Lenra.Cgu do
   alias Lenra.{Cgu, User, UserAcceptCguVersion}
 
   @derive {Jason.Encoder,
-  only: [
-    :link,
-    :version,
-    :hash,
-  ]}
+           only: [
+             :link,
+             :version,
+             :hash
+           ]}
 
   schema "cgu" do
     field(:link, :string)
