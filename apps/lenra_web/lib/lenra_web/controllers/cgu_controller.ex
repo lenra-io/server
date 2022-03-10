@@ -6,11 +6,11 @@ defmodule LenraWeb.CguController do
 
   alias Lenra.CguService
 
-  def get_latest_cgu(conn) do
-    with {:ok, %{latest_cgu: cgu}} <- CguService.get_latest_cgu() do
-      conn
-      |> assign_data(:latest_cgu, cgu)
-      |> reply
-    end
+  def get_latest_cgu(conn, _params) do
+    cgu = CguService.get_latest_cgu()
+
+    conn
+    |> assign_data(:latest_cgu, cgu)
+    |> reply
   end
 end
