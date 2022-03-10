@@ -27,6 +27,11 @@ defmodule LenraWeb.Router do
     plug RefreshPipeline
   end
 
+  scope "/cgu", LenraWeb do
+    pipe_through [:api]
+    get "/get_latest_cgu", CguController, :get_latest_cgu
+  end
+
   scope "/auth", LenraWeb do
     pipe_through :api
     post "/register", UserController, :register
