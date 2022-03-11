@@ -1,11 +1,11 @@
 defmodule Lenra.UserAcceptCguVersionServices do
   @moduledoc """
-    The cgu service.
+    The user accept cgu version service.
   """
 
   alias Lenra.{Cgu, Repo, User, UserAcceptCguVersion}
 
-  def accept_cgu_version(%User{} = user, %Cgu{} = cgu) do
+  def create(%User{} = user, %Cgu{} = cgu) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
       :inserted_user_accept_cgu_version,
