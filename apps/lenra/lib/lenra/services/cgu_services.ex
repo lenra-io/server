@@ -5,6 +5,11 @@ defmodule Lenra.CguService do
   alias Lenra.{Cgu, Repo}
 
   def get_latest_cgu do
-    Cgu |> Ecto.Query.last(:inserted_at) |> Repo.one()
+    cgu = Cgu |> Ecto.Query.last(:inserted_at) |> Repo.one()
+
+    case cgu do
+      nil -> {:error, :error_404}
+      cgu -> {:ok, cgu}
+    end
   end
 end

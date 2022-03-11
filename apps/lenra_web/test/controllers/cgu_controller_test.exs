@@ -61,5 +61,14 @@ defmodule LenraWeb.CguControllerTest do
                "success" => true
              }
     end
+
+    test "there no cgu in database", %{conn: conn} do
+      conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
+
+      assert json_response(conn, 404) == %{
+               "errors" => [%{"code" => 404, "message" => "Not Found."}],
+               "success" => false
+             }
+    end
   end
 end
