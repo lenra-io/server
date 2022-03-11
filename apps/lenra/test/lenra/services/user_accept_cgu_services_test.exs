@@ -1,4 +1,4 @@
-defmodule UserAcceptCguServicesTest do
+defmodule Lenra.UserAcceptCguServicesTest do
   use Lenra.RepoCase, async: false
 
   alias Lenra.{
@@ -7,11 +7,11 @@ defmodule UserAcceptCguServicesTest do
     UserAcceptCguVersionServices
   }
 
-  @valid_cgu %{link: "Test", version: "1.0.0", hash: "test"}
+  @valid_cgu1 %{link: "Test", version: "1.0.0", hash: "test"}
 
   test "acceptCguVersion should succeed" do
     {:ok, %{inserted_user: user}} = register_john_doe()
-    cgu = Cgu.new(@valid_cgu)
+    cgu = Cgu.new(@valid_cgu1)
     {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
 
     assert {:ok, %{inserted_user_accept_cgu_version: %UserAcceptCguVersion{}}} =
@@ -20,7 +20,7 @@ defmodule UserAcceptCguServicesTest do
 
   test "cgu_id have to be the same in the DB and before the insert" do
     {:ok, %{inserted_user: user}} = register_john_doe()
-    cgu = Cgu.new(@valid_cgu)
+    cgu = Cgu.new(@valid_cgu1)
     {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
 
     UserAcceptCguVersionServices.create(user, inserted_cgu)
@@ -31,7 +31,7 @@ defmodule UserAcceptCguServicesTest do
 
   test "user_id have to be the same in the DB and before the insert" do
     {:ok, %{inserted_user: user}} = register_john_doe()
-    cgu = Cgu.new(@valid_cgu)
+    cgu = Cgu.new(@valid_cgu1)
     {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
 
     UserAcceptCguVersionServices.create(user, inserted_cgu)

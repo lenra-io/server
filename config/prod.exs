@@ -2,7 +2,7 @@
 # There is NO important data here, all secret/passwords and dynamic config are stored in releases.exs
 
 import Config
-
+config :lenra, Lenra.Repo, pool_size: 10
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.

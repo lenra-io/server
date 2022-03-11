@@ -6,8 +6,8 @@ defmodule Lenra.UserAcceptCguVersionTest do
   @valid_cgu1 %{link: "Test", version: "1.0.0", hash: "test"}
   @valid_cgu2 %{link: "/tmp/aeg", version: "2.0.0", hash: "Test"}
 
-  describe "lenra_user_accept_cgu_version" do
-    test "new/1 with valid data creates a user_accept_cgu_version" do
+  describe "new/1" do
+    test "with valid data creates a user_accept_cgu_version" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
       cgu = Cgu.new(@valid_cgu1)
       {:ok, %Cgu{} = inserted_cgu} = Repo.insert(cgu)
@@ -24,7 +24,7 @@ defmodule Lenra.UserAcceptCguVersionTest do
                UserAcceptCguVersion.new(%{user_id: nil, cgu_id: nil})
     end
 
-    test "new/1 check if trigger work" do
+    test "trigger should not fail if latest cgu is accepted" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
       {:ok, %Cgu{} = _inserted_cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
@@ -42,7 +42,7 @@ defmodule Lenra.UserAcceptCguVersionTest do
                Repo.insert(UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: inserted_cgu1.id}))
     end
 
-    test "new/1 check if trigger doesn't work" do
+    test "trigger should fail if accepted cgu is not the latest" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
       {:ok, %Cgu{} = inserted_cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()

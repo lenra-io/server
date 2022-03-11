@@ -24,6 +24,6 @@ defmodule Lenra.Repo.Migrations.UserAcceptCguWithConstraint do
   def down do
     execute("DROP FUNCTION IF EXISTS check_version_cgu() CASCADE;")
 
-    execute("DROP TRIGGER IF EXISTS check_version_cgu_is_latest ON user_accept_cgui_versions;")
+    execute("DROP TRIGGER IF EXISTS check_version_cgu_is_latest ON user_accept_cgu_versions;")
   end
 end
