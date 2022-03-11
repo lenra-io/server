@@ -1,4 +1,4 @@
-defmodule LenraServers.PasswordServicesTest do
+defmodule Lenra.PasswordServicesTest do
   @moduledoc """
     Test the Password services
   """

@@ -1,7 +1,7 @@
 defmodule Lenra.CguTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Cgu, UserAcceptCguVersion}
+  alias Lenra.Cgu
 
   @valid_cgu %{link: "Test", version: "1.0.0", hash: "test"}
   @invalid_cgu %{link: nil, version: nil, hash: nil}

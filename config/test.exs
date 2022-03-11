@@ -5,8 +5,8 @@ config :lenra_web, LenraWeb.Endpoint,
   http: [port: 4002],
   server: false
 
-# Print only warnings and errors during test
-config :logger, level: :warn
+# Hide logs during test
+config :logger, level: :none
 
 # Used to "mock" with Bypass
 config :lenra,
@@ -26,6 +26,7 @@ config :lenra, Lenra.Repo,
   password: "postgres",
   database: "lenra_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: System.get_env("POSTGRES_HOST", "localhost"),
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  queue_target: 500
 
 config :lenra, Lenra.Mailer, adapter: Bamboo.TestAdapter
