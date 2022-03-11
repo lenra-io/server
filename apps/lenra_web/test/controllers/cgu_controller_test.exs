@@ -11,7 +11,7 @@ defmodule LenraWeb.CguControllerTest do
   @valid_cgu3 %{link: "Test2", version: "1.2.0", hash: "Test2"}
   @valid_cgu4 %{link: "Test3", version: "1.3.0", hash: "Test3"}
 
-  describe "Cgu" do
+  describe "get_latest_cgu" do
     test "test get latest cgu with 2 cgu in DB", %{conn: conn} do
       @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
