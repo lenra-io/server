@@ -30,7 +30,7 @@ defmodule LenraWeb.CguControllerTest do
              }
     end
 
-    test "test get latest cgu with 4 cgu in DB", %{conn: conn} do
+    test "test get_latest_cgu with 4 cgu in DB", %{conn: conn} do
       @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
