@@ -34,7 +34,7 @@ defmodule UserTestHelper do
   end
 
   def register_user_nb(idx, role) do
-    %{hash: params, link: "test", version: "1.0.0"}
+    %{hash: param_user(idx)["cgu_hash"], link: "test", version: "1.0.0"}
     |> Lenra.Cgu.new()
     |> Lenra.Repo.insert()
 

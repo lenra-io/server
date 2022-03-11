@@ -35,7 +35,7 @@ defmodule Lenra.UserServices do
       end
     )
     |> Ecto.Multi.insert(
-      :accept_cgu,
+      :inserted_accept_cgu,
       fn %{inserted_user: %User{} = user} ->
         cgu = Lenra.Repo.get_by(Cgu, hash: params["cgu_hash"])
         UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: cgu.id})

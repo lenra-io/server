@@ -4,7 +4,9 @@ defmodule LenraWeb.LenraApplicationServicesTest do
   alias Lenra.{EnvironmentServices, LenraApplicationServices, Repo, UserEnvironmentAccessServices}
 
   setup do
-    {:ok, create_applications_and_return_user()}
+    create_applications_and_return_user()
+    %{hash: "Test", link: "test", version: "1.0.0"} |> Lenra.Cgu.new() |> Repo.insert()
+    :ok
   end
 
   defp create_applications_and_return_user do
