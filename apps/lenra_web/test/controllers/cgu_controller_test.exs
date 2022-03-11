@@ -12,7 +12,7 @@ defmodule LenraWeb.CguControllerTest do
   @valid_cgu4 %{link: "Test3", version: "1.3.0", hash: "Test3"}
 
   describe "get_latest_cgu" do
-    test "test get latest cgu with 2 cgu in DB", %{conn: conn} do
+    test "test get_latest_cgu with 2 cgu in DB", %{conn: conn} do
       @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
