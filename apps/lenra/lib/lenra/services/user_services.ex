@@ -11,7 +11,7 @@ defmodule Lenra.UserServices do
     RegistrationCodeServices,
     Repo,
     User,
-    UserAcceptCguVersion
+    UserAcceptCguVersionServices
   }
 
   @doc """
@@ -33,14 +33,14 @@ defmodule Lenra.UserServices do
         RegistrationCodeServices.registration_code_changeset(user)
       end
     )
-    # |> Ecto.Multi.insert(
-    #   :accept_cgu,
-    #   fn %{:inserted_user %User{} = user} ->
-    #     %{cgu_hash: hash} = params
-    #     cgu = Lenra.Repo.get(Cgu, hash)
-    #     Lenra.UserAcceptCguVersionServices.create(user, cgu)
-    #   end
-    # )
+    |> Ecto.Multi.insert(
+      :accept_cgu,
+      fn %{inserted_user: %User{} = user} ->
+        %{cgu_hash: hash} = params
+        cgu = Lenra.Repo.get_by(Cgu, hash: hash)
+        Lenra.UserAcceptCguVersionServices.create(user, cgu)
+      end
+    )
     |> Ecto.Multi.run(:add_event, &add_registration_events/2)
     |> Repo.transaction()
   end

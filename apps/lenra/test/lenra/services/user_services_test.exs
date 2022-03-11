@@ -11,6 +11,11 @@ defmodule UserServicesTest do
     UserServices
   }
 
+  setup do
+    %{hash: "Test", link: "test", version: "1.0.0"} |> Lenra.Cgu.new() |> Lenra.Repo.insert()
+    :ok
+  end
+
   test "register user should succeed" do
     {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
 
