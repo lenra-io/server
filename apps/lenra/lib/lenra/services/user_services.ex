@@ -5,13 +5,14 @@ defmodule Lenra.UserServices do
   import Ecto.Query, only: [from: 2]
 
   alias Lenra.{
+    Cgu,
     DevCode,
     EmailWorker,
     Password,
     RegistrationCodeServices,
     Repo,
     User,
-    UserAcceptCguVersionServices
+    UserAcceptCguVersion
   }
 
   @doc """
@@ -36,9 +37,8 @@ defmodule Lenra.UserServices do
     |> Ecto.Multi.insert(
       :accept_cgu,
       fn %{inserted_user: %User{} = user} ->
-        %{cgu_hash: hash} = params
-        cgu = Lenra.Repo.get_by(Cgu, hash: hash)
-        Lenra.UserAcceptCguVersionServices.create(user, cgu)
+        cgu = Lenra.Repo.get_by(Cgu, hash: params["cgu_hash"])
+        UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: cgu.id})
       end
     )
     |> Ecto.Multi.run(:add_event, &add_registration_events/2)

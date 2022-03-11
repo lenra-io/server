@@ -11,11 +11,6 @@ defmodule UserServicesTest do
     UserServices
   }
 
-  setup do
-    %{hash: "Test", link: "test", version: "1.0.0"} |> Lenra.Cgu.new() |> Lenra.Repo.insert()
-    :ok
-  end
-
   test "register user should succeed" do
     {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
 
@@ -138,7 +133,7 @@ defmodule UserServicesTest do
 
   test "validate dev with already used code" do
     {:ok, %{inserted_user: user}} = register_john_doe()
-    {:ok, %{inserted_user: user2}} = register_john_doe(%{"email" => "johndoed2@lenra.fr"})
+    {:ok, %{inserted_user: user2}} = register_john_doe(%{"email" => "johndoed2@lenra.fr", "cgu_hash" => "Test2"})
 
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 

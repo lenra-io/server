@@ -12,8 +12,14 @@ defmodule LenraWeb.UserControllerTest do
     "last_name" => "Doe",
     "email" => "john.doe@lenra.fr",
     "password" => "Johndoe@thefirst",
-    "password_confirmation" => "Johndoe@thefirst"
+    "password_confirmation" => "Johndoe@thefirst",
+    "cgu_hash" => "Test"
   }
+
+  setup do
+    %{hash: "Test", link: "test", version: "1.0.0"} |> Lenra.Cgu.new() |> Repo.insert()
+    :ok
+  end
 
   test "register test", %{conn: conn} do
     conn = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))

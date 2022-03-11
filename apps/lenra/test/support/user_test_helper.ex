@@ -10,7 +10,8 @@ defmodule UserTestHelper do
     "last_name" => "Doe",
     "email" => "john.doe@lenra.fr",
     "password" => "Johndoe@thefirst",
-    "password_confirmation" => "Johndoe@thefirst"
+    "password_confirmation" => "Johndoe@thefirst",
+    "cgu_hash" => "Test"
   }
 
   def param_user(idx) do
@@ -19,15 +20,24 @@ defmodule UserTestHelper do
       "last_name" => "Doe #{idx}",
       "email" => "john.doe#{idx}@lenra.fr",
       "password" => "Johndoe@thefirst",
-      "password_confirmation" => "Johndoe@thefirst"
+      "password_confirmation" => "Johndoe@thefirst",
+      "cgu_hash" => "Test#{idx}"
     }
   end
 
   def register_user(params) do
+    %{hash: params["cgu_hash"], link: "test", version: "1.0.0"}
+    |> Lenra.Cgu.new()
+    |> Lenra.Repo.insert()
+
     UserServices.register(params, params["role"])
   end
 
   def register_user_nb(idx, role) do
+    %{hash: params, link: "test", version: "1.0.0"}
+    |> Lenra.Cgu.new()
+    |> Lenra.Repo.insert()
+
     UserServices.register(param_user(idx), role)
   end
 
