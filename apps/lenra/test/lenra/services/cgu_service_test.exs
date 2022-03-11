@@ -20,7 +20,7 @@ defmodule Lenra.CguSerciceTest do
         |> Ecto.Changeset.put_change(:inserted_at, date1)
         |> Repo.insert()
 
-      assert inserted_cgu1 == CguService.get_latest_cgu()
+      assert {:ok, inserted_cgu1} == CguService.get_latest_cgu()
     end
 
     test "insert 4 cgu and check if the service take the latest" do
@@ -50,7 +50,7 @@ defmodule Lenra.CguSerciceTest do
         |> Ecto.Changeset.put_change(:inserted_at, date3)
         |> Repo.insert()
 
-      assert inserted_cgu3 == CguService.get_latest_cgu()
+      assert {:ok, inserted_cgu3} == CguService.get_latest_cgu()
     end
   end
 end
