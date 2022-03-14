@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 15
     needs: 
       - prIsWip
-    if: ${{ needs.prIsWip.outputs.isWip }}
+    if: ${{ ! needs.prIsWip.outputs.isWip }}
     steps:
       - uses: webfactory/ssh-agent@v0.5.3
         with:
