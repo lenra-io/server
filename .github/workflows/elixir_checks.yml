@@ -2,6 +2,16 @@ name: Elixir CI
 on: push
 
 jobs:
+  prIsWip:
+    name: PR is WIP?
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - id: pr-is-wip
+        uses: shiipou/pr-is-wip-action@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
   checks:
     services:
       postgres:
@@ -22,6 +32,9 @@ jobs:
     name: Checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs: 
+      - prIsWip
+    if: ${{ needs.prIsWip.outputs.isWip }}
     steps:
       - uses: webfactory/ssh-agent@v0.5.3
         with:
