@@ -75,7 +75,7 @@ defmodule Lenra.UserAcceptCguVersionTest do
       assert {:ok, %UserAcceptCguVersion{}} =
                %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
 
-      assert {:error, %Ecto.Changeset{}} =
+      assert {:error, %{errors: [user_id: {"has already been taken", _}]}} =
                %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
     end
 
