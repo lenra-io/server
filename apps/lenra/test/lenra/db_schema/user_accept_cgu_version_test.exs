@@ -81,7 +81,7 @@ defmodule Lenra.UserAcceptCguVersionTest do
 
     test "new/1 can add 2 same cgu_id for 2 different user_id in the database" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
-      {:ok, %Cgu{} = inserted_cgu} = @valid_cgu |> Cgu.new() |> Repo.insert()
+      {:ok, %Cgu{} = inserted_cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
                %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
@@ -89,7 +89,7 @@ defmodule Lenra.UserAcceptCguVersionTest do
       date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
 
       cgu1 =
-        @valid_cgu1
+        @valid_cgu2
         |> Cgu.new()
         |> Ecto.Changeset.put_change(:inserted_at, date1)
 
@@ -102,7 +102,7 @@ defmodule Lenra.UserAcceptCguVersionTest do
     test "new/1 can add 2 same user_id for 2 different cgu_id in the database" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
       {:ok, %{inserted_user: user1}} = UserTestHelper.register_user(@user)
-      {:ok, %Cgu{} = inserted_cgu} = @valid_cgu |> Cgu.new() |> Repo.insert()
+      {:ok, %Cgu{} = inserted_cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
       assert {:ok, %UserAcceptCguVersion{}} =
                %{user_id: user.id, cgu_id: inserted_cgu.id} |> UserAcceptCguVersion.new() |> Repo.insert()
