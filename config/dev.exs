@@ -81,3 +81,7 @@ config :peerage,
   log_results: false
 
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
+
+config :cors_plug,
+  origin: System.get_env("ALLOWED_CLIENT_ORIGINS", "http://localhost:10000") |> String.split(","),
+  methods: ["GET", "POST", "PUT", "PATCH", "OPTION"]
