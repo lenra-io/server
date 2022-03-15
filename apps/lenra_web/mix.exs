@@ -42,6 +42,7 @@ defmodule LenraWeb.MixProject do
       {:sentry, "~> 8.0"},
       {:peerage, "~> 1.0"},
       {:lenra, in_umbrella: true},
+      {:cors_plug, "~> 3.0", only: :dev, runtime: false},
       {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},
       private_git(
         name: :application_runner,
