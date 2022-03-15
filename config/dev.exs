@@ -24,15 +24,6 @@ config :lenra_web, LenraWeb.Endpoint,
   code_reloader: true,
   watchers: []
 
-config :libcluster,
-  topologies: [
-    lenra: [
-      # The selected clustering strategy. Required.
-      strategy: Cluster.Strategy.Epmd,
-      config: [hosts: [:"lenra@127.0.0.1"]]
-    ]
-  ]
-
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
