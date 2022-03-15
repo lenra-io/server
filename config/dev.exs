@@ -29,7 +29,7 @@ config :libcluster,
     lenra: [
       # The selected clustering strategy. Required.
       strategy: Cluster.Strategy.Epmd,
-      config: [hosts: [:"lenra@127.0.0.1"]],
+      config: [hosts: [:"lenra@127.0.0.1"]]
     ]
   ]
 

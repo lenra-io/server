@@ -7,7 +7,6 @@ defmodule LenraWeb.Application do
   require Logger
 
   def start(_type, _args) do
-
     children = [
       # Start the Telemetry supervisor
       LenraWeb.Telemetry,
