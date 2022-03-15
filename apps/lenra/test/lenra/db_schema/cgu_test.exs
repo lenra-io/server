@@ -4,6 +4,9 @@ defmodule Lenra.CguTest do
   alias Lenra.Cgu
 
   @valid_cgu %{link: "Test", version: "1.0.0", hash: "test"}
+  @cgu_same_hash %{link: "test", version: "1.2.0", hash: "test"}
+  @cgu_same_version %{link: "test", version: "1.0.0", hash: "Test"}
+  @cgu_same_link %{link: "Test", version: "1.2.0", hash: "Test"}
   @invalid_cgu %{link: nil, version: nil, hash: nil}
 
   describe "lenra_cgu" do
@@ -36,6 +39,27 @@ defmodule Lenra.CguTest do
       assert {:error,
               %{errors: [link: {"can't be blank", _}, version: {"can't be blank", _}, hash: {"can't be blank", _}]}} =
                Repo.insert(cgu)
+    end
+
+    test "hash must be unique" do
+      @valid_cgu |> Cgu.new() |> Repo.insert()
+
+      assert {:error, %Ecto.Changeset{errors: [hash: {"has already been taken", _}]}} =
+               @cgu_same_hash |> Cgu.new() |> Repo.insert()
+    end
+
+    test "link must be unique" do
+      @valid_cgu |> Cgu.new() |> Repo.insert()
+
+      assert {:error, %Ecto.Changeset{errors: [link: {"has already been taken", _}]}} =
+               @cgu_same_link |> Cgu.new() |> Repo.insert()
+    end
+
+    test "version must be unique" do
+      @valid_cgu |> Cgu.new() |> Repo.insert()
+
+      assert {:error, %Ecto.Changeset{errors: [version: {"has already been taken", _}]}} =
+               @cgu_same_version |> Cgu.new() |> Repo.insert()
     end
   end
 end
