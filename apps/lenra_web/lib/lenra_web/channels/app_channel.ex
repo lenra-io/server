@@ -96,15 +96,31 @@ defmodule LenraWeb.AppChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:send, :error, reason}, socket) do
-    Logger.debug("send error  #{inspect(%{error: reason})}")
+  def handle_info({:send, :error, {:error, reason}}, socket) when is_atom(reason) do
+    Logger.error("Send error #{inspect(reason)}")
 
-    case is_atom(reason) do
-      true -> push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
-      # Application error
-      false -> push(socket, "error", %{"errors" => [%{code: -1, message: reason}]})
-    end
+    push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
+    {:noreply, socket}
+  end
 
+  def handle_info({:send, :error, {:error, :invalid_ui, errors}}, socket) when is_list(errors) do
+    formatted_errors =
+      errors
+      |> Enum.map(fn {message, path} -> %{code: 0, message: "#{message} at path #{path}"} end)
+
+    push(socket, "error", %{"errors" => formatted_errors})
+    {:noreply, socket}
+  end
+
+  def handle_info({:send, :error, reason}, socket) when is_atom(reason) do
+    Logger.error("Send error atom #{inspect(reason)}")
+    push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
+    {:noreply, socket}
+  end
+
+  def handle_info({:send, :error, malformated_error}, socket) do
+    Logger.error("Malformatted error #{inspect(malformated_error)}")
+    push(socket, "error", %{"errors" => ErrorHelpers.translate_error(:unknow_error)})
     {:noreply, socket}
   end
 
