@@ -4,6 +4,7 @@ on: push
 jobs:
   prIsWip:
     name: PR is WIP?
+    if: ${{ github.head_ref != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
