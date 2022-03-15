@@ -22,7 +22,7 @@ defmodule LenraWeb.MixProject do
   def application do
     [
       mod: {LenraWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools, :peerage]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
@@ -40,7 +40,7 @@ defmodule LenraWeb.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:phoenix_ecto, "~> 4.1"},
       {:sentry, "~> 8.0"},
-      {:peerage, "~> 1.0"},
+      {:libcluster, "~> 3.3"},
       {:lenra, in_umbrella: true},
       {:cors_plug, "~> 3.0", only: :dev, runtime: false},
       {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},

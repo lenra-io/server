@@ -7,11 +7,13 @@ defmodule LenraWeb.Application do
   require Logger
 
   def start(_type, _args) do
+
     children = [
       # Start the Telemetry supervisor
       LenraWeb.Telemetry,
       # Start the Endpoint (http/https)
-      LenraWeb.Endpoint
+      LenraWeb.Endpoint,
+      {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: LenraWeb.ClusterSupervisor]]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

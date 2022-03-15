@@ -24,6 +24,15 @@ config :lenra_web, LenraWeb.Endpoint,
   code_reloader: true,
   watchers: []
 
+config :libcluster,
+  topologies: [
+    lenra: [
+      # The selected clustering strategy. Required.
+      strategy: Cluster.Strategy.Epmd,
+      config: [hosts: [:"lenra@127.0.0.1"]],
+    ]
+  ]
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
@@ -74,11 +83,6 @@ config :lenra,
       "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
     ),
   faas_secrets: ["gitlab-registry"]
-
-config :peerage,
-  via: Peerage.Via.List,
-  node_list: [:"lenra@127.0.0.1"],
-  log_results: false
 
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
 
