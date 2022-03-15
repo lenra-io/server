@@ -1,0 +1,51 @@
+name: Create or Update PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Lenra Component Version'
+        required: true
+      release_notes:
+        description: 'Lenra Component Release notes'
+        required: false
+      origin:
+        description: 'Label of the dependency to change version.'
+        required: true
+
+jobs:
+  create_or_update_pr:
+    name: Create or Update PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup yq
+        id: setup-yq
+        uses: shiipou/setup-yq-action@v2.0.2
+      - name: create_pr
+        uses: lenra-io/create-or-update-pr-action@v1.1.0
+        with:
+          name: 'Update dependecies'
+          token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
+          script: |
+            # Regex in bash is not powerful enough but thanks to python regex that work 
+            ## (I choose python because it's already installed on GitHub Action runner)
+            ## This regex parse the private_git element of the server/mix.exs with name is application_runner and replace the tag with the requested version
+            python3 -c "import re
+            regex = re.compile(r'private_git\(\s*name\s*:\s*:${{ github.event.inputs.origin }}\s*,(?:\s|(tag:)?(?(1)\s*\"(.*)\"\s*\)|.))*')
+            with open ('apps/lenra_web/mix.exs', 'r') as file :
+              data = str().join(file.readlines())
+              match = re.search(regex, data)
+              result = data[:match.start(2)] + '${{ github.event.inputs.version }}' + data[match.end(2):]
+            with open('server/mix.exs', 'w') as file:
+              file.writelines(str(result))
+            "
+            git add apps/lenra_web/mix.exs
+            
+            RELEASE_NOTES="${{ github.event.inputs.release_notes }}"
+            RELEASE_TYPE="${RELEASE_NOTES/:*}"
+            
+            git commit -m "${RELEASE_TYPE}: Upgrade ${{ github.event.inputs.origin }} to ${{ github.event.inputs.version }}
+            ${RELEASE_NOTES}"
