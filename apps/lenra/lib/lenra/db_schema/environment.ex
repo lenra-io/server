@@ -14,6 +14,8 @@ defmodule Lenra.Environment do
     UserEnvironmentAccess
   }
 
+  @type t :: %__MODULE__{}
+
   @derive {Jason.Encoder,
            only: [
              :id,

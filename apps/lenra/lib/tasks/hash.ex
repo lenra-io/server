@@ -8,6 +8,7 @@ defmodule Mix.Tasks.Hash do
   properties : --algo {desired algorithm to hash the file}"
   use Mix.Task
 
+  @impl true
   def run(args) do
     {opts, paths} = OptionParser.parse!(args, strict: [algo: :string])
 

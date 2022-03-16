@@ -8,7 +8,11 @@ defmodule Lenra.Umbrella.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      dialyzer: [plt_add_apps: [:mix]],
+      dialyzer: [
+        plt_add_deps: :transitive,
+        plt_file: {:no_warn, ".plts/dialyzer.plt"},
+        plt_add_apps: [:mix]
+      ],
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
@@ -38,7 +42,7 @@ defmodule Lenra.Umbrella.MixProject do
     [
       {:ex_doc, "~> 0.22", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:sobelow, "~> 0.8", only: :dev},
       {:excoveralls, "~> 0.10", only: :test},
       {:benchee, "~> 1.0", only: :dev}
