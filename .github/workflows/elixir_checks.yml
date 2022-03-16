@@ -6,7 +6,6 @@ on:
       - edited
       - synchronize
 
-
 jobs:
   prIsWip:
     name: PR is WIP?

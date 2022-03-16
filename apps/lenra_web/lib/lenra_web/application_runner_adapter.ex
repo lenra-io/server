@@ -23,6 +23,7 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         event
       ) do
     Logger.info("Run listener for action #{action}")
+
     OpenfaasServices.run_listener(application, environment, action, data, props, event)
   end
 
@@ -97,5 +98,9 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         {atom, ui_or_patches}
       ) do
     send(socket_pid, {:send, atom, ui_or_patches})
+  end
+
+  def on_ui_changed(session_state, message) do
+    raise "Error, not maching on_ui_changed/2 #{inspect(session_state)}, #{inspect(message)}"
   end
 end
