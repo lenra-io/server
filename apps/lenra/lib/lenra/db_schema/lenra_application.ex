@@ -16,6 +16,8 @@ defmodule Lenra.LenraApplication do
     User
   }
 
+  @type t :: %__MODULE__{}
+
   @hex_regex ~r/[0-9A-Fa-f]{6}/
 
   @derive {Jason.Encoder, only: [:id, :name, :service_name, :icon, :color, :creator_id]}

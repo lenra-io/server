@@ -20,6 +20,8 @@ defmodule Lenra.User do
     UserEnvironmentAccess
   }
 
+  @type t :: %__MODULE__{}
+
   @email_regex ~r/[^@]+@[^\.]+\..+/
 
   @unverified_user_role :unverified_user
