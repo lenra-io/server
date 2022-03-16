@@ -119,7 +119,7 @@ defmodule LenraWeb.AppChannel do
   end
 
   def handle_info({:send, :error, malformatted_error}, socket) do
-    Logger.error("Malformatted error #{inspect(malformated_error)}")
+    Logger.error("Malformatted error #{inspect(malformatted_error)}")
     push(socket, "error", %{"errors" => ErrorHelpers.translate_error(:unknow_error)})
     {:noreply, socket}
   end
