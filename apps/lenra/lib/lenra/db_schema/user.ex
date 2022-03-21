@@ -19,6 +19,8 @@ defmodule Lenra.User do
     UserEnvironmentAccess
   }
 
+  alias ApplicationRunner.UserData
+
   @email_regex ~r/[^@]+@[^\.]+\..+/
 
   @unverified_user_role :unverified_user
@@ -36,13 +38,13 @@ defmodule Lenra.User do
     field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)
     has_many(:applications, LenraApplication, foreign_key: :creator_id)
-    has_many(:datastores, Datastore)
     has_one(:password_code, PasswordCode)
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
     has_one(:dev_code, DevCode)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
+    has_many(:user_datas, UserData, foreign_key: :user_id)
     timestamps()
   end
 
