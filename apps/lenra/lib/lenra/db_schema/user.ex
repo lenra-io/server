@@ -7,7 +7,6 @@ defmodule Lenra.User do
 
   alias Lenra.{
     Build,
-    Datastore,
     Deployment,
     DevCode,
     Environment,
