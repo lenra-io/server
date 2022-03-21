@@ -86,4 +86,4 @@ jobs:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
       - name: Run dialyzer
-        run: mix dialyzer --format short
+        run: mix dialyzer
