@@ -66,7 +66,9 @@ config :ex_component_schema,
        {ApplicationRunner.JsonSchemata, :read_schema}
 
 config :application_runner,
-  adapter: LenraWeb.ApplicationRunnerAdapter
+  adapter: LenraWeb.ApplicationRunnerAdapter,
+  lenra_environment_schema: Lenra.Environment,
+  lenra_user_schema: Lenra.User
 
 config :lenra,
   faas_secrets: []
