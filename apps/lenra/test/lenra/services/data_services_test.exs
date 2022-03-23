@@ -3,8 +3,9 @@ defmodule Lenra.DataServicesTest do
     Test the datastore services
   """
   use Lenra.RepoCase, async: true
-  alias Lenra.{DataServices, Repo, LenraApplication, LenraApplicationServices, Environment}
+
   alias ApplicationRunner.DatastoreServices
+  alias Lenra.{DataServices, Environment, LenraApplication, LenraApplicationServices, Repo}
 
   setup do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
@@ -21,7 +22,8 @@ defmodule Lenra.DataServicesTest do
 
   describe "Lenra.DataServices.get_old_data_1/1" do
     test "should return last data", %{env_id: env_id, user_id: user_id} do
-      DatastoreServices.create(env_id, %{"name" => "UserDatas"})
+      env_id
+      |> DatastoreServices.create(%{"name" => "UserDatas"})
       |> Repo.transaction()
 
       DataServices.create_and_link(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
@@ -32,7 +34,8 @@ defmodule Lenra.DataServicesTest do
 
   describe "Lenra.DataServices.upsert_data_1/1" do
     test "should update last data if data exist", %{env_id: env_id, user_id: user_id} do
-      DatastoreServices.create(env_id, %{"name" => "UserDatas"})
+      env_id
+      |> DatastoreServices.create(%{"name" => "UserDatas"})
       |> Repo.transaction()
 
       DataServices.create_and_link(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
@@ -43,7 +46,8 @@ defmodule Lenra.DataServicesTest do
     end
 
     test "should create data if data not exist", %{env_id: env_id, user_id: user_id} do
-      DatastoreServices.create(env_id, %{"name" => "UserDatas"})
+      env_id
+      |> DatastoreServices.create(%{"name" => "UserDatas"})
       |> Repo.transaction()
 
       DataServices.upsert_data(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
