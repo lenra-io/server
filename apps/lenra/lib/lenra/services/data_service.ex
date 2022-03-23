@@ -34,7 +34,7 @@ defmodule Lenra.DataServices do
     |> Repo.transaction()
   end
 
-  def get_old_data(user_id, environement_id) do
+  def get_old_data(user_id, environment_id) do
     Repo.one(
       from(d in Data,
         join: u in UserData,
