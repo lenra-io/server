@@ -4,7 +4,9 @@ defmodule Lenra.DataServicesTest do
   """
   use Lenra.RepoCase, async: true
 
-  alias ApplicationRunner.DatastoreServices
+  import Ecto.Query, only: [from: 2]
+
+  alias ApplicationRunner.{DatastoreServices, UserData, Data, Datastore}
   alias Lenra.{DataServices, Environment, LenraApplication, LenraApplicationServices, Repo}
 
   setup do
@@ -53,6 +55,34 @@ defmodule Lenra.DataServicesTest do
       DataServices.upsert_data(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
 
       assert %{"test" => "test"} = DataServices.get_old_data(user_id, env_id).data
+    end
+  end
+
+  describe "Lenra.DataServices.create_and_link_1/1" do
+    test "should create data and user_data", %{env_id: env_id, user_id: user_id} do
+      env_id
+      |> DatastoreServices.create(%{"name" => "UserDatas"})
+      |> Repo.transaction()
+
+      DataServices.create_and_link(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
+
+      %{user_id: user_data_user_id, data_id: user_data_data_id} =
+        Repo.one(
+          from(u in UserData,
+            join: d in Data,
+            on: d.id == u.data_id,
+            join: ds in Datastore,
+            on: ds.id == d.datastore_id,
+            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "UserDatas",
+            select: u
+          )
+        )
+
+      old_data = DataServices.get_old_data(user_id, env_id)
+
+      assert %{"test" => "test"} = old_data.data
+      assert user_data_data_id == old_data.id
+      assert user_data_user_id == user_id
     end
   end
 end
