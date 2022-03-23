@@ -7,7 +7,7 @@ defmodule Lenra.DataReferenceServiceTest do
     Datastore
   }
 
-  alias Lenra.{DataReferencesServices, LenraApplication, LenraApplicationServices, Environment, Repo}
+  alias Lenra.{DataReferencesServices, Environment, LenraApplication, LenraApplicationServices, Repo}
 
   setup do
     {:ok, env_id: create_and_return_environment().id}
