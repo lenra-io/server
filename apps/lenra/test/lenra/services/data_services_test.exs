@@ -6,7 +6,7 @@ defmodule Lenra.DataServicesTest do
 
   import Ecto.Query, only: [from: 2]
 
-  alias ApplicationRunner.{DatastoreServices, UserData, Data, Datastore}
+  alias ApplicationRunner.{Data, Datastore, DatastoreServices, UserData}
   alias Lenra.{DataServices, Environment, LenraApplication, LenraApplicationServices, Repo}
 
   setup do
