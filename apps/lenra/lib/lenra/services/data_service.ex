@@ -41,7 +41,7 @@ defmodule Lenra.DataServices do
         on: d.id == u.data_id,
         join: ds in Datastore,
         on: ds.id == d.datastore_id,
-        where: u.user_id == ^user_id and ds.environment_id == ^environement_id and ds.name == "UserDatas",
+        where: u.user_id == ^user_id and ds.environment_id == ^environment_id and ds.name == "UserDatas",
         select: d
       )
     )
