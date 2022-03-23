@@ -20,7 +20,7 @@ defmodule Lenra.MixProject do
   def application do
     [
       mod: {Lenra.Application, []},
-      extra_applications: [:logger, :runtime_tools, :guardian, :bamboo]
+      extra_applications: [:logger, :runtime_tools, :guardian, :bamboo, :application_runner]
     ]
   end
 
