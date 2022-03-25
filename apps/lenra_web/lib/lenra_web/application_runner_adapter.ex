@@ -61,8 +61,8 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
 
   @impl true
   def get_data(%SessionState{
+        env_id: env_id,
         assigns: %{
-          env_id: %Environment{} = env_id,
           user: %User{} = user
         }
       }) do
@@ -75,14 +75,16 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   @impl true
   def save_data(
         %SessionState{
+          env_id: env_id,
           assigns: %{
-            env_id: %Environment{} = env_id,
             user: %User{} = user
           }
         },
         data
       ) do
-    case DataServices.upsert_data(user.id, env_id, data) do
+    # TODO: change this line when data request avalaible
+
+    case DataServices.upsert_data(user.id, env_id, %{"datastore" => "UserDatas", "data" => data}) do
       {:ok, _} -> :ok
       {:error, _} -> {:error, :cannot_save_data}
     end
