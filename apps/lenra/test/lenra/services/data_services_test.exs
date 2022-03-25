@@ -23,7 +23,7 @@ defmodule Lenra.DataServicesTest do
   end
 
   describe "DataServices.create_1/1" do
-    test "should create data if json valid", %{env_id: env_id, user_id: user_id} do
+    test "should create data if json valid", %{env_id: env_id, user_id: _user_id} do
       {:ok, inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
       {:ok, %{inserted_data: inserted_data}} =
@@ -35,7 +35,7 @@ defmodule Lenra.DataServicesTest do
       assert data.data == %{"name" => "toto"}
     end
 
-    test "should return error if json invalid", %{env_id: env_id, user_id: user_id} do
+    test "should return error if json invalid", %{env_id: env_id, user_id: _user_id} do
       Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
       assert {:error, :data, :json_format_invalid, _changes_so_far} =
@@ -45,7 +45,7 @@ defmodule Lenra.DataServicesTest do
                })
     end
 
-    test "should return error if env_id invalid", %{env_id: env_id, user_id: user_id} do
+    test "should return error if env_id invalid", %{env_id: env_id, user_id: _user_id} do
       Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
       assert {:error, :datastore, :datastore_not_found, _changes_so_far} =
@@ -55,7 +55,7 @@ defmodule Lenra.DataServicesTest do
                })
     end
 
-    test "should return error if datastore name invalid", %{env_id: env_id, user_id: user_id} do
+    test "should return error if datastore name invalid", %{env_id: env_id, user_id: _user_id} do
       assert {:error, :datastore, :datastore_not_found, _changes_so_far} =
                DataServices.create(env_id, %{
                  "datastore" => "test",
@@ -63,7 +63,7 @@ defmodule Lenra.DataServicesTest do
                })
     end
 
-    test "should create reference if refs id is valid", %{env_id: env_id, user_id: user_id} do
+    test "should create reference if refs id is valid", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -83,7 +83,7 @@ defmodule Lenra.DataServicesTest do
       assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, refBy_id: inserted_data.id))
     end
 
-    test "should create 2 if give 2 refs_id", %{env_id: env_id, user_id: user_id} do
+    test "should create 2 if give 2 refs_id", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -116,7 +116,7 @@ defmodule Lenra.DataServicesTest do
              )
     end
 
-    test "should create reference if refBy id is valid", %{env_id: env_id, user_id: user_id} do
+    test "should create reference if refBy id is valid", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -133,7 +133,7 @@ defmodule Lenra.DataServicesTest do
       assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_data.id, refBy_id: inserted_user.id))
     end
 
-    test "should create reference if refs and refBy id is valid", %{env_id: env_id, user_id: user_id} do
+    test "should create reference if refs and refBy id is valid", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "team"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
@@ -160,7 +160,7 @@ defmodule Lenra.DataServicesTest do
       assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, refBy_id: inserted_user.id))
     end
 
-    test "should return error if refs id invalid ", %{env_id: env_id, user_id: user_id} do
+    test "should return error if refs id invalid ", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -172,7 +172,7 @@ defmodule Lenra.DataServicesTest do
                })
     end
 
-    test "should return error if refBy_id invalid", %{env_id: env_id, user_id: user_id} do
+    test "should return error if refBy_id invalid", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -198,7 +198,7 @@ defmodule Lenra.DataServicesTest do
   end
 
   describe "DataServices.delete_1/1" do
-    test "should delete data if json valid", %{env_id: env_id, user_id: user_id} do
+    test "should delete data if json valid", %{env_id: env_id, user_id: _user_id} do
       Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
       {:ok, %{inserted_data: inserted_data}} =
@@ -219,7 +219,7 @@ defmodule Lenra.DataServicesTest do
   end
 
   describe "DataServices.update_1/1" do
-    test "should update data if json valid", %{env_id: env_id, user_id: user_id} do
+    test "should update data if json valid", %{env_id: env_id, user_id: _user_id} do
       Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
       {:ok, %{inserted_data: inserted_data}} =
@@ -238,7 +238,7 @@ defmodule Lenra.DataServicesTest do
       assert {:error, :data, :data_not_found, _changes_so_far} = DataServices.update(-1, %{"data" => %{}})
     end
 
-    test "should also update refs on update", %{env_id: env_id, user_id: user_id} do
+    test "should also update refs on update", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -277,7 +277,7 @@ defmodule Lenra.DataServicesTest do
                inserted_point_bis.id
     end
 
-    test "should also update refBy on update", %{env_id: env_id, user_id: user_id} do
+    test "should also update refBy on update", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -316,7 +316,7 @@ defmodule Lenra.DataServicesTest do
                inserted_data_bis.id
     end
 
-    test "should also update refs and refBy on update", %{env_id: env_id, user_id: user_id} do
+    test "should also update refs and refBy on update", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "team"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
@@ -376,7 +376,7 @@ defmodule Lenra.DataServicesTest do
                inserted_point_bis.id
     end
 
-    test "should return error if update with invalid refs id", %{env_id: env_id, user_id: user_id} do
+    test "should return error if update with invalid refs id", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
@@ -399,7 +399,7 @@ defmodule Lenra.DataServicesTest do
         })
     end
 
-    test "should return error if update with invalid ref_by id", %{env_id: env_id, user_id: user_id} do
+    test "should return error if update with invalid ref_by id", %{env_id: env_id, user_id: _user_id} do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "team"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
