@@ -13,7 +13,9 @@ jobs:
     timeout-minutes: 2
     steps:
       - id: pr-is-wip
-        uses: shiipou/pr-is-wip-action@v1.0.0
+        uses: shiipou/pr-is-wip-action@v1.1.0
+        with:
+          continueIfNonPR: 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
