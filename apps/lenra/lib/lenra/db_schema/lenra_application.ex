@@ -10,7 +10,6 @@ defmodule Lenra.LenraApplication do
     ApplicationMainEnv,
     AppUserSession,
     Build,
-    Datastore,
     Environment,
     LenraApplication,
     User
@@ -32,7 +31,6 @@ defmodule Lenra.LenraApplication do
     field(:repository, :string, redact: true)
 
     belongs_to(:creator, User)
-    has_many(:datastores, Datastore, foreign_key: :application_id)
     has_many(:environments, Environment, foreign_key: :application_id)
     has_many(:builds, Build, foreign_key: :application_id)
     has_one(:main_env, ApplicationMainEnv, foreign_key: :application_id)
