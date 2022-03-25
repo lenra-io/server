@@ -2,89 +2,150 @@ defmodule Lenra.DatastoreServicesTest do
   @moduledoc """
     Test the datastore services
   """
-  # TODO: This test is no longer match the data schema and will be rework in another PR
+  use Lenra.RepoCase, async: true
 
-  # use Lenra.RepoCase, async: true
+  alias ApplicationRunner.{Data, Datastore}
+  alias Lenra.{DatastoreServices, LenraApplication, LenraApplicationServices, Environment, Repo}
 
-  # alias Lenra.{
-  #   Datastore,
-  #   DatastoreServices,
-  #   LenraApplication,
-  #   LenraApplicationServices,
-  #   Repo
-  # }
+  setup do
+    {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-  # setup do
-  #   {:ok, app: create_and_return_application()}
-  # end
+    LenraApplicationServices.create(user.id, %{
+      name: "mine-sweeper",
+      color: "FFFFFF",
+      icon: "60189"
+    })
 
-  # defp create_and_return_application do
-  #   {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+    env = Repo.get_by(Environment, application_id: Enum.at(Repo.all(LenraApplication), 0).id)
+    {:ok, env_id: env.id, user_id: user.id}
+  end
 
-  #   LenraApplicationServices.create(user.id, %{
-  #     name: "mine-sweeper",
-  #     color: "FFFFFF",
-  #     icon: "60189"
-  #   })
+  describe "DatastoreServices.create_1/1" do
+    test "should create datastore if params valid", %{env_id: env_id, user_id: _user_id} do
+      {:ok, %{inserted_datastore: inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
 
-  #   Enum.at(Repo.all(LenraApplication), 0)
-  # end
+      datastore = Repo.get(Datastore, inserted_datastore.id)
 
-  # describe "get" do
-  #   test "data from datastore but datastore does not exist", %{app: app} do
-  #     assert nil ==
-  #              DatastoreServices.get_old_data(
-  #                app.creator_id,
-  #                app.id
-  #              )
-  #   end
+      assert datastore.id == inserted_datastore.id
+      assert datastore.name == "users"
+    end
 
-  #   test "data from existing datastore", %{app: app} do
-  #     DatastoreServices.upsert_data(app.creator_id, app.id, %{"foo" => "bar"})
+    test "should return error if datastore same name and same env_id", %{env_id: env_id, user_id: _user_id} do
+      assert {:ok, %{inserted_datastore: _inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
 
-  #     assert %Datastore{data: %{"foo" => "bar"}} =
-  #              DatastoreServices.get_old_data(
-  #                app.creator_id,
-  #                app.id
-  #              )
-  #   end
+      assert {:error, :inserted_datastore, %{errors: [name: {"has already been taken", _constraint}]}, _changes_so_far} =
+               DatastoreServices.create(env_id, %{"name" => "users"})
+    end
 
-  #   test "datastore", %{app: app} do
-  #     DatastoreServices.upsert_data(app.creator_id, app.id, %{"foo" => "bar"})
+    test "should create datastore if datastore same name but different env_id", %{env_id: env_id, user_id: user_id} do
+      {:ok, %{inserted_main_env: environment}} =
+        LenraApplicationServices.create(user_id, %{
+          name: "test-update",
+          color: "FFFFFF",
+          icon: "60189"
+        })
 
-  #     assert (%Datastore{} = datastore) = DatastoreServices.get_by(user_id: app.creator_id, application_id: app.id)
+      assert {:ok, %{inserted_datastore: _inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
 
-  #     assert datastore.user_id == app.creator_id
-  #     assert datastore.application_id == app.id
-  #     assert datastore.data == %{"foo" => "bar"}
-  #   end
+      assert {:ok, %{inserted_datastore: _inserted_datastore}} =
+               DatastoreServices.create(environment.id, %{"name" => "users"})
+    end
 
-  #   test "datastore but does not exist", %{app: app} do
-  #     assert nil == DatastoreServices.get_by(user_id: app.creator_id, application_id: app.id)
-  #   end
-  # end
+    test "should create datastore if different name but same env_id", %{env_id: env_id, user_id: user_id} do
+      {:ok, %{inserted_main_env: environment}} =
+        LenraApplicationServices.create(user_id, %{
+          name: "test-update",
+          color: "FFFFFF",
+          icon: "60189"
+        })
 
-  # describe "insert" do
-  #   test "data", %{app: app} do
-  #     assert {:ok,
-  #             %Datastore{
-  #               data: %{"data" => "test data"}
-  #             }} = DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test data"})
+      assert {:ok, %{inserted_datastore: _inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
 
-  #     assert (%Datastore{} = datastore) = Repo.get_by(Datastore, user_id: app.creator_id, application_id: app.id)
+      assert {:ok, %{inserted_datastore: _inserted_datastore}} =
+               DatastoreServices.create(environment.id, %{"name" => "test"})
+    end
 
-  #     assert datastore.data == %{"data" => "test data"}
-  #   end
+    test "should return error if json invalid", %{env_id: env_id, user_id: _user_id} do
+      assert {:error, :inserted_datastore, %{errors: [name: {"can't be blank", [validation: :required]}]},
+              _changes_so_far} =
+               DatastoreServices.create(env_id, %{
+                 "datastore" => "users"
+               })
+    end
+  end
 
-  #   test "and check updated data", %{app: app} do
-  #     DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test data"})
+  describe "DatastoreServices.delete_1/1" do
+    test "should delete datastore if params valid", %{env_id: env_id, user_id: _user_id} do
+      {:ok, %{inserted_datastore: inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
 
-  #     assert {:ok, %Datastore{data: %{"data" => "test new data"}}} =
-  #              DatastoreServices.upsert_data(app.creator_id, app.id, %{"data" => "test new data"})
+      datastore = Repo.get(Datastore, inserted_datastore.id)
 
-  #     assert (%Datastore{} = datastore) = Repo.get_by(Datastore, user_id: app.creator_id, application_id: app.id)
+      DatastoreServices.delete(datastore.id)
 
-  #     assert datastore.data == %{"data" => "test new data"}
-  #   end
-  # end
+      deleted_data = Repo.get(Datastore, inserted_datastore.id)
+
+      assert datastore.id == inserted_datastore.id
+      assert deleted_data == nil
+    end
+
+    test "should return error id invalid", %{env_id: _env_id} do
+      assert {:error, :datastore, :datastore_not_found, _changes_so_far} = DatastoreServices.delete(-1)
+    end
+
+    test "should also delete data", %{env_id: env_id, user_id: _user_id} do
+      {:ok, %{inserted_datastore: inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
+
+      datastore = Repo.get(Datastore, inserted_datastore.id)
+
+      Repo.insert(Data.new(datastore.id, %{"name" => "test"}))
+      Repo.insert(Data.new(datastore.id, %{"name" => "test2"}))
+      Repo.insert(Data.new(datastore.id, %{"name" => "test3"}))
+
+      datas =
+        Repo.all(
+          from(
+            d in Data,
+            where: d.datastore_id == ^datastore.id,
+            select: d
+          )
+        )
+
+      assert length(datas) == 3
+
+      DatastoreServices.delete(datastore.id)
+
+      deleted_datastore = Repo.get(Datastore, inserted_datastore.id)
+
+      deleted_datas =
+        Repo.all(
+          from(
+            d in Data,
+            where: d.datastore_id == ^datastore.id,
+            select: d
+          )
+        )
+
+      assert deleted_datastore == nil
+      assert Enum.empty?(deleted_datas)
+    end
+  end
+
+  describe "DatastoreServices.update_1/1" do
+    test "should update datastore if params valid", %{env_id: env_id, user_id: _user_id} do
+      {:ok, %{inserted_datastore: inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
+
+      datastore = Repo.get(Datastore, inserted_datastore.id)
+
+      DatastoreServices.update(datastore.id, %{"name" => "test"})
+
+      updated_data = Repo.get(Datastore, inserted_datastore.id)
+
+      assert updated_data.name == "test"
+    end
+
+    test "should return error id invalid", %{env_id: _env_id} do
+      assert {:error, :datastore, :datastore_not_found, _changes_so_far} =
+               DatastoreServices.update(-1, %{"name" => "test"})
+    end
+  end
 end
