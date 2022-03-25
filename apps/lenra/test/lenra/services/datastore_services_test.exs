@@ -5,7 +5,7 @@ defmodule Lenra.DatastoreServicesTest do
   use Lenra.RepoCase, async: true
 
   alias ApplicationRunner.{Data, Datastore}
-  alias Lenra.{DatastoreServices, LenraApplication, LenraApplicationServices, Environment, Repo}
+  alias Lenra.{DatastoreServices, Environment, LenraApplication, LenraApplicationServices, Repo}
 
   setup do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
