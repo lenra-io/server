@@ -83,7 +83,6 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         data
       ) do
     # TODO: change this line when data request avalaible
-
     case DataServices.upsert_data(user.id, env_id, %{"datastore" => "UserDatas", "data" => data}) do
       {:ok, _} -> :ok
       {:error, _} -> {:error, :cannot_save_data}
