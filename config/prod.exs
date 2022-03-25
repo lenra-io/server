@@ -2,8 +2,6 @@
 # There is NO important data here, all secret/passwords and dynamic config are stored in releases.exs
 
 import Config
-config :lenra, Lenra.Repo, pool_size: 10
-
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.
@@ -22,8 +20,3 @@ config :lenra_web, LenraWeb.Endpoint,
 
 config :lenra,
   faas_secrets: ["gitlab-registry"]
-
-# Edit to allow only wanted sources
-config :cors_plug,
-  origin: System.fetch_env!("ALLOWED_CLIENT_ORIGINS") |> String.split(","),
-  methods: ["GET", "POST", "PUT", "PATCH", "OPTION"]

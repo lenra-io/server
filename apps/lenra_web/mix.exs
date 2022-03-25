@@ -39,10 +39,10 @@ defmodule LenraWeb.MixProject do
       {:telemetry_poller, "~> 0.4"},
       {:plug_cowboy, "~> 2.0"},
       {:phoenix_ecto, "~> 4.1"},
-      {:cors_plug, "~> 2.0"},
       {:sentry, "~> 8.0"},
       {:peerage, "~> 1.0"},
       {:lenra, in_umbrella: true},
+      {:cors_plug, "~> 3.0", only: :dev, runtime: false},
       {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},
       private_git(
         name: :application_runner,

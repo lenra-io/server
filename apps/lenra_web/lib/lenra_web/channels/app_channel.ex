@@ -3,8 +3,16 @@ defmodule LenraWeb.AppChannel do
     `LenraWeb.AppChannel` handle the app channel to run app and listeners and push to the user the resulted UI or Patch
   """
   use Phoenix.Channel
+
   alias ApplicationRunner.{SessionManager, SessionManagers}
-  alias Lenra.{Environment, LenraApplication, LenraApplicationServices, Repo}
+
+  alias Lenra.{
+    Environment,
+    LenraApplication,
+    LenraApplicationServices,
+    Repo
+  }
+
   alias LenraWeb.ErrorHelpers
 
   require Logger
@@ -16,14 +24,12 @@ defmodule LenraWeb.AppChannel do
 
     Logger.debug("Joining channel for app : #{app_name}")
 
-    with {:ok, app} <-
-           LenraApplicationServices.fetch_by(
-             service_name: app_name,
-             # This restrict to "owner" app only
-             creator_id: user.id
-           ),
+    with {:ok, _uuid} <- Ecto.UUID.cast(app_name),
+         {:ok, app} <-
+           LenraApplicationServices.fetch_by(service_name: app_name),
          %LenraApplication{} = application <-
-           Repo.preload(app, main_env: [environment: [:deployed_build]]) do
+           Repo.preload(app, main_env: [environment: [:deployed_build]]),
+         :ok <- Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application) do
       %Environment{} = environment = select_env(application)
 
       Logger.debug("Environment selected is #{environment.name}")
@@ -54,7 +60,11 @@ defmodule LenraWeb.AppChannel do
           {:error, %{reason: ErrorHelpers.translate_error(reason)}}
       end
     else
-      _err -> {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
+      {:error, :forbidden} ->
+        {:error, %{reason: ErrorHelpers.translate_error(:no_app_authorization)}}
+
+      _err ->
+        {:error, %{reason: ErrorHelpers.translate_error(:no_app_found)}}
     end
   end
 
@@ -86,15 +96,31 @@ defmodule LenraWeb.AppChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:send, :error, reason}, socket) do
-    Logger.debug("send error  #{inspect(%{error: reason})}")
+  def handle_info({:send, :error, {:error, reason}}, socket) when is_atom(reason) do
+    Logger.error("Send error #{inspect(reason)}")
 
-    case is_atom(reason) do
-      true -> push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
-      # Application error
-      false -> push(socket, "error", %{"errors" => [%{code: -1, message: reason}]})
-    end
+    push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
+    {:noreply, socket}
+  end
 
+  def handle_info({:send, :error, {:error, :invalid_ui, errors}}, socket) when is_list(errors) do
+    formatted_errors =
+      errors
+      |> Enum.map(fn {message, path} -> %{code: 0, message: "#{message} at path #{path}"} end)
+
+    push(socket, "error", %{"errors" => formatted_errors})
+    {:noreply, socket}
+  end
+
+  def handle_info({:send, :error, reason}, socket) when is_atom(reason) do
+    Logger.error("Send error atom #{inspect(reason)}")
+    push(socket, "error", %{"errors" => ErrorHelpers.translate_error(reason)})
+    {:noreply, socket}
+  end
+
+  def handle_info({:send, :error, malformatted_error}, socket) do
+    Logger.error("Malformatted error #{inspect(malformatted_error)}")
+    push(socket, "error", %{"errors" => ErrorHelpers.translate_error(:unknow_error)})
     {:noreply, socket}
   end
 
@@ -116,4 +142,34 @@ defmodule LenraWeb.AppChannel do
 
     {:noreply, socket}
   end
+end
+
+defmodule LenraWeb.AppChannel.Policy do
+  @moduledoc """
+    This policy defines the rules to join an application.
+    The admin can join any app.
+  """
+  @behaviour Bouncer.Policy
+
+  @impl true
+  def authorize(_action, %Lenra.User{role: :admin}, _metadata), do: true
+
+  def authorize(:join_app, %Lenra.User{id: id}, %Lenra.LenraApplication{creator_id: id}), do: true
+
+  def authorize(:join_app, _user, %Lenra.LenraApplication{
+        main_env: %Lenra.ApplicationMainEnv{environment: %Lenra.Environment{is_public: true}}
+      }),
+      do: true
+
+  def authorize(:join_app, user, app) do
+    case Lenra.UserEnvironmentAccessServices.fetch_by(
+           environment_id: app.main_env.environment.id,
+           user_id: user.id
+         ) do
+      {:ok, _access} -> true
+      _any -> false
+    end
+  end
+
+  def authorize(_action, _resource, _metadata), do: false
 end

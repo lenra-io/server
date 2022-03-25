@@ -3,6 +3,8 @@ FROM elixir:1.12-alpine AS build
 ARG CI
 ARG GH_PERSONNAL_TOKEN
 
+ENV ALLOWED_CLIENT_ORIGINS='http://localhost:8080'
+
 # prepare build dir
 WORKDIR /app
 

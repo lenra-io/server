@@ -51,10 +51,11 @@ defmodule Lenra.OpenfaasServices do
     )
 
     Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
     |> case do
       {:ok, %{"data" => data}} -> {:ok, data}
+      {:error, :ressource_not_found} -> {:error, :listener_not_found}
       err -> err
     end
   end
@@ -77,10 +78,11 @@ defmodule Lenra.OpenfaasServices do
     body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
     Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
     |> case do
       {:ok, %{"widget" => widget}} -> {:ok, widget}
+      {:error, :ressource_not_found} -> {:error, :widget_not_found}
       err -> err
     end
   end
@@ -99,12 +101,15 @@ defmodule Lenra.OpenfaasServices do
     headers = [{"Content-Type", "application/json"} | base_headers]
 
     Finch.build(:post, url, headers)
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
     |> case do
       {:ok, %{"manifest" => manifest}} ->
         Logger.debug("Got manifest : #{inspect(manifest)}")
         {:ok, manifest}
+
+      {:error, :ressource_not_found} ->
+        {:error, :manifest_not_found}
 
       err ->
         Logger.error("Error while getting manifest : #{inspect(err)}")
@@ -153,7 +158,7 @@ defmodule Lenra.OpenfaasServices do
       headers,
       body
     )
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:deploy_app)
   end
 
@@ -172,7 +177,7 @@ defmodule Lenra.OpenfaasServices do
         "functionName" => get_function_name(service_name, build_number)
       })
     )
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:delete_app)
   end
 
@@ -190,13 +195,13 @@ defmodule Lenra.OpenfaasServices do
     {:ok, status_code}
   end
 
-  defp response({:ok, %Finch.Response{}}, :delete_app) do
-    Logger.error("Openfaas could not delete the application. It should not happen.")
+  defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
+    Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
     {:error, :openfaas_delete_error}
   end
 
-  defp response({:error, %Mint.TransportError{reason: _reason}}, _action) do
-    Logger.error("Openfaas could not be reached. It should not happen.")
+  defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
+    Logger.error("Openfaas could not be reached. It should not happen. \n\t\t reason: #{reason}")
     {:error, :openfass_not_recheable}
   end
 
@@ -206,6 +211,10 @@ defmodule Lenra.OpenfaasServices do
        )
        when status_code not in [200, 202] do
     case status_code do
+      400 ->
+        Logger.error(body)
+        {:error, :bad_request}
+
       404 ->
         Logger.error(body)
         {:error, :ressource_not_found}
@@ -217,6 +226,10 @@ defmodule Lenra.OpenfaasServices do
       504 ->
         Logger.error(body)
         {:error, :timeout}
+
+      _err ->
+        Logger.error(body)
+        {:error, :unknow_error}
     end
   end
 end

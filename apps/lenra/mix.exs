@@ -45,7 +45,8 @@ defmodule Lenra.MixProject do
       {:argon2_elixir, "~> 2.0"},
       {:sentry, "~> 8.0"},
       {:bypass, "~> 2.0", only: :test},
-      {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"}
+      {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
+      {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false}
     ]
   end
 

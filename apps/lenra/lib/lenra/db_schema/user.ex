@@ -15,10 +15,13 @@ defmodule Lenra.User do
     PasswordCode,
     RegistrationCode,
     User,
+    UserAcceptCguVersion,
     UserEnvironmentAccess
   }
 
   alias ApplicationRunner.UserData
+
+  @type t :: %__MODULE__{}
 
   @email_regex ~r/[^@]+@[^\.]+\..+/
 
@@ -44,6 +47,7 @@ defmodule Lenra.User do
     has_one(:dev_code, DevCode)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
     has_many(:user_datas, UserData, foreign_key: :user_id)
+    many_to_many(:cgus, Lenra.Cgu, join_through: UserAcceptCguVersion)
     timestamps()
   end
 
