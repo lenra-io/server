@@ -7,10 +7,13 @@ defmodule Lenra.LenraApplicationServices do
   alias Lenra.{
     ApplicationMainEnv,
     Environment,
+    EnvironmentServices,
     LenraApplication,
     Repo,
     UserEnvironmentAccess
   }
+
+  alias ApplicationRunner.Datastore
 
   require Logger
 
@@ -45,6 +48,9 @@ defmodule Lenra.LenraApplicationServices do
     |> Ecto.Multi.insert(:inserted_application, LenraApplication.new(user_id, params))
     |> Ecto.Multi.insert(:inserted_main_env, fn %{inserted_application: app} ->
       Environment.new(app.id, user_id, nil, %{name: "live", is_ephemeral: false, is_public: false})
+    end)
+    |> Ecto.Multi.insert(:inserted_datastore, fn %{inserted_main_env: env} ->
+      Datastore.new(env.id, %{"name" => "UserDatas"})
     end)
     |> Ecto.Multi.insert(:application_main_env, fn %{
                                                      inserted_application: app,
