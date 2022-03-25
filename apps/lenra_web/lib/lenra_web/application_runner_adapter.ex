@@ -5,8 +5,8 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   """
   @behaviour ApplicationRunner.AdapterBehavior
 
-  alias ApplicationRunner.{EnvState, SessionState}
-  alias Lenra.{Datastore, DatastoreServices, LenraApplication, OpenfaasServices, User}
+  alias ApplicationRunner.{Data, EnvState, SessionState}
+  alias Lenra.{DataServices, DatastoreServices, Environment, LenraApplication, OpenfaasServices, User}
   require Logger
 
   @impl true
@@ -62,13 +62,13 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   @impl true
   def get_data(%SessionState{
         assigns: %{
-          application: %LenraApplication{} = application,
+          env_id: %Environment{} = env_id,
           user: %User{} = user
         }
       }) do
-    case DatastoreServices.get_old_data(user.id, application.id) do
+    case DataServices.get_old_data(user.id, env_id) do
       nil -> {:ok, %{}}
-      %Datastore{} = datastore -> {:ok, datastore.data}
+      %Data{} = data -> {:ok, data}
     end
   end
 
@@ -76,13 +76,13 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   def save_data(
         %SessionState{
           assigns: %{
-            application: %LenraApplication{} = application,
+            env_id: %Environment{} = env_id,
             user: %User{} = user
           }
         },
         data
       ) do
-    case DatastoreServices.upsert_data(user.id, application.id, data) do
+    case DataServices.upsert_data(user.id, env_id, data) do
       {:ok, _} -> :ok
       {:error, _} -> {:error, :cannot_save_data}
     end
