@@ -13,14 +13,15 @@ defmodule Lenra.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       test_coverage: [tool: ExCoveralls],
-      deps: deps()
+      deps: deps(),
+      xref: [exclude: [ApplicationRunner]]
     ]
   end
 
   def application do
     [
       mod: {Lenra.Application, []},
-      extra_applications: [:logger, :runtime_tools, :guardian, :bamboo]
+      extra_applications: [:logger, :runtime_tools, :guardian, :bamboo, :application_runner]
     ]
   end
 
