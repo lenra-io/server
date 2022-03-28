@@ -423,7 +423,7 @@ defmodule Lenra.DataServicesTest do
     end
 
     test "should not update data if env_id not the same", %{env_id: env_id, user_id: user_id} do
-      {:ok, %{inserted_main_env: environment}} =
+      {:ok, %{inserted_env: environment}} =
         LenraApplicationServices.create(user_id, %{
           name: "test-update",
           color: "FFFFFF",

@@ -45,7 +45,7 @@ defmodule Lenra.OpenfaasServicesTest do
                  @john_doe_application,
                  @john_doe_environment,
                  "InitData",
-                 %{data: %{}},
+                 %{},
                  %{},
                  %{}
                )
@@ -59,7 +59,7 @@ defmodule Lenra.OpenfaasServicesTest do
                  @john_doe_application,
                  @john_doe_environment,
                  "InitData",
-                 %{data: %{}},
+                 %{},
                  %{},
                  %{}
                )

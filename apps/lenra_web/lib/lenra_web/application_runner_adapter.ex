@@ -67,8 +67,8 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         }
       }) do
     case DataServices.get_old_data(user.id, env_id) do
-      nil -> {:ok, %{data: %{}}}
-      %Data{} = data -> {:ok, data}
+      nil -> {:ok, %{}}
+      %Data{} = data -> {:ok, data.data}
     end
   end
 

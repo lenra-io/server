@@ -91,7 +91,7 @@ defmodule Lenra.DeploymentServicesTest do
     end
 
     test "deployment but wrong environment", %{app: app} do
-      {:ok, %{inserted_main_env: wrong_env}} =
+      {:ok, %{inserted_env: wrong_env}} =
         LenraApplicationServices.create(app.creator_id, %{
           name: "wrong_app",
           color: "FFFFFF",

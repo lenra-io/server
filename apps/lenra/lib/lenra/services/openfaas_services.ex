@@ -42,7 +42,7 @@ defmodule Lenra.OpenfaasServices do
     url = "#{base_url}/function/#{function_name}"
 
     headers = [{"Content-Type", "application/json"} | base_headers]
-    body = Jason.encode!(%{action: action, data: data.data, props: props, event: event})
+    body = Jason.encode!(%{action: action, data: data, props: props, event: event})
 
     Logger.debug("Call to Openfaas : #{function_name}")
 
@@ -75,7 +75,7 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
     headers = [{"Content-Type", "application/json"} | base_headers]
-    body = Jason.encode!(%{widget: widget_name, data: data.data, props: props})
+    body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
     Finch.build(:post, url, headers, body)
     |> Finch.request(FaasHttp, receive_timeout: 1000)
