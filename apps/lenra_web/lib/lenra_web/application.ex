@@ -11,8 +11,7 @@ defmodule LenraWeb.Application do
       # Start the Telemetry supervisor
       LenraWeb.Telemetry,
       # Start the Endpoint (http/https)
-      LenraWeb.Endpoint,
-      {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: LenraWeb.ClusterSupervisor]]}
+      LenraWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -40,33 +40,9 @@ defmodule LenraWeb.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:phoenix_ecto, "~> 4.1"},
       {:sentry, "~> 8.0"},
-      {:libcluster, "~> 3.3"},
       {:lenra, in_umbrella: true},
       {:cors_plug, "~> 3.0", only: :dev, runtime: false},
-      {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},
-      private_git(
-        name: :application_runner,
-        host: "github.com",
-        project: "lenra-io/application-runner.git",
-        tag: "v1.0.0-beta.23",
-        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
-      )
+      {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"}
     ]
-  end
-
-  defp private_git(opts) do
-    name = Keyword.fetch!(opts, :name)
-    host = Keyword.fetch!(opts, :host)
-    project = Keyword.fetch!(opts, :project)
-    tag = Keyword.fetch!(opts, :tag)
-    credentials = Keyword.get(opts, :credentials)
-
-    case System.get_env("CI") do
-      "true" ->
-        {name, git: "https://#{credentials}@#{host}/#{project}", tag: tag, submodules: true}
-
-      _ ->
-        {name, git: "git@#{host}:#{project}", tag: tag, submodules: true}
-    end
   end
 end
