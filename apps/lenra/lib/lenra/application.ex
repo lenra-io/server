@@ -26,6 +26,7 @@ defmodule Lenra.Application do
          Application.fetch_env!(:lenra, :faas_url) => [size: 32, count: 8],
          Application.fetch_env!(:lenra, :gitlab_api_url) => [size: 10, count: 3]
        }},
+      {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
       AppChannelMonitor
     ]
 
