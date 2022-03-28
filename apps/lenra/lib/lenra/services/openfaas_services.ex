@@ -51,10 +51,11 @@ defmodule Lenra.OpenfaasServices do
     )
 
     Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
     |> case do
       {:ok, %{"data" => data}} -> {:ok, data}
+      {:error, :ressource_not_found} -> {:error, :listener_not_found}
       err -> err
     end
   end
@@ -77,10 +78,11 @@ defmodule Lenra.OpenfaasServices do
     body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
     Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
     |> case do
       {:ok, %{"widget" => widget}} -> {:ok, widget}
+      {:error, :ressource_not_found} -> {:error, :widget_not_found}
       err -> err
     end
   end
@@ -99,12 +101,15 @@ defmodule Lenra.OpenfaasServices do
     headers = [{"Content-Type", "application/json"} | base_headers]
 
     Finch.build(:post, url, headers)
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
     |> case do
       {:ok, %{"manifest" => manifest}} ->
         Logger.debug("Got manifest : #{inspect(manifest)}")
         {:ok, manifest}
+
+      {:error, :ressource_not_found} ->
+        {:error, :manifest_not_found}
 
       err ->
         Logger.error("Error while getting manifest : #{inspect(err)}")
@@ -153,7 +158,7 @@ defmodule Lenra.OpenfaasServices do
       headers,
       body
     )
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:deploy_app)
   end
 
@@ -172,7 +177,7 @@ defmodule Lenra.OpenfaasServices do
         "functionName" => get_function_name(service_name, build_number)
       })
     )
-    |> Finch.request(FaasHttp)
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:delete_app)
   end
 
