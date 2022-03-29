@@ -1,7 +1,7 @@
 defmodule LenraWeb.DataControllerTest do
-  moduledoc("""
+  @moduledoc """
     Test the `LenraWeb.DataController` module
-  """)
+  """
 
   use LenraWeb.ConnCase, async: true
 
