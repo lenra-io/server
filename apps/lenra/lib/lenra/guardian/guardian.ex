@@ -49,22 +49,11 @@ defmodule Lenra.Guardian do
   end
 
   def verify_claims(claims, _options) do
-    with {:ok, user} <- resource_from_claims(claims) do
-      cgus = Lenra.Repo.preload(user, :cgus).cgus
-
-      case Enum.count(cgus) do
-        0 ->
-          {:error, :did_not_accept_cgu}
-
-        _ ->
-          with {:ok, latest_cgu} <- Lenra.CguService.get_latest_cgu(),
-               {:ok, latest_accepted_cgu} <- Lenra.CguService.get_latest_cgu_from_list(cgus),
-               {:ok, 0} <- Lenra.CguService.compare_versions(latest_cgu, latest_accepted_cgu) do
-            {:ok, claims}
-          else
-            _ -> {:error, :did_not_accept_cgu}
-          end
-      end
+    with {:ok, user} <- resource_from_claims(claims),
+         true <- Lenra.CguService.user_accepted_latest_cgu?(user.id) do
+      {:ok, claims}
+    else
+      _ -> {:error, :did_not_accept_cgu}
     end
   end
 end
