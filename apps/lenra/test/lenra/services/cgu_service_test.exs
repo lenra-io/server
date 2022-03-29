@@ -58,7 +58,7 @@ defmodule Lenra.CguSerciceTest do
     test "No CGU in database" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-      assert false == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+      assert true == Lenra.CguService.user_accepted_latest_cgu?(user.id)
     end
 
     test "User did not accept CGU" do

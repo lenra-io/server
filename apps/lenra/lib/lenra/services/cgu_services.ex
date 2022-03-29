@@ -16,7 +16,7 @@ defmodule Lenra.CguService do
   end
 
   def user_accepted_latest_cgu?(user_id) do
-    latest_accepted_cgu =
+    latest_accepted_cgu_id =
       from(c in Cgu,
         join: u in Lenra.UserAcceptCguVersion,
         on: c.id == u.cgu_id,
@@ -25,13 +25,12 @@ defmodule Lenra.CguService do
         limit: 1,
         select: c.id
       )
+      |> Repo.one()
 
-    is_latest_accepted =
-      from(c in Cgu, order_by: [desc: c.inserted_at], limit: 1, where: c.id in subquery(latest_accepted_cgu)) |> Repo.one()
+    latest_cgu_id =
+      from(c in Cgu, order_by: [desc: c.inserted_at], limit: 1, select: c.id)
+      |> Repo.one()
 
-    case is_latest_accepted do
-      nil -> false
-      _ -> true
-    end
+    latest_accepted_cgu_id == latest_cgu_id
   end
 end
