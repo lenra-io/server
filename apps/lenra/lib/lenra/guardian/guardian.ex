@@ -18,7 +18,22 @@ defmodule Lenra.Guardian do
         raise "Cannot parse subject from claims"
 
       user ->
-        {:ok, user}
+        cgus = Lenra.Repo.preload(user, :cgus).cgus
+
+        case Enum.count(cgus) do
+          0 ->
+            {:error, :did_not_accept_cgu}
+
+          _ ->
+            {:ok, latest_cgu} = Lenra.CguService.get_latest_cgu()
+            {:ok, latest_accepted_cgu} = Lenra.CguService.get_latest_cgu_from_list(cgus)
+
+            with {:ok, 0} <- Lenra.CguService.compare_versions(latest_cgu, latest_accepted_cgu) do
+              {:ok, user}
+            else
+              _ -> {:error, :did_not_accept_cgu}
+            end
+        end
     end
   end
 

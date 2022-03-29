@@ -17,6 +17,9 @@ defmodule Lenra.Guardian.ErrorHandler do
 
         :unauthenticated ->
           "You are not authenticated"
+
+        :did_not_accept_cgu ->
+          "You did not accept the latest CGU"
       end
 
     conn
