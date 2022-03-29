@@ -10,7 +10,7 @@ defmodule LenraWeb.TokenHelper do
     conn = create_refresh_and_store_cookie(conn, user)
 
     with {:ok, refresh_token} <- get_cookie_from_resp(conn),
-         access_token <- create_access_token(refresh_token) do
+         {:ok, access_token} <- create_access_token(refresh_token) do
       assign_access_token(conn, access_token)
     else
       error ->
@@ -34,9 +34,12 @@ defmodule LenraWeb.TokenHelper do
   end
 
   def create_access_token(refresh_token) do
-    {:ok, _old, {access_token, _new_claims}} = Lenra.Guardian.exchange(refresh_token, "refresh", "access")
-
-    access_token
+    with {:ok, _old, {access_token, _new_claims}} <- Lenra.Guardian.exchange(refresh_token, "refresh", "access") do
+      {:ok, access_token}
+    else
+      {:error, :did_not_accept_cgu} -> {:did_not_accept_cgu, :did_not_accept_cgu}
+      error -> error
+    end
   end
 
   def revoke_current_refresh(conn) do
