@@ -45,7 +45,7 @@ defmodule Lenra.CguService do
     - {:ok, cgu}, with cgu being the latest CGU
     - {:error, error} if an error occurred
   """
-  def get_latest_cgu_from_list(list) do
+  def get_latest_cgu_from_list(list) when is_list(list) do
     cond do
       Enum.count(list) == 0 ->
         {:error, "Cannot get latest CGU from an empty list"}
