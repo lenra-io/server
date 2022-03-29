@@ -38,7 +38,7 @@ defmodule LenraWeb.ErrorHelpers do
     error_500: %{code: 500, message: "Internal server error."},
     openfaas_not_reachable: %{code: 1000, message: "Openfaas is not accessible"},
     forbidden: %{code: 403, message: "Forbidden"},
-    did_not_accept_cgu: %{code: 4031, message: "You must accept the CGU to use Lenra"},
+    did_not_accept_cgu: %{code: 4031, message: "You must accept the CGU to use Lenra"}
   ]
 
   def translate_errors([]), do: []
