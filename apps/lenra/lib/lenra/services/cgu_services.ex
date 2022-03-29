@@ -18,7 +18,7 @@ defmodule Lenra.CguService do
   def user_accepted_latest_cgu?(user_id) do
     latest_accepted_cgu =
       from(c in Cgu,
-        join: u in UserAcceptCguVersion,
+        join: u in Lenra.UserAcceptCguVersion,
         on: c.id == u.cgu_id,
         where: u.user_id == ^user_id,
         order_by: [desc: c.inserted_at],
