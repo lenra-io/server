@@ -53,4 +53,43 @@ defmodule Lenra.CguSerciceTest do
       assert {:ok, inserted_cgu3} == CguService.get_latest_cgu()
     end
   end
+
+  describe "user_accepted_latest_cgu?" do
+    test "No CGU in database" do
+      {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+
+      assert false == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+    end
+
+    test "User did not accept CGU" do
+      {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+      Lenra.Cgu.new(%{link: "a", version: "1.0.0", hash: "a"}) |> Repo.insert()
+
+      assert Lenra.Repo.all(Lenra.Cgu) |> Enum.count() == 1
+      assert false == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+    end
+
+    test "User accepted latest CGU" do
+      {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+      {:ok, cgu} = Lenra.Cgu.new(%{link: "a", version: "1.0.0", hash: "a"}) |> Repo.insert()
+      Lenra.UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: cgu.id}) |> Repo.insert()
+
+      assert true == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+    end
+
+    test "User accepted CGU but it is not the latest" do
+      {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+      {:ok, cgu} = Lenra.Cgu.new(%{link: "a", version: "1.0.0", hash: "a"}) |> Repo.insert()
+      Lenra.UserAcceptCguVersion.new(%{user_id: user.id, cgu_id: cgu.id}) |> Repo.insert()
+      date = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      {:ok, cgu} =
+        Lenra.Cgu.new(%{link: "b", version: "2.0.0", hash: "b"})
+        |> Ecto.Changeset.put_change(:inserted_at, date)
+        |> Ecto.Changeset.put_change(:updated_at, date)
+        |> Repo.insert()
+
+      assert false == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+    end
+  end
 end
