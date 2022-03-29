@@ -49,9 +49,6 @@ defmodule Lenra.Guardian do
   end
 
   def verify_claims(claims, _options) do
-    IO.puts("VERIFY CLAIMS")
-    IO.puts(inspect(claims))
-
     with {:ok, user} <- resource_from_claims(claims) do
       cgus = Lenra.Repo.preload(user, :cgus).cgus
 
