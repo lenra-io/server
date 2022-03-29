@@ -36,9 +36,6 @@ defmodule LenraWeb.TokenHelper do
   def create_access_token(refresh_token) do
     with {:ok, _old, {access_token, _new_claims}} <- Lenra.Guardian.exchange(refresh_token, "refresh", "access") do
       {:ok, access_token}
-    else
-      {:error, :did_not_accept_cgu} -> {:did_not_accept_cgu, :did_not_accept_cgu}
-      error -> error
     end
   end
 
