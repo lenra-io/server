@@ -17,19 +17,18 @@ defmodule Lenra.CguService do
 
   def user_accepted_latest_cgu?(user_id) do
     latest_accepted_cgu_id =
-      from(c in Cgu,
-        join: u in Lenra.UserAcceptCguVersion,
-        on: c.id == u.cgu_id,
-        where: u.user_id == ^user_id,
-        order_by: [desc: c.inserted_at],
-        limit: 1,
-        select: c.id
+      Repo.one(
+        from(c in Cgu,
+          join: u in Lenra.UserAcceptCguVersion,
+          on: c.id == u.cgu_id,
+          where: u.user_id == ^user_id,
+          order_by: [desc: c.inserted_at],
+          limit: 1,
+          select: c.id
+        )
       )
-      |> Repo.one()
 
-    latest_cgu_id =
-      from(c in Cgu, order_by: [desc: c.inserted_at], limit: 1, select: c.id)
-      |> Repo.one()
+    latest_cgu_id = Repo.one(from(c in Cgu, order_by: [desc: c.inserted_at], limit: 1, select: c.id))
 
     latest_accepted_cgu_id == latest_cgu_id
   end

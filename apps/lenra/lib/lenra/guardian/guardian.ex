@@ -53,7 +53,7 @@ defmodule Lenra.Guardian do
          true <- Lenra.CguService.user_accepted_latest_cgu?(user.id) do
       {:ok, claims}
     else
-      _ -> {:error, :did_not_accept_cgu}
+      _error -> {:error, :did_not_accept_cgu}
     end
   end
 end
