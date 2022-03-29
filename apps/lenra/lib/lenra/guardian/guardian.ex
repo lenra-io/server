@@ -57,10 +57,9 @@ defmodule Lenra.Guardian do
           {:error, :did_not_accept_cgu}
 
         _ ->
-          {:ok, latest_cgu} = Lenra.CguService.get_latest_cgu()
-          {:ok, latest_accepted_cgu} = Lenra.CguService.get_latest_cgu_from_list(cgus)
-
-          with {:ok, 0} <- Lenra.CguService.compare_versions(latest_cgu, latest_accepted_cgu) do
+          with {:ok, latest_cgu} <- Lenra.CguService.get_latest_cgu(),
+               {:ok, latest_accepted_cgu} <- Lenra.CguService.get_latest_cgu_from_list(cgus),
+               {:ok, 0} <- Lenra.CguService.compare_versions(latest_cgu, latest_accepted_cgu) do
             {:ok, claims}
           else
             _ -> {:error, :did_not_accept_cgu}
