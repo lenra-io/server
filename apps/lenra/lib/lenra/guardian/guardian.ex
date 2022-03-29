@@ -18,22 +18,7 @@ defmodule Lenra.Guardian do
         raise "Cannot parse subject from claims"
 
       user ->
-        cgus = Lenra.Repo.preload(user, :cgus).cgus
-
-        case Enum.count(cgus) do
-          0 ->
-            {:error, :did_not_accept_cgu}
-
-          _ ->
-            {:ok, latest_cgu} = Lenra.CguService.get_latest_cgu()
-            {:ok, latest_accepted_cgu} = Lenra.CguService.get_latest_cgu_from_list(cgus)
-
-            with {:ok, 0} <- Lenra.CguService.compare_versions(latest_cgu, latest_accepted_cgu) do
-              {:ok, user}
-            else
-              _ -> {:error, :did_not_accept_cgu}
-            end
-        end
+        {:ok, user}
     end
   end
 
@@ -60,6 +45,30 @@ defmodule Lenra.Guardian do
   def on_revoke(claims, token, _options) do
     with {:ok, _} <- Guardian.DB.on_revoke(claims, token) do
       {:ok, claims}
+    end
+  end
+
+  def verify_claims(claims, _options) do
+    IO.puts("VERIFY CLAIMS")
+    IO.puts(inspect(claims))
+
+    with {:ok, user} <- resource_from_claims(claims) do
+      cgus = Lenra.Repo.preload(user, :cgus).cgus
+
+      case Enum.count(cgus) do
+        0 ->
+          {:error, :did_not_accept_cgu}
+
+        _ ->
+          {:ok, latest_cgu} = Lenra.CguService.get_latest_cgu()
+          {:ok, latest_accepted_cgu} = Lenra.CguService.get_latest_cgu_from_list(cgus)
+
+          with {:ok, 0} <- Lenra.CguService.compare_versions(latest_cgu, latest_accepted_cgu) do
+            {:ok, claims}
+          else
+            _ -> {:error, :did_not_accept_cgu}
+          end
+      end
     end
   end
 end
