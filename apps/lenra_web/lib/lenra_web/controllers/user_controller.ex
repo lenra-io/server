@@ -24,7 +24,7 @@ defmodule LenraWeb.UserController do
   end
 
   def refresh(conn, _params) do
-    access_token =
+    {:ok, access_token} =
       conn
       |> Plug.current_token()
       |> TokenHelper.create_access_token()
