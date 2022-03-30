@@ -6,7 +6,7 @@ defmodule LenraWeb.DataController do
   def create(conn, params) do
     with {:ok, inserted_data: data} <- DataServices.create(params["env_id"], params) do
       conn
-      |> assign_data(:data, data)
+      |> assign_data(:inserted_data, data)
       |> reply
     end
   end
@@ -14,7 +14,7 @@ defmodule LenraWeb.DataController do
   def update(conn, params) do
     with {:ok, updated_data: data} <- DataServices.update(params["data_id"], params) do
       conn
-      |> assign_data(:data, data)
+      |> assign_data(:updated_data, data)
       |> reply
     end
   end
@@ -22,7 +22,7 @@ defmodule LenraWeb.DataController do
   def delete(conn, params) do
     with {:ok, deleted_data: data} <- DataServices.delete(params["data_id"]) do
       conn
-      |> assign_data(:data, data)
+      |> assign_data(:deleted_data, data)
       |> reply
     end
   end
