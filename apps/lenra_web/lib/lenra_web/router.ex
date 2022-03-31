@@ -30,6 +30,7 @@ defmodule LenraWeb.Router do
   scope "/cgu", LenraWeb do
     pipe_through([:api])
     get("/latest", CguController, :get_latest_cgu)
+    get("/latest/html", CguController, :get_latest_cgu_as_html)
   end
 
   scope "/auth", LenraWeb do
