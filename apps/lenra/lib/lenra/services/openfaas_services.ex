@@ -26,7 +26,7 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map(), String.t()) ::
+  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map(), Integer.t()) ::
           {:ok, map()} | {:error, any()}
   def run_listener(
         %LenraApplication{} = application,
@@ -70,21 +70,31 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::
+  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map(), Integer.t()) ::
           {:ok, map()} | {:error, any()}
   def fetch_widget(
         %LenraApplication{} = application,
         %Environment{} = environment,
         widget_name,
         data,
-        props
+        props,
+        session_id
       ) do
     {base_url, base_headers} = get_http_context()
 
     function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
-    headers = [{"Content-Type", "application/json"} | base_headers]
+
+    token =
+      session_id
+      |> Lenra.AppGuardian.encode_and_sign()
+      |> to_string()
+
+    SessionManager.save_token(session_id, token)
+
+    headers = [{"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]]
+
     body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
     Finch.build(:post, url, headers, body)
