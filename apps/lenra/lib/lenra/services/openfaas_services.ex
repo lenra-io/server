@@ -2,6 +2,7 @@ defmodule Lenra.OpenfaasServices do
   @moduledoc """
     The service that manage calls to an Openfaas action with `run_action/3`
   """
+  alias ApplicationRunner.SessionManager
   alias Lenra.{DeploymentServices, Environment, LenraApplication}
   require Logger
 
@@ -25,7 +26,7 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map()) ::
+  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map(), String.t()) ::
           {:ok, map()} | {:error, any()}
   def run_listener(
         %LenraApplication{} = application,
@@ -33,7 +34,8 @@ defmodule Lenra.OpenfaasServices do
         action,
         data,
         props,
-        event
+        event,
+        session_id
       ) do
     {base_url, base_headers} = get_http_context()
 
@@ -41,7 +43,15 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-    headers = [{"Content-Type", "application/json"} | base_headers]
+    token =
+      session_id
+      |> Lenra.AppGuardian.encode_and_sign()
+      |> to_string()
+
+    SessionManager.save_token(session_id, token)
+
+    headers = [{"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]]
+
     body = Jason.encode!(%{action: action, data: data, props: props, event: event})
 
     Logger.debug("Call to Openfaas : #{function_name}")

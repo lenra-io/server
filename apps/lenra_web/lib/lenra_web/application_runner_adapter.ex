@@ -17,6 +17,7 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
             application: application
           }
         },
+        %SessionState{session_id: session_id},
         action,
         data,
         props,
@@ -24,7 +25,7 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
       ) do
     Logger.info("Run listener for action #{action}")
 
-    OpenfaasServices.run_listener(application, environment, action, data, props, event)
+    OpenfaasServices.run_listener(application, environment, action, data, props, event, session_id)
   end
 
   @impl true
@@ -35,12 +36,13 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
             application: application
           }
         },
+        %SessionState{session_id: session_id},
         widget_name,
         data,
         props
       ) do
     Logger.info("Get widget #{widget_name}")
-    OpenfaasServices.fetch_widget(application, environment, widget_name, data, props)
+    OpenfaasServices.fetch_widget(application, environment, widget_name, data, props, session_id)
   end
 
   @impl true

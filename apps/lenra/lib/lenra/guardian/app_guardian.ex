@@ -24,8 +24,11 @@ defmodule Lenra.AppGuardian do
   def on_verify(claims, token, _options) do
     # TODO see if we can pass id in option, from verify_claims
     with {:ok, _id} <- SessionManagers.fetch_session_manager_pid(claims["sub"]),
-         :ok <- SessionManager.verify_token(claims["sub"], token) do
-      {:ok, claims}
+         session_token <- SessionManager.get_token(claims["sub"]) do
+      case session_token == token do
+        true -> {:ok, claims}
+        false -> {:error, :invalid_token}
+      end
     end
   end
 end
