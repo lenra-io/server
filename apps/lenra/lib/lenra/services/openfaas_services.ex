@@ -43,10 +43,9 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-    token =
+    {:ok, token, _claims} =
       session_id
       |> Lenra.AppGuardian.encode_and_sign()
-      |> to_string()
 
     SessionManager.save_token(session_id, token)
 
@@ -86,10 +85,9 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-    token =
+    {:ok, token, _claims} =
       session_id
       |> Lenra.AppGuardian.encode_and_sign()
-      |> to_string()
 
     SessionManager.save_token(session_id, token)
 

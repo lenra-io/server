@@ -47,7 +47,8 @@ defmodule Lenra.OpenfaasServicesTest do
                  "InitData",
                  %{},
                  %{},
-                 %{}
+                 %{},
+                 1
                )
     end
 
@@ -61,7 +62,8 @@ defmodule Lenra.OpenfaasServicesTest do
                  "InitData",
                  %{},
                  %{},
-                 %{}
+                 %{},
+                 1
                )
     end
   end
