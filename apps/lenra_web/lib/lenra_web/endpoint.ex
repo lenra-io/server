@@ -23,25 +23,11 @@ defmodule LenraWeb.Endpoint do
   #
   # You should set gzip to true if you are running phx.digest
   # when deploying your static files in production.
-  if Mix.env() == :dev do
-    cors_header = %{
-      "Access-Control-Allow-Origin" => "localhost",
-      "Access-Control-Allow-Headers" => "Content-Type, Authorization, X-Requested-With, Authorization, Content-Type, Accept, Origin, User-Agent, DNT, Cache-Control, X-Mx-ReqToken, Keep-Alive, X-Requested-With, If-Modified-Since, X-CSRF-Token",
-      "Access-Control-Allow-Methods" => "GET, OPTIONS"
-    }
-    plug Plug.Static,
-      at: "/web",
-      from: :lenra_web,
-      gzip: false,
-      headers: cors_header,
-      only: ~w(html css fonts images js favicon.ico robots.txt cgu)
-  else
-    plug Plug.Static,
-      at: "/web",
-      from: :lenra_web,
-      gzip: false,
-      only: ~w(html css fonts images js favicon.ico robots.txt cgu)
-  end
+  plug Plug.Static,
+    at: "/web",
+    from: :lenra_web,
+    gzip: false,
+    only: ~w(html css fonts images js favicon.ico robots.txt cgu)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
