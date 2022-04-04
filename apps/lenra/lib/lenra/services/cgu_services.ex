@@ -1,10 +1,11 @@
-defmodule Lenra.CguService do
+defmodule Lenra.CguServices do
   @moduledoc """
     The service that get the latest CGU.
   """
+
   import Ecto.Query, only: [from: 2, select: 3]
 
-  alias Lenra.{Cgu, Repo}
+  alias Lenra.{Cgu, Repo, UserAcceptCguVersion}
 
   defp get_latest_cgu_query do
     Ecto.Query.last(Cgu, :inserted_at)
@@ -31,5 +32,14 @@ defmodule Lenra.CguService do
            ) do
       not Repo.exists?(latest_cgu)
     end
+  end
+
+  def accept(cgu_id, user_id) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :accepted_cgu,
+      UserAcceptCguVersion.new(%{cgu_id: cgu_id, user_id: user_id})
+    )
+    |> Repo.transaction()
   end
 end

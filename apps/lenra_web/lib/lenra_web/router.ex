@@ -65,6 +65,8 @@ defmodule LenraWeb.Router do
     put("/password", UserController, :password_modification)
     put("/verify/dev", UserController, :validate_dev)
     get("/me/apps", AppsController, :get_user_apps)
+
+    post("/cgu/:cgu_id", CguController, :accept)
   end
 
   scope "/api", LenraWeb do

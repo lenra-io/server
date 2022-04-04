@@ -1,7 +1,7 @@
-defmodule Lenra.CguSerciceTest do
+defmodule Lenra.CguServicesTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{Cgu, CguService}
+  alias Lenra.{Cgu, CguServices}
 
   @valid_cgu1 %{link: "Test", version: "1.0.0", hash: "test"}
   @valid_cgu2 %{link: "Test1", version: "1.1.0", hash: "Test1"}
@@ -20,7 +20,7 @@ defmodule Lenra.CguSerciceTest do
         |> Ecto.Changeset.put_change(:inserted_at, date1)
         |> Repo.insert()
 
-      assert {:ok, inserted_cgu1} == CguService.get_latest_cgu()
+      assert {:ok, inserted_cgu1} == CguServices.get_latest_cgu()
     end
 
     test "insert 4 cgu and check if the service take the latest" do
@@ -50,7 +50,56 @@ defmodule Lenra.CguSerciceTest do
         |> Ecto.Changeset.put_change(:inserted_at, date3)
         |> Repo.insert()
 
-      assert {:ok, inserted_cgu3} == CguService.get_latest_cgu()
+      assert {:ok, inserted_cgu3} == CguServices.get_latest_cgu()
+    end
+  end
+
+  describe "accept" do
+    setup do
+      {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
+
+      %{user: user}
+    end
+
+    test "existing cgu", %{user: user} do
+      {:ok, cgu} = Repo.insert(Cgu.new(%{link: "test.html", hash: "a", version: "1.0.0"}))
+      assert {:ok, %{accepted_cgu: _cgu}} = CguServices.accept(cgu.id, user.id)
+    end
+
+    test "not latest cgu", %{user: user} do
+      {:ok, cgu} = Repo.insert(Cgu.new(%{link: "test.html", hash: "a", version: "1.0.0"}))
+
+      Repo.insert(
+        Cgu.new(%{link: "test2.html", hash: "b", version: "2.0.0"})
+        |> Ecto.Changeset.put_change(
+          :inserted_at,
+          DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+        )
+      )
+
+      assert_raise Postgrex.Error, "ERROR P0001 (raise_exception) Not latest CGU", fn ->
+        CguServices.accept(cgu.id, user.id)
+      end
+    end
+
+    test "not existing user", %{user: _user} do
+      {:ok, cgu} = Repo.insert(Cgu.new(%{link: "test.html", hash: "a", version: "1.0.0"}))
+      assert {:error, :accepted_cgu, %{errors: [user_id: {"does not exist", _}]}, _} = CguServices.accept(cgu.id, -1)
+    end
+
+    test "latest cgu", %{user: user} do
+      Repo.insert(Cgu.new(%{link: "test.html", hash: "a", version: "1.0.0"}))
+
+      {:ok, cgu} =
+        Repo.insert(
+          Cgu.new(%{link: "test2.html", hash: "b", version: "2.0.0"})
+          |> Ecto.Changeset.put_change(
+            :inserted_at,
+            DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+          )
+        )
+
+      assert {:ok, %{accepted_cgu: _cgu}} = CguServices.accept(cgu.id, user.id)
     end
   end
 
