@@ -8,7 +8,7 @@ defmodule Lenra.AppGuardian do
   alias ApplicationRunner.{SessionManagers, SessionManager}
 
   def subject_for_token(session_pid, _claims) do
-    {:ok, to_string(session_pid)}
+    {:ok, to_string(inspect(session_pid))}
   end
 
   def resource_from_claims(%{"sub" => session_pid}) do

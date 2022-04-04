@@ -48,7 +48,7 @@ defmodule Lenra.OpenfaasServicesTest do
                  %{},
                  %{},
                  %{},
-                 1
+                 self()
                )
     end
 
@@ -63,7 +63,7 @@ defmodule Lenra.OpenfaasServicesTest do
                  %{},
                  %{},
                  %{},
-                 1
+                 self()
                )
     end
   end
