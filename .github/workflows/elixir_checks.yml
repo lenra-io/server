@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - id: pr-is-wip
-        uses: shiipou/pr-is-wip-action@v1.1.0
+        uses: shiipou/pr-is-wip-action@v2.0.0
         with:
           continueIfNonPR: 'true'
         env:
@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 15
     needs:
       - prIsWip
-    if: ${{ needs.prIsWip.outputs.isWip == 'false' }}
+    if: ${{ ! needs.prIsWip.outputs.isWip }}
     steps:
       - uses: webfactory/ssh-agent@v0.5.3
         with:
