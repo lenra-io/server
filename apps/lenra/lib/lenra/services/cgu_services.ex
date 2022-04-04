@@ -6,7 +6,7 @@ defmodule Lenra.CguService do
 
   alias Lenra.{Cgu, Repo}
 
-  defp get_latest_cgu_query() do
+  defp get_latest_cgu_query do
     Ecto.Query.last(Cgu, :inserted_at)
   end
 
