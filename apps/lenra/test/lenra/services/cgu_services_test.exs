@@ -70,7 +70,8 @@ defmodule Lenra.CguServicesTest do
       {:ok, cgu} = Repo.insert(Cgu.new(%{link: "test.html", hash: "a", version: "1.0.0"}))
 
       Repo.insert(
-        Cgu.new(%{link: "test2.html", hash: "b", version: "2.0.0"})
+        %{link: "test2.html", hash: "b", version: "2.0.0"}
+        |> Cgu.new()
         |> Ecto.Changeset.put_change(
           :inserted_at,
           DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
@@ -84,7 +85,7 @@ defmodule Lenra.CguServicesTest do
 
     test "not existing user", %{user: _user} do
       {:ok, cgu} = Repo.insert(Cgu.new(%{link: "test.html", hash: "a", version: "1.0.0"}))
-      assert {:error, :accepted_cgu, %{errors: [user_id: {"does not exist", _}]}, _} = CguServices.accept(cgu.id, -1)
+      assert {:error, :accepted_cgu, %{errors: [user_id: {"does not exist", _constraints}]}, _any} = CguServices.accept(cgu.id, -1)
     end
 
     test "latest cgu", %{user: user} do
@@ -92,7 +93,8 @@ defmodule Lenra.CguServicesTest do
 
       {:ok, cgu} =
         Repo.insert(
-          Cgu.new(%{link: "test2.html", hash: "b", version: "2.0.0"})
+          %{link: "test2.html", hash: "b", version: "2.0.0"}
+          |> Cgu.new()
           |> Ecto.Changeset.put_change(
             :inserted_at,
             DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
