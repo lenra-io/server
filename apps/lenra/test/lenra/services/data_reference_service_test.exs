@@ -67,7 +67,7 @@ defmodule Lenra.DataReferenceServiceTest do
 
       {:ok, inserted_user} = Repo.insert(Data.new(inserted_datastore_point.id, %{"name" => "toto"}))
 
-      assert {:error, :inserted_reference, %{errors: [refBy_id: {"does not exist", _constraint}]}, _changes_so_far} =
+      assert {:error, :data_reference, :reference_not_found, _changes_so_far} =
                DataReferencesServices.create(%{
                  refs_id: inserted_user.id,
                  refBy_id: -1

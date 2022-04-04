@@ -103,6 +103,8 @@ defmodule Lenra.OpenfaasServices do
       {:error, :ressource_not_found} -> {:error, :widget_not_found}
       err -> err
     end
+
+    SessionManager.save_token(session_id, Lenra.AppGuardian.revoke(token))
   end
 
   def fetch_manifest(%LenraApplication{} = _application, %Environment{} = environment)
