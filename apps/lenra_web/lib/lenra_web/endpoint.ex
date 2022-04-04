@@ -30,8 +30,8 @@ defmodule LenraWeb.Endpoint do
     only: ~w(html css fonts images js favicon.ico robots.txt cgu),
     headers: %{
       "Access-Control-Allow-Origin" => "http://localhost:10000",
-      "Access-Control-Allow-Methods" => "GET, OPTIONS",
-      "Access-Control-Allow-Headers" => "Accept, Content-Type, X-Requested-With, X-CSRF-Token, Authorization",
+      "Access-Control-Allow-Methods" => "GET",
+      "Access-Control-Allow-Headers" => "Content-Type, X-Requested-With",
       "Access-Control-Max-Age" => "240"
     }
 
