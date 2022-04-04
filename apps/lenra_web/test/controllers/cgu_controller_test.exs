@@ -109,13 +109,16 @@ defmodule LenraWeb.CguControllerTest do
       end
     end
 
-    # test "test accept with invalid user_id", %{conn: conn} do
-    #   conn = get(conn, Routes.cgu_path(conn, :accept, cgu_id: @valid_cgu1.id, user_id: "invalid"))
+    @tag auth_users: [:dev]
+    test "test accept with invalid user_id", %{users: [conn]} do
+      {:ok, cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
 
-    #   assert json_response(conn, 404) == %{
-    #            "errors" => [%{"code" => 404, "message" => "Not Found."}],
-    #            "success" => false
-    #          }
-    # end
+      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => -1})
+
+      assert json_response(conn, 401) == %{
+               "errors" => [%{"code" => 401, "message" => "You are not authenticated."}],
+               "success" => false
+             }
+    end
   end
 end
