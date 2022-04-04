@@ -27,7 +27,13 @@ defmodule LenraWeb.Endpoint do
     at: "/web",
     from: :lenra_web,
     gzip: false,
-    only: ~w(html css fonts images js favicon.ico robots.txt cgu)
+    only: ~w(html css fonts images js favicon.ico robots.txt cgu),
+    headers: %{
+      "Access-Control-Allow-Origin" => "http://localhost:10000",
+      "Access-Control-Allow-Methods" => "GET, OPTIONS",
+      "Access-Control-Allow-Headers" => "Accept, Content-Type, X-Requested-With, X-CSRF-Token, Authorization",
+      "Access-Control-Max-Age" => "240"
+    }
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -55,12 +61,7 @@ defmodule LenraWeb.Endpoint do
   plug Plug.Session, @session_options
 
   if Mix.env() == :dev do
-    plug CORSPlug,
-      origins: ["http://localhost:10000"],
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-      headers: ["Accept", "Content-Type", "X-Requested-With", "X-CSRF-Token", "Authorization"],
-      credentials: true,
-      max_age: 86_400
+    plug CORSPlug
   end
 
   plug LenraWeb.Router
