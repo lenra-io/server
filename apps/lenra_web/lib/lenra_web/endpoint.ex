@@ -27,7 +27,13 @@ defmodule LenraWeb.Endpoint do
     at: "/web",
     from: :lenra_web,
     gzip: false,
-    only: ~w(html css fonts images js favicon.ico robots.txt cgu)
+    only: ~w(html css fonts images js favicon.ico robots.txt cgu),
+    headers: %{
+      "Access-Control-Allow-Origin" => "http://localhost:10000",
+      "Access-Control-Allow-Methods" => "GET",
+      "Access-Control-Allow-Headers" => "Content-Type, X-Requested-With",
+      "Access-Control-Max-Age" => "240"
+    }
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
