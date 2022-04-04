@@ -55,7 +55,12 @@ defmodule LenraWeb.Endpoint do
   plug Plug.Session, @session_options
 
   if Mix.env() == :dev do
-    plug CORSPlug
+    plug CORSPlug,
+      origins: ["http://localhost:10000"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      headers: ["Accept", "Content-Type", "X-Requested-With", "X-CSRF-Token", "Authorization"],
+      credentials: true,
+      max_age: 86_400
   end
 
   plug LenraWeb.Router
