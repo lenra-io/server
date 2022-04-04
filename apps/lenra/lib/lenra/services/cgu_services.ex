@@ -2,12 +2,16 @@ defmodule Lenra.CguService do
   @moduledoc """
     The service that get the latest CGU.
   """
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query, only: [from: 2, select: 3]
 
   alias Lenra.{Cgu, Repo}
 
+  defp get_latest_cgu_query() do
+    Ecto.Query.last(Cgu, :inserted_at)
+  end
+
   def get_latest_cgu do
-    cgu = Cgu |> Ecto.Query.last(:inserted_at) |> Repo.one()
+    cgu = get_latest_cgu_query() |> Repo.one()
 
     case cgu do
       nil -> {:error, :error_404}
@@ -16,20 +20,16 @@ defmodule Lenra.CguService do
   end
 
   def user_accepted_latest_cgu?(user_id) do
-    latest_accepted_cgu_id =
-      Repo.one(
-        from(c in Cgu,
-          join: u in Lenra.UserAcceptCguVersion,
-          on: c.id == u.cgu_id,
-          where: u.user_id == ^user_id,
-          order_by: [desc: c.inserted_at],
-          limit: 1,
-          select: c.id
-        )
-      )
+    latest_cgu = get_latest_cgu_query() |> select([c], c.id)
 
-    latest_cgu_id = Repo.one(from(c in Cgu, order_by: [desc: c.inserted_at], limit: 1, select: c.id))
-
-    latest_accepted_cgu_id == latest_cgu_id
+    with false <-
+           Repo.exists?(
+             from(
+               u in Lenra.UserAcceptCguVersion,
+               where: u.user_id == ^user_id and u.cgu_id in subquery(latest_cgu)
+             )
+           ) do
+      not Repo.exists?(latest_cgu)
+    end
   end
 end
