@@ -1,7 +1,7 @@
 defmodule LenraWeb.CguController do
   use LenraWeb, :controller
 
-  alias Lenra.CguService
+  alias Lenra.CguServices
 
   def get_latest_cgu(conn, _params) do
     with {:ok, cgu} <- CguServices.get_latest_cgu() do
@@ -11,8 +11,8 @@ defmodule LenraWeb.CguController do
     end
   end
 
-  def accept_cgu(conn, %{cgu_id: cgu_id, user_id: user_id} = _params) do
-    with {:ok, cgu} <- CguServices.accept_cgu(cgu_id, user_id) do
+  def accept(conn, %{"user_id" => user_id, "cgu_id" => cgu_id} = params) do
+    with {:ok, %{accepted_cgu: cgu}} <- CguServices.accept(cgu_id, user_id) do
       conn
       |> assign_data(:accepted_cgu, cgu)
       |> reply

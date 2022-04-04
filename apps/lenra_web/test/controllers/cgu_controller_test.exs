@@ -71,4 +71,51 @@ defmodule LenraWeb.CguControllerTest do
              }
     end
   end
+
+  describe "accept" do
+    @tag auth_users: [:dev]
+    test "with valid cgu_id and user_id", %{users: [conn]} do
+      @valid_cgu1 |> Cgu.new() |> Repo.insert()
+
+      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      {:ok, cgu} =
+        @valid_cgu2
+        |> Cgu.new()
+        |> Ecto.Changeset.put_change(:inserted_at, date1)
+        |> Repo.insert()
+
+      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
+
+      assert %{
+               "data" => %{"accepted_cgu" => %{"cgu_id" => cgu.id, "user_id" => conn.assigns[:user].id}},
+               "success" => true
+             } == json_response(conn, 200)
+    end
+
+    @tag auth_users: [:dev]
+    test "with valid cgu_id and user_id but not latest cgu", %{users: [conn]} do
+      {:ok, cgu} = @valid_cgu1 |> Cgu.new() |> Repo.insert()
+
+      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      @valid_cgu2
+      |> Cgu.new()
+      |> Ecto.Changeset.put_change(:inserted_at, date1)
+      |> Repo.insert()
+
+      assert_raise Postgrex.Error, "ERROR P0001 (raise_exception) Not latest CGU", fn ->
+        post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
+      end
+    end
+
+    # test "test accept with invalid user_id", %{conn: conn} do
+    #   conn = get(conn, Routes.cgu_path(conn, :accept, cgu_id: @valid_cgu1.id, user_id: "invalid"))
+
+    #   assert json_response(conn, 404) == %{
+    #            "errors" => [%{"code" => 404, "message" => "Not Found."}],
+    #            "success" => false
+    #          }
+    # end
+  end
 end
