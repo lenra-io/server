@@ -3,6 +3,7 @@ defmodule LenraWeb.Router do
 
   alias Lenra.Guardian.{
     EnsureAuthenticatedPipeline,
+    EnsureAuthenticatedPreCgu,
     EnsureAuthenticatedQueryParamsPipeline,
     RefreshPipeline
   }
@@ -25,6 +26,10 @@ defmodule LenraWeb.Router do
 
   pipeline :ensure_auth_refresh do
     plug(RefreshPipeline)
+  end
+
+  pipeline :ensure_auth_pre_cgu do
+    plug(EnsureAuthenticatedPreCgu)
   end
 
   scope "/cgu", LenraWeb do
@@ -65,7 +70,10 @@ defmodule LenraWeb.Router do
     put("/password", UserController, :password_modification)
     put("/verify/dev", UserController, :validate_dev)
     get("/me/apps", AppsController, :get_user_apps)
+  end
 
+  scope "/api", LenraWeb do
+    pipe_through([:api, :ensure_auth_pre_cgu])
     post("/cgu/:cgu_id/accept", CguController, :accept)
   end
 
