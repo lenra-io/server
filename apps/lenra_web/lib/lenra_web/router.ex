@@ -21,6 +21,10 @@ defmodule LenraWeb.Router do
   end
 
   pipeline :ensure_auth_app do
+    plug Plug.Parsers,
+      parsers: [:urlencoded, :json],
+      json_decoder: Jason
+
     plug(EnsureAuthenticatedAppPipeline)
   end
 

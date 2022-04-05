@@ -13,7 +13,6 @@ defmodule LenraWeb.AppGuardianTest do
     Deployment,
     Environment,
     EnvironmentServices,
-    LenraApplication,
     LenraApplicationServices,
     OpenfaasServices,
     FaasStub,
@@ -21,11 +20,11 @@ defmodule LenraWeb.AppGuardianTest do
   }
 
   setup %{conn: conn} do
-    %{env: env, app: app, session_id: session_id} = create_app_and_get_env(conn)
+    %{env: env, app: app, session_id: session_id} = create_app_and_get_env()
     {:ok, %{conn: conn, env: env, app: app, session_id: session_id}}
   end
 
-  defp create_app_and_get_env(conn) do
+  defp create_app_and_get_env() do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
     {:ok, %{inserted_application: application, inserted_main_env: env}} =
@@ -41,9 +40,10 @@ defmodule LenraWeb.AppGuardianTest do
     env = Repo.get(Environment, env.id) |> Repo.preload(:deployed_build)
 
     faas = FaasStub.create_faas_stub()
-    app = FaasStub.stub_app(faas, application.service_name, inserted_build.build_number)
+    lenra_env = Application.fetch_env!(:lenra, :lenra_env)
+    url = "/function/#{lenra_env}-#{application.service_name}-#{inserted_build.build_number}"
 
-    FaasStub.stub_action_once(app, "", %{"manifest" => %{}})
+    Bypass.stub(faas, "POST", url, &handle_request(&1))
 
     session_id = Ecto.UUID.generate()
 
@@ -74,23 +74,54 @@ defmodule LenraWeb.AppGuardianTest do
     |> Repo.transaction()
   end
 
-  test "create data if token valid", %{conn: conn, env: env, app: app, session_id: session_id} do
-    FaasStub.stub_action_once(
-      app,
-      "InitData",
-      post(
-        conn,
-        Routes.data_path(conn, :create, %{
-          "name" => "test",
-          "color" => "ffffff",
-          "icon" => 31
-        })
-      )
-    )
+  defp handle_request(conn) do
+    case length(conn.req_headers) do
+      4 ->
+        %{"manifest" => %{}}
 
-    OpenfaasServices.run_listener(app, env, "InitData", %{}, %{}, %{}, session_id)
+      5 ->
+        post(
+          conn,
+          Routes.data_path(conn, :create, %{"datastore" => "test", "data" => %{"name" => "toto"}})
+        )
+    end
   end
 
-  test "should return error if params not valid" do
+  test "request should pass if token valid", %{conn: _conn, env: env, app: app, session_id: session_id} do
+    assert %{assigns: %{message: "Your token is invalid."}} !=
+             OpenfaasServices.run_listener(app, env, "InitData", %{}, %{}, %{}, session_id)
+  end
+
+  test "request should return error if token invalid", %{
+    conn: conn,
+    env: env,
+    app: app,
+    session_id: session_id
+  } do
+    OpenfaasServices.run_listener(app, env, "InitData", %{}, %{}, %{}, session_id)
+
+    {:ok, token, _claims} =
+      session_id
+      |> Lenra.AppGuardian.encode_and_sign()
+
+    conn =
+      Map.put(conn, :req_headers, [
+        {"Content-Type", "application/json"},
+        {"authorization", "Bearer #{token}, Basic YWRtaW46M2kwREc4NTdLWlVaODQ3R0pheW5qMXAwbQ=="}
+      ])
+
+    assert %{assigns: %{message: "Your token is invalid."}} =
+             post(
+               conn,
+               Routes.data_path(conn, :create, %{})
+             )
+  end
+
+  test "request should return error if token not found", %{conn: conn, env: _env, app: _app, session_id: _session_id} do
+    assert %{assigns: %{message: "No token found in the request, please try again."}} =
+             post(
+               conn,
+               Routes.data_path(conn, :create, %{})
+             )
   end
 end

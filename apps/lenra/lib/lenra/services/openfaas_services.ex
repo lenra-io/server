@@ -2,7 +2,7 @@ defmodule Lenra.OpenfaasServices do
   @moduledoc """
     The service that manage calls to an Openfaas action with `run_action/3`
   """
-  alias ApplicationRunner.SessionManager
+  alias ApplicationRunner.{SessionManager, SessionManagers}
   alias Lenra.{DeploymentServices, Environment, LenraApplication}
   require Logger
 
@@ -47,7 +47,7 @@ defmodule Lenra.OpenfaasServices do
       session_id
       |> Lenra.AppGuardian.encode_and_sign()
 
-    SessionManager.save_token(session_id, token)
+    SessionManager.save_token(SessionManagers.fetch_session_manager_pid(session_id), token)
 
     headers = [{"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]]
 
