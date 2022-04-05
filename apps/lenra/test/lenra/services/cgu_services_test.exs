@@ -109,7 +109,7 @@ defmodule Lenra.CguServicesTest do
     test "No CGU in database" do
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-      assert true == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+      assert true == CguServices.user_accepted_latest_cgu?(user.id)
     end
 
     test "User did not accept CGU" do
@@ -117,7 +117,7 @@ defmodule Lenra.CguServicesTest do
       %{link: "a", version: "1.0.0", hash: "a"} |> Lenra.Cgu.new() |> Repo.insert()
 
       assert Lenra.Cgu |> Lenra.Repo.all() |> Enum.count() == 1
-      assert false == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+      assert false == CguServices.user_accepted_latest_cgu?(user.id)
     end
 
     test "User accepted latest CGU" do
@@ -125,7 +125,7 @@ defmodule Lenra.CguServicesTest do
       {:ok, cgu} = %{link: "a", version: "1.0.0", hash: "a"} |> Lenra.Cgu.new() |> Repo.insert()
       %{user_id: user.id, cgu_id: cgu.id} |> Lenra.UserAcceptCguVersion.new() |> Repo.insert()
 
-      assert true == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+      assert true == CguServices.user_accepted_latest_cgu?(user.id)
     end
 
     test "User accepted CGU but it is not the latest" do
@@ -141,7 +141,7 @@ defmodule Lenra.CguServicesTest do
         |> Ecto.Changeset.put_change(:updated_at, date)
         |> Repo.insert()
 
-      assert false == Lenra.CguService.user_accepted_latest_cgu?(user.id)
+      assert false == CguServices.user_accepted_latest_cgu?(user.id)
     end
   end
 end
