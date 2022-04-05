@@ -78,9 +78,7 @@ defmodule Lenra.CguServicesTest do
         )
       )
 
-      assert_raise Postgrex.Error, "ERROR P0001 (raise_exception) Not latest CGU", fn ->
-        CguServices.accept(cgu.id, user.id)
-      end
+      assert {:error, %{postgres: %{message: "Not latest CGU"}}} = CguServices.accept(cgu.id, user.id)
     end
 
     test "not existing user", %{user: _user} do

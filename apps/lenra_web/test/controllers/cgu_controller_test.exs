@@ -104,9 +104,12 @@ defmodule LenraWeb.CguControllerTest do
       |> Ecto.Changeset.put_change(:inserted_at, date1)
       |> Repo.insert()
 
-      assert_raise Postgrex.Error, "ERROR P0001 (raise_exception) Not latest CGU", fn ->
-        post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
-      end
+      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
+
+      assert json_response(conn, 400) == %{
+               "errors" => [%{"code" => 26, "message" => "Not latest CGU."}],
+               "success" => false
+             }
     end
 
     @tag auth_users: [:dev]
@@ -115,8 +118,8 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => -1})
 
-      assert json_response(conn, 401) == %{
-               "errors" => [%{"code" => 401, "message" => "You are not authenticated."}],
+      assert json_response(conn, 400) == %{
+               "errors" => [%{"code" => 0, "message" => "user_id does not exist"}],
                "success" => false
              }
     end

@@ -35,11 +35,15 @@ defmodule Lenra.CguServices do
   end
 
   def accept(cgu_id, user_id) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(
-      :accepted_cgu,
-      UserAcceptCguVersion.new(%{cgu_id: cgu_id, user_id: user_id})
-    )
-    |> Repo.transaction()
+    try do
+      Ecto.Multi.new()
+      |> Ecto.Multi.insert(
+        :accepted_cgu,
+        UserAcceptCguVersion.new(%{cgu_id: cgu_id, user_id: user_id})
+      )
+      |> Repo.transaction()
+    rescue
+      Postgrex.Error -> {:error, :not_latest_cgu}
+    end
   end
 end
