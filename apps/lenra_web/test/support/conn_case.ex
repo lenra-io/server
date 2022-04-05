@@ -45,6 +45,7 @@ defmodule LenraWeb.ConnCase do
       %{conn: Phoenix.ConnTest.build_conn()}
       |> auth_user(tags)
       |> auth_users(tags)
+      |> auth_user_with_cgu(tags)
 
     {:ok, map}
   end
@@ -65,6 +66,15 @@ defmodule LenraWeb.ConnCase do
     end
   end
 
+  defp auth_user_with_cgu(%{conn: conn} = map, tags) do
+    case tags[:auth_user_with_cgu] do
+      false -> map
+      nil -> map
+      true -> Map.put(map, :conn, auth_john_doe_with_cgu(conn))
+      role -> Map.put(map, :conn, auth_john_doe_with_cgu(conn, %{"role" => role}))
+    end
+  end
+
   defp auth_users(users_role) do
     users_role
     |> Enum.with_index()
@@ -77,6 +87,14 @@ defmodule LenraWeb.ConnCase do
 
   defp auth_john_doe(conn, params \\ %{}) do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(params)
+    conn_user(conn, user)
+  end
+
+  defp auth_john_doe_with_cgu(conn, params \\ %{}) do
+    {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(params)
+    {:ok, cgu} = Lenra.Cgu.new(%{link: "latest", hash: "latesthash", version: "latest"}) |> Lenra.Repo.insert()
+
+    Lenra.CguServices.accept(cgu.id, user.id)
     conn_user(conn, user)
   end
 
