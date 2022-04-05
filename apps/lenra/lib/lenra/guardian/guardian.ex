@@ -50,7 +50,7 @@ defmodule Lenra.Guardian do
 
   def verify_claims(claims, _options) do
     with {:ok, user} <- resource_from_claims(claims),
-         true <- Lenra.CguService.user_accepted_latest_cgu?(user.id) do
+         true <- Lenra.CguServices.user_accepted_latest_cgu?(user.id) do
       {:ok, claims}
     else
       _error -> {:error, :did_not_accept_cgu}

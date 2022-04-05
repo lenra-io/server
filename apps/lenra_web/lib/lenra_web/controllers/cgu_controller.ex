@@ -11,7 +11,7 @@ defmodule LenraWeb.CguController do
     end
   end
 
-  def accept(conn, %{"user_id" => user_id, "cgu_id" => cgu_id} = params) do
+  def accept(conn, %{"user_id" => user_id, "cgu_id" => cgu_id} = _params) do
     with {:ok, %{accepted_cgu: cgu}} <- CguServices.accept(cgu_id, user_id) do
       conn
       |> assign_data(:accepted_cgu, cgu)
