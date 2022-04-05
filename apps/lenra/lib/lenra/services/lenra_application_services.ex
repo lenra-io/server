@@ -7,6 +7,7 @@ defmodule Lenra.LenraApplicationServices do
   alias Lenra.{
     ApplicationMainEnv,
     Environment,
+    EnvironmentServices,
     LenraApplication,
     Repo,
     UserEnvironmentAccess
@@ -43,12 +44,10 @@ defmodule Lenra.LenraApplicationServices do
   def create(user_id, params) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:inserted_application, LenraApplication.new(user_id, params))
-    |> Ecto.Multi.insert(:inserted_main_env, fn %{inserted_application: app} ->
-      Environment.new(app.id, user_id, nil, %{name: "live", is_ephemeral: false, is_public: false})
-    end)
+    |> EnvironmentServices.create_with_app(user_id, %{name: "live", is_ephemeral: false, is_public: false})
     |> Ecto.Multi.insert(:application_main_env, fn %{
                                                      inserted_application: app,
-                                                     inserted_main_env: env
+                                                     inserted_env: env
                                                    } ->
       ApplicationMainEnv.new(app.id, env.id)
     end)
