@@ -26,7 +26,7 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map(), Integer.t()) ::
+  @spec run_listener(LenraApplication.t(), Environment.t(), Integer.t(), map(), map(), map(), Integer.t()) ::
           {:ok, map()} | {:error, any()}
   def run_listener(
         %LenraApplication{} = application,
@@ -47,7 +47,7 @@ defmodule Lenra.OpenfaasServices do
       session_id
       |> Lenra.AppGuardian.encode_and_sign()
 
-    SessionManager.save_token(SessionManagers.fetch_session_manager_pid(session_id), token)
+    SessionManager.set_assigns(SessionManagers.fetch_session_manager_pid(session_id), %{token: token})
 
     headers = [{"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]]
 
@@ -69,15 +69,14 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map(), Integer.t()) ::
+  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::
           {:ok, map()} | {:error, any()}
   def fetch_widget(
         %LenraApplication{} = application,
         %Environment{} = environment,
         widget_name,
         data,
-        props,
-        session_id
+        props
       ) do
     {base_url, base_headers} = get_http_context()
 
@@ -85,13 +84,7 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-    {:ok, token, _claims} =
-      session_id
-      |> Lenra.AppGuardian.encode_and_sign()
-
-    SessionManager.save_token(session_id, token)
-
-    headers = [{"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]]
+    headers = [{"Content-Type", "application/json"} | base_headers]
 
     body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
@@ -103,8 +96,6 @@ defmodule Lenra.OpenfaasServices do
       {:error, :ressource_not_found} -> {:error, :widget_not_found}
       err -> err
     end
-
-    SessionManager.save_token(session_id, Lenra.AppGuardian.revoke(token))
   end
 
   def fetch_manifest(%LenraApplication{} = _application, %Environment{} = environment)

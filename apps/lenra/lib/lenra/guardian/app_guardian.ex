@@ -27,7 +27,7 @@ defmodule Lenra.AppGuardian do
          session_token <- SessionManager.get_token(session_id) do
       case session_token == token do
         true ->
-          SessionManager.save_token(session_id, Lenra.AppGuardian.revoke(token))
+          SessionManager.set_assigns(session_id, Lenra.AppGuardian.revoke(token))
           {:ok, claims}
 
         false ->
