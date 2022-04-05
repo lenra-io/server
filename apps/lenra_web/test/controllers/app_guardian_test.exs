@@ -13,9 +13,9 @@ defmodule LenraWeb.AppGuardianTest do
     Deployment,
     Environment,
     EnvironmentServices,
+    FaasStub,
     LenraApplicationServices,
     OpenfaasServices,
-    FaasStub,
     Repo
   }
 
@@ -24,7 +24,7 @@ defmodule LenraWeb.AppGuardianTest do
     {:ok, %{conn: conn, env: env, app: app, session_id: session_id}}
   end
 
-  defp create_app_and_get_env() do
+  defp create_app_and_get_env do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
     {:ok, %{inserted_application: application, inserted_main_env: env}} =
@@ -37,7 +37,10 @@ defmodule LenraWeb.AppGuardianTest do
 
     deploy(inserted_build.id, env.id, user.id)
 
-    env = Repo.get(Environment, env.id) |> Repo.preload(:deployed_build)
+    env_preloaded =
+      Environment
+      |> Repo.get(env.id)
+      |> Repo.preload(:deployed_build)
 
     faas = FaasStub.create_faas_stub()
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
@@ -50,11 +53,11 @@ defmodule LenraWeb.AppGuardianTest do
     SessionManagers.start_session(
       session_id,
       env.id,
-      %{user: user, application: application, environment: env},
-      %{application: application, environment: env}
+      %{user: user, application: application, environment: env_preloaded},
+      %{application: application, environment: env_preloaded}
     )
 
-    %{env: env, app: application, session_id: session_id}
+    %{env: env_preloaded, app: application, session_id: session_id}
   end
 
   defp deploy(build_id, env_id, publisher_id) do

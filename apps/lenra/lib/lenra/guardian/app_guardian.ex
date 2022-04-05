@@ -5,7 +5,7 @@ defmodule Lenra.AppGuardian do
 
   use Guardian, otp_app: :lenra
 
-  alias ApplicationRunner.{SessionManagers, SessionManager}
+  alias ApplicationRunner.{SessionManager, SessionManagers}
 
   def subject_for_token(session_pid, _claims) do
     {:ok, to_string(inspect(session_pid))}
