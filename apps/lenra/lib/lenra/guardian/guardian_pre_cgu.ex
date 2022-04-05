@@ -1,4 +1,4 @@
-defmodule Lenra.Guardian do
+defmodule Lenra.GuardianPreCgu do
   @moduledoc """
     Lenra.Guardian handle the callback operations to generate and verify the token.
   """

@@ -103,10 +103,7 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
 
-      assert json_response(conn, 400) == %{
-               "errors" => [%{"code" => 26, "message" => "Not latest CGU."}],
-               "success" => false
-             }
+      assert %{"success" => true} = json_response(conn, 200)
     end
 
     @tag auth_user_with_cgu: :dev
