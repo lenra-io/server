@@ -59,6 +59,8 @@ defmodule LenraWeb.Router do
   scope "/api", LenraWeb do
     pipe_through([:api, :ensure_auth])
     post("/cgu/:cgu_id/accept", CguController, :accept)
+
+    pipe_through([:ensure_cgu_accepted])
     resources("/apps", AppsController, only: [:index, :create, :delete])
     get("/apps/:app_id/main_environment", ApplicationMainEnvController, :index)
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
