@@ -26,7 +26,7 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_listener(LenraApplication.t(), Environment.t(), Integer.t(), map(), map(), map(), Integer.t()) ::
+  @spec run_listener(LenraApplication.t(), Environment.t(), Integer, map(), map(), map(), Integer) ::
           {:ok, map()} | {:error, any()}
   def run_listener(
         %LenraApplication{} = application,
