@@ -1,4 +1,8 @@
 defmodule LenraWeb.Plugs.CheckCguPlug do
+  @moduledoc """
+  Plug that checks whether the latest cgu has been accepted or not
+  """
+
   def init(opts), do: opts
 
   def call(conn, _opts) do
