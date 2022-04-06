@@ -3,7 +3,6 @@ defmodule LenraWeb.Router do
 
   alias Lenra.Guardian.{
     EnsureAuthenticatedPipeline,
-    EnsureAuthenticatedPreCgu,
     EnsureAuthenticatedQueryParamsPipeline,
     RefreshPipeline
   }
