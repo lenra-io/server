@@ -34,6 +34,9 @@ defmodule LenraWeb.Router do
   scope "/cgu", LenraWeb do
     pipe_through([:api])
     get("/latest", CguController, :get_latest_cgu)
+
+    pipe_through([:ensure_auth])
+    get("/me/is_latest_accepted", CguController, :user_accepted_latest_cgu)
   end
 
   scope "/auth", LenraWeb do

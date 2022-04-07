@@ -18,4 +18,16 @@ defmodule LenraWeb.CguController do
       |> reply
     end
   end
+
+  def user_accepted_latest_cgu(conn, _params) do
+    user_id = Lenra.Guardian.resource_from_claims(conn).id
+
+    if CguServices.user_accepted_latest_cgu?(user_id) do
+      conn
+      |> assign_data(:user_accepted_latest_cgu, true)
+      |> reply
+    else
+      {:error, :did_not_accept_cgu}
+    end
+  end
 end
