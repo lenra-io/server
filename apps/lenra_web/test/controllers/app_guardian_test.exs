@@ -83,16 +83,22 @@ defmodule LenraWeb.AppGuardianTest do
         %{"manifest" => %{}}
 
       5 ->
+        IO.inspect(conn)
+
         post(
           conn,
-          Routes.data_path(conn, :create, %{"datastore" => "test", "data" => %{"name" => "toto"}})
+          Routes.data_path(conn, :create, %{"datastore" => "UserDatas", "data" => %{"name" => "toto"}})
         )
     end
   end
 
-  test "request should pass if token valid", %{conn: _conn, env: env, app: app, session_id: session_id} do
-    assert %{assigns: %{message: "Your token is invalid."}} !=
-             OpenfaasServices.run_listener(app, env, "InitData", %{}, %{}, %{}, session_id)
+  test "request should pass if token valid", %{conn: conn, env: env, app: app, session_id: session_id} do
+    extract_token([%{token: "token"}])
+    assert({:ok, res} = OpenfaasServices.run_listener(app, env, "InitData", %{}, %{}, %{}, session_id))
+  end
+
+  defp extract_token([%{token: token}]) do
+    token
   end
 
   test "request should return error if token invalid", %{
