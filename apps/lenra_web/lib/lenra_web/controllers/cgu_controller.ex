@@ -20,7 +20,7 @@ defmodule LenraWeb.CguController do
   end
 
   def user_accepted_latest_cgu(conn, _params) do
-    user_id = Lenra.Guardian.resource_from_claims(conn).id
+    user_id = Guardian.Plug.current_resource(conn).id
 
     if CguServices.user_accepted_latest_cgu?(user_id) do
       conn
