@@ -59,6 +59,7 @@ defmodule LenraWeb.Router do
   scope "/api", LenraWeb do
     pipe_through([:api, :ensure_auth])
     post("/cgu/:cgu_id/accept", CguController, :accept)
+    get("/me/cgu/accepted_latest", CguController, :user_accepted_latest_cgu)
 
     pipe_through([:ensure_cgu_accepted])
     resources("/apps", AppsController, only: [:index, :create, :delete])
@@ -74,7 +75,6 @@ defmodule LenraWeb.Router do
     put("/password", UserController, :password_modification)
     put("/verify/dev", UserController, :validate_dev)
     get("/me/apps", AppsController, :get_user_apps)
-    get("/me/cgu/accepted_latest", CguController, :user_accepted_latest_cgu)
   end
 
   scope "/api", LenraWeb do
