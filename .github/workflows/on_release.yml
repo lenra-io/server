@@ -25,9 +25,6 @@ jobs:
           else
             echo "::set-output name=target_ref::main"
           fi
-          RELEASE_NOTES="$(git log -n1 | head -n5 | tail -n1)"
-          RELEASE_NOTES="${RELEASE_NOTES/    /}"
-          echo "::set-output name=release-notes::${RELEASE_NOTES}"
       - name: create_pr
         uses: lenra-io/create-or-update-pr-action/utils/trigger_workflow@v1.0.0
         with:
@@ -38,6 +35,6 @@ jobs:
             {
               "version": "${{ steps.extract_tag.outputs.tag }}",
               "origin": "server",
-              "release_notes": "${{ steps.extract_tag.outputs.release-notes }}"
+              "release_notes": "${{ github.event.release.body }}"
             }
           token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
