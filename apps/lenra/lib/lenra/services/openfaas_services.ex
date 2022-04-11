@@ -47,9 +47,13 @@ defmodule Lenra.OpenfaasServices do
       session_id
       |> Lenra.AppGuardian.encode_and_sign()
 
-    SessionManager.set_assigns(SessionManagers.fetch_session_manager_pid(session_id), %{token: token})
+    SessionManager.set_assigns(SessionManagers.fetch_session_manager_pid(session_id), %{
+      token: token
+    })
 
-    headers = [{"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]]
+    headers = [
+      {"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]
+    ]
 
     body = Jason.encode!(%{action: action, data: data, props: props, event: event})
 
@@ -92,9 +96,14 @@ defmodule Lenra.OpenfaasServices do
     |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
     |> case do
-      {:ok, %{"widget" => widget}} -> {:ok, widget}
-      {:error, :ressource_not_found} -> {:error, :widget_not_found}
-      err -> err
+      {:ok, %{"widget" => widget}} ->
+        {:ok, widget}
+
+      {:error, :ressource_not_found} ->
+        {:error, :widget_not_found}
+
+      err ->
+        err
     end
   end
 
@@ -208,6 +217,7 @@ defmodule Lenra.OpenfaasServices do
 
   defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
     Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
+
     {:error, :openfaas_delete_error}
   end
 
