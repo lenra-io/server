@@ -2,6 +2,6 @@
     "editor.rulers": [
         120,
     ],
-    "thunder-client.loadFromProject": true,
-    "thunder-client.workspaceRelativePath": ".vscode"
+    "thunder-client.workspaceRelativePath": ".vscode",
+    "thunder-client.saveToWorkspace": true
 }

@@ -1,0 +1,89 @@
+[
+  {
+    "_id": "786cd85e-2a59-44b6-a835-45cd23e28b73",
+    "colName": "Lenra",
+    "created": "2022-02-07T13:10:03.672Z",
+    "sortNum": 10000,
+    "folders": [
+      {
+        "_id": "4bf14235-9c4a-4826-98f4-26eda1430256",
+        "name": "/auth",
+        "containerId": "",
+        "created": "2022-02-07T13:14:47.725Z",
+        "sortNum": 10000
+      },
+      {
+        "_id": "a94213ca-8f76-4321-98c8-c7963d59efb9",
+        "name": "/api",
+        "containerId": "",
+        "created": "2022-02-07T13:23:15.885Z",
+        "sortNum": 20000,
+        "settings": {
+          "headers": [],
+          "tests": []
+        }
+      },
+      {
+        "_id": "2cd2ddaa-4e51-4e24-98a3-0aa25fa60e9a",
+        "name": "apps",
+        "containerId": "a94213ca-8f76-4321-98c8-c7963d59efb9",
+        "created": "2022-02-07T14:34:43.959Z",
+        "sortNum": 40000
+      },
+      {
+        "_id": "92e1989e-b7e4-4274-847e-4a81bab928fe",
+        "name": "environments",
+        "containerId": "a94213ca-8f76-4321-98c8-c7963d59efb9",
+        "created": "2022-02-07T14:34:57.236Z",
+        "sortNum": 50000
+      },
+      {
+        "_id": "62ce82a7-3adf-421e-ab6f-a82a6c3d3b30",
+        "name": "builds",
+        "containerId": "a94213ca-8f76-4321-98c8-c7963d59efb9",
+        "created": "2022-02-07T14:40:18.836Z",
+        "sortNum": 60000
+      },
+      {
+        "_id": "56f5ce79-7af6-405d-be53-8bcc0c1c72a2",
+        "name": "deployments",
+        "containerId": "a94213ca-8f76-4321-98c8-c7963d59efb9",
+        "created": "2022-02-07T14:42:17.598Z",
+        "sortNum": 70000
+      },
+      {
+        "_id": "997859ea-5139-4d88-9114-97a8c7e102f3",
+        "name": "me",
+        "containerId": "a94213ca-8f76-4321-98c8-c7963d59efb9",
+        "created": "2022-02-07T14:44:46.824Z",
+        "sortNum": 80000
+      },
+      {
+        "_id": "880bc176-0b50-44c1-b255-0b804958e79a",
+        "name": "runner",
+        "containerId": "a94213ca-8f76-4321-98c8-c7963d59efb9",
+        "created": "2022-02-07T14:46:00.881Z",
+        "sortNum": 90000
+      },
+      {
+        "_id": "e28fd8ba-f2f9-4d79-8b77-6a6830cdb315",
+        "name": "/cgu",
+        "containerId": "",
+        "created": "2022-04-11T11:36:35.505Z",
+        "sortNum": 100000,
+        "settings": {
+          "headers": [],
+          "tests": []
+        }
+      }
+    ],
+    "settings": {
+      "headers": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{access_token}}"
+      },
+      "tests": []
+    }
+  }
+]
