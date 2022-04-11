@@ -24,10 +24,10 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
-      assert json_response(conn, 200) == %{
+      assert %{
                "data" => %{"latest_cgu" => %{"hash" => "Test1", "link" => "Test1", "version" => "1.1.0"}},
                "success" => true
-             }
+             } = json_response(conn, 200)
     end
 
     test "test get_latest_cgu with 4 cgu in DB", %{conn: conn} do
@@ -56,10 +56,10 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
-      assert json_response(conn, 200) == %{
+      assert %{
                "data" => %{"latest_cgu" => %{"hash" => "Test3", "link" => "Test3", "version" => "1.3.0"}},
                "success" => true
-             }
+             } = json_response(conn, 200)
     end
 
     test "test get_latest_cgu without cgu in database", %{conn: conn} do
@@ -104,18 +104,6 @@ defmodule LenraWeb.CguControllerTest do
       conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
 
       assert %{"success" => true} = json_response(conn, 200)
-    end
-
-    @tag auth_user_with_cgu: :dev
-    test "test accept with invalid user_id", %{conn: conn} do
-      {:ok, cgu} = Lenra.CguServices.get_latest_cgu()
-
-      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => -1})
-
-      assert json_response(conn, 400) == %{
-               "errors" => [%{"code" => 0, "message" => "user_id does not exist"}],
-               "success" => false
-             }
     end
   end
 
