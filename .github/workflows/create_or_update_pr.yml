@@ -6,6 +6,9 @@ on:
       version:
         description: 'Lenra Component Version'
         required: true
+      commit_message:
+        description: 'Message to use when commit'
+        required: false
       release_notes:
         description: 'Lenra Component Release notes'
         required: false
@@ -44,8 +47,4 @@ jobs:
             "
             git add apps/lenra_web/mix.exs
             
-            RELEASE_NOTES="${{ github.event.inputs.release_notes }}"
-            RELEASE_TYPE="${RELEASE_NOTES/:*}"
-            
-            git commit -m "${RELEASE_TYPE}: Upgrade ${{ github.event.inputs.origin }} to ${{ github.event.inputs.version }}
-            ${RELEASE_NOTES}"
+            git commit -m "${{ github.event.inputs.commit_message }}"
