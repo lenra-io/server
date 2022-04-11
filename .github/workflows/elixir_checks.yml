@@ -11,6 +11,8 @@ jobs:
     name: PR is WIP?
     runs-on: ubuntu-latest
     timeout-minutes: 2
+    outputs:
+      isWip: ${{ steps.prIsWip.outputs.isWip }}
     steps:
       - id: pr-is-wip
         uses: shiipou/pr-is-wip-action@v1.1.0
@@ -41,7 +43,7 @@ jobs:
     timeout-minutes: 15
     needs:
       - prIsWip
-    if: ${{ needs.prIsWip.outputs.isWip == 'false' }}
+    if: needs.prIsWip.outputs.isWip == 'false'
     steps:
       - uses: webfactory/ssh-agent@v0.5.3
         with:
