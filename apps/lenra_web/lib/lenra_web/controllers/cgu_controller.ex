@@ -18,4 +18,12 @@ defmodule LenraWeb.CguController do
       |> reply
     end
   end
+
+  def user_accepted_latest_cgu(conn, _params) do
+    user_id = Guardian.Plug.current_resource(conn).id
+
+    conn
+    |> assign_data(:user_accepted_latest_cgu, CguServices.user_accepted_latest_cgu?(user_id))
+    |> reply
+  end
 end

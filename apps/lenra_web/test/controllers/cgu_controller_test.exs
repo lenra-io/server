@@ -118,4 +118,40 @@ defmodule LenraWeb.CguControllerTest do
              }
     end
   end
+
+  describe "user_accepted_latest_cgu" do
+    @tag auth_user: :dev
+    test "user accepted latest", %{conn: conn} do
+      {:ok, cgu} =
+        %{hash: "user_accepted_latest_cgu", version: "user_accepted_latest_cgu", link: "user_accepted_latest_cgu"}
+        |> Lenra.Cgu.new()
+        |> Lenra.Repo.insert()
+
+      %{cgu_id: cgu.id, user_id: conn.assigns.user.id}
+      |> Lenra.UserAcceptCguVersion.new()
+      |> Lenra.Repo.insert()
+
+      conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
+
+      assert json_response(conn, 200) == %{
+               "data" => %{"user_accepted_latest_cgu" => true},
+               "success" => true
+             }
+    end
+
+    @tag auth_user: :dev
+    test "user did not accept latest", %{conn: conn} do
+      {:ok, cgu} =
+        %{hash: "user_accepted_latest_cgu", version: "user_accepted_latest_cgu", link: "user_accepted_latest_cgu"}
+        |> Lenra.Cgu.new()
+        |> Lenra.Repo.insert()
+
+      conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
+
+      assert json_response(conn, 200) == %{
+               "data" => %{"user_accepted_latest_cgu" => false},
+               "success" => true
+             }
+    end
+  end
 end
