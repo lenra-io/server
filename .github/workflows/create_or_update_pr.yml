@@ -32,6 +32,9 @@ jobs:
         with:
           name: 'Update dependencies'
           token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
+          message: |
+            # Upgrading ${{ github.event.inputs.origin }} to ${{ github.event.inputs.version }}
+            ${{ github.event.inputs.release_notes }}
           script: |
             # Regex in bash is not powerful enough but thanks to python regex that work 
             ## (I choose python because it's already installed on GitHub Action runner)
