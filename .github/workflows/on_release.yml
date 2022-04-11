@@ -35,6 +35,7 @@ jobs:
             {
               "version": "${{ steps.extract_tag.outputs.tag }}",
               "origin": "server",
+              "commit_message": "build(deps-dev): Upgrade ${{ github.event.inputs.origin }} to ${{ github.event.inputs.version }}",
               "release_notes": "${{ github.event.release.body }}"
             }
           token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
