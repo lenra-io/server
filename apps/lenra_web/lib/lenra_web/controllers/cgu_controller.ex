@@ -22,12 +22,8 @@ defmodule LenraWeb.CguController do
   def user_accepted_latest_cgu(conn, _params) do
     user_id = Guardian.Plug.current_resource(conn).id
 
-    if CguServices.user_accepted_latest_cgu?(user_id) do
-      conn
-      |> assign_data(:user_accepted_latest_cgu, true)
-      |> reply
-    else
-      {:error, :did_not_accept_cgu}
-    end
+    conn
+    |> assign_data(:user_accepted_latest_cgu, CguServices.user_accepted_latest_cgu?(user_id))
+    |> reply
   end
 end
