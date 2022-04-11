@@ -51,7 +51,6 @@ defmodule LenraWeb.MixProject do
         tag: "v1.0.0-data.1",
         credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       )
-      # {:application_runner, path: "/home/emric/Documents/Lenra/application-runner"}
     ]
   end
 
