@@ -3,7 +3,7 @@ defmodule LenraWeb.AppGuardianTest do
     Test the `LenraWeb.DataController` module
   """
 
-  use LenraWeb.ConnCase, async: true
+  use LenraWeb.ConnCase, async: false
 
   alias ApplicationRunner.SessionManagers
 
@@ -79,14 +79,22 @@ defmodule LenraWeb.AppGuardianTest do
 
   defp handle_request(conn) do
     case length(conn.req_headers) do
+      # no token -> fetch manifest
       4 ->
         Plug.Conn.resp(conn, 200, Jason.encode!(%{"manifest" => %{}}))
 
+      # token -> run_listeners
       5 ->
+        {:ok, body, _conn} = Plug.Conn.read_body(conn)
+
+        conn =
+          Map.replace(conn, :req_headers, [{"authorization", "Bearer " <> Jason.decode!(body)["api_options"]["token"]}])
+
         res =
           post(
             conn,
-            Routes.data_path(conn, :create, %{"datastore" => "UserDatas", "data" => %{"name" => "toto"}})
+            Routes.data_path(conn, :create, "UserDatas"),
+            %{"data" => %{"name" => "toto"}}
           )
 
         Plug.Conn.resp(conn, 200, res.resp_body)
@@ -94,7 +102,7 @@ defmodule LenraWeb.AppGuardianTest do
   end
 
   test "request should pass if token valid", %{conn: conn, env: env, app: app, session_id: session_id} do
-    assert({:ok, res} = OpenfaasServices.run_listener(app, env, "InitData", %{}, %{}, %{}, session_id))
+    assert {:ok, res} = OpenfaasServices.run_listener(app, env, "InitData", %{}, %{}, %{}, session_id)
   end
 
   test "request should return error if token invalid", %{
@@ -118,7 +126,8 @@ defmodule LenraWeb.AppGuardianTest do
     assert %{assigns: %{message: "Your token is invalid."}} =
              post(
                conn,
-               Routes.data_path(conn, :create, %{})
+               Routes.data_path(conn, :create, "UserDatas"),
+               %{"data" => %{"name" => "toto"}}
              )
   end
 
@@ -126,7 +135,8 @@ defmodule LenraWeb.AppGuardianTest do
     assert %{assigns: %{message: "No token found in the request, please try again."}} =
              post(
                conn,
-               Routes.data_path(conn, :create, %{})
+               Routes.data_path(conn, :create, "UserDatas"),
+               %{"data" => %{"name" => "toto"}}
              )
   end
 end

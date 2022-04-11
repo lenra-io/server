@@ -8,7 +8,7 @@ defmodule Lenra.AppGuardian do
   alias ApplicationRunner.{SessionManager, SessionManagers}
 
   def subject_for_token(session_pid, _claims) do
-    {:ok, to_string(inspect(session_pid))}
+    {:ok, to_string(to_string(session_pid))}
   end
 
   def resource_from_claims(%{"sub" => session_id}) do
@@ -28,11 +28,8 @@ defmodule Lenra.AppGuardian do
     # TODO see if we can pass id in option, from verify_claims
     with {:ok, session_pid} <- SessionManagers.fetch_session_manager_pid(claims["sub"]),
          session_assigns <- SessionManager.get_assigns(session_pid) do
-      IO.puts(session_assigns)
-
       case extract_token(session_assigns) == token do
         true ->
-          SessionManager.set_assigns(session_pid, Lenra.AppGuardian.revoke(token))
           {:ok, claims}
 
         false ->
@@ -41,7 +38,7 @@ defmodule Lenra.AppGuardian do
     end
   end
 
-  defp extract_token([%{token: token}]) do
+  defp extract_token(%{token: token}) do
     token
   end
 end

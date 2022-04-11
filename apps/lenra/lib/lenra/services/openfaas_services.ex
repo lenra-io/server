@@ -3,7 +3,7 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas action with `run_action/3`
   """
   alias ApplicationRunner.{SessionManager, SessionManagers}
-  alias Lenra.{DeploymentServices, Environment, LenraApplication}
+  alias Lenra.{DeploymentServices, Environment, LenraApplication, SessionStateServices}
   require Logger
 
   defp get_http_context do
@@ -43,19 +43,22 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-    {:ok, token, _claims} =
-      session_id
-      |> Lenra.AppGuardian.encode_and_sign()
+    {:ok, token} = SessionStateServices.create_and_assign_token(session_id)
 
-    SessionManager.set_assigns(SessionManagers.fetch_session_manager_pid(session_id), %{
-      token: token
-    })
+    [host: host] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:url]
+    [port: port] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:http]
 
     headers = [
-      {"Content-Type", "application/json"} | [{"Authorization", "Bearer #{token}"} | base_headers]
+      {"Content-Type", "application/json"} | base_headers
     ]
 
-    body = Jason.encode!(%{action: action, data: data, props: props, event: event})
+    body =
+      Jason.encode!(%{
+        action: action,
+        props: props,
+        event: event,
+        api_options: %{host: host, port: port, token: token}
+      })
 
     Logger.debug("Call to Openfaas : #{function_name}")
 
@@ -66,10 +69,16 @@ defmodule Lenra.OpenfaasServices do
     Finch.build(:post, url, headers, body)
     |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
+    |> SessionStateServices.revoke_token_in_pipe(session_id, token)
     |> case do
-      {:ok, %{"data" => data}} -> {:ok, data}
-      {:error, :ressource_not_found} -> {:error, :listener_not_found}
-      err -> err
+      {:ok, %{"data" => data}} ->
+        {:ok, data}
+
+      {:error, :ressource_not_found} ->
+        {:error, :listener_not_found}
+
+      err ->
+        err
     end
   end
 
