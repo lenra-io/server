@@ -71,4 +71,51 @@ defmodule LenraWeb.CguControllerTest do
              }
     end
   end
+
+  describe "accept" do
+    @tag auth_user_with_cgu: :dev
+    test "with valid cgu_id and user_id", %{conn: conn} do
+      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      {:ok, cgu} =
+        @valid_cgu2
+        |> Cgu.new()
+        |> Ecto.Changeset.put_change(:inserted_at, date1)
+        |> Repo.insert()
+
+      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
+
+      assert %{
+               "data" => %{"accepted_cgu" => %{"cgu_id" => cgu.id, "user_id" => conn.assigns[:user].id}},
+               "success" => true
+             } == json_response(conn, 200)
+    end
+
+    @tag auth_user_with_cgu: :dev
+    test "with valid cgu_id and user_id but not latest cgu", %{conn: conn} do
+      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+
+      {:ok, cgu} =
+        @valid_cgu2
+        |> Cgu.new()
+        |> Ecto.Changeset.put_change(:inserted_at, date1)
+        |> Repo.insert()
+
+      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
+
+      assert %{"success" => true} = json_response(conn, 200)
+    end
+
+    @tag auth_user_with_cgu: :dev
+    test "test accept with invalid user_id", %{conn: conn} do
+      {:ok, cgu} = Lenra.CguServices.get_latest_cgu()
+
+      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => -1})
+
+      assert json_response(conn, 400) == %{
+               "errors" => [%{"code" => 0, "message" => "user_id does not exist"}],
+               "success" => false
+             }
+    end
+  end
 end
