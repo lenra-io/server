@@ -27,7 +27,7 @@ defmodule LenraWeb.AppGuardianTest do
   defp create_app_and_get_env do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    {:ok, %{inserted_application: application, inserted_main_env: env}} =
+    {:ok, %{inserted_application: application, application_main_env: env}} =
       LenraApplicationServices.create(
         user.id,
         %{name: "stubapp", color: "FFFFFF", icon: 1}
@@ -35,11 +35,11 @@ defmodule LenraWeb.AppGuardianTest do
 
     {:ok, inserted_build} = Repo.insert(Build.new(user.id, application.id, 1, %{}))
 
-    deploy(inserted_build.id, env.id, user.id)
+    deploy(inserted_build.id, env.environment_id, user.id)
 
     env_preloaded =
       Environment
-      |> Repo.get(env.id)
+      |> Repo.get(env.environment_id)
       |> Repo.preload(:deployed_build)
 
     faas = FaasStub.create_faas_stub()
