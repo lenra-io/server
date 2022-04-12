@@ -27,8 +27,15 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:error, reason}` if the HTTP Post fail
   """
 
-  # def run_env_listeners(%LenraApplication{} = application, %Environment{} = environment, action, props, event, env_id) do
-  # end
+  #  def run_env_listeners(
+  #   %LenraApplication{} = application,
+  #   %Environment{} = environment,
+  #   action,
+  #   props,
+  #   event,
+  #   env_id
+  #   ) do
+  #  end
 
   def run_session_listeners(
         %LenraApplication{} = application,

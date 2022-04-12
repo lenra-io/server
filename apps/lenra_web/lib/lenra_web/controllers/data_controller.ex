@@ -1,8 +1,8 @@
 defmodule LenraWeb.DataController do
   use LenraWeb, :controller
 
-  alias Lenra.{DataServices}
   alias Lenra.AppGuardian.Plug
+  alias Lenra.DataServices
 
   def create(conn, params) do
     with {:ok, inserted_data: data} <-
