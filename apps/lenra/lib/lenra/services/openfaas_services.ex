@@ -2,7 +2,7 @@ defmodule Lenra.OpenfaasServices do
   @moduledoc """
     The service that manage calls to an Openfaas action with `run_action/3`
   """
-  alias ApplicationRunner.{SessionManager, SessionManagers}
+
   alias Lenra.{DeploymentServices, Environment, LenraApplication, SessionStateServices}
   require Logger
 
@@ -26,24 +26,52 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:ok, decoded_body}` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
   """
-  @spec run_listener(LenraApplication.t(), Environment.t(), Integer, map(), map(), map(), Integer) ::
-          {:ok, map()} | {:error, any()}
-  def run_listener(
+
+  # def run_env_listeners(%LenraApplication{} = application, %Environment{} = environment, action, props, event, env_id) do
+  # end
+
+  def run_session_listeners(
         %LenraApplication{} = application,
         %Environment{} = environment,
         action,
-        data,
         props,
         event,
         session_id
       ) do
+    {:ok, token} = SessionStateServices.create_and_assign_token(session_id)
+
+    finch_response = run_listener(application, environment, action, props, event, token)
+
+    SessionStateServices.revoke_token(session_id, token)
+
+    finch_response
+    |> case do
+      {:ok, %{"data" => data}} ->
+        {:ok, data}
+
+      {:error, :ressource_not_found} ->
+        {:error, :listener_not_found}
+
+      err ->
+        err
+    end
+  end
+
+  @spec run_listener(LenraApplication.t(), Environment.t(), Integer, map(), map(), String.t()) ::
+          {:ok, map()} | {:error, any()}
+  defp run_listener(
+         %LenraApplication{} = application,
+         %Environment{} = environment,
+         action,
+         props,
+         event,
+         token
+       ) do
     {base_url, base_headers} = get_http_context()
 
     function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
-
-    {:ok, token} = SessionStateServices.create_and_assign_token(session_id)
 
     [host: host] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:url]
     [port: port] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:http]
@@ -69,17 +97,6 @@ defmodule Lenra.OpenfaasServices do
     Finch.build(:post, url, headers, body)
     |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:decode)
-    |> SessionStateServices.revoke_token_in_pipe(session_id, token)
-    |> case do
-      {:ok, %{"data" => data}} ->
-        {:ok, data}
-
-      {:error, :ressource_not_found} ->
-        {:error, :listener_not_found}
-
-      err ->
-        err
-    end
   end
 
   @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::

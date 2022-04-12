@@ -80,7 +80,7 @@ defmodule Lenra.DataServicesTest do
           "refs" => [inserted_point.id]
         })
 
-      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, refBy_id: inserted_data.id))
+      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, ref_by_id: inserted_data.id))
     end
 
     test "should create 2 if give 2 refs_id", %{env_id: env_id, user_id: _user_id} do
@@ -106,12 +106,12 @@ defmodule Lenra.DataServicesTest do
           "refs" => [inserted_point.id, inserted_point_bis.id]
         })
 
-      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, refBy_id: inserted_data.id))
+      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, ref_by_id: inserted_data.id))
 
       assert !is_nil(
                Repo.get_by(DataReferences,
                  refs_id: inserted_point_bis.id,
-                 refBy_id: inserted_data.id
+                 ref_by_id: inserted_data.id
                )
              )
     end
@@ -130,7 +130,7 @@ defmodule Lenra.DataServicesTest do
           "refBy" => [inserted_user.id]
         })
 
-      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_data.id, refBy_id: inserted_user.id))
+      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_data.id, ref_by_id: inserted_user.id))
     end
 
     test "should create reference if refs and refBy id is valid", %{env_id: env_id, user_id: _user_id} do
@@ -155,9 +155,9 @@ defmodule Lenra.DataServicesTest do
           "refBy" => [inserted_team.id]
         })
 
-      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_user.id, refBy_id: inserted_team.id))
+      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_user.id, ref_by_id: inserted_team.id))
 
-      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, refBy_id: inserted_user.id))
+      assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, ref_by_id: inserted_user.id))
     end
 
     test "should return error if refs id invalid ", %{env_id: env_id, user_id: _user_id} do
@@ -176,7 +176,7 @@ defmodule Lenra.DataServicesTest do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
-      assert {:error, :"inserted_refBy_-1", %{errors: [refBy_id: {"does not exist", _constraint}]}, _change_so_far} =
+      assert {:error, :"inserted_refBy_-1", %{errors: [ref_by_id: {"does not exist", _constraint}]}, _change_so_far} =
                DataServices.create(env_id, %{
                  "datastore" => "points",
                  "data" => %{"score" => "10"},
@@ -308,11 +308,11 @@ defmodule Lenra.DataServicesTest do
       data =
         Data
         |> Repo.get(updated_data.id)
-        |> Repo.preload(:refBy)
+        |> Repo.preload(:ref_by)
 
-      assert 1 == length(data.refBy)
+      assert 1 == length(data.ref_by)
 
-      assert List.first(data.refBy).id ==
+      assert List.first(data.ref_by).id ==
                inserted_data_bis.id
     end
 
@@ -362,12 +362,12 @@ defmodule Lenra.DataServicesTest do
       data =
         Data
         |> Repo.get(updated_data.id)
-        |> Repo.preload(:refBy)
+        |> Repo.preload(:ref_by)
         |> Repo.preload(:refs)
 
-      assert 1 == length(data.refBy)
+      assert 1 == length(data.ref_by)
 
-      assert List.first(data.refBy).id ==
+      assert List.first(data.ref_by).id ==
                inserted_team_bis.id
 
       assert 1 == length(data.refs)
@@ -416,7 +416,7 @@ defmodule Lenra.DataServicesTest do
           "refBy" => [inserted_team.id]
         })
 
-      {:error, :refBy, :references_not_found, _change_so_far} =
+      {:error, :ref_by, :references_not_found, _change_so_far} =
         DataServices.update(inserted_user.id, %{
           "refBy" => [-1]
         })
@@ -455,7 +455,7 @@ defmodule Lenra.DataServicesTest do
           "refBy" => [inserted_team.id]
         })
 
-      {:error, :refBy, :references_not_found, _change_so_far} =
+      {:error, :ref_by, :references_not_found, _change_so_far} =
         DataServices.update(inserted_user.id, %{
           "refBy" => [inserted_team_bis.id]
         })

@@ -1,11 +1,12 @@
 defmodule LenraWeb.DataController do
   use LenraWeb, :controller
 
-  alias Lenra.{AppGuardian, DataServices}
-  alias Lenra.Guardian.Plug
+  alias Lenra.{DataServices}
+  alias Lenra.AppGuardian.Plug
 
   def create(conn, params) do
-    with {:ok, inserted_data: data} <- DataServices.create(Plug.current_resource(conn).environment.id, params) do
+    with {:ok, inserted_data: data} <-
+           DataServices.create(Plug.current_resource(conn).environment.id, params) do
       conn
       |> assign_data(:inserted_data, data)
       |> reply

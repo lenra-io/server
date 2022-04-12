@@ -26,10 +26,6 @@ defmodule Lenra.OpenfaasServicesTest do
     application: @john_doe_application
   }
 
-  @john_doe_environment %Environment{
-    deployed_build: @john_doe_build
-  }
-
   describe "get_app_resource" do
     test "openfaas not accessible" do
       assert {:error, %Mint.TransportError{reason: :econnrefused}} ==
