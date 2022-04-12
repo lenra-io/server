@@ -38,7 +38,7 @@ defmodule Lenra.DatastoreServicesTest do
     end
 
     test "should create datastore if datastore same name but different env_id", %{env_id: env_id, user_id: user_id} do
-      {:ok, %{inserted_main_env: environment}} =
+      {:ok, %{inserted_env: environment}} =
         LenraApplicationServices.create(user_id, %{
           name: "test-update",
           color: "FFFFFF",
@@ -52,7 +52,7 @@ defmodule Lenra.DatastoreServicesTest do
     end
 
     test "should create datastore if different name but same env_id", %{env_id: env_id, user_id: user_id} do
-      {:ok, %{inserted_main_env: environment}} =
+      {:ok, %{inserted_env: environment}} =
         LenraApplicationServices.create(user_id, %{
           name: "test-update",
           color: "FFFFFF",
