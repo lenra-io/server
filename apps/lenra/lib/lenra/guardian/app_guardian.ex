@@ -12,9 +12,9 @@ defmodule Lenra.AppGuardian do
   end
 
   def resource_from_claims(%{"sub" => session_id}) do
-    with {:ok, session_pid} <- SessionManagers.fetch_session_manager_pid(session_id),
-         session_assigns <- SessionManager.get_assigns(session_pid) do
-      {:ok, session_assigns}
+    case SessionManager.fetch_assigns(session_id) do
+      {:ok, session_assigns} -> session_assigns
+      err -> err
     end
   end
 
@@ -26,15 +26,18 @@ defmodule Lenra.AppGuardian do
 
   def on_verify(claims, token, _options) do
     # TODO see if we can pass id in option, from verify_claims
-    with {:ok, session_pid} <- SessionManagers.fetch_session_manager_pid(claims["sub"]),
-         session_assigns <- SessionManager.get_assigns(session_pid) do
-      case extract_token(session_assigns) == token do
-        true ->
-          {:ok, claims}
+    case SessionManager.fetch_assigns(claims["sub"]) do
+      {:ok, session_assigns} ->
+        case extract_token(session_assigns) == token do
+          true ->
+            {:ok, claims}
 
-        false ->
-          {:error, :invalid_token}
-      end
+          false ->
+            {:error, :invalid_token}
+        end
+
+      err ->
+        err
     end
   end
 

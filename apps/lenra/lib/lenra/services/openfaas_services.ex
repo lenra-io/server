@@ -64,7 +64,7 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec run_listener(LenraApplication.t(), Environment.t(), Integer, map(), map(), String.t()) ::
+  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), String.t()) ::
           {:ok, map()} | {:error, any()}
   defp run_listener(
          %LenraApplication{} = application,

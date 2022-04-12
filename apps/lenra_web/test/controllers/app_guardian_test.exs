@@ -53,7 +53,7 @@ defmodule LenraWeb.AppGuardianTest do
     SessionManagers.start_session(
       session_id,
       env.id,
-      %{user: user, application: application, environment: env_preloaded},
+      %{user: user, application: application, environment: env_preloaded, socket_pid: self()},
       %{application: application, environment: env_preloaded}
     )
 
