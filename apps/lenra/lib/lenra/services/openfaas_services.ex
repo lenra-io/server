@@ -113,9 +113,7 @@ defmodule Lenra.OpenfaasServices do
     function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
 
     url = "#{base_url}/function/#{function_name}"
-
     headers = [{"Content-Type", "application/json"} | base_headers]
-
     body = Jason.encode!(%{widget: widget_name, data: data, props: props})
 
     Finch.build(:post, url, headers, body)
@@ -243,7 +241,6 @@ defmodule Lenra.OpenfaasServices do
 
   defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
     Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
-
     {:error, :openfaas_delete_error}
   end
 

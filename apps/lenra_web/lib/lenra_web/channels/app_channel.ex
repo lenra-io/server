@@ -47,7 +47,6 @@ defmodule LenraWeb.AppChannel do
 
       env_assigns = %{application: application, environment: environment}
 
-      #  :ok <- SessionManager.init_data(session_pid)
       with {:ok, session_pid} <-
              start_session(environment.id, session_id, session_assigns, env_assigns) do
         {:ok, assign(socket, session_pid: session_pid)}
@@ -138,7 +137,7 @@ defmodule LenraWeb.AppChannel do
     } = socket.assigns
 
     Logger.debug("Handle run #{code}")
-    SessionManager.run_listener(session_pid, code, event)
+    SessionManager.send_client_event(session_pid, code, event)
 
     {:noreply, socket}
   end
