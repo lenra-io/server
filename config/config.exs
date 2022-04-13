@@ -25,6 +25,11 @@ config :lenra, Lenra.Guardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 
+# Configure Guardian
+config :lenra, Lenra.AppGuardian,
+  issuer: "lenra",
+  secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
+
 # Configure Guardian DB
 config :guardian, Guardian.DB,
   repo: Lenra.Repo,

@@ -47,11 +47,10 @@ defmodule LenraWeb.AppChannel do
 
       env_assigns = %{application: application, environment: environment}
 
-      with {:ok, session_pid} <-
-             start_session(environment.id, session_id, session_assigns, env_assigns),
-           :ok <- SessionManager.init_data(session_pid) do
-        {:ok, assign(socket, session_pid: session_pid)}
-      else
+      case start_session(environment.id, session_id, session_assigns, env_assigns) do
+        {:ok, session_pid} ->
+          {:ok, assign(socket, session_pid: session_pid)}
+
         # Application error
         {:error, reason} when is_bitstring(reason) ->
           {:error, %{reason: [%{code: -1, message: reason}]}}
@@ -138,7 +137,7 @@ defmodule LenraWeb.AppChannel do
     } = socket.assigns
 
     Logger.debug("Handle run #{code}")
-    SessionManager.run_listener(session_pid, code, event)
+    SessionManager.send_client_event(session_pid, code, event)
 
     {:noreply, socket}
   end

@@ -38,6 +38,8 @@ config :lenra, Lenra.Mailer, api_key: System.fetch_env!("SENDGRID_API_KEY")
 
 config :lenra, Lenra.Guardian, secret_key: System.fetch_env!("GUARDIAN_SECRET_KEY")
 
+config :lenra, Lenra.AppGuardian, secret_key: System.fetch_env!("GUARDIAN_SECRET_KEY")
+
 # Set the DSN for sentry and the current environment.
 # Only production and sentry are used. test env are ignored.
 config :sentry,

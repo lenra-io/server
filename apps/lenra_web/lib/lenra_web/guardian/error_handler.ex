@@ -17,6 +17,9 @@ defmodule Lenra.Guardian.ErrorHandler do
 
         :unauthenticated ->
           "You are not authenticated"
+
+        :no_resource_found ->
+          "No token found in the request, please try again."
       end
 
     conn

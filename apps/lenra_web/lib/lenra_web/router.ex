@@ -2,6 +2,7 @@ defmodule LenraWeb.Router do
   use LenraWeb, :router
 
   alias Lenra.Guardian.{
+    EnsureAuthenticatedAppPipeline,
     EnsureAuthenticatedPipeline,
     EnsureAuthenticatedQueryParamsPipeline,
     RefreshPipeline
@@ -17,6 +18,14 @@ defmodule LenraWeb.Router do
 
   pipeline :ensure_auth do
     plug(EnsureAuthenticatedPipeline)
+  end
+
+  pipeline :ensure_auth_app do
+    plug Plug.Parsers,
+      parsers: [:urlencoded, :json],
+      json_decoder: Jason
+
+    plug(EnsureAuthenticatedAppPipeline)
   end
 
   pipeline :ensure_resource_auth do
@@ -70,6 +79,14 @@ defmodule LenraWeb.Router do
   scope "/api", LenraWeb do
     pipe_through([:api, :ensure_resource_auth])
     get("/apps/:service_name/resources/:resource", ResourcesController, :get_app_resource)
+  end
+
+  scope "/app", LenraWeb do
+    pipe_through([:api, :ensure_auth_app])
+    # TODO define datastore/data/datareference route
+    resources("/data/:ds_name", DataController, only: [:create, :update, :delete])
+    resources("/datastore/:ds_name", DatastoreController, only: [:create, :update, :delete])
+    resources("/data_reference/:ds_name", DataReferenceController, only: [:create, :update, :delete])
   end
 
   scope "/", LenraWeb do

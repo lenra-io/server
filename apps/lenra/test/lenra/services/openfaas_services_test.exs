@@ -26,46 +26,6 @@ defmodule Lenra.OpenfaasServicesTest do
     application: @john_doe_application
   }
 
-  @john_doe_environment %Environment{
-    deployed_build: @john_doe_build
-  }
-
-  describe "run_listener" do
-    setup do
-      faas = FaasStub.create_faas_stub()
-      app = FaasStub.stub_app(faas, @john_doe_application.service_name, 1)
-      {:ok, %{app: app, faas: faas}}
-    end
-
-    test "Openfaas correctly handle ok 200 and decode data", %{app: app} do
-      FaasStub.stub_action_once(app, "InitData", %{"data" => %{"foo" => "bar"}})
-
-      assert {:ok, %{"foo" => "bar"}} ==
-               OpenfaasServices.run_listener(
-                 @john_doe_application,
-                 @john_doe_environment,
-                 "InitData",
-                 %{},
-                 %{},
-                 %{}
-               )
-    end
-
-    test "Openfaas correctly handle 404 not found", %{app: app} do
-      FaasStub.stub_action_once(app, "InitData", {:error, 404, "Not Found"})
-
-      assert {:error, :listener_not_found} ==
-               OpenfaasServices.run_listener(
-                 @john_doe_application,
-                 @john_doe_environment,
-                 "InitData",
-                 %{},
-                 %{},
-                 %{}
-               )
-    end
-  end
-
   describe "get_app_resource" do
     test "openfaas not accessible" do
       assert {:error, %Mint.TransportError{reason: :econnrefused}} ==

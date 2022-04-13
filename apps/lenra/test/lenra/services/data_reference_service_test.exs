@@ -37,16 +37,16 @@ defmodule Lenra.DataReferenceServiceTest do
       {:ok, %{inserted_reference: _inserted_reference}} =
         DataReferencesServices.create(%{
           refs_id: inserted_point.id,
-          refBy_id: inserted_user.id
+          ref_by_id: inserted_user.id
         })
 
       %{refs: [ref | _tail]} =
         inserted_user
         |> Repo.preload(:refs)
 
-      %{refBy: [ref_by | _tail]} =
+      %{ref_by: [ref_by | _tail]} =
         inserted_point
-        |> Repo.preload(:refBy)
+        |> Repo.preload(:ref_by)
 
       assert ref.id == inserted_point.id
       assert ref.data == %{"score" => 10}
@@ -58,7 +58,7 @@ defmodule Lenra.DataReferenceServiceTest do
       assert {:error, :inserted_reference, %{errors: [refs_id: {"does not exist", _constraint}]}, _changes_so_far} =
                DataReferencesServices.create(%{
                  refs_id: -1,
-                 refBy_id: -1
+                 ref_by_id: -1
                })
     end
 
@@ -67,10 +67,10 @@ defmodule Lenra.DataReferenceServiceTest do
 
       {:ok, inserted_user} = Repo.insert(Data.new(inserted_datastore_point.id, %{"name" => "toto"}))
 
-      assert {:error, :inserted_reference, %{errors: [refBy_id: {"does not exist", _constraint}]}, _changes_so_far} =
+      assert {:error, :data_reference, :reference_not_found, _changes_so_far} =
                DataReferencesServices.create(%{
                  refs_id: inserted_user.id,
-                 refBy_id: -1
+                 ref_by_id: -1
                })
     end
 
@@ -85,14 +85,14 @@ defmodule Lenra.DataReferenceServiceTest do
       {:ok, %{inserted_reference: _inserted_reference}} =
         DataReferencesServices.create(%{
           refs_id: inserted_user.id,
-          refBy_id: inserted_point.id
+          ref_by_id: inserted_point.id
         })
 
       assert {:error, :inserted_reference, %{errors: [refs_id: {"has already been taken", _constraint}]},
               _changes_so_far} =
                DataReferencesServices.create(%{
                  refs_id: inserted_user.id,
-                 refBy_id: inserted_point.id
+                 ref_by_id: inserted_point.id
                })
     end
   end
@@ -109,10 +109,10 @@ defmodule Lenra.DataReferenceServiceTest do
       {:ok, %{inserted_reference: inserted_reference}} =
         DataReferencesServices.create(%{
           refs_id: inserted_point.id,
-          refBy_id: inserted_user.id
+          ref_by_id: inserted_user.id
         })
 
-      {:ok, _deleted_ref} = DataReferencesServices.delete(%{refs_id: inserted_point.id, refBy_id: inserted_user.id})
+      {:ok, _deleted_ref} = DataReferencesServices.delete(%{refs_id: inserted_point.id, ref_by_id: inserted_user.id})
 
       assert nil == Repo.get(DataReferences, inserted_reference.id)
     end
@@ -126,7 +126,7 @@ defmodule Lenra.DataReferenceServiceTest do
       {:error, :reference, :reference_not_found, %{}} =
         DataReferencesServices.delete(%{
           refs_id: -1,
-          refBy_id: inserted_user.id
+          ref_by_id: inserted_user.id
         })
     end
 
@@ -139,7 +139,7 @@ defmodule Lenra.DataReferenceServiceTest do
       {:error, :reference, :reference_not_found, %{}} =
         DataReferencesServices.delete(%{
           refs_id: inserted_user.id,
-          refBy_id: -1
+          ref_by_id: -1
         })
     end
 

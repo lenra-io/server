@@ -9,22 +9,40 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   alias Lenra.{DataServices, OpenfaasServices, User}
   require Logger
 
+  # @impl true
+  # def run_listener(
+  #       %EnvState{
+  #         env_id: env_id,
+  #         assigns: %{
+  #           environment: environment,
+  #           application: application
+  #         }
+  #       },
+  #       action,
+  #       props,
+  #       event
+  #     ) do
+  #   Logger.info("Run env listener for action #{action}")
+
+  #   OpenfaasServices.run_env_listeners(application, environment, action, props, event, env_id)
+  # end
+
   @impl true
   def run_listener(
-        %EnvState{
+        %SessionState{
+          session_id: session_id,
           assigns: %{
             environment: environment,
             application: application
           }
         },
         action,
-        data,
         props,
         event
       ) do
-    Logger.info("Run listener for action #{action}")
+    Logger.info("Run session listener for action #{action}")
 
-    OpenfaasServices.run_listener(application, environment, action, data, props, event)
+    OpenfaasServices.run_session_listeners(application, environment, action, props, event, session_id)
   end
 
   @impl true
