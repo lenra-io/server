@@ -308,32 +308,31 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  # test "change lost password error password test", %{conn: conn} do
-  #   post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+  test "change lost password error password test", %{conn: conn} do
+    %{assigns: %{data: %{user: user}}} = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
-  #   post(conn, Routes.user_path(conn, :password_lost_code, @john_doe_user_params))
+    post(conn, Routes.user_path(conn, :password_lost_code, @john_doe_user_params))
 
-  #   [user | _tails] = Repo.all(User)
-  #   password_code = Repo.get_by(PasswordCode, user_id: user.id)
+    password_code = Repo.get_by(PasswordCode, user_id: user.id)
 
-  #   conn =
-  #     put(
-  #       conn,
-  #       Routes.user_path(conn, :password_lost_modification, %{
-  #         "email" => @john_doe_user_params["email"],
-  #         "code" => password_code.code,
-  #         "password" => "Johndoe@thefirst",
-  #         "password_confirmation" => "Johndoe@thefirst"
-  #       })
-  #     )
+    conn =
+      put(
+        conn,
+        Routes.user_path(conn, :password_lost_modification, %{
+          "email" => @john_doe_user_params["email"],
+          "code" => password_code.code,
+          "password" => "Johndoe@thefirst",
+          "password_confirmation" => "Johndoe@thefirst"
+        })
+      )
 
-  #   assert %{
-  #            "success" => false,
-  #            "errors" => [
-  #              %{"code" => 8, "message" => "Your password cannot be equal to the last 3."}
-  #            ]
-  #          } = json_response(conn, 400)
-  # end
+    assert %{
+             "success" => false,
+             "errors" => [
+               %{"code" => 8, "message" => "Your password cannot be equal to the last 3."}
+             ]
+           } = json_response(conn, 400)
+  end
 
   @tag :auth_user
   test "change password code 4 time with password 1 test", %{conn: conn!} do
