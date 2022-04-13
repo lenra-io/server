@@ -3,21 +3,18 @@ defmodule Lenra.SessionStateServices do
     Lenra.Sessionstate handle all operation for session state.
   """
 
-  alias ApplicationRunner.SessionManager
   alias Lenra.AppGuardian
+  alias Lenra.SessionAgent
 
-  def create_and_assign_token(session_id) do
-    with {:ok, session_assigns} <- SessionManager.fetch_assigns(session_id),
-         {:ok, token, _claims} <- AppGuardian.encode_and_sign(session_id, %{type: "session"}),
-         :ok <- SessionManager.set_assigns(session_id, Map.merge(session_assigns, %{token: token})) do
+  def create_and_assign_token(session_id, user_id, env_id) do
+    with {:ok, token, _claims} <-
+           AppGuardian.encode_and_sign(session_id, %{type: "session", user_id: user_id, env_id: env_id}),
+         :ok <- SessionAgent.add_token(session_id, token) do
       {:ok, token}
     end
   end
 
-  def revoke_token(session_id, token) do
-    with {:ok, session_assigns} <- SessionManager.fetch_assigns(session_id),
-         {:ok, revoked_token} <- AppGuardian.revoke(token) do
-      SessionManager.set_assigns(session_id, Map.merge(session_assigns, %{token: revoked_token}))
-    end
+  def revoke_token(session_id) do
+    SessionAgent.revoke_token(session_id)
   end
 end

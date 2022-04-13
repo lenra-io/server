@@ -4,9 +4,18 @@ defmodule LenraWeb.DataController do
   alias Lenra.AppGuardian.Plug
   alias Lenra.DataServices
 
+  def get(conn, params) do
+    with data <- DataServices.get(params["ds_name"], params["id"]) do
+      conn
+      |> assign_data(:data, data)
+      |> reply
+    end
+  end
+
   def create(conn, params) do
-    with {:ok, inserted_data: data} <-
-           DataServices.create(Plug.current_resource(conn).environment.id, params) do
+    with session_assings <- Plug.current_resource(conn),
+         {:ok, %{inserted_data: data}} <-
+           DataServices.create(session_assings.environment.id, params) do
       conn
       |> assign_data(:inserted_data, data)
       |> reply
@@ -14,7 +23,7 @@ defmodule LenraWeb.DataController do
   end
 
   def update(conn, params) do
-    with {:ok, updated_data: data} <- DataServices.update(params["data_id"], params) do
+    with {:ok, %{updated_data: data}} <- DataServices.update(params["id"], params) do
       conn
       |> assign_data(:updated_data, data)
       |> reply
@@ -22,7 +31,7 @@ defmodule LenraWeb.DataController do
   end
 
   def delete(conn, params) do
-    with {:ok, deleted_data: data} <- DataServices.delete(params["data_id"]) do
+    with {:ok, %{deleted_data: data}} <- DataServices.delete(params["id"]) do
       conn
       |> assign_data(:deleted_data, data)
       |> reply
@@ -30,5 +39,12 @@ defmodule LenraWeb.DataController do
   end
 
   def query(conn, params) do
+    with session_assings <- Plug.current_resource(conn),
+         requested <-
+           DataServices.query(session_assings.environment.id, session_assings.user.id, params["query"]) do
+      conn
+      |> assign_data(:requested, requested)
+      |> reply
+    end
   end
 end

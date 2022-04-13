@@ -81,12 +81,23 @@ defmodule LenraWeb.Router do
     get("/apps/:service_name/resources/:resource", ResourcesController, :get_app_resource)
   end
 
-  scope "/app", LenraWeb do
+  scope "/datastore", LenraWeb do
     pipe_through([:api, :ensure_auth_app])
-    # TODO define datastore/data/datareference route
-    resources("/data/:ds_name", DataController, only: [:create, :update, :delete])
-    resources("/datastore/:ds_name", DatastoreController, only: [:create, :update, :delete])
-    resources("/data_reference/:ds_name", DataReferenceController, only: [:create, :update, :delete])
+
+    post("/", DatastoreController, :create)
+    delete("/:datastore", DatastoreController, :delete)
+
+    get("/:datastore/data/:id", DataController, :get)
+    post("/:datastore/data", DataController, :create)
+    delete("/:datastore/data/:id", DataController, :delete)
+    put("/:datastore/data/:id", DataController, :update)
+    # patch("/:ds_name/data/:id", DataController, :update)
+  end
+
+  scope "/data", LenraWeb do
+    pipe_through([:api, :ensure_auth_app])
+
+    post("/query", DataController, :query)
   end
 
   scope "/", LenraWeb do
