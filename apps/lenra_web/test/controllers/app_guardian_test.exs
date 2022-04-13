@@ -130,7 +130,7 @@ defmodule LenraWeb.AppGuardianTest do
   end
 
   test "request should return error if token not found", %{conn: conn, env: _env, app: _app, session_id: _session_id} do
-    assert %{assigns: %{message: "No token found in the request, please try again."}} =
+    assert %{assigns: %{message: "You are not authenticated"}} =
              post(
                conn,
                Routes.data_path(conn, :create, "UserDatas"),

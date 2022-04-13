@@ -8,5 +8,6 @@ defmodule Lenra.Guardian.EnsureAuthenticatedAppPipeline do
     module: Lenra.AppGuardian
 
   plug(Guardian.Plug.VerifyHeader, claims: %{"typ" => "access"})
+  plug(Guardian.Plug.EnsureAuthenticated, claims: %{"typ" => "access"})
   plug(Guardian.Plug.LoadResource)
 end
