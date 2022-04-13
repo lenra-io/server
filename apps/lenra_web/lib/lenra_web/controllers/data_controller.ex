@@ -28,4 +28,7 @@ defmodule LenraWeb.DataController do
       |> reply
     end
   end
+
+  def query(conn, params) do
+  end
 end

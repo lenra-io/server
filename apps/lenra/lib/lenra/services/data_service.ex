@@ -7,6 +7,12 @@ defmodule Lenra.DataServices do
   alias Lenra.Repo
   alias ApplicationRunner.{Data, DataServices, Datastore, UserData}
 
+  def query(env_id, user_data_id, query) do
+    query
+    |> Parser.from_json()
+    |> EctoParser.to_ecto(env_id, user_data_id)
+  end
+
   def create(environment_id, params) do
     environment_id
     |> DataServices.create(params)
