@@ -80,7 +80,7 @@ defmodule Lenra.DatastoreServicesTest do
 
       datastore = Repo.get(Datastore, inserted_datastore.id)
 
-      DatastoreServices.delete(datastore.id)
+      DatastoreServices.delete("users", env_id)
 
       deleted_data = Repo.get(Datastore, inserted_datastore.id)
 
@@ -88,8 +88,8 @@ defmodule Lenra.DatastoreServicesTest do
       assert deleted_data == nil
     end
 
-    test "should return error id invalid", %{env_id: _env_id} do
-      assert {:error, :datastore, :datastore_not_found, _changes_so_far} = DatastoreServices.delete(-1)
+    test "should return error id invalid", %{env_id: env_id} do
+      assert {:error, :datastore_not_found} = DatastoreServices.delete("null", env_id)
     end
 
     test "should also delete data", %{env_id: env_id, user_id: _user_id} do
@@ -112,7 +112,7 @@ defmodule Lenra.DatastoreServicesTest do
 
       assert length(datas) == 3
 
-      DatastoreServices.delete(datastore.id)
+      DatastoreServices.delete("users", env_id)
 
       deleted_datastore = Repo.get(Datastore, inserted_datastore.id)
 
@@ -130,22 +130,22 @@ defmodule Lenra.DatastoreServicesTest do
     end
   end
 
-  describe "DatastoreServices.update_1/1" do
-    test "should update datastore if params valid", %{env_id: env_id, user_id: _user_id} do
-      {:ok, %{inserted_datastore: inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
+  # describe "DatastoreServices.update_1/1" do
+  #   test "should update datastore if params valid", %{env_id: env_id, user_id: _user_id} do
+  #     {:ok, %{inserted_datastore: inserted_datastore}} = DatastoreServices.create(env_id, %{"name" => "users"})
 
-      datastore = Repo.get(Datastore, inserted_datastore.id)
+  #     datastore = Repo.get(Datastore, inserted_datastore.id)
 
-      DatastoreServices.update(datastore.id, %{"name" => "test"})
+  #     DatastoreServices.update(datastore.id, %{"name" => "test"})
 
-      updated_data = Repo.get(Datastore, inserted_datastore.id)
+  #     updated_data = Repo.get(Datastore, inserted_datastore.id)
 
-      assert updated_data.name == "test"
-    end
+  #     assert updated_data.name == "test"
+  #   end
 
-    test "should return error id invalid", %{env_id: _env_id} do
-      assert {:error, :datastore, :datastore_not_found, _changes_so_far} =
-               DatastoreServices.update(-1, %{"name" => "test"})
-    end
-  end
+  #   test "should return error id invalid", %{env_id: _env_id} do
+  #     assert {:error, :datastore, :datastore_not_found, _changes_so_far} =
+  #              DatastoreServices.update(-1, %{"name" => "test"})
+  #   end
+  # end
 end

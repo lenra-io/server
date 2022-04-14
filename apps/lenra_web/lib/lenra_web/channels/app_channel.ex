@@ -10,7 +10,8 @@ defmodule LenraWeb.AppChannel do
     Environment,
     LenraApplication,
     LenraApplicationServices,
-    Repo
+    Repo,
+    SessionStateServices
   }
 
   alias LenraWeb.ErrorHelpers
@@ -31,6 +32,8 @@ defmodule LenraWeb.AppChannel do
            Repo.preload(app, main_env: [environment: [:deployed_build]]),
          :ok <- Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application) do
       %Environment{} = environment = select_env(application)
+
+      SessionStateServices.create_and_assign_token(session_id, user.id, environment.id)
 
       Logger.debug("Environment selected is #{environment.name}")
 

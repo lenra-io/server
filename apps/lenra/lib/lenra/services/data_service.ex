@@ -5,7 +5,41 @@ defmodule Lenra.DataServices do
   import Ecto.Query, only: [from: 2]
 
   alias Lenra.Repo
-  alias ApplicationRunner.{Data, DataServices, Datastore, UserData}
+  alias ApplicationRunner.{AST.EctoParser, AST.Parser, Data, DataServices, Datastore, UserData}
+
+  def get(ds_name, id) do
+    select =
+      from(d in Data,
+        join: ds in Datastore,
+        on: d.datastore_id == ds.id,
+        where: d.id == ^id and ds.name == ^ds_name,
+        select: d
+      )
+
+    select
+    |> Repo.one()
+  end
+
+  def query(env_id, user_id, query) do
+    select =
+      from(d in Data,
+        join: ud in UserData,
+        on: ud.data_id == d.id,
+        join: ds in Datastore,
+        on: d.datastore_id == ds.id,
+        where: ud.user_id == ^user_id and ds.environment_id == ^env_id,
+        select: d.id
+      )
+
+    user_data_id =
+      select
+      |> Repo.one()
+
+    query
+    |> Parser.from_json()
+    |> EctoParser.to_ecto(env_id, user_data_id)
+    |> Repo.all()
+  end
 
   def create(environment_id, params) do
     environment_id

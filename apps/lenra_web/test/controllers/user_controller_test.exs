@@ -309,11 +309,10 @@ defmodule LenraWeb.UserControllerTest do
   end
 
   test "change lost password error password test", %{conn: conn} do
-    post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+    %{assigns: %{data: %{user: user}}} = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
     post(conn, Routes.user_path(conn, :password_lost_code, @john_doe_user_params))
 
-    [user | _tails] = Repo.all(User)
     password_code = Repo.get_by(PasswordCode, user_id: user.id)
 
     conn =

@@ -16,7 +16,8 @@ defmodule LenraWeb.AppGuardianTest do
     FaasStub,
     LenraApplicationServices,
     OpenfaasServices,
-    Repo
+    Repo,
+    SessionStateServices
   }
 
   setup %{conn: conn} do
@@ -49,6 +50,8 @@ defmodule LenraWeb.AppGuardianTest do
     Bypass.stub(faas, "POST", url, &handle_request(&1))
 
     session_id = Ecto.UUID.generate()
+
+    {:ok, token} = SessionStateServices.create_and_assign_token(session_id, user.id, env_preloaded.id)
 
     SessionManagers.start_session(
       session_id,

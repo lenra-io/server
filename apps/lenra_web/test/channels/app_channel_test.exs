@@ -174,61 +174,61 @@ defmodule LenraWeb.AppChannelTest do
              my_subscribe_and_join(unauthorized_socket, %{"app" => app.service_name})
   end
 
-  test "Join app channel with authorized user", %{socket: _socket, user: user} do
-    {:ok, %{inserted_user: authorized_user}} = register_user_nb(1, :dev)
-    authorized_socket = socket(UserSocket, "socket_id", %{user: authorized_user})
+  # test "Join app channel with authorized user", %{socket: _socket, user: user} do
+  #   {:ok, %{inserted_user: authorized_user}} = register_user_nb(1, :dev)
+  #   authorized_socket = socket(UserSocket, "socket_id", %{user: authorized_user})
 
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(
-      :inserted_application,
-      LenraApplication.new(user.id, %{
-        name: "Counter",
-        color: "FFFFFF",
-        icon: "60189"
-      })
-    )
-    |> Ecto.Multi.insert(:inserted_env, fn %{inserted_application: app} ->
-      Environment.new(app.id, user.id, nil, %{name: "live", is_ephemeral: false, is_public: false})
-    end)
-    |> Ecto.Multi.insert(:inserted_build, fn %{inserted_application: app} ->
-      Build.new(user.id, app.id, @build_number, %{status: :success})
-    end)
-    |> Ecto.Multi.insert(:application_main_env, fn %{inserted_application: app, inserted_env: env} ->
-      ApplicationMainEnv.new(app.id, env.id)
-    end)
-    |> Ecto.Multi.insert(:user_env_access, fn %{inserted_application: app, inserted_env: env} ->
-      %UserEnvironmentAccess{user_id: authorized_user.id, environment_id: env.id}
-      |> UserEnvironmentAccess.changeset()
-    end)
-    |> Ecto.Multi.update(:updated_env, fn %{inserted_env: env, inserted_build: build} ->
-      Ecto.Changeset.change(env, deployed_build_id: build.id)
-    end)
-    |> Ecto.Multi.insert(:inserted_deployment, fn %{
-                                                    inserted_application: app,
-                                                    inserted_env: env,
-                                                    inserted_build: build
-                                                  } ->
-      Deployment.new(app.id, env.id, build.id, user.id, %{})
-    end)
-    |> Repo.transaction()
+  #   Ecto.Multi.new()
+  #   |> Ecto.Multi.insert(
+  #     :inserted_application,
+  #     LenraApplication.new(user.id, %{
+  #       name: "Counter",
+  #       color: "FFFFFF",
+  #       icon: "60189"
+  #     })
+  #   )
+  #   |> Ecto.Multi.insert(:inserted_env, fn %{inserted_application: app} ->
+  #     Environment.new(app.id, user.id, nil, %{name: "live", is_ephemeral: false, is_public: false})
+  #   end)
+  #   |> Ecto.Multi.insert(:inserted_build, fn %{inserted_application: app} ->
+  #     Build.new(user.id, app.id, @build_number, %{status: :success})
+  #   end)
+  #   |> Ecto.Multi.insert(:application_main_env, fn %{inserted_application: app, inserted_env: env} ->
+  #     ApplicationMainEnv.new(app.id, env.id)
+  #   end)
+  #   |> Ecto.Multi.insert(:user_env_access, fn %{inserted_application: app, inserted_env: env} ->
+  #     %UserEnvironmentAccess{user_id: authorized_user.id, environment_id: env.id}
+  #     |> UserEnvironmentAccess.changeset()
+  #   end)
+  #   |> Ecto.Multi.update(:updated_env, fn %{inserted_env: env, inserted_build: build} ->
+  #     Ecto.Changeset.change(env, deployed_build_id: build.id)
+  #   end)
+  #   |> Ecto.Multi.insert(:inserted_deployment, fn %{
+  #                                                   inserted_application: app,
+  #                                                   inserted_env: env,
+  #                                                   inserted_build: build
+  #                                                 } ->
+  #     Deployment.new(app.id, env.id, build.id, user.id, %{})
+  #   end)
+  #   |> Repo.transaction()
 
-    app = Repo.get_by(LenraApplication, name: "Counter")
+  #   app = Repo.get_by(LenraApplication, name: "Counter")
 
-    owstub =
-      FaasStub.create_faas_stub()
-      |> FaasStub.stub_app(app.service_name, @build_number)
+  #   owstub =
+  #     FaasStub.create_faas_stub()
+  #     |> FaasStub.stub_app(app.service_name, @build_number)
 
-    owstub
-    |> FaasStub.stub_request_once(@manifest)
-    |> FaasStub.stub_request_once(@data)
-    |> FaasStub.stub_request_once(@widget)
-    |> FaasStub.stub_request_once(@data2)
-    |> FaasStub.stub_request_once(@widget2)
+  #   owstub
+  #   |> FaasStub.stub_request_once(@manifest)
+  #   |> FaasStub.stub_request_once(@data)
+  #   |> FaasStub.stub_request_once(@widget)
+  #   |> FaasStub.stub_request_once(@data2)
+  #   |> FaasStub.stub_request_once(@widget2)
 
-    assert {:ok, _reply, _socket} = my_subscribe_and_join(authorized_socket, %{"app" => app.service_name})
+  #   assert {:ok, _reply, _socket} = my_subscribe_and_join(authorized_socket, %{"app" => app.service_name})
 
-    :timer.sleep(500)
-  end
+  #   :timer.sleep(500)
+  # end
 
   defp my_subscribe_and_join(socket, params \\ %{}) do
     subscribe_and_join(socket, LenraWeb.AppChannel, "app", params)

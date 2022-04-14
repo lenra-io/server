@@ -3,7 +3,7 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas action with `run_action/3`
   """
 
-  alias Lenra.{DeploymentServices, Environment, LenraApplication, SessionStateServices}
+  alias Lenra.{DeploymentServices, Environment, LenraApplication, SessionAgent}
   require Logger
 
   defp get_http_context do
@@ -45,11 +45,9 @@ defmodule Lenra.OpenfaasServices do
         event,
         session_id
       ) do
-    {:ok, token} = SessionStateServices.create_and_assign_token(session_id)
+    token = SessionAgent.fetch_token(session_id)
 
     finch_response = run_listener(application, environment, action, props, event, token)
-
-    SessionStateServices.revoke_token(session_id, token)
 
     finch_response
     |> case do
