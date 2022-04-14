@@ -5,7 +5,7 @@ defmodule LenraWeb.DataController do
   alias Lenra.DataServices
 
   def get(conn, params) do
-    with data <- DataServices.get(params["ds_name"], params["id"]) do
+    with data <- DataServices.get(params["datastore"], params["id"]) do
       conn
       |> assign_data(:data, data)
       |> reply

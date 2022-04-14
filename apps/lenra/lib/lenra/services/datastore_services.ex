@@ -19,12 +19,6 @@ defmodule Lenra.DatastoreServices do
     end)
   end
 
-  # def update(datastore_id, params) do
-  #   datastore_id
-  #   |> DatastoreServices.update(params)
-  #   |> Repo.transaction()
-  # end
-
   def delete(ds_name, env_id) do
     Datastore
     |> Repo.get_by(environment_id: env_id, name: ds_name)

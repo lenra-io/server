@@ -18,13 +18,7 @@ defmodule Lenra.AppGuardian do
     end
   end
 
-  def verify_claims(claims, _option) do
-    {:ok, claims}
-  end
-
   def on_verify(claims, token, _options) do
-    # TODO see if we can pass id in option, from verify_claims
-
     if SessionAgent.fetch_token(claims["sub"]) ==
          token do
       {:ok, claims}
