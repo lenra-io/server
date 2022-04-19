@@ -22,7 +22,7 @@ defmodule UserServicesTest do
     assert String.length(registration_code.code) == 8
   end
 
-  # TODO: Uncomment when the email service is enabled
+  # Uncomment when the email service is enabled
   # test "send email after registration" do
   #   {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
 
