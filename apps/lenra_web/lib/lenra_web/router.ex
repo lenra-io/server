@@ -31,14 +31,6 @@ defmodule LenraWeb.Router do
     plug(LenraWeb.Plugs.CheckCguPlug)
   end
 
-  scope "/cgu", LenraWeb do
-    pipe_through([:api])
-    get("/latest", CguController, :get_latest_cgu)
-
-    pipe_through :ensure_auth
-    get("/me/accepted_latest", CguController, :user_accepted_latest_cgu)
-  end
-
   scope "/auth", LenraWeb do
     pipe_through(:api)
     post("/register", UserController, :register)
@@ -60,8 +52,12 @@ defmodule LenraWeb.Router do
   end
 
   scope "/api", LenraWeb do
-    pipe_through([:api, :ensure_auth])
+    pipe_through([:api])
+    get("/cgu/latest", CguController, :get_latest_cgu)
+
+    pipe_through([:ensure_auth])
     post("/cgu/:cgu_id/accept", CguController, :accept)
+    get("/cgu/me/accepted_latest", CguController, :user_accepted_latest_cgu)
 
     pipe_through([:ensure_cgu_accepted])
     resources("/apps", AppsController, only: [:index, :create, :delete])
