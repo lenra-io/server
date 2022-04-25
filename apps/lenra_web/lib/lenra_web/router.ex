@@ -60,7 +60,7 @@ defmodule LenraWeb.Router do
     get("/cgu/me/accepted_latest", CguController, :user_accepted_latest_cgu)
 
     pipe_through([:ensure_cgu_accepted])
-    resources("/apps", AppsController, only: [:index, :create, :delete])
+    resources("/apps", AppsController, only: [:index, :create, :update, :delete])
     get("/apps/:app_id/main_environment", ApplicationMainEnvController, :index)
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
