@@ -56,9 +56,9 @@ defmodule Lenra.DataServices do
     |> Repo.transaction()
   end
 
-  def update(data_id, params) do
-    data_id
-    |> DataServices.update(params)
+  def update(params) do
+    params
+    |> ApplicationRunner.DataServices.update()
     |> Repo.transaction()
   end
 
@@ -68,26 +68,26 @@ defmodule Lenra.DataServices do
     |> Repo.transaction()
   end
 
-  def get_old_data(user_id, environment_id) do
-    Repo.one(
-      from(d in Data,
-        join: u in UserData,
-        on: d.id == u.data_id,
-        join: ds in Datastore,
-        on: ds.id == d.datastore_id,
-        where: u.user_id == ^user_id and ds.environment_id == ^environment_id and ds.name == "UserDatas",
-        select: d
-      )
-    )
-  end
+  # def get_old_data(user_id, environment_id) do
+  #   Repo.one(
+  #     from(d in Data,
+  #       join: u in UserData,
+  #       on: d.id == u.data_id,
+  #       join: ds in Datastore,
+  #       on: ds.id == d.datastore_id,
+  #       where: u.user_id == ^user_id and ds.environment_id == ^environment_id and ds.name == "UserData",
+  #       select: d
+  #     )
+  #   )
+  # end
 
-  def upsert_data(user_id, environment_id, data) do
-    case get_old_data(user_id, environment_id) do
-      nil ->
-        create_and_link(user_id, environment_id, data)
+  # def upsert_data(user_id, environment_id, data) do
+  #   case get_old_data(user_id, environment_id) do
+  #     nil ->
+  #       create_and_link(user_id, environment_id, data)
 
-      old_data_id ->
-        update(old_data_id.id, data)
-    end
-  end
+  #     old_data_id ->
+  #       update(old_data_id.id, data)
+  #   end
+  # end
 end

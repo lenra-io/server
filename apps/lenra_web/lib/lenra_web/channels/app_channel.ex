@@ -33,8 +33,6 @@ defmodule LenraWeb.AppChannel do
          :ok <- Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application) do
       %Environment{} = environment = select_env(application)
 
-      SessionStateServices.create_and_assign_token(session_id, user.id, environment.id)
-
       Logger.debug("Environment selected is #{environment.name}")
 
       # Assign the session_id to the socket for future usage
@@ -48,7 +46,7 @@ defmodule LenraWeb.AppChannel do
         socket_pid: self()
       }
 
-      env_assigns = %{application: application, environment: environment}
+      env_assigns = %{user: user, application: application, environment: environment}
 
       case start_session(environment.id, session_id, session_assigns, env_assigns) do
         {:ok, session_pid} ->

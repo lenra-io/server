@@ -94,7 +94,7 @@ defmodule LenraWeb.AppGuardianTest do
         res =
           post(
             conn,
-            Routes.data_path(conn, :create, "UserDatas"),
+            Routes.data_path(conn, :create, "UserData"),
             %{"data" => %{"name" => "toto"}}
           )
 
@@ -127,7 +127,7 @@ defmodule LenraWeb.AppGuardianTest do
     assert %{assigns: %{message: "Your token is invalid."}} =
              post(
                conn,
-               Routes.data_path(conn, :create, "UserDatas"),
+               Routes.data_path(conn, :create, "UserData"),
                %{"data" => %{"name" => "toto"}}
              )
   end
@@ -136,7 +136,7 @@ defmodule LenraWeb.AppGuardianTest do
     assert %{assigns: %{message: "You are not authenticated"}} =
              post(
                conn,
-               Routes.data_path(conn, :create, "UserDatas"),
+               Routes.data_path(conn, :create, "UserData"),
                %{"data" => %{"name" => "toto"}}
              )
   end

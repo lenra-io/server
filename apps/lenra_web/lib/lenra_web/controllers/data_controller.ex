@@ -23,7 +23,7 @@ defmodule LenraWeb.DataController do
   end
 
   def update(conn, params) do
-    with {:ok, %{updated_data: data}} <- DataServices.update(params["id"], params) do
+    with {:ok, %{updated_data: data}} <- DataServices.update(params) do
       conn
       |> assign_data(:updated_data, data)
       |> reply
