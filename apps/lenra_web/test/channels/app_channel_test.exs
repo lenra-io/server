@@ -85,7 +85,7 @@ defmodule LenraWeb.AppChannelTest do
   #     Environment.new(app.id, user.id, nil, %{name: "live", is_ephemeral: false, is_public: false})
   #   end)
   #   |> Ecto.Multi.insert(:inserted_datastore, fn %{inserted_env: env} ->
-  #     Datastore.new(env.id, %{"name" => "UserData"})
+  #     Datastore.new(env.id, %{"name" => "_users"})
   #   end)
   #   |> Ecto.Multi.insert(:inserted_build, fn %{inserted_application: app} ->
   #     Build.new(user.id, app.id, @build_number, %{status: :success})

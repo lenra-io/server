@@ -80,16 +80,14 @@ defmodule LenraWeb.Router do
   scope "/app", LenraWeb do
     pipe_through([:api, :ensure_auth_app])
 
-    post("/datastore", DatastoreController, :create)
-    delete("/datastore/:_datastore", DatastoreController, :delete)
-
-    get("/datastore/:_datastore/data/:_id", DataController, :get)
-    post("/datastore/:_datastore/data", DataController, :create)
-    delete("/datastore/:_datastore/data/:_id", DataController, :delete)
-    put("/datastore/:_datastore/data/:_id", DataController, :update)
-    # patch("/:ds_name/data/:id", DataController, :update)
-
-    post("/data/query", DataController, :query)
+    post("/datastores", DatastoreController, :create)
+    delete("/datastores/:_datastore", DatastoreController, :delete)
+    get("/datastores/:_datastore/data/:_id", DataController, :get)
+    get("/datastores/:_datastore/data", DataController, :get_all)
+    post("/datastores/:_datastore/data", DataController, :create)
+    delete("/datastores/:_datastore/data/:_id", DataController, :delete)
+    put("/datastores/:_datastore/data/:_id", DataController, :update)
+    post("/query", DataController, :query)
   end
 
   scope "/", LenraWeb do

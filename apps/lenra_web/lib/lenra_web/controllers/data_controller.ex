@@ -5,9 +5,19 @@ defmodule LenraWeb.DataController do
   alias Lenra.DataServices
 
   def get(conn, params) do
-    with data <- DataServices.get(params["_datastore"], params["_id"]) do
+    with session_assings <- Plug.current_resource(conn),
+         result <- DataServices.get(session_assings.environment.id, params["_datastore"], params["_id"]) do
       conn
-      |> assign_data(:data, data)
+      |> assign_all(result.data)
+      |> reply
+    end
+  end
+
+  def get_all(conn, params) do
+    with session_assings <- Plug.current_resource(conn),
+         result <- DataServices.get_all(session_assings.environment.id, params["_datastore"]) do
+      conn
+      |> assign_all(Enum.map(result, fn r -> r.data end))
       |> reply
     end
   end
@@ -40,10 +50,10 @@ defmodule LenraWeb.DataController do
 
   def query(conn, params) do
     with session_assings <- Plug.current_resource(conn),
-         requested <-
-           DataServices.query(session_assings.environment.id, session_assings.user.id, params["query"]) do
+         data <-
+           DataServices.parse_and_exec_query(params["query"], session_assings.environment.id, session_assings.user.id) do
       conn
-      |> assign_data(:requested, requested)
+      |> assign_all(data)
       |> reply
     end
   end

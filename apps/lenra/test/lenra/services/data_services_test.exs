@@ -184,10 +184,10 @@ defmodule Lenra.DataServicesTest do
   # describe "Lenra.DataServices.get_old_data_1/1" do
   #   test "should return last data", %{env_id: env_id, user_id: user_id} do
   #     env_id
-  #     |> DatastoreServices.create(%{"name" => "UserData"})
+  #     |> DatastoreServices.create(%{"name" => "_users"})
   #     |> Repo.transaction()
 
-  #     DataServices.create_and_link(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
+  #     DataServices.create_and_link(user_id, env_id, %{"_datastore" => "_users", "test" => "test"})
 
   #     assert %{"test" => "test"} = DataServices.get_old_data(user_id, env_id).data
   #   end
@@ -465,22 +465,22 @@ defmodule Lenra.DataServicesTest do
   # describe "Lenra.DataServices.upsert_data_1/1" do
   #   test "should update last data if data exist", %{env_id: env_id, user_id: user_id} do
   #     env_id
-  #     |> DatastoreServices.create(%{"name" => "UserData"})
+  #     |> DatastoreServices.create(%{"name" => "_users"})
   #     |> Repo.transaction()
 
-  #     DataServices.create_and_link(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
+  #     DataServices.create_and_link(user_id, env_id, %{"_datastore" => "_users", "test" => "test"})
 
-  #     DataServices.upsert_data(user_id, env_id, %{"_datastore" => "UserData", "test" => "test2"})
+  #     DataServices.upsert_data(user_id, env_id, %{"_datastore" => "_users", "test" => "test2"})
 
   #     assert %{"test" => "test2"} = DataServices.get_old_data(user_id, env_id).data
   #   end
 
   #   test "should create data if data not exist", %{env_id: env_id, user_id: user_id} do
   #     env_id
-  #     |> DatastoreServices.create(%{"name" => "UserData"})
+  #     |> DatastoreServices.create(%{"name" => "_users"})
   #     |> Repo.transaction()
 
-  #     DataServices.upsert_data(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
+  #     DataServices.upsert_data(user_id, env_id, %{"_datastore" => "_users", "test" => "test"})
 
   #     assert %{"test" => "test"} = DataServices.get_old_data(user_id, env_id).data
   #   end
@@ -489,10 +489,10 @@ defmodule Lenra.DataServicesTest do
   describe "Lenra.DataServices.create_and_link_1/1" do
     test "should create data and user_data", %{env_id: env_id, user_id: user_id} do
       env_id
-      |> DatastoreServices.create(%{"name" => "UserData"})
+      |> DatastoreServices.create(%{"name" => "_users"})
       |> Repo.transaction()
 
-      DataServices.create_and_link(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
+      DataServices.create_and_link(user_id, env_id, %{"_datastore" => "_users", "test" => "test"})
 
       %{user_id: user_data_user_id, data_id: user_data_data_id} =
         Repo.one(
@@ -501,7 +501,7 @@ defmodule Lenra.DataServicesTest do
             on: d.id == u.data_id,
             join: ds in Datastore,
             on: ds.id == d.datastore_id,
-            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "UserData",
+            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "_users",
             select: u
           )
         )
@@ -513,7 +513,7 @@ defmodule Lenra.DataServicesTest do
             on: d.id == u.data_id,
             join: ds in Datastore,
             on: ds.id == d.datastore_id,
-            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "UserData",
+            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "_users",
             select: d
           )
         )

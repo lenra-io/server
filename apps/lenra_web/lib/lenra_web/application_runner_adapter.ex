@@ -91,7 +91,7 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
 
   @impl true
   def exec_query(%SessionState{assigns: %{environment: env, user: user}}, query) do
-    DataServices.query(env.id, user.id, query)
+    DataServices.exec_query(query, env.id, user.id)
   end
 
   @impl true

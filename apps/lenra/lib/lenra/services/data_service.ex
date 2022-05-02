@@ -5,36 +5,49 @@ defmodule Lenra.DataServices do
   import Ecto.Query, only: [from: 2]
 
   alias Lenra.Repo
-  alias ApplicationRunner.{AST.EctoParser, AST.Parser, AST.Query, Data, DataServices, Datastore, UserData}
 
-  def get(ds_name, id) do
-    select =
-      from(d in Data,
-        join: ds in Datastore,
-        on: d.datastore_id == ds.id,
-        where: d.id == ^id and ds.name == ^ds_name,
-        select: d
-      )
+  alias ApplicationRunner.{
+    AST.EctoParser,
+    AST.Parser,
+    AST.Query,
+    Data,
+    DataQueryViewServices,
+    DataServices,
+    Datastore,
+    UserData
+  }
 
-    select
+  def get(env_id, ds_name, data_id) do
+    env_id
+    |> DataQueryViewServices.get_one(ds_name, data_id)
     |> Repo.one()
   end
 
-  def query(env_id, user_id, %Query{} = query) do
-    user_data_id = get_user_data_id(env_id, user_id)
-
-    query
-    |> EctoParser.to_ecto(env_id, user_data_id)
+  def get_all(env_id, ds_name) do
+    env_id
+    |> DataQueryViewServices.get_all(ds_name)
     |> Repo.all()
   end
 
-  def query(env_id, user_id, query) do
-    user_data_id = get_user_data_id(env_id, user_id)
+  def exec_query(_env_id, _user_id, nil) do
+    []
+  end
+
+  def exec_query(%Query{} = query, env_id, user_id) do
+    user_data =
+      env_id
+      |> ApplicationRunner.UserDataServices.current_user_data_query(user_id)
+      |> Repo.one()
 
     query
-    |> Parser.from_json()
-    |> EctoParser.to_ecto(env_id, user_data_id)
+    |> EctoParser.to_ecto(env_id, user_data.id)
     |> Repo.all()
+  end
+
+  def parse_and_exec_query(query, env_id, user_id) do
+    query
+    |> Parser.from_json()
+    |> exec_query(env_id, user_id)
   end
 
   defp get_user_data_id(env_id, user_id) do
