@@ -19,8 +19,8 @@ defmodule LenraWeb.DatastoreControllerTest do
   }
 
   setup %{conn: conn} do
-    %{env: env, app: app, session_id: session_id, token: token} = create_app_and_get_env()
-    {:ok, %{conn: conn, env: env, app: app, session_id: session_id, token: token}}
+    %{env: env, app: app, session_id: session_id} = create_app_and_get_env()
+    {:ok, %{conn: conn, env: env, app: app, session_id: session_id}}
   end
 
   defp create_app_and_get_env do
@@ -49,16 +49,14 @@ defmodule LenraWeb.DatastoreControllerTest do
 
     session_id = Ecto.UUID.generate()
 
-    {:ok, token} = SessionStateServices.create_and_assign_token(session_id, user.id, env_preloaded.id)
-
     SessionManagers.start_session(
       session_id,
-      env.id,
+      env_preloaded.id,
       %{user: user, application: application, environment: env_preloaded, socket_pid: self()},
-      %{application: application, environment: env_preloaded}
+      %{application: application, environment: env_preloaded, user: user}
     )
 
-    %{env: env_preloaded, app: application, session_id: session_id, token: token}
+    %{env: env_preloaded, app: application, session_id: session_id}
   end
 
   defp handle_request(conn) do
@@ -82,12 +80,13 @@ defmodule LenraWeb.DatastoreControllerTest do
     |> Repo.transaction()
   end
 
-  # TODO make tests when route are defined
   describe "LenraWeb.DatastoreController.create_2/1" do
     test "should create datastore if params valid", %{
       conn: conn,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn =
         conn
         |> put_req_header("accept", "application/json")
@@ -101,8 +100,10 @@ defmodule LenraWeb.DatastoreControllerTest do
 
     test "should return error if params not valid", %{
       conn: conn,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn =
         conn
         |> put_req_header("accept", "application/json")
@@ -121,8 +122,10 @@ defmodule LenraWeb.DatastoreControllerTest do
   describe "LenraWeb.DatastoreController.delete_1/1" do
     test "should delete datastore if id valid", %{
       conn: conn,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn
       |> put_req_header("accept", "application/json")
       |> put_req_header("authorization", "Bearer #{token}")

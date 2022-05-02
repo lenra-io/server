@@ -26,8 +26,7 @@ defmodule Lenra.DataServicesTest do
     test "should create data if json valid", %{env_id: env_id, user_id: _user_id} do
       {:ok, inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
-      {:ok, %{inserted_data: inserted_data}} =
-        DataServices.create(env_id, %{"datastore" => "users", "data" => %{"name" => "toto"}})
+      {:ok, %{inserted_data: inserted_data}} = DataServices.create(env_id, %{"_datastore" => "users", "name" => "toto"})
 
       data = Repo.get(Data, inserted_data.id)
 
@@ -40,8 +39,7 @@ defmodule Lenra.DataServicesTest do
 
       assert {:error, :data, :json_format_invalid, _changes_so_far} =
                DataServices.create(env_id, %{
-                 "datastore" => "users",
-                 "test" => %{"name" => "toto"}
+                 "_datastoe" => "users"
                })
     end
 
@@ -50,16 +48,16 @@ defmodule Lenra.DataServicesTest do
 
       assert {:error, :datastore, :datastore_not_found, _changes_so_far} =
                DataServices.create(-1, %{
-                 "datastore" => "users",
-                 "data" => %{"name" => "toto"}
+                 "_datastore" => "users",
+                 "name" => "toto"
                })
     end
 
     test "should return error if datastore name invalid", %{env_id: env_id, user_id: _user_id} do
       assert {:error, :datastore, :datastore_not_found, _changes_so_far} =
                DataServices.create(env_id, %{
-                 "datastore" => "test",
-                 "data" => %{"name" => "toto"}
+                 "_datastore" => "test",
+                 "name" => "toto"
                })
     end
 
@@ -69,15 +67,15 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_point}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"score" => "10"}
+          "_datastore" => "points",
+          "score" => "10"
         })
 
       {:ok, %{inserted_data: inserted_data}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refs" => [inserted_point.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refs" => [inserted_point.id]
         })
 
       assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, ref_by_id: inserted_data.id))
@@ -89,21 +87,21 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_point}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"score" => "10"}
+          "_datastore" => "points",
+          "score" => "10"
         })
 
       {:ok, %{inserted_data: inserted_point_bis}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"score" => "12"}
+          "_datastore" => "points",
+          "score" => "12"
         })
 
       {:ok, %{inserted_data: inserted_data}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refs" => [inserted_point.id, inserted_point_bis.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refs" => [inserted_point.id, inserted_point_bis.id]
         })
 
       assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_point.id, ref_by_id: inserted_data.id))
@@ -120,14 +118,13 @@ defmodule Lenra.DataServicesTest do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
-      {:ok, %{inserted_data: inserted_user}} =
-        DataServices.create(env_id, %{"datastore" => "users", "data" => %{"name" => "toto"}})
+      {:ok, %{inserted_data: inserted_user}} = DataServices.create(env_id, %{"_datastore" => "users", "name" => "toto"})
 
       {:ok, %{inserted_data: inserted_data}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"score" => "10"},
-          "refBy" => [inserted_user.id]
+          "_datastore" => "points",
+          "score" => "10",
+          "_refBy" => [inserted_user.id]
         })
 
       assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_data.id, ref_by_id: inserted_user.id))
@@ -138,21 +135,20 @@ defmodule Lenra.DataServicesTest do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
-      {:ok, %{inserted_data: inserted_team}} =
-        DataServices.create(env_id, %{"datastore" => "team", "data" => %{"name" => "test"}})
+      {:ok, %{inserted_data: inserted_team}} = DataServices.create(env_id, %{"_datastore" => "team", "name" => "test"})
 
       {:ok, %{inserted_data: inserted_point}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"scrore" => "10"}
+          "_datastore" => "points",
+          "scrore" => "10"
         })
 
       {:ok, %{inserted_data: inserted_user}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refs" => [inserted_point.id],
-          "refBy" => [inserted_team.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refs" => [inserted_point.id],
+          "_refBy" => [inserted_team.id]
         })
 
       assert !is_nil(Repo.get_by(DataReferences, refs_id: inserted_user.id, ref_by_id: inserted_team.id))
@@ -164,11 +160,11 @@ defmodule Lenra.DataServicesTest do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
-      assert {:error, :"inserted_refs_-1", %{errors: [refs_id: {"does not exist", _constraint}]}, _change_so_far} =
+      assert {:error, "inserted_refs_-1", %{errors: [refs_id: {"does not exist", _constraint}]}, _change_so_far} =
                DataServices.create(env_id, %{
-                 "datastore" => "users",
-                 "data" => %{"name" => "toto"},
-                 "refs" => [-1]
+                 "_datastore" => "users",
+                 "name" => "toto",
+                 "_refs" => [-1]
                })
     end
 
@@ -176,33 +172,32 @@ defmodule Lenra.DataServicesTest do
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
       {:ok, _inserted_datastore} = Repo.insert(Datastore.new(env_id, %{"name" => "points"}))
 
-      assert {:error, :"inserted_refBy_-1", %{errors: [ref_by_id: {"does not exist", _constraint}]}, _change_so_far} =
+      assert {:error, "inserted_refBy_-1", %{errors: [ref_by_id: {"does not exist", _constraint}]}, _change_so_far} =
                DataServices.create(env_id, %{
-                 "datastore" => "points",
-                 "data" => %{"score" => "10"},
-                 "refBy" => [-1]
+                 "_datastore" => "points",
+                 "score" => "10",
+                 "_refBy" => [-1]
                })
     end
   end
 
-  describe "Lenra.DataServices.get_old_data_1/1" do
-    test "should return last data", %{env_id: env_id, user_id: user_id} do
-      env_id
-      |> DatastoreServices.create(%{"name" => "UserDatas"})
-      |> Repo.transaction()
+  # describe "Lenra.DataServices.get_old_data_1/1" do
+  #   test "should return last data", %{env_id: env_id, user_id: user_id} do
+  #     env_id
+  #     |> DatastoreServices.create(%{"name" => "UserData"})
+  #     |> Repo.transaction()
 
-      DataServices.create_and_link(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
+  #     DataServices.create_and_link(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
 
-      assert %{"test" => "test"} = DataServices.get_old_data(user_id, env_id).data
-    end
-  end
+  #     assert %{"test" => "test"} = DataServices.get_old_data(user_id, env_id).data
+  #   end
+  # end
 
   describe "DataServices.delete_1/1" do
     test "should delete data if json valid", %{env_id: env_id, user_id: _user_id} do
       Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
-      {:ok, %{inserted_data: inserted_data}} =
-        DataServices.create(env_id, %{"datastore" => "users", "data" => %{"name" => "toto"}})
+      {:ok, %{inserted_data: inserted_data}} = DataServices.create(env_id, %{"_datastore" => "users", "name" => "toto"})
 
       data = Repo.get(Data, inserted_data.id)
 
@@ -222,12 +217,11 @@ defmodule Lenra.DataServicesTest do
     test "should update data if json valid", %{env_id: env_id, user_id: _user_id} do
       Repo.insert(Datastore.new(env_id, %{"name" => "users"}))
 
-      {:ok, %{inserted_data: inserted_data}} =
-        DataServices.create(env_id, %{"datastore" => "users", "data" => %{"name" => "toto"}})
+      {:ok, %{inserted_data: inserted_data}} = DataServices.create(env_id, %{"_datastore" => "users", "name" => "toto"})
 
       data = Repo.get(Data, inserted_data.id)
 
-      DataServices.update(data.id, %{"data" => %{"name" => "test"}})
+      DataServices.update(%{"_id" => data.id, "name" => "test"})
 
       updated_data = Repo.get(Data, inserted_data.id)
 
@@ -235,7 +229,7 @@ defmodule Lenra.DataServicesTest do
     end
 
     test "should return error id invalid", %{env_id: _env_id} do
-      assert {:error, :data, :data_not_found, _changes_so_far} = DataServices.update(-1, %{"data" => %{}})
+      assert {:error, :data, :data_not_found, _changes_so_far} = DataServices.update(%{"_id" => -1})
     end
 
     test "should also update refs on update", %{env_id: env_id, user_id: _user_id} do
@@ -244,26 +238,27 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_point}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"score" => "10"}
+          "_datastore" => "points",
+          "score" => "10"
         })
 
       {:ok, %{inserted_data: inserted_point_bis}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"score" => "12"}
+          "_datastore" => "points",
+          "score" => "12"
         })
 
       {:ok, %{inserted_data: inserted_data}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refs" => [inserted_point.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refs" => [inserted_point.id]
         })
 
       {:ok, %{data: updated_data}} =
-        DataServices.update(inserted_data.id, %{
-          "refs" => [inserted_point_bis.id]
+        DataServices.update(%{
+          "_id" => inserted_data.id,
+          "_refs" => [inserted_point_bis.id]
         })
 
       data =
@@ -283,26 +278,27 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_data}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"}
+          "_datastore" => "users",
+          "name" => "toto"
         })
 
       {:ok, %{inserted_data: inserted_data_bis}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "test"}
+          "_datastore" => "users",
+          "name" => "test"
         })
 
       {:ok, %{inserted_data: inserted_point}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"score" => "10"},
-          "refBy" => [inserted_data.id]
+          "_datastore" => "points",
+          "score" => "10",
+          "_refBy" => [inserted_data.id]
         })
 
       {:ok, %{data: updated_data}} =
-        DataServices.update(inserted_point.id, %{
-          "refBy" => [inserted_data_bis.id]
+        DataServices.update(%{
+          "_id" => inserted_point.id,
+          "_refBy" => [inserted_data_bis.id]
         })
 
       data =
@@ -323,40 +319,41 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_team}} =
         DataServices.create(env_id, %{
-          "datastore" => "team",
-          "data" => %{"name" => "team1"}
+          "_datastore" => "team",
+          "name" => "team1"
         })
 
       {:ok, %{inserted_data: inserted_team_bis}} =
         DataServices.create(env_id, %{
-          "datastore" => "team",
-          "data" => %{"name" => "team2"}
+          "_datastore" => "team",
+          "name" => "team2"
         })
 
       {:ok, %{inserted_data: inserted_point}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"name" => "10"}
+          "_datastore" => "points",
+          "name" => "10"
         })
 
       {:ok, %{inserted_data: inserted_point_bis}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"name" => "12"}
+          "_datastore" => "points",
+          "name" => "12"
         })
 
       {:ok, %{inserted_data: inserted_user}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refs" => [inserted_point.id],
-          "refBy" => [inserted_team.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refs" => [inserted_point.id],
+          "_refBy" => [inserted_team.id]
         })
 
       {:ok, %{data: updated_data}} =
-        DataServices.update(inserted_user.id, %{
-          "refs" => [inserted_point_bis.id],
-          "refBy" => [inserted_team_bis.id]
+        DataServices.update(%{
+          "_id" => inserted_user.id,
+          "_refs" => [inserted_point_bis.id],
+          "_refBy" => [inserted_team_bis.id]
         })
 
       data =
@@ -382,20 +379,21 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_point}} =
         DataServices.create(env_id, %{
-          "datastore" => "points",
-          "data" => %{"name" => "10"}
+          "_datastore" => "points",
+          "name" => "10"
         })
 
       {:ok, %{inserted_data: inserted_user}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refs" => [inserted_point.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refs" => [inserted_point.id]
         })
 
       {:error, :refs, :references_not_found, _change_so_far} =
-        DataServices.update(inserted_user.id, %{
-          "refs" => [-1]
+        DataServices.update(%{
+          "_id" => inserted_user.id,
+          "_refs" => [-1]
         })
     end
 
@@ -405,20 +403,21 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_team}} =
         DataServices.create(env_id, %{
-          "datastore" => "team",
-          "data" => %{"name" => "team1"}
+          "_datastore" => "team",
+          "name" => "team1"
         })
 
       {:ok, %{inserted_data: inserted_user}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refBy" => [inserted_team.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refBy" => [inserted_team.id]
         })
 
       {:error, :ref_by, :references_not_found, _change_so_far} =
-        DataServices.update(inserted_user.id, %{
-          "refBy" => [-1]
+        DataServices.update(%{
+          "_id" => inserted_user.id,
+          "_refBy" => [-1]
         })
     end
 
@@ -438,61 +437,62 @@ defmodule Lenra.DataServicesTest do
 
       {:ok, %{inserted_data: inserted_team}} =
         DataServices.create(env_id, %{
-          "datastore" => "team",
-          "data" => %{"name" => "team1"}
+          "_datastore" => "team",
+          "name" => "team1"
         })
 
       {:ok, %{inserted_data: inserted_team_bis}} =
         DataServices.create(environment.id, %{
-          "datastore" => "team2",
-          "data" => %{"name" => "team2"}
+          "_datastore" => "team2",
+          "name" => "team2"
         })
 
       {:ok, %{inserted_data: inserted_user}} =
         DataServices.create(env_id, %{
-          "datastore" => "users",
-          "data" => %{"name" => "toto"},
-          "refBy" => [inserted_team.id]
+          "_datastore" => "users",
+          "name" => "toto",
+          "_refBy" => [inserted_team.id]
         })
 
       {:error, :ref_by, :references_not_found, _change_so_far} =
-        DataServices.update(inserted_user.id, %{
-          "refBy" => [inserted_team_bis.id]
+        DataServices.update(%{
+          "_id" => inserted_user.id,
+          "_refBy" => [inserted_team_bis.id]
         })
     end
   end
 
-  describe "Lenra.DataServices.upsert_data_1/1" do
-    test "should update last data if data exist", %{env_id: env_id, user_id: user_id} do
-      env_id
-      |> DatastoreServices.create(%{"name" => "UserDatas"})
-      |> Repo.transaction()
+  # describe "Lenra.DataServices.upsert_data_1/1" do
+  #   test "should update last data if data exist", %{env_id: env_id, user_id: user_id} do
+  #     env_id
+  #     |> DatastoreServices.create(%{"name" => "UserData"})
+  #     |> Repo.transaction()
 
-      DataServices.create_and_link(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
+  #     DataServices.create_and_link(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
 
-      DataServices.upsert_data(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test2"}})
+  #     DataServices.upsert_data(user_id, env_id, %{"_datastore" => "UserData", "test" => "test2"})
 
-      assert %{"test" => "test2"} = DataServices.get_old_data(user_id, env_id).data
-    end
+  #     assert %{"test" => "test2"} = DataServices.get_old_data(user_id, env_id).data
+  #   end
 
-    test "should create data if data not exist", %{env_id: env_id, user_id: user_id} do
-      env_id
-      |> DatastoreServices.create(%{"name" => "UserDatas"})
-      |> Repo.transaction()
+  #   test "should create data if data not exist", %{env_id: env_id, user_id: user_id} do
+  #     env_id
+  #     |> DatastoreServices.create(%{"name" => "UserData"})
+  #     |> Repo.transaction()
 
-      DataServices.upsert_data(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
+  #     DataServices.upsert_data(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
 
-      assert %{"test" => "test"} = DataServices.get_old_data(user_id, env_id).data
-    end
-  end
+  #     assert %{"test" => "test"} = DataServices.get_old_data(user_id, env_id).data
+  #   end
+  # end
 
   describe "Lenra.DataServices.create_and_link_1/1" do
     test "should create data and user_data", %{env_id: env_id, user_id: user_id} do
       env_id
-      |> DatastoreServices.create(%{"name" => "UserDatas"})
+      |> DatastoreServices.create(%{"name" => "UserData"})
       |> Repo.transaction()
 
-      DataServices.create_and_link(user_id, env_id, %{"datastore" => "UserDatas", "data" => %{"test" => "test"}})
+      DataServices.create_and_link(user_id, env_id, %{"_datastore" => "UserData", "test" => "test"})
 
       %{user_id: user_data_user_id, data_id: user_data_data_id} =
         Repo.one(
@@ -501,12 +501,22 @@ defmodule Lenra.DataServicesTest do
             on: d.id == u.data_id,
             join: ds in Datastore,
             on: ds.id == d.datastore_id,
-            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "UserDatas",
+            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "UserData",
             select: u
           )
         )
 
-      old_data = DataServices.get_old_data(user_id, env_id)
+      old_data =
+        Repo.one(
+          from(d in Data,
+            join: u in UserData,
+            on: d.id == u.data_id,
+            join: ds in Datastore,
+            on: ds.id == d.datastore_id,
+            where: u.user_id == ^user_id and ds.environment_id == ^env_id and ds.name == "UserData",
+            select: d
+          )
+        )
 
       assert %{"test" => "test"} = old_data.data
       assert user_data_data_id == old_data.id

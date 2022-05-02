@@ -15,7 +15,7 @@ defmodule Lenra.DatastoreServices do
   def create_environment_user_datastore(multi) do
     multi
     |> Ecto.Multi.insert(:inserted_datastore, fn %{inserted_env: env} ->
-      Datastore.new(env.id, %{"name" => "UserDatas"})
+      Datastore.new(env.id, %{"name" => "UserData"})
     end)
   end
 

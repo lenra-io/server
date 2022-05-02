@@ -6,6 +6,8 @@ defmodule Lenra.Environment do
   use Lenra.Schema
   import Ecto.Changeset
 
+  alias ApplicationRunner.Datastore
+
   alias Lenra.{
     Build,
     Environment,
@@ -34,6 +36,8 @@ defmodule Lenra.Environment do
     belongs_to(:creator, User)
     belongs_to(:deployed_build, Build)
     many_to_many(:shared_with, User, join_through: UserEnvironmentAccess)
+    has_many(:datastore, Datastore, foreign_key: :environment_id)
+
     timestamps()
   end
 

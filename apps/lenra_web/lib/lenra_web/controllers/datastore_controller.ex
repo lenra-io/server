@@ -16,7 +16,7 @@ defmodule LenraWeb.DatastoreController do
   def delete(conn, params) do
     with session_assings <- Plug.current_resource(conn),
          {:ok, %{deleted_datastore: datastore}} <-
-           DatastoreServices.delete(params["datastore"], session_assings.environment.id) do
+           DatastoreServices.delete(params["_datastore"], session_assings.environment.id) do
       conn
       |> assign_data(:deleted_datastore, datastore)
       |> reply

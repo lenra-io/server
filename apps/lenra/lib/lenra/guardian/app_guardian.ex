@@ -5,7 +5,7 @@ defmodule Lenra.AppGuardian do
 
   use Guardian, otp_app: :lenra
 
-  alias Lenra.{Environment, Repo, SessionAgent, User}
+  alias Lenra.{Environment, EnvironmentStateServices, Repo, SessionStateServices, User}
 
   def subject_for_token(session_pid, _claims) do
     {:ok, to_string(session_pid)}
@@ -19,11 +19,24 @@ defmodule Lenra.AppGuardian do
   end
 
   def on_verify(claims, token, _options) do
-    if SessionAgent.fetch_token(claims["sub"]) ==
+    if get_app_token(claims) ==
          token do
       {:ok, claims}
     else
       {:error, :invalid_token}
+    end
+  end
+
+  defp get_app_token(claims) do
+    case claims["type"] do
+      "session" ->
+        SessionStateServices.fetch_token(claims["sub"])
+
+      "env" ->
+        EnvironmentStateServices.fetch_token(String.to_integer(claims["sub"]))
+
+      _err ->
+        :error
     end
   end
 end

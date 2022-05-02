@@ -6,26 +6,26 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   @behaviour ApplicationRunner.AdapterBehavior
 
   alias ApplicationRunner.{Data, EnvState, SessionState}
-  alias Lenra.{DataServices, OpenfaasServices, User}
+  alias Lenra.{DataServices, OpenfaasServices, User, UserDataServices}
   require Logger
 
-  # @impl true
-  # def run_listener(
-  #       %EnvState{
-  #         env_id: env_id,
-  #         assigns: %{
-  #           environment: environment,
-  #           application: application
-  #         }
-  #       },
-  #       action,
-  #       props,
-  #       event
-  #     ) do
-  #   Logger.info("Run env listener for action #{action}")
+  @impl true
+  def run_listener(
+        %EnvState{
+          env_id: env_id,
+          assigns: %{
+            environment: environment,
+            application: application
+          }
+        },
+        action,
+        props,
+        event
+      ) do
+    Logger.info("Run env listener for action #{action}")
 
-  #   OpenfaasServices.run_env_listeners(application, environment, action, props, event, env_id)
-  # end
+    OpenfaasServices.run_env_listeners(application, environment, action, props, event, env_id)
+  end
 
   @impl true
   def run_listener(
@@ -47,7 +47,7 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
 
   @impl true
   def get_widget(
-        %EnvState{
+        %SessionState{
           assigns: %{
             environment: environment,
             application: application
@@ -78,36 +78,6 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   end
 
   @impl true
-  def get_data(%SessionState{
-        env_id: env_id,
-        assigns: %{
-          user: %User{} = user
-        }
-      }) do
-    case DataServices.get_old_data(user.id, env_id) do
-      nil -> {:ok, %{}}
-      %Data{} = data -> {:ok, data.data}
-    end
-  end
-
-  @impl true
-  def save_data(
-        %SessionState{
-          env_id: env_id,
-          assigns: %{
-            user: %User{} = user
-          }
-        },
-        data
-      ) do
-    # TODO: change this line when data request avalaible
-    case DataServices.upsert_data(user.id, env_id, %{"datastore" => "UserDatas", "data" => data}) do
-      {:ok, _} -> :ok
-      {:error, _} -> {:error, :cannot_save_data}
-    end
-  end
-
-  @impl true
   def on_ui_changed(
         %SessionState{
           assigns: %{
@@ -117,6 +87,21 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         {atom, ui_or_patches}
       ) do
     send(socket_pid, {:send, atom, ui_or_patches})
+  end
+
+  @impl true
+  def exec_query(%SessionState{assigns: %{environment: env, user: user}}, query) do
+    DataServices.query(env.id, user.id, query)
+  end
+
+  @impl true
+  def first_time_user?(%SessionState{assigns: %{user: user, environment: env}}) do
+    not UserDataServices.has_user_data?(env.id, user.id)
+  end
+
+  @impl true
+  def create_user_data(%SessionState{assigns: %{user: user, environment: env}}) do
+    UserDataServices.create_user_data(env.id, user.id)
   end
 
   def on_ui_changed(session_state, message) do

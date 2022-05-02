@@ -3,7 +3,7 @@ defmodule LenraWeb.DataControllerTest do
     Test the `LenraWeb.DataController` module
   """
 
-  use LenraWeb.ConnCase, async: true
+  use LenraWeb.ConnCase, async: false
 
   alias ApplicationRunner.SessionManagers
 
@@ -20,8 +20,8 @@ defmodule LenraWeb.DataControllerTest do
   }
 
   setup %{conn: conn} do
-    %{env: env, app: app, session_id: session_id, token: token} = create_app_and_get_env()
-    {:ok, %{conn: conn, env: env, app: app, session_id: session_id, token: token}}
+    %{env: env, app: app, session_id: session_id} = create_app_and_get_env()
+    {:ok, %{conn: conn, env: env, app: app, session_id: session_id}}
   end
 
   defp create_app_and_get_env do
@@ -50,16 +50,14 @@ defmodule LenraWeb.DataControllerTest do
 
     session_id = Ecto.UUID.generate()
 
-    {:ok, token} = SessionStateServices.create_and_assign_token(session_id, user.id, env_preloaded.id)
-
     SessionManagers.start_session(
       session_id,
-      env.id,
+      env_preloaded.id,
       %{user: user, application: application, environment: env_preloaded, socket_pid: self()},
-      %{application: application, environment: env_preloaded}
+      %{application: application, environment: env_preloaded, user: user}
     )
 
-    %{env: env_preloaded, app: application, session_id: session_id, token: token}
+    %{env: env_preloaded, app: application, session_id: session_id}
   end
 
   defp handle_request(conn) do
@@ -83,12 +81,13 @@ defmodule LenraWeb.DataControllerTest do
     |> Repo.transaction()
   end
 
-  # TODO make tests when route are defined
   describe "LenraWeb.DataController.create_2/1" do
     test "should create data if params valid", %{
       conn: conn,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn
       |> put_req_header("accept", "application/json")
       |> put_req_header("authorization", "Bearer #{token}")
@@ -101,7 +100,7 @@ defmodule LenraWeb.DataControllerTest do
         |> put_req_header("accept", "application/json")
         |> put_req_header("authorization", "Bearer #{token}")
         |> post(Routes.data_path(conn, :create, "test"), %{
-          "data" => %{"name" => "toto"}
+          "name" => "toto"
         })
 
       assert Map.has_key?(json_response(conn, 200), "data")
@@ -109,14 +108,16 @@ defmodule LenraWeb.DataControllerTest do
 
     test "should return error if params not valid", %{
       conn: conn,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn =
         conn
         |> put_req_header("accept", "application/json")
         |> put_req_header("authorization", "Bearer #{token}")
         |> post(Routes.data_path(conn, :create, "test"), %{
-          "data" => %{"name" => "toto"}
+          "name" => "toto"
         })
 
       assert json_response(conn, 400) == %{
@@ -130,8 +131,10 @@ defmodule LenraWeb.DataControllerTest do
     test "should update data if params valid", %{
       conn: conn,
       env: env,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn
       |> put_req_header("accept", "application/json")
       |> put_req_header("authorization", "Bearer #{token}")
@@ -140,14 +143,14 @@ defmodule LenraWeb.DataControllerTest do
       })
 
       {:ok, %{inserted_data: data}} =
-        Lenra.DataServices.create(env.id, %{"datastore" => "test", "data" => %{"name" => "toto"}})
+        Lenra.DataServices.create(env.id, %{"_datastore" => "test", "data" => %{"name" => "toto"}})
 
       conn =
         conn
         |> put_req_header("accept", "application/json")
         |> put_req_header("authorization", "Bearer #{token}")
         |> put(Routes.data_path(conn, :update, "test", data.id), %{
-          "data" => %{"name" => "test"}
+          "name" => "test"
         })
 
       assert Map.has_key?(json_response(conn, 200), "data")
@@ -155,8 +158,10 @@ defmodule LenraWeb.DataControllerTest do
 
     test "should return error if params not valid", %{
       conn: conn,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn =
         conn
         |> put_req_header("accept", "application/json")
@@ -176,8 +181,10 @@ defmodule LenraWeb.DataControllerTest do
     test "should delete data if id valid", %{
       conn: conn,
       env: env,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn
       |> put_req_header("accept", "application/json")
       |> put_req_header("authorization", "Bearer #{token}")
@@ -186,7 +193,7 @@ defmodule LenraWeb.DataControllerTest do
       })
 
       {:ok, %{inserted_data: data}} =
-        Lenra.DataServices.create(env.id, %{"datastore" => "test", "data" => %{"name" => "toto"}})
+        Lenra.DataServices.create(env.id, %{"_datastore" => "test", "data" => %{"name" => "toto"}})
 
       conn =
         conn
@@ -202,8 +209,10 @@ defmodule LenraWeb.DataControllerTest do
     test "should return error if id invalid", %{
       conn: conn,
       env: env,
-      token: token
+      session_id: session_id
     } do
+      token = SessionStateServices.fetch_token(session_id)
+
       conn =
         conn
         |> put_req_header("accept", "application/json")

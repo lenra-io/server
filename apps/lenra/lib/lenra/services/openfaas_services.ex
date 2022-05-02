@@ -3,7 +3,7 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas action with `run_action/3`
   """
 
-  alias Lenra.{DeploymentServices, Environment, LenraApplication, SessionAgent}
+  alias Lenra.{DeploymentServices, Environment, EnvironmentStateServices, LenraApplication, SessionStateServices}
   require Logger
 
   defp get_http_context do
@@ -27,15 +27,18 @@ defmodule Lenra.OpenfaasServices do
     Returns `{:error, reason}` if the HTTP Post fail
   """
 
-  #  def run_env_listeners(
-  #   %LenraApplication{} = application,
-  #   %Environment{} = environment,
-  #   action,
-  #   props,
-  #   event,
-  #   env_id
-  #   ) do
-  #  end
+  def run_env_listeners(
+        %LenraApplication{} = application,
+        %Environment{} = environment,
+        action,
+        props,
+        event,
+        env_id
+      ) do
+    token = EnvironmentStateServices.fetch_token(env_id)
+
+    run_listener(application, environment, action, props, event, token)
+  end
 
   def run_session_listeners(
         %LenraApplication{} = application,
@@ -45,21 +48,9 @@ defmodule Lenra.OpenfaasServices do
         event,
         session_id
       ) do
-    token = SessionAgent.fetch_token(session_id)
+    token = SessionStateServices.fetch_token(session_id)
 
-    finch_response = run_listener(application, environment, action, props, event, token)
-
-    finch_response
-    |> case do
-      {:ok, %{"data" => data}} ->
-        {:ok, data}
-
-      {:error, :ressource_not_found} ->
-        {:error, :listener_not_found}
-
-      err ->
-        err
-    end
+    run_listener(application, environment, action, props, event, token)
   end
 
   @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), String.t()) ::
@@ -90,7 +81,7 @@ defmodule Lenra.OpenfaasServices do
         action: action,
         props: props,
         event: event,
-        api_options: %{host: host, port: port, token: token}
+        api: %{url: host, port: port, token: token}
       })
 
     Logger.debug("Call to Openfaas : #{function_name}")
@@ -100,8 +91,18 @@ defmodule Lenra.OpenfaasServices do
     )
 
     Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:decode)
+    |> Finch.request(FaasHttp, receive_timeout: 5000)
+    |> response(:listener)
+    |> case do
+      :ok ->
+        :ok
+
+      {:error, :ressource_not_found} ->
+        {:error, :listener_not_found}
+
+      err ->
+        err
+    end
   end
 
   @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::
@@ -123,7 +124,7 @@ defmodule Lenra.OpenfaasServices do
 
     Finch.build(:post, url, headers, body)
     |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:decode)
+    |> response(:widget)
     |> case do
       {:ok, %{"widget" => widget}} ->
         {:ok, widget}
@@ -151,7 +152,7 @@ defmodule Lenra.OpenfaasServices do
 
     Finch.build(:post, url, headers)
     |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:decode)
+    |> response(:manifest)
     |> case do
       {:ok, %{"manifest" => manifest}} ->
         Logger.debug("Got manifest : #{inspect(manifest)}")
@@ -230,8 +231,12 @@ defmodule Lenra.OpenfaasServices do
     |> response(:delete_app)
   end
 
-  defp response({:ok, %Finch.Response{status: 200, body: body}}, :decode) do
+  defp response({:ok, %Finch.Response{status: 200, body: body}}, key) when key in [:manifest, :widget] do
     {:ok, Jason.decode!(body)}
+  end
+
+  defp response({:ok, %Finch.Response{status: 200}}, :listener) do
+    :ok
   end
 
   defp response({:ok, %Finch.Response{status: status_code}}, :deploy_app)
