@@ -18,7 +18,6 @@ defmodule Lenra.Plug.VerifySecret do
         conn
 
       e ->
-        IO.puts(inspect(e))
         error(conn)
     end
   end

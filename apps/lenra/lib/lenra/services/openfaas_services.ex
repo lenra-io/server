@@ -3,7 +3,7 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas action with `run_action/3`
   """
 
-  alias Lenra.{DeploymentServices, Environment, LenraApplication, SessionStateServices, EnvironmentStateServices}
+  alias Lenra.{DeploymentServices, Environment, EnvironmentStateServices, LenraApplication, SessionStateServices}
   require Logger
 
   defp get_http_context do
@@ -35,10 +35,9 @@ defmodule Lenra.OpenfaasServices do
         event,
         env_id
       ) do
-    {:ok, token} = EnvironmentStateServices.fetch_token(environment.id)
+    token = EnvironmentStateServices.fetch_token(env_id)
 
     run_listener(application, environment, action, props, event, token)
-    |> handle_listeners_result
   end
 
   def run_session_listeners(
@@ -49,24 +48,9 @@ defmodule Lenra.OpenfaasServices do
         event,
         session_id
       ) do
-    {:ok, token} = SessionStateServices.fetch_token(session_id)
+    token = SessionStateServices.fetch_token(session_id)
 
     run_listener(application, environment, action, props, event, token)
-    |> handle_listeners_result
-  end
-
-  defp handle_listeners_result(finch_response) do
-    finch_response
-    |> case do
-      {:ok, %{"data" => data}} ->
-        {:ok, data}
-
-      {:error, :ressource_not_found} ->
-        {:error, :listener_not_found}
-
-      err ->
-        err
-    end
   end
 
   @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), String.t()) ::
@@ -85,7 +69,7 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-    [host: _host] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:url]
+    [host: host] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:url]
     [port: port] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:http]
 
     headers = [
@@ -97,7 +81,7 @@ defmodule Lenra.OpenfaasServices do
         action: action,
         props: props,
         event: event,
-        api: %{url: "https://hungry-panther-65.loca.lt", port: port, token: token}
+        api: %{url: host, port: port, token: token}
       })
 
     Logger.debug("Call to Openfaas : #{function_name}")
@@ -109,6 +93,16 @@ defmodule Lenra.OpenfaasServices do
     Finch.build(:post, url, headers, body)
     |> Finch.request(FaasHttp, receive_timeout: 5000)
     |> response(:listener)
+    |> case do
+      :ok ->
+        :ok
+
+      {:error, :ressource_not_found} ->
+        {:error, :listener_not_found}
+
+      err ->
+        err
+    end
   end
 
   @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::
@@ -238,7 +232,6 @@ defmodule Lenra.OpenfaasServices do
   end
 
   defp response({:ok, %Finch.Response{status: 200, body: body}}, key) when key in [:manifest, :widget] do
-    IO.inspect(body)
     {:ok, Jason.decode!(body)}
   end
 

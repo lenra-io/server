@@ -14,11 +14,8 @@ defmodule Lenra.EnvironmentStateServices do
   end
 
   def fetch_token(env_id) do
-    IO.inspect({:env_id, env_id})
-
     with agent <- EnvSupervisor.fetch_module_pid!(env_id, Lenra.TokenAgent) do
       Agent.get(agent, fn state -> state end)
-      |> IO.inspect()
     end
   end
 end

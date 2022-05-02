@@ -4,9 +4,8 @@ defmodule Lenra.AppGuardian do
   """
 
   use Guardian, otp_app: :lenra
-  require Logger
 
-  alias Lenra.{Environment, Repo, SessionAgent, User, SessionStateServices, EnvironmentStateServices}
+  alias Lenra.{Environment, EnvironmentStateServices, Repo, SessionStateServices, User}
 
   def subject_for_token(session_pid, _claims) do
     {:ok, to_string(session_pid)}
@@ -29,17 +28,12 @@ defmodule Lenra.AppGuardian do
   end
 
   defp get_app_token(claims) do
-    IO.inspect(claims)
-
     case claims["type"] do
       "session" ->
-        {:ok, token} = SessionStateServices.fetch_token(String.to_integer(claims["sub"]))
-        token
+        SessionStateServices.fetch_token(claims["sub"])
 
       "env" ->
-        {:ok, token} = EnvironmentStateServices.fetch_token(String.to_integer(claims["sub"]))
-        IO.inspect({:env, token})
-        token
+        EnvironmentStateServices.fetch_token(String.to_integer(claims["sub"]))
 
       _err ->
         :error

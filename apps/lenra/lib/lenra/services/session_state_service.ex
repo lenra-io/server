@@ -3,8 +3,8 @@ defmodule Lenra.SessionStateServices do
     Lenra.Sessionstate handle all operation for session state.
   """
 
-  alias Lenra.AppGuardian
   alias ApplicationRunner.SessionSupervisor
+  alias Lenra.AppGuardian
 
   def create_token(session_id, user_id, env_id) do
     with {:ok, token, _claims} <-
