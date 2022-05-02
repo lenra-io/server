@@ -77,8 +77,8 @@ config :application_runner,
   adapter: LenraWeb.ApplicationRunnerAdapter,
   lenra_environment_schema: Lenra.Environment,
   lenra_user_schema: Lenra.User,
-  additional_session_modules: fn opts -> [{Lenra.TokenAgent, opts}] end,
-  additional_env_modules: fn opts -> [{Lenra.TokenAgent, opts}] end
+  additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
+  additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
 
 config :lenra,
   faas_secrets: []
