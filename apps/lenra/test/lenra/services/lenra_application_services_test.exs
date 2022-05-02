@@ -66,4 +66,20 @@ defmodule LenraWeb.LenraApplicationServicesTest do
       assert apps == []
     end
   end
+
+  describe "update" do
+    test "application successfully", %{user: user, random_user: _random_user} do
+      {:ok, app} = LenraApplicationServices.fetch_by(name: "public-app")
+
+      LenraApplicationServices.update(app, %{
+        repository: "new_repo"
+      })
+
+      {:ok, updated_app} = LenraApplicationServices.fetch_by(name: "public-app")
+
+      assert app.repository != updated_app.repository
+      assert app.repository == nil
+      assert updated_app.repository == "new_repo"
+    end
+  end
 end
