@@ -107,4 +107,12 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   def on_ui_changed(session_state, message) do
     raise "Error, not maching on_ui_changed/2 #{inspect(session_state)}, #{inspect(message)}"
   end
+
+  def additional_session_modules(opts) do
+    [{Lenra.TokenAgent, opts}]
+  end
+
+  def additional_env_modules(opts) do
+    [{Lenra.TokenAgent, opts}]
+  end
 end
