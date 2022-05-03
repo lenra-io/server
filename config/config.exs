@@ -47,7 +47,7 @@ config :lenra, Lenra.Mailer,
 
 # Configures the endpoint
 config :lenra_web, LenraWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: {:system, "PORT"}],
   http: [port: {:system, "PORT"}],
   render_errors: [view: LenraWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Lenra.PubSub,
