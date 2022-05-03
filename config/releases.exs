@@ -6,7 +6,7 @@ import Config
 config :lenra_web, LenraWeb.Endpoint,
   http: [port: System.fetch_env!("PORT")],
   secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
-  url: [host: {:system, "APP_HOST"}, port: System.fetch_env!("PORT")]
+  url: [host: System.fetch_env!("API_ENDPOINT"), port: System.fetch_env!("PORT")]
 
 config :lenra, Lenra.Repo,
   username: System.fetch_env!("POSTGRES_USER"),
