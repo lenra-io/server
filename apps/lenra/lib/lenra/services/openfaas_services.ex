@@ -69,8 +69,6 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-
-
     headers = [
       {"Content-Type", "application/json"} | base_headers
     ]
