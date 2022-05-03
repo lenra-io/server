@@ -22,7 +22,6 @@ config :lenra,
   gitlab_ci_ref: "master",
   template_url: "https://github.com/lenra-io/templates.git"
 
-
 config :lenra, Lenra.Repo,
   username: "postgres",
   password: "postgres",
