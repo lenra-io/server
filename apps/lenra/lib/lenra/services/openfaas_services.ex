@@ -69,7 +69,7 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
 
-    [host: host, port: port] = Application.get_env(:lenra_web, LenraWeb.Endpoint)[:url]
+
 
     headers = [
       {"Content-Type", "application/json"} | base_headers
@@ -80,7 +80,7 @@ defmodule Lenra.OpenfaasServices do
         action: action,
         props: props,
         event: event,
-        api: %{url: host, port: port, token: token}
+        api: %{url: LenraWeb.Endpoint.url(), token: token}
       })
 
     Logger.debug("Call to Openfaas : #{function_name}")
