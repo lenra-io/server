@@ -21,6 +21,8 @@ defmodule Lenra.GitlabApiServices do
     gitlab_project_id = Application.fetch_env!(:lenra, :gitlab_project_id)
     runner_secret = Application.fetch_env!(:lenra, :runner_secret)
     gitlab_ref = Application.fetch_env!(:lenra, :gitlab_ci_ref)
+    template_url = Application.fetch_env!(:lenra, :template_url)
+
 
     url = "#{gitlab_api_url}/projects/#{gitlab_project_id}/pipeline"
 
@@ -41,7 +43,8 @@ defmodule Lenra.GitlabApiServices do
             "key" => "CALLBACK_URL",
             "value" => "#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}"
           },
-          %{"key" => "APP_REPOSITORY", "value" => app_repostiory}
+          %{"key" => "APP_REPOSITORY", "value" => app_repostiory},
+          %{"key" => "FAAS_TEMPLATE_REPOSITORY", "value" => template_url}
         ]
       })
 
