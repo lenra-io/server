@@ -74,7 +74,7 @@ config :lenra,
       "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
     ),
   faas_secrets: ["gitlab-registry"],
-  template_url: System.fetch_env!("TEMPLATE_URL", "https://github.com/lenra-io/templates.git")
+  template_url: System.get_env("TEMPLATE_URL", "https://github.com/lenra-io/templates.git")
 
 config :peerage,
   via: Peerage.Via.List,
