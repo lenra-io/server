@@ -10,17 +10,8 @@ defmodule Lenra.EmailService do
     new_email()
     |> to(email_address)
     |> from("no-reply@lenra.io")
-    |> SendGridHelper.with_template("d-bd160809d9a04b07ac6925a823f8f61c")
-    |> SendGridHelper.add_dynamic_field("subject", "Bienvenue !")
-    |> SendGridHelper.add_dynamic_field(
-      "body_hello",
-      "Bonjour " <> email_address <> ",<br />Merci pour votre inscription! Vous rejoignez une communauté incroyable"
-    )
+    |> SendGridHelper.with_template("d-311a3dc52f6d44c2b613e3367e7ba82b")
     |> SendGridHelper.add_dynamic_field("code", code)
-    |> SendGridHelper.add_dynamic_field(
-      "body_help",
-      "Ce code vous permet de valider votre inscription.<br />Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
-    )
   end
 
   @spec create_recovery_email(String.t(), String.t()) :: Bamboo.Email.t()
