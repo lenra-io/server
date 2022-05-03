@@ -23,7 +23,6 @@ defmodule Lenra.GitlabApiServices do
     gitlab_ref = Application.fetch_env!(:lenra, :gitlab_ci_ref)
     template_url = Application.fetch_env!(:lenra, :template_url)
 
-
     url = "#{gitlab_api_url}/projects/#{gitlab_project_id}/pipeline"
 
     headers = [
