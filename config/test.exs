@@ -19,7 +19,8 @@ config :lenra,
   gitlab_api_token: "none",
   gitlab_project_id: "26231009",
   runner_secret: "test_secret",
-  gitlab_ci_ref: "master"
+  gitlab_ci_ref: "master",
+  lenra_email: "contact@lenra.io"
 
 config :lenra, Lenra.Repo,
   username: "postgres",
