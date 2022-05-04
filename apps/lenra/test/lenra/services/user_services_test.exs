@@ -22,13 +22,14 @@ defmodule UserServicesTest do
     assert String.length(registration_code.code) == 8
   end
 
-  test "send email after registration" do
-    {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
+  # Uncomment when the email service is enables
+  # test "send email after registration" do
+  #   {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
 
-    email = EmailService.create_welcome_email(user.email, registration_code.code)
+  #   email = EmailService.create_welcome_email(user.email, registration_code.code)
 
-    assert_delivered_email(email)
-  end
+  #   assert_delivered_email(email)
+  # end
 
   test "send email for a password recovery" do
     {:ok, %{inserted_user: user}} = register_john_doe()
