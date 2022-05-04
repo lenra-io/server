@@ -32,6 +32,6 @@ defmodule Lenra.EmailService do
     |> from("no-reply@lenra.io")
     |> SendGridHelper.with_template("d-61866b0c62b347d3880155d680036f65")
     |> SendGridHelper.add_dynamic_field("application_name", application_name)
-    |> SendGridHelper.add_dynamic_field("link", app_link)
+    |> SendGridHelper.add_dynamic_field("app_link", app_link)
   end
 end
