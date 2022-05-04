@@ -73,6 +73,7 @@ config :lenra,
       "RUNNER_SECRET",
       "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
     ),
+  lenra_email: System.get_env("LENRA_EMAIL", "contact@lenra.io"),
   faas_secrets: ["gitlab-registry"]
 
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
