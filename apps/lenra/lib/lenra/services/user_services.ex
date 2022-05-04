@@ -32,8 +32,7 @@ defmodule Lenra.UserServices do
         RegistrationCodeServices.registration_code_changeset(user)
       end
     )
-    ## Temporary disable the email sending for the registration.
-    # |> Ecto.Multi.run(:add_event, &add_registration_events/2)
+    |> Ecto.Multi.run(:add_event, &add_registration_events/2)
     |> Repo.transaction()
   end
 
