@@ -33,13 +33,15 @@ defmodule LenraWeb.ErrorHelpers do
     widget_not_found: %{code: 23, message: "No Widget found in app manifest."},
     no_app_authorization: %{code: 24, message: "You are not authorized to join this app."},
     invalid_ui: %{code: 25, message: "Invalid UI"},
-    datastore_not_found: %{code: 26, message: "Datastore cannot be found"},
-    data_not_found: %{code: 27, message: "Data cannot be found"},
+    not_latest_cgu: %{code: 26, message: "Not latest CGU."},
+    datastore_not_found: %{code: 27, message: "Datastore cannot be found"},
+    data_not_found: %{code: 28, message: "Data cannot be found"},
     bad_request: %{code: 400, message: "Server cannot understand or process the request due to a client-side error."},
     error_404: %{code: 404, message: "Not Found."},
     error_500: %{code: 500, message: "Internal server error."},
     openfaas_not_reachable: %{code: 1000, message: "Openfaas is not accessible"},
-    forbidden: %{code: 403, message: "Forbidden"}
+    forbidden: %{code: 403, message: "Forbidden"},
+    did_not_accept_cgu: %{code: 4031, message: "You must accept the CGU to use Lenra"}
   ]
 
   def translate_errors([]), do: []

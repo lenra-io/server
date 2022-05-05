@@ -26,14 +26,24 @@ config :lenra,
   gitlab_project_id: System.fetch_env!("GITLAB_PROJECT_ID"),
   gitlab_ci_ref: "master",
   template_url: System.fetch_env!("TEMPLATE_URL")
+  lenra_email: System.fetch_env!("LENRA_EMAIL")
 
 # Do not print debug messages in production
 config :logger, level: String.to_atom(System.get_env("LOG_LEVEL", "info"))
 
-config :peerage,
-  via: Peerage.Via.Dns,
-  dns_name: System.fetch_env!("SERVICE_NAME"),
-  app_name: "lenra"
+config :libcluster,
+  topologies: [
+    lenra: [
+      # The selected clustering strategy. Required.
+      strategy: Elixir.Cluster.Strategy.Kubernetes.DNS,
+      # Configuration for the provided strategy. Optional.
+      config: [
+        service: System.fetch_env!("SERVICE_NAME"),
+        application_name: "lenra",
+        polling_interval: 10_000
+      ]
+    ]
+  ]
 
 config :lenra, Lenra.Mailer, api_key: System.fetch_env!("SENDGRID_API_KEY")
 

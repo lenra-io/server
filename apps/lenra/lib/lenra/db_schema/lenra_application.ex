@@ -29,6 +29,7 @@ defmodule Lenra.LenraApplication do
     # As long as we do not handle repository link read access, we need to redact it
     # and remove it from the JSON response.
     field(:repository, :string, redact: true)
+    field(:repository_branch, :string, redact: true)
 
     belongs_to(:creator, User)
     has_many(:environments, Environment, foreign_key: :application_id)
@@ -40,7 +41,7 @@ defmodule Lenra.LenraApplication do
 
   def changeset(application, params \\ %{}) do
     application
-    |> cast(params, [:name, :color, :icon, :repository])
+    |> cast(params, [:name, :color, :icon, :repository, :repository_branch])
     |> validate_required([:name, :service_name, :color, :icon, :creator_id])
     |> unique_constraint(:name)
     |> unique_constraint(:service_name)

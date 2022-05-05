@@ -29,6 +29,16 @@ defmodule LenraWeb.AppsController do
     end
   end
 
+  def update(conn, %{"id" => app_id} = params) do
+    with {:ok, app} <- LenraApplicationServices.fetch(app_id),
+         :ok <- allow(conn, app),
+         {:ok, %{updated_application: app}} <- LenraApplicationServices.update(app, params) do
+      conn
+      |> assign_data(:updated_application, app)
+      |> reply
+    end
+  end
+
   def delete(conn, %{"id" => app_id}) do
     with {:ok, app} <- LenraApplicationServices.fetch(app_id),
          :ok <- allow(conn, app),

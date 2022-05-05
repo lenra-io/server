@@ -27,7 +27,7 @@ jobs:
       - name: create_pr
         uses: lenra-io/create-or-update-pr-action@v1.1.0
         with:
-          name: 'Update dependecies'
+          name: 'Update dependencies'
           token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
           script: |
             # Regex in bash is not powerful enough but thanks to python regex that work 

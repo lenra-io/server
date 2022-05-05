@@ -20,8 +20,8 @@ defmodule LenraWeb.ErrorView do
     %{"errors" => [%{code: 401, message: "Unauthorized"}], "success" => false}
   end
 
-  def render("403.json", %{message: message}) do
-    %{"errors" => [%{code: 403, message: message}], "success" => false}
+  def render("403.json", %{error: error}) do
+    %{"errors" => [error], "success" => false}
   end
 
   def render("403.json", _assigns) do

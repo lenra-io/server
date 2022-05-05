@@ -10,6 +10,7 @@ defmodule Lenra.Cgu do
 
   @derive {Jason.Encoder,
            only: [
+             :id,
              :link,
              :version,
              :hash

@@ -46,8 +46,31 @@ defmodule Lenra.MixProject do
       {:sentry, "~> 8.0"},
       {:bypass, "~> 2.0", only: :test},
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
-      {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false}
+      {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
+      {:libcluster, "~> 3.3"},
+      private_git(
+        name: :application_runner,
+        host: "github.com",
+        project: "lenra-io/application-runner.git",
+        tag: "v1.0.0-beta.23",
+        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+      )
     ]
   end
 
+  defp private_git(opts) do
+    name = Keyword.fetch!(opts, :name)
+    host = Keyword.fetch!(opts, :host)
+    project = Keyword.fetch!(opts, :project)
+    tag = Keyword.fetch!(opts, :tag)
+    credentials = Keyword.get(opts, :credentials)
+
+    case System.get_env("CI") do
+      "true" ->
+        {name, git: "https://#{credentials}@#{host}/#{project}", tag: tag, submodules: true}
+
+      _ ->
+        {name, git: "git@#{host}:#{project}", tag: tag, submodules: true}
+    end
+  end
 end

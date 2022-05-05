@@ -9,56 +9,29 @@ defmodule Lenra.EmailService do
     # base template ID : d-bd160809d9a04b07ac6925a823f8f61c
     new_email()
     |> to(email_address)
-    |> from("no-reply@lenra.io")
-    |> SendGridHelper.with_template("d-bd160809d9a04b07ac6925a823f8f61c")
-    |> SendGridHelper.add_dynamic_field("subject", "Bienvenue !")
-    |> SendGridHelper.add_dynamic_field(
-      "body_hello",
-      "Bonjour " <> email_address <> ",<br />Merci pour votre inscription! Vous rejoignez une communauté incroyable"
-    )
-    |> SendGridHelper.add_dynamic_field("code", code)
-    |> SendGridHelper.add_dynamic_field(
-      "body_help",
-      "Ce code vous permet de valider votre inscription.<br />Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
-    )
+    |> from(Application.fetch_env!(:lenra, :lenra_email))
+    |> SendGridHelper.with_template("d-311a3dc52f6d44c2b613e3367e7ba82b")
+    |> SendGridHelper.add_dynamic_field("token", code)
   end
 
   @spec create_recovery_email(String.t(), String.t()) :: Bamboo.Email.t()
   def create_recovery_email(email_address, code) do
+    # base template ID : d-4f7744c575434313a767f1b11cc389c1
     new_email()
     |> to(email_address)
-    |> from("no-reply@lenra.io")
-    |> SendGridHelper.with_template("d-bd160809d9a04b07ac6925a823f8f61c")
-    |> SendGridHelper.add_dynamic_field("subject", "Votre code de vérification")
-    |> SendGridHelper.add_dynamic_field(
-      "body_hello",
-      "Bonjour " <> email_address <> ",<br />Modifiez votre mot de passe à l'aide du code suivant"
-    )
-    |> SendGridHelper.add_dynamic_field("code", code)
-    |> SendGridHelper.add_dynamic_field(
-      "body_help",
-      "Ce code vous permet de modifier votre mot de passe.<br />Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
-    )
+    |> from(Application.fetch_env!(:lenra, :lenra_email))
+    |> SendGridHelper.with_template("d-4f7744c575434313a767f1b11cc389c1")
+    |> SendGridHelper.add_dynamic_field("token", code)
   end
 
   @spec create_invitation_email(String.t(), String.t(), String.t()) :: Bamboo.Email.t()
   def create_invitation_email(email_address, application_name, app_link) do
+    # base template ID : d-61866b0c62b347d3880155d680036f65
     new_email()
     |> to(email_address)
-    |> from("no-reply@lenra.io")
-    |> SendGridHelper.with_template("d-1d702d4b28b94b2da1bb713ac091f9fa")
-    |> SendGridHelper.add_dynamic_field("subject", "Invitation à rejoindre une application sur Lenra")
-    |> SendGridHelper.add_dynamic_field(
-      "body_hello",
-      "Bonjour,<br />Vous avez été invité à rejoindre " <>
-        application_name <>
-        " sur Lenra.<br />Pour y accéder, cliquez sur le lien suivant:"
-    )
-    |> SendGridHelper.add_dynamic_field("link", app_link)
-    |> SendGridHelper.add_dynamic_field(
-      "body_help",
-      "Si vous rencontrez un problème contactez-nous à l'adresse mail suivante : <a href=\"mailto:contact@lenra.io?subject=&amp;body=\">contact@lenra.io</a>"
-    )
-    |> SendGridHelper.add_dynamic_field("goodbye", "A bientôt !")
+    |> from(Application.fetch_env!(:lenra, :lenra_email))
+    |> SendGridHelper.with_template("d-61866b0c62b347d3880155d680036f65")
+    |> SendGridHelper.add_dynamic_field("application_name", application_name)
+    |> SendGridHelper.add_dynamic_field("app_link", app_link)
   end
 end

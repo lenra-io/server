@@ -32,9 +32,8 @@ defmodule LenraWeb.Router do
     plug(RefreshPipeline)
   end
 
-  scope "/cgu", LenraWeb do
-    pipe_through([:api])
-    get("/latest", CguController, :get_latest_cgu)
+  pipeline :ensure_cgu_accepted do
+    plug(LenraWeb.Plugs.CheckCguPlug)
   end
 
   scope "/auth", LenraWeb do
@@ -45,9 +44,11 @@ defmodule LenraWeb.Router do
     put("/password/lost", UserController, :password_lost_modification)
 
     pipe_through(:ensure_auth_refresh)
-    post("/refresh", UserController, :refresh)
     post("/logout", UserController, :logout)
     post("/verify", UserController, :validate_user)
+
+    pipe_through([:ensure_cgu_accepted])
+    post("/refresh", UserController, :refresh)
   end
 
   scope "/runner", LenraWeb do
@@ -56,8 +57,15 @@ defmodule LenraWeb.Router do
   end
 
   scope "/api", LenraWeb do
-    pipe_through([:api, :ensure_auth])
-    resources("/apps", AppsController, only: [:index, :create, :delete])
+    pipe_through([:api])
+    get("/cgu/latest", CguController, :get_latest_cgu)
+
+    pipe_through([:ensure_auth])
+    post("/cgu/:cgu_id/accept", CguController, :accept)
+    get("/cgu/me/accepted_latest", CguController, :user_accepted_latest_cgu)
+
+    pipe_through([:ensure_cgu_accepted])
+    resources("/apps", AppsController, only: [:index, :create, :update, :delete])
     get("/apps/:app_id/main_environment", ApplicationMainEnvController, :index)
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
@@ -73,7 +81,7 @@ defmodule LenraWeb.Router do
   end
 
   scope "/api", LenraWeb do
-    pipe_through([:api, :ensure_resource_auth])
+    pipe_through([:api, :ensure_resource_auth, :ensure_cgu_accepted])
     get("/apps/:service_name/resources/:resource", ResourcesController, :get_app_resource)
   end
 

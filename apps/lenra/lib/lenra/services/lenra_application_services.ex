@@ -54,6 +54,12 @@ defmodule Lenra.LenraApplicationServices do
     |> Repo.transaction()
   end
 
+  def update(app, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:updated_application, LenraApplication.update(app, params))
+    |> Repo.transaction()
+  end
+
   def delete(app) do
     Ecto.Multi.new()
     |> Ecto.Multi.delete(:deleted_application, app)
