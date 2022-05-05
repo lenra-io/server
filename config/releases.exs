@@ -25,7 +25,7 @@ config :lenra,
   gitlab_api_token: System.fetch_env!("GITLAB_API_TOKEN"),
   gitlab_project_id: System.fetch_env!("GITLAB_PROJECT_ID"),
   gitlab_ci_ref: "master",
-  template_url: System.fetch_env!("TEMPLATE_URL")
+  template_url: System.fetch_env!("TEMPLATE_URL"),
   lenra_email: System.fetch_env!("LENRA_EMAIL")
 
 # Do not print debug messages in production
