@@ -121,7 +121,7 @@ defmodule LenraWeb.DataControllerTest do
         })
 
       assert json_response(conn, 400) == %{
-               "errors" => [%{"code" => 26, "message" => "Datastore cannot be found"}],
+               "errors" => [%{"code" => 27, "message" => "Datastore cannot be found"}],
                "success" => false
              }
     end
@@ -171,7 +171,7 @@ defmodule LenraWeb.DataControllerTest do
         })
 
       assert json_response(conn, 400) == %{
-               "errors" => [%{"code" => 27, "message" => "Data cannot be found"}],
+               "errors" => [%{"code" => 28, "message" => "Data cannot be found"}],
                "success" => false
              }
     end
@@ -222,7 +222,7 @@ defmodule LenraWeb.DataControllerTest do
         })
 
       assert json_response(conn, 400) == %{
-               "errors" => [%{"code" => 27, "message" => "Data cannot be found"}],
+               "errors" => [%{"code" => 28, "message" => "Data cannot be found"}],
                "success" => false
              }
     end
