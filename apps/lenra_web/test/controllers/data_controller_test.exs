@@ -127,6 +127,26 @@ defmodule LenraWeb.DataControllerTest do
     end
   end
 
+  describe "LenraWeb.DataController.get_me_2/1" do
+    test "should get data if params valid", %{
+      conn: conn,
+      session_id: session_id
+    } do
+      token = SessionStateServices.fetch_token(session_id)
+
+      conn =
+        conn
+        |> put_req_header("accept", "application/json")
+        |> put_req_header("authorization", "Bearer #{token}")
+        |> get(Routes.data_path(conn, :get_me))
+
+      %{"email" => email} = conn.assigns.data.user_data.data["_user"]
+
+      assert Map.has_key?(json_response(conn, 200), "data")
+      assert email = "john.doe@lenra.fr"
+    end
+  end
+
   describe "LenraWeb.DataController.update_2/1" do
     test "should update data if params valid", %{
       conn: conn,

@@ -29,6 +29,14 @@ defmodule Lenra.DataServices do
     |> Repo.all()
   end
 
+  def get_me(env_id, user_id) do
+    data_id = get_user_data_id(env_id, user_id)
+
+    env_id
+    |> DataQueryViewServices.get_one("_users", data_id)
+    |> Repo.one()
+  end
+
   def exec_query(_env_id, _user_id, nil) do
     []
   end
