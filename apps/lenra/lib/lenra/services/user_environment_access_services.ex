@@ -3,7 +3,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
     The service that manages the different possible actions on an environment's user accesses.
   """
   import Ecto.Query
-  alias Lenra.{EmailWorker, EnvironmentServices, Repo, UserEnvironmentAccess, User, UserServices}
+  alias Lenra.{EmailWorker, EnvironmentServices, Repo, User, UserEnvironmentAccess, UserServices}
   require Logger
 
   @app_url_prefix Application.compile_env!(:lenra_web, :app_url_prefix)
