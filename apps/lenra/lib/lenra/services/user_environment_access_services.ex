@@ -35,6 +35,21 @@ defmodule Lenra.UserEnvironmentAccessServices do
     |> Repo.transaction()
   end
 
+  def create(env_id, %{"email" => email}) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:user, fn _repo, %{} ->
+      Lenra.Repo.fetch_by(Lenra.User, email: email)
+    end)
+    |> Ecto.Multi.run(:inserted_user_access, fn _repo, %{user: user} ->
+      case create(env_id, %{"user_id" => user.id}) do
+        {:ok, %{inserted_user_access: user_access}} -> {:ok, user_access}
+        {:error, :inserted_user_access, failed_value, _changes_so_far} -> {:error, failed_value}
+        other -> other
+      end
+    end)
+    |> Repo.transaction()
+  end
+
   defp add_invitation_events(user, application_name, app_link) do
     EmailWorker.add_email_invitation_event(user, application_name, app_link)
   end

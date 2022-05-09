@@ -87,6 +87,32 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
     end
   end
 
+  describe "create user env access from email" do
+    test "successfully", %{app: app, env: env} do
+      user = Lenra.UserServices.get(app.creator_id)
+      UserEnvironmentAccessServices.create(env.id, %{"email" => user.email})
+
+      access =
+        env.id
+        |> UserEnvironmentAccessServices.all()
+        |> Enum.at(0)
+
+      assert access.environment_id == env.id
+      assert access.user_id == app.creator_id
+    end
+
+    test "unknown email", %{app: app, env: env} do
+      assert {:error, :user, :error_404, _value} =
+               UserEnvironmentAccessServices.create(env.id, %{"email" => "unknown@lenra.io"})
+
+      access =
+        env.id
+        |> UserEnvironmentAccessServices.all()
+
+      assert access == []
+    end
+  end
+
   describe "delete" do
     test "user environment access successfully", %{app: app, env: env} do
       UserEnvironmentAccessServices.create(env.id, %{"user_id" => app.creator_id})

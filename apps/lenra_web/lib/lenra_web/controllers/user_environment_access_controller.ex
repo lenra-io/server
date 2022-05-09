@@ -31,6 +31,16 @@ defmodule LenraWeb.UserEnvironmentAccessController do
       |> reply
     end
   end
+
+  def create(conn, %{"env_id" => env_id, "email" => email} = params) do
+    with {:ok, _app} <- get_app_and_allow(conn, params),
+         {:ok, %{inserted_user_access: user_env_access}} <-
+           UserEnvironmentAccessServices.create(env_id, %{"email" => email}) do
+      conn
+      |> assign_data(:inserted_user_access, user_env_access)
+      |> reply
+    end
+  end
 end
 
 defmodule LenraWeb.UserEnvironmentAccessController.Policy do
