@@ -87,10 +87,10 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
     end
   end
 
-  describe "add user env access from email" do
+  describe "create user env access from email" do
     test "successfully", %{app: app, env: env} do
       user = Lenra.UserServices.get(app.creator_id)
-      UserEnvironmentAccessServices.add_user_env_access_from_email(env.id, %{"email" => user.email})
+      UserEnvironmentAccessServices.create(env.id, %{"email" => user.email})
 
       access =
         env.id
@@ -103,7 +103,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
 
     test "unknown email", %{app: app, env: env} do
       assert {:error, :user, :error_404, _value} =
-               UserEnvironmentAccessServices.add_user_env_access_from_email(env.id, %{"email" => "unknown@lenra.io"})
+               UserEnvironmentAccessServices.create(env.id, %{"email" => "unknown@lenra.io"})
 
       access =
         env.id

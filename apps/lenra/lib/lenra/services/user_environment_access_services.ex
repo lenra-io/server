@@ -35,13 +35,17 @@ defmodule Lenra.UserEnvironmentAccessServices do
     |> Repo.transaction()
   end
 
-  def add_user_env_access_from_email(env_id, %{"email" => email}) do
+  def create(env_id, %{"email" => email}) do
     Ecto.Multi.new()
     |> Ecto.Multi.run(:user, fn _repo, %{} ->
       Lenra.Repo.fetch_by(Lenra.User, email: email)
     end)
-    |> Ecto.Multi.run(:inserted_user_access_multi, fn _repo, %{user: user} ->
-      create(env_id, %{"user_id" => user.id})
+    |> Ecto.Multi.run(:inserted_user_access, fn _repo, %{user: user} ->
+      case create(env_id, %{"user_id" => user.id}) do
+        {:ok, %{inserted_user_access: user_access}} -> {:ok, user_access}
+        {:error, :inserted_user_access, failed_value, _changes_so_far} -> {:error, failed_value}
+        other -> other
+      end
     end)
     |> Repo.transaction()
   end
