@@ -35,6 +35,11 @@ defmodule Lenra.UserEnvironmentAccessServices do
     |> Repo.transaction()
   end
 
+  def add_user_env_access_from_email(env_id, %{"email" => email}) do
+    {:ok, user} = Lenra.Repo.fetch_by(Lenra.User, email: email)
+    create(env_id, %{"user_id" => user.id})
+  end
+
   defp add_invitation_events(user, application_name, app_link) do
     EmailWorker.add_email_invitation_event(user, application_name, app_link)
   end
