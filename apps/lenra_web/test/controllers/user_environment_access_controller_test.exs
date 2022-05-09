@@ -49,14 +49,14 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       assert %{
                "data" => %{
-                 "environment_user_accesses" => [%{"environment_id" => _, "user_id" => _}]
+                 "environment_user_accesses" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
                },
                "success" => true
              } = json_response(creator!, 200)
 
       assert %{
                "data" => %{
-                 "environment_user_accesses" => [%{"environment_id" => _, "user_id" => _}]
+                 "environment_user_accesses" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
                },
                "success" => true
              } = json_response(admin, 200)

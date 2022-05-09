@@ -3,13 +3,20 @@ defmodule Lenra.UserEnvironmentAccessServices do
     The service that manages the different possible actions on an environment's user accesses.
   """
   import Ecto.Query
-  alias Lenra.{EmailWorker, EnvironmentServices, Repo, UserEnvironmentAccess, UserServices}
+  alias Lenra.{EmailWorker, EnvironmentServices, Repo, UserEnvironmentAccess, User, UserServices}
   require Logger
 
   @app_url_prefix Application.compile_env!(:lenra_web, :app_url_prefix)
 
   def all(env_id) do
-    Repo.all(from(e in UserEnvironmentAccess, where: e.environment_id == ^env_id))
+    Repo.all(
+      from(e in UserEnvironmentAccess,
+        join: u in User,
+        on: u.id == e.user_id,
+        where: e.environment_id == ^env_id,
+        select: %{user_id: e.user_id, environment_id: e.environment_id, email: u.email}
+      )
+    )
   end
 
   def fetch_by(clauses, error \\ {:error, :error_404}) do
@@ -54,8 +61,11 @@ defmodule Lenra.UserEnvironmentAccessServices do
     EmailWorker.add_email_invitation_event(user, application_name, app_link)
   end
 
-  def delete(user_access) do
+  def delete(%{environment_id: env_id, user_id: user_id} = _params) do
     Ecto.Multi.new()
-    |> Ecto.Multi.delete(:deleted_user_access, user_access)
+    |> Ecto.Multi.run(:user_access, fn _repo, _changes ->
+      Lenra.UserEnvironmentAccessServices.fetch_by(environment_id: env_id, user_id: user_id)
+    end)
+    |> Ecto.Multi.delete(:deleted_user_access, fn %{user_access: user_access} -> user_access end)
   end
 end
