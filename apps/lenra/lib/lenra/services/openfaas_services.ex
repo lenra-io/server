@@ -194,7 +194,15 @@ defmodule Lenra.OpenfaasServices do
       Jason.encode!(%{
         "image" => DeploymentServices.image_name(service_name, build_number),
         "service" => get_function_name(service_name, build_number),
-        "secrets" => Application.fetch_env!(:lenra, :faas_secrets)
+        "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
+        "limits" => %{
+          "memory" => "256Mi",
+          "cpu" => "100m"
+        },
+        "requests" => %{
+          "memory" => "128Mi",
+          "cpu" => "50m"
+        }
       })
 
     Logger.debug("Deploy Openfaas application \n#{url} : \n#{body}")
