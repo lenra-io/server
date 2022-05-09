@@ -50,7 +50,8 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         %SessionState{
           assigns: %{
             environment: environment,
-            application: application
+            application: application,
+            context: context
           }
         },
         widget_name,

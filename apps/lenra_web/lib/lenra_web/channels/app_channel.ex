@@ -18,7 +18,7 @@ defmodule LenraWeb.AppChannel do
 
   require Logger
 
-  def join("app", %{"app" => app_name}, socket) do
+  def join("app", %{"app" => app_name, "context" => context}, socket) do
     # action_logs_uuid = Ecto.UUID.generate()
     session_id = Ecto.UUID.generate()
     user = socket.assigns.user
@@ -43,6 +43,7 @@ defmodule LenraWeb.AppChannel do
         user: user,
         application: application,
         environment: environment,
+        context: context,
         socket_pid: self()
       }
 
