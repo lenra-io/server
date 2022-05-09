@@ -100,6 +100,16 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
       assert access.environment_id == env.id
       assert access.user_id == app.creator_id
     end
+
+    test "unknown email", %{app: app, env: env} do
+      UserEnvironmentAccessServices.add_user_env_access_from_email(env.id, %{"email" => "unknown@lenra.io"})
+
+      access =
+        env.id
+        |> UserEnvironmentAccessServices.all()
+
+      assert access == []
+    end
   end
 
   describe "delete" do

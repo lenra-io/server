@@ -36,8 +36,14 @@ defmodule Lenra.UserEnvironmentAccessServices do
   end
 
   def add_user_env_access_from_email(env_id, %{"email" => email}) do
-    {:ok, user} = Lenra.Repo.fetch_by(Lenra.User, email: email)
-    create(env_id, %{"user_id" => user.id})
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:user, fn _repo, %{} ->
+      Lenra.Repo.fetch_by(Lenra.User, email: email)
+    end)
+    |> Ecto.Multi.run(:inserted_user_access_multi, fn _repo, %{user: user} ->
+      create(env_id, %{"user_id" => user.id})
+    end)
+    |> Repo.transaction()
   end
 
   defp add_invitation_events(user, application_name, app_link) do
