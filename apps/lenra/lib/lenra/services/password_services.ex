@@ -65,7 +65,7 @@ defmodule Lenra.PasswordServices do
       :password_code,
       PasswordCode.new(user, code),
       conflict_target: :user_id,
-      on_conflict: [set: [code: code]]
+      on_conflict: {:replace, [:code, :updated_at]}
     )
     |> Ecto.Multi.run(:add_password_event, fn _repo, %{password_code: %PasswordCode{} = password_code} ->
       add_password_events(password_code, user)
@@ -91,8 +91,8 @@ defmodule Lenra.PasswordServices do
 
   @validity_time 3600
   def date_difference(password_code) do
-    if NaiveDateTime.diff(NaiveDateTime.utc_now(), password_code.inserted_at) <= @validity_time and
-         NaiveDateTime.diff(NaiveDateTime.utc_now(), password_code.inserted_at) >= 0 do
+    if NaiveDateTime.diff(NaiveDateTime.utc_now(), password_code.updated_at) <= @validity_time and
+         NaiveDateTime.diff(NaiveDateTime.utc_now(), password_code.updated_at) >= 0 do
       true
     else
       false
