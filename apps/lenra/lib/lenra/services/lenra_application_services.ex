@@ -30,7 +30,7 @@ defmodule Lenra.LenraApplicationServices do
   end
 
   def all_for_user(user_id) do
-    Repo.all(from(a in LenraApplication, where: a.creator_id == ^user_id))
+    Repo.all(from(a in LenraApplication, where: a.creator_id == ^user_id, select: %{repository: a.repository}))
   end
 
   def fetch(app_id) do

@@ -13,14 +13,18 @@ defmodule LenraWeb.LenraApplicationServicesTest do
     LenraApplicationServices.create(user.id, %{
       name: "private-app",
       color: "FFFFFF",
-      icon: "60189"
+      icon: "60189",
+      repository: "http://repository.com/link.git",
+      repository_branch: "master"
     })
 
     {:ok, %{application_main_env: main_env}} =
       LenraApplicationServices.create(user.id, %{
         name: "public-app",
         color: "FFFFFF",
-        icon: "60189"
+        icon: "60189",
+        repository: "http://repository.com/link.git",
+        repository_branch: "beta"
       })
 
     env = Repo.preload(main_env, :environment).environment
@@ -78,7 +82,7 @@ defmodule LenraWeb.LenraApplicationServicesTest do
       {:ok, updated_app} = LenraApplicationServices.fetch_by(name: "public-app")
 
       assert app.repository != updated_app.repository
-      assert app.repository == nil
+      assert app.repository == "http://repository.com/link.git"
       assert updated_app.repository == "new_repo"
     end
   end

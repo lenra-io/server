@@ -65,7 +65,7 @@ defmodule LenraWeb.AppsController.Policy do
   def authorize(:index, _user, _data), do: true
   def authorize(:create, %User{role: :dev}, _data), do: true
   def authorize(:delete, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
-  def authorize(:get_user_apps, %User{role: :dev}, _data), do: true
+  def authorize(:get_user_apps, %User{role: :dev, id: user_id}, %LenraApplication{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default

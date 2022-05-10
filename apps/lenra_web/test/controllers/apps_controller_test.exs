@@ -13,7 +13,9 @@ defmodule LenraWeb.AppsControllerTest do
       Routes.apps_path(conn, :create, %{
         "name" => "test",
         "color" => "ffffff",
-        "icon" => 31
+        "icon" => 31,
+        "repository" => "http://repository.com/link.git",
+        "repository_branch" => "master"
       })
     )
   end
@@ -46,7 +48,7 @@ defmodule LenraWeb.AppsControllerTest do
                      "service_name" => ^app_service_name,
                      "color" => "ffffff",
                      "icon" => 31,
-                     "id" => _
+                     "id" => _,
                    }
                  ]
                },
