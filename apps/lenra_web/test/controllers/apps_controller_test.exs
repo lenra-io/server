@@ -94,11 +94,9 @@ defmodule LenraWeb.AppsControllerTest do
     @tag auth_user: :dev
     test "apps controller authenticated", %{conn: conn} do
       conn = create_app_test(conn)
-      IO.inspect(Guardian.Plug.current_resource(conn).id)
       assert %{"success" => true} = json_response(conn, 200)
 
       conn = get(conn, Routes.apps_path(conn, :get_user_apps))
-      IO.inspect(Guardian.Plug.current_resource(conn).id)
 
       assert %{"success" => true, "data" => %{"apps" => apps}} = json_response(conn, 200)
 
