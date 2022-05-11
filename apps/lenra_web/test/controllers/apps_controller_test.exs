@@ -13,7 +13,9 @@ defmodule LenraWeb.AppsControllerTest do
       Routes.apps_path(conn, :create, %{
         "name" => "test",
         "color" => "ffffff",
-        "icon" => 31
+        "icon" => 31,
+        "repository" => "http://repository.com/link.git",
+        "repository_branch" => "master"
       })
     )
   end
@@ -85,6 +87,32 @@ defmodule LenraWeb.AppsControllerTest do
         })
 
       assert %{"errors" => _} = json_response(conn, 400)
+    end
+  end
+
+  describe "get user apps" do
+    @tag auth_user: :dev
+    test "apps controller authenticated", %{conn: conn} do
+      conn = create_app_test(conn)
+      assert %{"success" => true} = json_response(conn, 200)
+
+      conn! = get(conn, Routes.apps_path(conn, :get_user_apps))
+
+      assert %{"success" => true, "data" => %{"apps" => apps}} = json_response(conn!, 200)
+
+      user_id = Guardian.Plug.current_resource(conn!).id
+
+      app_service_name = Enum.at(apps, 0)["service_name"]
+
+      assert %{
+               "color" => "ffffff",
+               "icon" => 31,
+               "name" => "test",
+               "service_name" => ^app_service_name,
+               "creator_id" => ^user_id,
+               "repository" => "http://repository.com/link.git",
+               "repository_branch" => "master"
+             } = Enum.at(apps, 0)
     end
   end
 
