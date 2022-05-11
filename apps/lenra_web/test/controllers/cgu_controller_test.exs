@@ -129,7 +129,7 @@ defmodule LenraWeb.CguControllerTest do
 
     @tag auth_user: :dev
     test "user did not accept latest", %{conn: conn} do
-      {:ok, cgu} =
+      {:ok, _cgu} =
         %{hash: "user_accepted_latest_cgu", version: "user_accepted_latest_cgu", link: "user_accepted_latest_cgu"}
         |> Lenra.Cgu.new()
         |> Lenra.Repo.insert()

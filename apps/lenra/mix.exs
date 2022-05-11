@@ -52,7 +52,7 @@ defmodule Lenra.MixProject do
         name: :application_runner,
         host: "github.com",
         project: "lenra-io/application-runner.git",
-        tag: "v1.0.0-beta.33",
+        tag: "v1.0.0-beta.34",
         credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       )
     ]
