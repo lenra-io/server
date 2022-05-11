@@ -101,7 +101,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
       assert access.user_id == app.creator_id
     end
 
-    test "unknown email", %{app: app, env: env} do
+    test "unknown email", %{app: _app, env: env} do
       assert {:error, :user, :error_404, _value} =
                UserEnvironmentAccessServices.create(env.id, %{"email" => "unknown@lenra.io"})
 

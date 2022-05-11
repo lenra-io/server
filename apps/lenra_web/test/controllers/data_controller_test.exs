@@ -143,7 +143,7 @@ defmodule LenraWeb.DataControllerTest do
       %{"email" => email} = conn.assigns.data.user_data.data["_user"]
 
       assert Map.has_key?(json_response(conn, 200), "data")
-      assert email = "john.doe@lenra.fr"
+      assert "john.doe@lenra.fr" == email
     end
   end
 
@@ -228,7 +228,7 @@ defmodule LenraWeb.DataControllerTest do
 
     test "should return error if id invalid", %{
       conn: conn,
-      env: env,
+      env: _env,
       session_id: session_id
     } do
       token = SessionStateServices.fetch_token(session_id)
