@@ -5,8 +5,8 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   """
   @behaviour ApplicationRunner.AdapterBehavior
 
-  alias ApplicationRunner.{Data, EnvState, SessionState}
-  alias Lenra.{DataServices, OpenfaasServices, User, UserDataServices}
+  alias ApplicationRunner.{EnvState, SessionState}
+  alias Lenra.{DataServices, OpenfaasServices, UserDataServices}
   require Logger
 
   @impl true
@@ -89,6 +89,10 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
     send(socket_pid, {:send, atom, ui_or_patches})
   end
 
+  def on_ui_changed(session_state, message) do
+    raise "Error, not maching on_ui_changed/2 #{inspect(session_state)}, #{inspect(message)}"
+  end
+
   @impl true
   def exec_query(%SessionState{assigns: %{environment: env, user: user}}, query) do
     DataServices.exec_query(query, env.id, user.id)
@@ -102,10 +106,6 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
   @impl true
   def create_user_data(%SessionState{assigns: %{user: user, environment: env}}) do
     UserDataServices.create_user_data(env.id, user.id)
-  end
-
-  def on_ui_changed(session_state, message) do
-    raise "Error, not maching on_ui_changed/2 #{inspect(session_state)}, #{inspect(message)}"
   end
 
   def additional_session_modules(opts) do

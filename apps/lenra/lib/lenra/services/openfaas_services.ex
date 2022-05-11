@@ -94,9 +94,6 @@ defmodule Lenra.OpenfaasServices do
       :ok ->
         :ok
 
-      {:error, :ressource_not_found} ->
-        {:error, :listener_not_found}
-
       err ->
         err
     end
@@ -126,7 +123,7 @@ defmodule Lenra.OpenfaasServices do
       {:ok, %{"widget" => widget}} ->
         {:ok, widget}
 
-      {:error, :ressource_not_found} ->
+      :error404 ->
         {:error, :widget_not_found}
 
       err ->
@@ -155,7 +152,7 @@ defmodule Lenra.OpenfaasServices do
         Logger.debug("Got manifest : #{inspect(manifest)}")
         {:ok, manifest}
 
-      {:error, :ressource_not_found} ->
+      :error404 ->
         {:error, :manifest_not_found}
 
       err ->
@@ -276,7 +273,7 @@ defmodule Lenra.OpenfaasServices do
 
       404 ->
         Logger.error(body)
-        {:error, :ressource_not_found}
+        :error404
 
       500 ->
         Logger.error(body)
