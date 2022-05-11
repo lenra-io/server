@@ -68,7 +68,7 @@ defmodule LenraWeb.LenraApplicationServicesTest do
   end
 
   describe "update" do
-    test "application successfully", %{user: user, random_user: _random_user} do
+    test "application successfully", %{user: _user, random_user: _random_user} do
       {:ok, app} = LenraApplicationServices.fetch_by(name: "public-app")
 
       LenraApplicationServices.update(app, %{
