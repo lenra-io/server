@@ -96,11 +96,11 @@ defmodule LenraWeb.AppsControllerTest do
       conn = create_app_test(conn)
       assert %{"success" => true} = json_response(conn, 200)
 
-      conn = get(conn, Routes.apps_path(conn, :get_user_apps))
+      conn! = get(conn, Routes.apps_path(conn, :get_user_apps))
 
-      assert %{"success" => true, "data" => %{"apps" => apps}} = json_response(conn, 200)
+      assert %{"success" => true, "data" => %{"apps" => apps}} = json_response(conn!, 200)
 
-      user_id = Guardian.Plug.current_resource(conn).id
+      user_id = Guardian.Plug.current_resource(conn!).id
 
       app_service_name = Enum.at(apps, 0)["service_name"]
 
