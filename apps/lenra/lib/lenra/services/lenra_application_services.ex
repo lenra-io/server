@@ -34,6 +34,7 @@ defmodule Lenra.LenraApplicationServices do
       from(a in LenraApplication,
         where: a.creator_id == ^user_id,
         select: %{
+          id: a.id,
           name: a.name,
           color: a.color,
           icon: a.icon,
