@@ -29,6 +29,12 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/cache
+          key: ${{ runner.os }}-${{ hashFiles('./Dockerfile') }}
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PERSONNAL_TOKEN }}
