@@ -63,5 +63,5 @@ docker buildx build \
   --build-arg CI=true \
   --build-arg GH_PERSONNAL_TOKEN="${GITHUB_TOKEN}" \
   --cache-from type=local,src=~/cache/${DOCKER_IMAGE}-buildcache \
-  --cache-to type=local,ref=~/cache/${DOCKER_IMAGE}-buildcache,mode=max \
+  --cache-to type=local,dest=~/cache/${DOCKER_IMAGE}-buildcache,mode=max \
   .
