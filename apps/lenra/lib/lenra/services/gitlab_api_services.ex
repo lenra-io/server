@@ -14,7 +14,7 @@ defmodule Lenra.GitlabApiServices do
   The build_id is the id of the freshly created build. It is used to set to create the runner callback url
   The build_number is the number of the freshly created build. It us used to set the docker image URL.
   """
-  def create_pipeline(service_name, app_repostiory, build_id, build_number) do
+  def create_pipeline(service_name, app_repository, app_repository_branch, build_id, build_number) do
     runner_callback_url = Application.fetch_env!(:lenra, :runner_callback_url)
     gitlab_api_url = Application.fetch_env!(:lenra, :gitlab_api_url)
     gitlab_api_token = Application.fetch_env!(:lenra, :gitlab_api_token)
@@ -42,7 +42,8 @@ defmodule Lenra.GitlabApiServices do
             "key" => "CALLBACK_URL",
             "value" => "#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}"
           },
-          %{"key" => "APP_REPOSITORY", "value" => app_repostiory},
+          %{"key" => "APP_REPOSITORY", "value" => app_repository},
+          %{"key" => "REPOSITORY_BRANCH", "value" => app_repository_branch},
           %{"key" => "FAAS_TEMPLATE_REPOSITORY", "value" => template_url}
         ]
       })
