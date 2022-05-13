@@ -54,6 +54,7 @@ defmodule Lenra.BuildServices do
         GitlabApiServices.create_pipeline(
           app.service_name,
           app.repository,
+          app.repository_branch,
           build.id,
           build.build_number
         )
