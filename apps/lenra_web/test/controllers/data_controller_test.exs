@@ -103,6 +103,20 @@ defmodule LenraWeb.DataControllerTest do
           "name" => "toto"
         })
 
+      assert %{
+               "data" => %{
+                 "inserted_data" => %{
+                   "data" => %{
+                     "_datastore" => "test",
+                     "_id" => _id,
+                     "_refBy" => [],
+                     "_refs" => [],
+                     "name" => "toto"
+                   }
+                 }
+               }
+             } = json_response(conn, 200)
+
       assert Map.has_key?(json_response(conn, 200), "data")
     end
 
@@ -172,6 +186,20 @@ defmodule LenraWeb.DataControllerTest do
         |> put(Routes.data_path(conn, :update, "test", data.id), %{
           "name" => "test"
         })
+
+      assert %{
+               "data" => %{
+                 "updated_data" => %{
+                   "data" => %{
+                     "_datastore" => "test",
+                     "_id" => _id,
+                     "_refBy" => [],
+                     "_refs" => [],
+                     "name" => "test"
+                   }
+                 }
+               }
+             } = json_response(conn, 200)
 
       assert Map.has_key?(json_response(conn, 200), "data")
     end
