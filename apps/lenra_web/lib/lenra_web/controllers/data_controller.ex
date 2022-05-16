@@ -60,7 +60,7 @@ defmodule LenraWeb.DataController do
   def query(conn, params) do
     with session_assings <- Plug.current_resource(conn),
          data <-
-           DataServices.parse_and_exec_query(params["query"], session_assings.environment.id, session_assings.user.id) do
+           DataServices.parse_and_exec_query(params, session_assings.environment.id, session_assings.user.id) do
       conn
       |> assign_all(data)
       |> reply
