@@ -48,49 +48,79 @@ defmodule Lenra.RepositoryServicesTest do
     end
   end
 
-  # describe("get by") do
-  #   test "build_number", %{app: app} do
-  #     BuildServices.create_and_trigger_pipeline(app.creator_id, app.id, %{
-  #       commit_hash: "abcdef"
-  #     })
+  describe("fetch by") do
+    test "application_id", %{app: app} do
+      RepositoryServices.create(app.id, %{
+        url: "http://git.com/git.git",
+        branch: "master",
+        username: "admin",
+        token: "password"
+      })
 
-  #     assert {:ok, %Build{commit_hash: "abcdef", status: :pending}} = BuildServices.fetch_by(%{build_number: 1})
-  #   end
-  # end
+      assert {:ok, %Repository{url: "http://git.com/git.git", branch: "master", username: "admin", token: "password"}} =
+               RepositoryServices.fetch_by(%{application_id: app.id})
+    end
+  end
 
-  # describe "create" do
-  #   test "build but invalid params", %{app: app} do
-  #     assert {:error, :inserted_build, _failed_value, _changes_so_far} =
-  #              BuildServices.create_and_trigger_pipeline(app.creator_id, app.id, %{
-  #                commit_hash: 12
-  #              })
-  #   end
+  describe "create" do
+    test "repository but invalid params", %{app: app} do
+      assert {:error, :inserted_repository, _failed_value, _changes_so_far} =
+               RepositoryServices.create(app.id, %{
+                 url: nil,
+                 branch: 123,
+                 username: 123,
+                 token: 123
+               })
+    end
 
-  #   test "build successfully", %{app: app} do
-  #     BuildServices.create_and_trigger_pipeline(app.creator_id, app.id, %{
-  #       commit_hash: "abcdef"
-  #     })
+    test "repository successfully", %{app: app} do
+      RepositoryServices.create(app.id, %{
+        url: "http://git.com/git.git",
+        branch: "master",
+        username: "admin",
+        token: "password"
+      })
 
-  #     build = Enum.at(Repo.all(Build), 0)
+      repository = Enum.at(Repo.all(Repository), 0)
 
-  #     assert %Build{commit_hash: "abcdef", status: :pending} = build
-  #   end
-  # end
+      assert %Repository{url: "http://git.com/git.git", branch: "master", username: "admin", token: "password"} =
+               repository
+    end
+  end
 
-  # describe "update" do
-  #   test "build successfully", %{app: app} do
-  #     {:ok, %{inserted_build: build}} =
-  #       BuildServices.create_and_trigger_pipeline(app.creator_id, app.id, %{
-  #         commit_hash: "abcdef"
-  #       })
+  describe "update" do
+    test "repository successfully", %{app: app} do
+      {:ok, %{inserted_repository: repository}} =
+        RepositoryServices.create(app.id, %{
+          url: "http://git.com/git.git",
+          branch: "master",
+          username: "admin",
+          token: "password"
+        })
 
-  #     BuildServices.update(build, %{status: :success})
+      RepositoryServices.update(repository, %{branch: "beta"})
 
-  #     updated_build = Enum.at(Repo.all(Build), 0)
+      updated_repository = Enum.at(Repo.all(Repository), 0)
 
-  #     assert updated_build.status == :success
-  #   end
-  # end
+      assert updated_repository.branch == "beta"
+    end
+
+    test "repository with wrong param", %{app: app} do
+      {:ok, %{inserted_repository: repository}} =
+        RepositoryServices.create(app.id, %{
+          url: "http://git.com/git.git",
+          branch: "master",
+          username: "admin",
+          token: "password"
+        })
+
+      assert {:error, :updated_repository,  %Ecto.Changeset{errors: [branch: {"is invalid", _}]}, _} = RepositoryServices.update(repository, %{branch: 123})
+
+      updated_repository = Enum.at(Repo.all(Repository), 0)
+
+      assert updated_repository.branch == "master"
+    end
+  end
 
   # describe "delete" do
   #   test "build successfully", %{app: app} do
