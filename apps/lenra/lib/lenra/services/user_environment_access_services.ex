@@ -7,6 +7,11 @@ defmodule Lenra.UserEnvironmentAccessServices do
   require Logger
 
   @lenra_env Application.compile_env!(:lenra, :lenra_env)
+  @lenra_url %{
+    "production" => "https://app.lenra.io/app",
+    "staging" => "https://app.staging.lenra.io/app",
+    "dev" => "https://localhost:10000/app"
+  }
 
   def all(env_id) do
     Repo.all(
@@ -35,12 +40,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
       env = repo.preload(env, :application)
 
-      app_url_prefix =
-        case @lenra_env do
-          "production" -> "https://app.lenra.io/app"
-          "staging" -> "https://app.staging.lenra.io/app"
-          _other -> "https://localhost:10000/app"
-        end
+      app_url_prefix = Map.get(@lenra_url, @lenra_env, "https://localhost:10000/app")
 
       app_link = "#{app_url_prefix}/#{env.application.service_name}"
 
