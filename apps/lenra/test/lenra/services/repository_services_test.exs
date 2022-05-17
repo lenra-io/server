@@ -122,20 +122,23 @@ defmodule Lenra.RepositoryServicesTest do
     end
   end
 
-  # describe "delete" do
-  #   test "build successfully", %{app: app} do
-  #     BuildServices.create_and_trigger_pipeline(app.creator_id, app.id, %{
-  #       commit_hash: "abcdef"
-  #     })
+  describe "delete" do
+    test "repository successfully", %{app: app} do
+      RepositoryServices.create(app.id, %{
+        url: "http://git.com/git.git",
+        branch: "master",
+        username: "admin",
+        token: "password"
+      })
 
-  #     assert [] != Repo.all(Build)
-  #     build = Enum.at(Repo.all(Build), 0)
+      assert [] != Repo.all(Repository)
+      repository = Enum.at(Repo.all(Repository), 0)
 
-  #     build
-  #     |> BuildServices.delete()
-  #     |> Repo.transaction()
+      repository
+      |> RepositoryServices.delete()
+      |> Repo.transaction()
 
-  #     assert [] == Repo.all(Build)
-  #   end
-  # end
+      assert [] == Repo.all(Repository)
+    end
+  end
 end
