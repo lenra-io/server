@@ -2,7 +2,6 @@ defmodule Lenra.RepositoryServices do
   @moduledoc """
     The service that manages possible actions on a repository.
   """
-  import Ecto.Query
 
   alias Lenra.{
     Repo,
