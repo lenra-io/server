@@ -1,9 +1,9 @@
-defmodule :"Elixir.Lenra.Repo.Migrations.Remote-git-credentials" do
+defmodule Lenra.Repo.Migrations.RemoteGitCredentials do
   use Ecto.Migration
 
   def change do
     create table(:repositories) do
-      add(:user_id, references(:users, on_delete: :delete_all))
+      add(:application_id, references(:applications, on_delete: :delete_all))
       add(:url, :string, null: false)
       add(:branch, :string)
       add(:username, :string)
@@ -11,11 +11,11 @@ defmodule :"Elixir.Lenra.Repo.Migrations.Remote-git-credentials" do
       timestamps()
     end
 
-    execute("INSERT INTO repositories (user_id, url, branch) SELECT id, repository, repository_branch FROM users", "")
+    execute("INSERT INTO repositories (application_id, url, branch) SELECT id, repository, repository_branch FROM applications", "")
 
-    alter table(:users) do
-      drop(:repository)
-      drop(:repository_branch)
+    alter table(:applications) do
+      remove(:repository)
+      remove(:repository_branch)
     end
   end
 end
