@@ -5,11 +5,11 @@ defmodule Lenra.RepositoryServicesTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.{
-    Repository,
-    RepositoryServices,
     LenraApplication,
     LenraApplicationServices,
-    Repo
+    Repo,
+    Repository,
+    RepositoryServices,
   }
 
   setup do
@@ -114,7 +114,7 @@ defmodule Lenra.RepositoryServicesTest do
           token: "password"
         })
 
-      assert {:error, :updated_repository, %Ecto.Changeset{errors: [branch: {"is invalid", _}]}, _} =
+      assert {:error, :updated_repository, %Ecto.Changeset{errors: [branch: {"is invalid", _something}]}, _something} =
                RepositoryServices.update(repository, %{branch: 123})
 
       updated_repository = Enum.at(Repo.all(Repository), 0)
