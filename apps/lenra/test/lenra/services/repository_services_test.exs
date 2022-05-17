@@ -114,7 +114,8 @@ defmodule Lenra.RepositoryServicesTest do
           token: "password"
         })
 
-      assert {:error, :updated_repository,  %Ecto.Changeset{errors: [branch: {"is invalid", _}]}, _} = RepositoryServices.update(repository, %{branch: 123})
+      assert {:error, :updated_repository, %Ecto.Changeset{errors: [branch: {"is invalid", _}]}, _} =
+               RepositoryServices.update(repository, %{branch: 123})
 
       updated_repository = Enum.at(Repo.all(Repository), 0)
 
@@ -134,9 +135,7 @@ defmodule Lenra.RepositoryServicesTest do
       assert [] != Repo.all(Repository)
       repository = Enum.at(Repo.all(Repository), 0)
 
-      repository
-      |> RepositoryServices.delete()
-      |> Repo.transaction()
+      RepositoryServices.delete(repository)
 
       assert [] == Repo.all(Repository)
     end

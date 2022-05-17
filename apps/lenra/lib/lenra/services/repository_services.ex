@@ -33,5 +33,6 @@ defmodule Lenra.RepositoryServices do
   def delete(repository) do
     Ecto.Multi.new()
     |> Ecto.Multi.delete(:deleted_repository, repository)
+    |> Repo.transaction()
   end
 end
