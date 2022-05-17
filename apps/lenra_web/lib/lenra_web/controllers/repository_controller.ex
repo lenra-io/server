@@ -46,13 +46,13 @@ defmodule LenraWeb.RepositoryController do
 end
 
 defmodule LenraWeb.RepositoryController.Policy do
-  alias Lenra.{Repository, User}
+  alias Lenra.{LenraApplication, User}
 
   @impl Bouncer.Policy
-  def authorize(:index, %User{id: user_id}, %Repository{application_id: user_id}), do: true
-  def authorize(:create, %User{id: user_id}, %Repository{application_id: user_id}), do: true
-  def authorize(:update, %User{id: user_id}, %Repository{application_id: user_id}), do: true
-  def authorize(:delete, %User{id: user_id}, %Repository{application_id: user_id}), do: true
+  def authorize(:index, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
+  def authorize(:create, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
+  def authorize(:update, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
+  def authorize(:delete, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
