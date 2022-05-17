@@ -26,16 +26,14 @@ defmodule Lenra.LenraApplication do
     field(:color, :string)
     field(:icon, :integer)
 
-    # As long as we do not handle repository link read access, we need to redact it
-    # and remove it from the JSON response.
-    field(:repository, :string, redact: true)
-    field(:repository_branch, :string, redact: true)
-
     belongs_to(:creator, User)
+
     has_many(:environments, Environment, foreign_key: :application_id)
     has_many(:builds, Build, foreign_key: :application_id)
-    has_one(:main_env, ApplicationMainEnv, foreign_key: :application_id)
     has_many(:app_user_session, AppUserSession, foreign_key: :application_id)
+
+    has_one(:main_env, ApplicationMainEnv, foreign_key: :application_id)
+    has_one(:repository, Repository, foreign_key: :application_id)
     timestamps()
   end
 

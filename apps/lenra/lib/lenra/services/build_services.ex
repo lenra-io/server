@@ -47,14 +47,15 @@ defmodule Lenra.BuildServices do
   end
 
   def create_and_trigger_pipeline(creator_id, app_id, params) do
-    with {:ok, %LenraApplication{} = app} <- LenraApplicationServices.fetch(app_id) do
+    with {:ok, %LenraApplication{} = app} <- LenraApplicationServices.fetch(app_id),
+    {:ok, %Lenra.Repository{} = repository} <- Lenra.RepositoryServices.fetch_by(application_id: app_id) do
       creator_id
       |> create(app.id, params)
       |> Ecto.Multi.run(:gitlab_pipeline, fn _repo, %{inserted_build: %Build{} = build} ->
         GitlabApiServices.create_pipeline(
           app.service_name,
-          app.repository,
-          app.repository_branch,
+          repository.url,
+          repository.branch,
           build.id,
           build.build_number
         )
