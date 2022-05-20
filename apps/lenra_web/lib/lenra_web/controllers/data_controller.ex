@@ -26,7 +26,7 @@ defmodule LenraWeb.DataController do
     with session_assigns <- Plug.current_resource(conn),
          result <- DataServices.get_me(session_assigns.environment.id, session_assigns.user.id) do
       conn
-      |> assign_data(:user_data, result)
+      |> assign_all(result.data)
       |> reply
     end
   end
@@ -37,7 +37,7 @@ defmodule LenraWeb.DataController do
            DataServices.create(session_assigns.environment.id, params),
          result <- DataServices.get(session_assigns.environment.id, params["_datastore"], data.id) do
       conn
-      |> assign_data(:inserted_data, result)
+      |> assign_all(result.data)
       |> reply
     end
   end
@@ -47,7 +47,7 @@ defmodule LenraWeb.DataController do
          {:ok, %{updated_data: data}} <- DataServices.update(params),
          result <- DataServices.get(session_assigns.environment.id, params["_datastore"], data.id) do
       conn
-      |> assign_data(:updated_data, result)
+      |> assign_all(result.data)
       |> reply
     end
   end
