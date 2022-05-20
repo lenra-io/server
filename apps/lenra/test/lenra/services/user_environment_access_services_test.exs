@@ -15,7 +15,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
     UserServices
   }
 
-  @app_url_prefix "https://localhost:10000/app"
+  @app_url_prefix Application.compile_env!(:lenra_web, :app_url_prefix)
 
   setup do
     {:ok, create_and_return_application()}
