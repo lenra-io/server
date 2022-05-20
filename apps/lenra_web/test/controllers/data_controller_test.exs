@@ -105,15 +105,11 @@ defmodule LenraWeb.DataControllerTest do
 
       assert %{
                "data" => %{
-                 "inserted_data" => %{
-                   "data" => %{
-                     "_datastore" => "test",
-                     "_id" => _id,
-                     "_refBy" => [],
-                     "_refs" => [],
-                     "name" => "toto"
-                   }
-                 }
+                 "_datastore" => "test",
+                 "_id" => _id,
+                 "_refBy" => [],
+                 "_refs" => [],
+                 "name" => "toto"
                }
              } = json_response(conn, 200)
 
@@ -154,7 +150,7 @@ defmodule LenraWeb.DataControllerTest do
         |> put_req_header("authorization", "Bearer #{token}")
         |> get(Routes.data_path(conn, :get_me))
 
-      %{"email" => email} = conn.assigns.data.user_data.data["_user"]
+      %{"email" => email} = conn.assigns.data["_user"]
 
       assert Map.has_key?(json_response(conn, 200), "data")
       assert "john.doe@lenra.fr" == email
@@ -189,15 +185,11 @@ defmodule LenraWeb.DataControllerTest do
 
       assert %{
                "data" => %{
-                 "updated_data" => %{
-                   "data" => %{
-                     "_datastore" => "test",
-                     "_id" => _id,
-                     "_refBy" => [],
-                     "_refs" => [],
-                     "name" => "test"
-                   }
-                 }
+                 "_datastore" => "test",
+                 "_id" => _id,
+                 "_refBy" => [],
+                 "_refs" => [],
+                 "name" => "test"
                }
              } = json_response(conn, 200)
 
