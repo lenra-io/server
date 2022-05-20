@@ -6,7 +6,6 @@ defmodule Lenra.UserEnvironmentAccessServices do
   alias Lenra.{EmailWorker, EnvironmentServices, Repo, User, UserEnvironmentAccess, UserServices}
   require Logger
 
-  @lenra_env Application.compile_env!(:lenra, :lenra_env)
   @lenra_url %{
     "production" => "https://app.lenra.io/app",
     "staging" => "https://app.staging.lenra.io/app",
@@ -40,7 +39,9 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
       env = repo.preload(env, :application)
 
-      app_url_prefix = Map.get(@lenra_url, @lenra_env, "https://localhost:10000/app")
+      lenra_env = Application.fetch_env!(:lenra, :lenra_env)
+
+      app_url_prefix = Map.get(@lenra_url, lenra_env, "https://localhost:10000/app")
 
       app_link = "#{app_url_prefix}/#{env.application.service_name}"
 
