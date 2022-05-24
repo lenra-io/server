@@ -99,14 +99,15 @@ defmodule Lenra.OpenfaasServices do
     end
   end
 
-  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::
+  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map(), map()) ::
           {:ok, map()} | {:error, any()}
   def fetch_widget(
         %LenraApplication{} = application,
         %Environment{} = environment,
         widget_name,
         data,
-        props
+        props,
+        context
       ) do
     {base_url, base_headers} = get_http_context()
 
@@ -114,7 +115,7 @@ defmodule Lenra.OpenfaasServices do
 
     url = "#{base_url}/function/#{function_name}"
     headers = [{"Content-Type", "application/json"} | base_headers]
-    body = Jason.encode!(%{widget: widget_name, data: data, props: props})
+    body = Jason.encode!(%{widget: widget_name, data: data, props: props, context: context})
 
     Finch.build(:post, url, headers, body)
     |> Finch.request(FaasHttp, receive_timeout: 1000)
