@@ -7,9 +7,6 @@ defmodule Lenra.DataServices do
   alias Lenra.Repo
 
   alias ApplicationRunner.{
-    AST.EctoParser,
-    AST.Parser,
-    AST.Query,
     Data,
     DataQueryViewServices,
     DataServices,
@@ -41,20 +38,20 @@ defmodule Lenra.DataServices do
     []
   end
 
-  def exec_query(%Query{} = query, env_id, user_id) do
+  def exec_query(query, env_id, user_id) do
     user_data =
       env_id
       |> ApplicationRunner.UserDataServices.current_user_data_query(user_id)
       |> Repo.one()
 
     query
-    |> EctoParser.to_ecto(env_id, user_data.id)
+    |> ApplicationRunner.DataServices.ecto_parser(env_id, user_data.id)
     |> Repo.all()
   end
 
   def parse_and_exec_query(query, env_id, user_id) do
     query
-    |> Parser.from_json()
+    |> ApplicationRunner.DataServices.json_parser()
     |> exec_query(env_id, user_id)
   end
 
