@@ -6,15 +6,23 @@ defmodule Lenra.TokenAgent do
 
   alias Lenra.{EnvironmentStateServices, SessionStateServices}
 
-  def start_link(env_id: env_id, session_id: session_id, assigns: %{user: user}) do
-    with {:ok, token} <- SessionStateServices.create_token(session_id, user.id, env_id) do
-      Agent.start_link(fn -> token end, name: {:global, session_id})
-    end
-  end
+  # TODO: Change this into SessiontokenAgent & Environmenttokenagent during Application_runner refactor
+  def start_link(session_state) do
+    env_id = Keyword.fetch!(session_state, :env_id)
 
-  def start_link(env_id: env_id, assigns: %{user: user}) do
-    with {:ok, token} <- EnvironmentStateServices.create_token(user.id, env_id) do
-      Agent.start_link(fn -> token end, name: {:global, env_id})
+    assigns = Keyword.fetch!(session_state, :assigns)
+
+    Keyword.fetch(session_state, :session_id)
+    |> case do
+      {:ok, session_id} ->
+        with {:ok, token} <- SessionStateServices.create_token(session_id, assigns.user.id, env_id) do
+          Agent.start_link(fn -> token end, name: {:global, session_id})
+        end
+
+      :error ->
+        with {:ok, token} <- EnvironmentStateServices.create_token(assigns.user.id, env_id) do
+          Agent.start_link(fn -> token end, name: {:global, env_id})
+        end
     end
   end
 end
