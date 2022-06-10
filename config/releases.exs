@@ -28,6 +28,9 @@ config :lenra,
   template_url: System.fetch_env!("TEMPLATE_URL"),
   lenra_email: System.fetch_env!("LENRA_EMAIL")
 
+config :application_runner,
+  url: System.fetch_env!("API_ENDPOINT")
+
 # Do not print debug messages in production
 config :logger, level: String.to_atom(System.get_env("LOG_LEVEL", "info"))
 
