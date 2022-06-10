@@ -14,7 +14,7 @@ defmodule Lenra.OpenfaasServices do
     {base_url, headers}
   end
 
-  defp get_function_name(service_name, build_number) do
+  def get_function_name(service_name, build_number) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 
     String.downcase("#{lenra_env}-#{service_name}-#{build_number}")

@@ -74,4 +74,5 @@ defmodule LenraWeb.Endpoint do
   end
 
   plug LenraWeb.Router
+  plug ApplicationRunner.Router
 end
