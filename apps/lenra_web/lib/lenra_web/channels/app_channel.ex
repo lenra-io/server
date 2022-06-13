@@ -43,12 +43,13 @@ defmodule LenraWeb.AppChannel do
         user: user,
         application: application,
         environment: environment,
-        socket_pid: self()
+        socket_pid: self(),
+        context: context
       }
 
       env_assigns = %{user: user, application: application, environment: environment}
 
-      case start_session(environment.id, session_id, session_assigns, env_assigns, context) do
+      case start_session(environment.id, session_id, session_assigns, env_assigns) do
         {:ok, session_pid} ->
           {:ok, assign(socket, session_pid: session_pid)}
 
@@ -76,8 +77,8 @@ defmodule LenraWeb.AppChannel do
     app.main_env.environment
   end
 
-  defp start_session(env_id, session_id, session_assigns, env_assigns, context) do
-    case SessionManagers.start_session(session_id, env_id, session_assigns, env_assigns, context) do
+  defp start_session(env_id, session_id, session_assigns, env_assigns) do
+    case SessionManagers.start_session(session_id, env_id, session_assigns, env_assigns) do
       {:ok, session_pid} -> {:ok, session_pid}
       {:error, message} -> {:error, message}
     end
