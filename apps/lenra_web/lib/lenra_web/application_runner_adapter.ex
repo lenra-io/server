@@ -50,13 +50,13 @@ defmodule LenraWeb.ApplicationRunnerAdapter do
         %SessionState{
           assigns: %{
             environment: environment,
-            application: application,
-            context: context
+            application: application
           }
         },
         widget_name,
         data,
-        props
+        props,
+        context
       ) do
     Logger.info("Get widget #{widget_name}")
     OpenfaasServices.fetch_widget(application, environment, widget_name, data, props, context)
