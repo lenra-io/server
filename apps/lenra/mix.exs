@@ -41,20 +41,21 @@ defmodule Lenra.MixProject do
       {:json_diff, "~> 0.1.0"},
       {:guardian, "~> 2.1.1"},
       {:guardian_db, "~> 2.0"},
-      {:finch, "~> 0.3"},
+      # {:finch, "~> 0.3"},
       {:argon2_elixir, "~> 2.0"},
       {:sentry, "~> 8.0"},
       {:bypass, "~> 2.0", only: :test},
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3"},
-      private_git(
-        name: :application_runner,
-        host: "github.com",
-        project: "lenra-io/application-runner.git",
-        tag: "v1.0.0-beta.37",
-        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
-      )
+      # private_git(
+      #   name: :application_runner,
+      #   host: "github.com",
+      #   project: "lenra-io/application-runner.git",
+      #   tag: "v1.0.0-beta.37",
+      #   credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+      # )
+      {:application_runner, path: "/home/emric/Documents/Lenra/application-runner"}
     ]
   end
 
