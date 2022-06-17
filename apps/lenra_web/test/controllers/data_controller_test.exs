@@ -54,7 +54,8 @@ defmodule LenraWeb.DataControllerTest do
       session_id,
       env_preloaded.id,
       %{user: user, application: application, environment: env_preloaded, socket_pid: self()},
-      %{application: application, environment: env_preloaded, user: user}
+      %{application: application, environment: env_preloaded, user: user},
+      context: %{}
     )
 
     %{env: env_preloaded, app: application, session_id: session_id}
