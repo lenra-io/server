@@ -71,11 +71,13 @@ config :ex_component_schema,
        {ApplicationRunner.JsonSchemata, :read_schema}
 
 config :application_runner,
-  adapter: LenraWeb.ApplicationRunnerAdapter,
   lenra_environment_table: "environments",
   lenra_user_table: "users",
   repo: Lenra.Repo,
-  url: System.get_env("HOST", "4000")
+  url: System.get_env("HOST", "4000"),
+  faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
+  faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
+  faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci")
 
 # additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
 # additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
