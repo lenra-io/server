@@ -1,19 +1,19 @@
-defmodule Lenra.AppGuardian do
+defmodule LenraWeb.AppGuardian do
   @moduledoc """
-    Lenra.Guardian handle the callback operations to generate and verify the token.
+    LenraWeb.AppGuardian handle the callback operations to generate and verify the token.
   """
 
-  use Guardian, otp_app: :lenra
+  use Guardian, otp_app: :lenra_web
 
-  alias Lenra.{Environment, EnvironmentStateServices, Repo, SessionStateServices, User}
+  alias Lenra.{EnvironmentServices, EnvironmentStateServices, SessionStateServices, UserServices}
 
   def subject_for_token(session_pid, _claims) do
     {:ok, to_string(session_pid)}
   end
 
   def resource_from_claims(%{"user_id" => user_id, "env_id" => env_id}) do
-    with env <- Repo.get(Environment, env_id),
-         user <- Repo.get(User, user_id) do
+    with env <- EnvironmentServices.get(env_id),
+         user <- UserServices.get(user_id) do
       {:ok, %{environment: env, user: user}}
     end
   end

@@ -1,8 +1,8 @@
 defmodule LenraWeb.DatastoreController do
   use LenraWeb, :controller
 
-  alias Lenra.AppGuardian.Plug
   alias Lenra.DatastoreServices
+  alias LenraWeb.AppGuardian.Plug
 
   def create(conn, params) do
     with session_assings <- Plug.current_resource(conn),

@@ -1,4 +1,4 @@
-defmodule LenraWeb.Plugs.CheckCguPlug do
+defmodule LenraWeb.Plug.VerifyCgu do
   @moduledoc """
   Plug that checks whether the latest cgu has been accepted or not
   """

@@ -1,5 +1,5 @@
 if Code.ensure_loaded?(Plug) do
-  defmodule Lenra.Guardian.Plug.VerifyQueryParams do
+  defmodule LenraWeb.Plug.VerifyQueryParams do
     @moduledoc """
       Looks for and validates a token found in the `token` query parameter.
     """

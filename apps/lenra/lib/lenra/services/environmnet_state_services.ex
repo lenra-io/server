@@ -4,7 +4,7 @@ defmodule Lenra.EnvironmentStateServices do
   """
 
   alias ApplicationRunner.EnvSupervisor
-  alias Lenra.AppGuardian
+  alias LenraWeb.AppGuardian
 
   def create_token(user_id, env_id) do
     with {:ok, token, _claims} <-

@@ -1,8 +1,8 @@
 defmodule LenraWeb.ResourcesController do
   use LenraWeb, :controller
 
-  alias Lenra.Guardian.Plug
   alias Lenra.ResourcesServices
+  alias LenraWeb.Guardian.Plug
 
   def get_app_resource(conn, %{"service_name" => service_name, "resource" => resource_name}) do
     user = Plug.current_resource(conn)

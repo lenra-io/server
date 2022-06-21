@@ -2,7 +2,7 @@ defmodule LenraWeb.TokenHelper do
   @moduledoc """
     The TokenService module handle the refresh_token and access_token operations
   """
-  alias Lenra.Guardian.{ErrorHandler, Plug}
+  alias LenraWeb.Guardian.{ErrorHandler, Plug}
 
   @token_key "guardian_default_token"
 
@@ -34,14 +34,14 @@ defmodule LenraWeb.TokenHelper do
   end
 
   def create_access_token(refresh_token) do
-    with {:ok, _old, {access_token, _new_claims}} <- Lenra.Guardian.exchange(refresh_token, "refresh", "access") do
+    with {:ok, _old, {access_token, _new_claims}} <- LenraWeb.Guardian.exchange(refresh_token, "refresh", "access") do
       {:ok, access_token}
     end
   end
 
   def revoke_current_refresh(conn) do
     refresh_token = Plug.current_token(conn)
-    Lenra.Guardian.revoke(refresh_token)
+    LenraWeb.Guardian.revoke(refresh_token)
     conn
   end
 end

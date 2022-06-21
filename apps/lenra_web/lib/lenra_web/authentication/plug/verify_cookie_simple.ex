@@ -1,4 +1,4 @@
-defmodule Lenra.Plug.SimpleVerifyCookie do
+defmodule LenraWeb.Plug.VerifyCookieSimple do
   @moduledoc """
     This is a plug that just check and put inside the conn the refresh_token (it does not exchange it for an access_token)
   """
@@ -11,7 +11,7 @@ defmodule Lenra.Plug.SimpleVerifyCookie do
          {:ok, token} <- Guardian.Plug.find_token_from_cookies(conn, opts),
          claims_to_check <- Keyword.get(opts, :claims, %{}),
          key <- Pipeline.fetch_key(conn, opts),
-         {:ok, claims} <- Lenra.Guardian.decode_and_verify(token, claims_to_check, opts) do
+         {:ok, claims} <- LenraWeb.Guardian.decode_and_verify(token, claims_to_check, opts) do
       conn
       |> Guardian.Plug.put_current_token(token, key: key)
       |> Guardian.Plug.put_current_claims(claims, key: key)

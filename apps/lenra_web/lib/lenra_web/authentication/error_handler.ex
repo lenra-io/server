@@ -1,6 +1,6 @@
-defmodule Lenra.Guardian.ErrorHandler do
+defmodule LenraWeb.Guardian.ErrorHandler do
   @moduledoc """
-    Lenra.Guardian.ErrorHandler handle the Guardian Errors
+    LenraWeb.Guardian.ErrorHandler handle the Guardian Errors
   """
 
   @behaviour Guardian.Plug.ErrorHandler

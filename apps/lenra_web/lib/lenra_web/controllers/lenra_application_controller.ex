@@ -4,8 +4,8 @@ defmodule LenraWeb.AppsController do
   use LenraWeb.Policy,
     module: LenraWeb.AppsController.Policy
 
-  alias Lenra.Guardian.Plug
   alias Lenra.LenraApplicationServices
+  alias LenraWeb.Guardian.Plug
 
   require Logger
 

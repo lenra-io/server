@@ -96,7 +96,7 @@ defmodule LenraWeb.Policy do
   defmacro __using__(opts \\ []) do
     policy_module = Keyword.get(opts, :module)
 
-    alias Lenra.Guardian.Plug
+    alias LenraWeb.Guardian.Plug
 
     quote do
       @spec allow(any(), any()) :: :ok | {:error, atom()}

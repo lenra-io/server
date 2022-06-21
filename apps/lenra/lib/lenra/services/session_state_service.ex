@@ -4,7 +4,7 @@ defmodule Lenra.SessionStateServices do
   """
 
   alias ApplicationRunner.SessionSupervisor
-  alias Lenra.AppGuardian
+  alias LenraWeb.AppGuardian
 
   def create_token(session_id, user_id, env_id) do
     with {:ok, token, _claims} <-

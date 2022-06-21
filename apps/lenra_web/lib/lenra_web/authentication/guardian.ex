@@ -1,9 +1,9 @@
-defmodule Lenra.Guardian do
+defmodule LenraWeb.Guardian do
   @moduledoc """
-    Lenra.Guardian handle the callback operations to generate and verify the token.
+    LenraWeb.Guardian handle the callback operations to generate and verify the token.
   """
 
-  use Guardian, otp_app: :lenra
+  use Guardian, otp_app: :lenra_web
 
   alias Lenra.UserServices
   require Logger
