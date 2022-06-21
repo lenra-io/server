@@ -7,6 +7,7 @@ defmodule Lenra.DeploymentServices do
     BuildServices,
     Deployment,
     EnvironmentServices,
+    LenraApplication,
     OpenfaasServices,
     Repo
   }
@@ -46,7 +47,10 @@ defmodule Lenra.DeploymentServices do
     )
     |> Ecto.Multi.run(:openfaas_deploy, fn _repo, _result ->
       # a faire: check if this build is already deployed on another env
-      OpenfaasServices.deploy_app(image_name(), function_name)
+      OpenfaasServices.deploy_app(
+        build.application.service_name,
+        build.build_number
+      )
     end)
     |> Repo.transaction()
   end

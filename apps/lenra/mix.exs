@@ -48,14 +48,13 @@ defmodule Lenra.MixProject do
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3"},
-      # private_git(
-      #   name: :application_runner,
-      #   host: "github.com",
-      #   project: "lenra-io/application-runner.git",
-      #   tag: "v1.0.0-beta.37",
-      #   credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
-      # )
-      {:application_runner, path: "/home/emric/Documents/Lenra/application-runner"}
+      private_git(
+        name: :application_runner,
+        host: "github.com",
+        project: "lenra-io/application-runner.git",
+        tag: "v1.0.0-beta.37",
+        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+      )
     ]
   end
 

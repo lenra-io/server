@@ -3,7 +3,8 @@ defmodule Lenra.EnvironmentServices do
     The service that manages the different possible actions on an environment.
   """
   import Ecto.Query
-  alias Lenra.{DatastoreServices, Environment, Repo}
+  alias ApplicationRunner.Datastore
+  alias Lenra.{Environment, Repo}
   require Logger
 
   def all(app_id) do
@@ -25,7 +26,9 @@ defmodule Lenra.EnvironmentServices do
   def create(application_id, creator_id, params) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:inserted_env, Environment.new(application_id, creator_id, nil, params))
-    |> DatastoreServices.create_environment_user_datastore()
+    |> Ecto.Multi.insert(:inserted_datastore, fn %{inserted_env: env} ->
+      Datastore.new(env.id, %{"name" => "_users"})
+    end)
     |> Repo.transaction()
   end
 
@@ -34,7 +37,9 @@ defmodule Lenra.EnvironmentServices do
     |> Ecto.Multi.insert(:inserted_env, fn %{inserted_application: app} ->
       Environment.new(app.id, creator_id, nil, params)
     end)
-    |> DatastoreServices.create_environment_user_datastore()
+    |> Ecto.Multi.insert(:inserted_datastore, fn %{inserted_env: env} ->
+      Datastore.new(env.id, %{"name" => "_users"})
+    end)
   end
 
   def update(env, params) do
