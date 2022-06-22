@@ -41,15 +41,15 @@ defmodule LenraWeb.Router do
     pipe_through(:api)
     post("/register", UserController, :register)
     post("/login", UserController, :login)
-    post("/password/lost", UserController, :password_lost_code)
-    put("/password/lost", UserController, :password_lost_modification)
+    post("/password/lost", UserController, :send_lost_password_code)
+    put("/password/lost", UserController, :change_lost_password)
 
     pipe_through(:ensure_auth_refresh)
     post("/logout", UserController, :logout)
     post("/verify", UserController, :validate_user)
 
     pipe_through([:ensure_cgu_accepted])
-    post("/refresh", UserController, :refresh)
+    post("/refresh", UserController, :refresh_token)
   end
 
   scope "/runner", LenraWeb do
@@ -71,12 +71,14 @@ defmodule LenraWeb.Router do
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
 
-    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController,
+      only: [:index, :create]
+    )
 
     resources("/apps/:app_id/builds", BuildsController, only: [:index, :create])
 
     resources("/apps/deployments", DeploymentsController, only: [:create])
-    put("/password", UserController, :password_modification)
+    put("/password", UserController, :change_password)
     put("/verify/dev", UserController, :validate_dev)
     get("/me/apps", AppsController, :get_user_apps)
   end

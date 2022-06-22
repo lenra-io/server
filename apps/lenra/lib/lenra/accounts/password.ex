@@ -1,4 +1,4 @@
-defmodule Lenra.Password do
+defmodule Lenra.Accounts.Password do
   @moduledoc """
     The password_save shema.
   """

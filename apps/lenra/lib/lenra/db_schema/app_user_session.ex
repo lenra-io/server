@@ -10,9 +10,10 @@ defmodule Lenra.AppUserSession do
     ActionLogs,
     AppUserSession,
     LenraApplication,
-    SocketAppMeasurement,
-    User
+    SocketAppMeasurement
   }
+
+  alias Lenra.Accounts.User
 
   schema "app_user_session" do
     field(:uuid, :binary_id, primary_key: true)

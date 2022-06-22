@@ -129,7 +129,7 @@ defmodule LenraWeb.Policy.Default do
       @behaviour Bouncer.Policy
 
       @impl Bouncer.Policy
-      def authorize(_action, %Lenra.User{role: :admin}, _data), do: true
+      def authorize(_action, %Lenra.Accounts.User{role: :admin}, _data), do: true
       def authorize(_action, _user, _data), do: false
 
       defoverridable authorize: 3

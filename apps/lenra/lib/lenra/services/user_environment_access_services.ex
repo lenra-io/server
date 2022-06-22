@@ -3,7 +3,17 @@ defmodule Lenra.UserEnvironmentAccessServices do
     The service that manages the different possible actions on an environment's user accesses.
   """
   import Ecto.Query
-  alias Lenra.{EmailWorker, EnvironmentServices, Repo, User, UserEnvironmentAccess, UserServices}
+
+  alias Lenra.Accounts
+  alias Lenra.Accounts.User
+
+  alias Lenra.{
+    EmailWorker,
+    EnvironmentServices,
+    Repo,
+    UserEnvironmentAccess
+  }
+
   require Logger
 
   @lenra_url %{
@@ -31,11 +41,14 @@ defmodule Lenra.UserEnvironmentAccessServices do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
       :inserted_user_access,
-      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{user_id: user_id, environment_id: env_id})
+      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
+        user_id: user_id,
+        environment_id: env_id
+      })
     )
     |> Ecto.Multi.run(:add_invitation_event, fn repo, %{inserted_user_access: _} ->
       env = EnvironmentServices.get(env_id)
-      user = UserServices.get(user_id)
+      user = Accounts.get_user(user_id)
 
       env = repo.preload(env, :application)
 
@@ -53,7 +66,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
   def create(env_id, %{"email" => email}) do
     Ecto.Multi.new()
     |> Ecto.Multi.run(:user, fn _repo, %{} ->
-      Lenra.Repo.fetch_by(Lenra.User, email: email)
+      Lenra.Repo.fetch_by(User, email: email)
     end)
     |> Ecto.Multi.run(:inserted_user_access, fn _repo, %{user: user} ->
       case create(env_id, %{"user_id" => user.id}) do

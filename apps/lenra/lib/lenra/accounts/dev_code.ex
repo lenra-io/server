@@ -1,4 +1,4 @@
-defmodule Lenra.DevCode do
+defmodule Lenra.Accounts.DevCode do
   @moduledoc """
   The DevCode representation in the database.
   A DevCode is a code used to validate a developper account.
@@ -7,7 +7,7 @@ defmodule Lenra.DevCode do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{DevCode, User}
+  alias Lenra.Accounts.{DevCode, User}
 
   schema "dev_codes" do
     field(:code, Ecto.UUID)

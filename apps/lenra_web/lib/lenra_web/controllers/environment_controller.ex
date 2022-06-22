@@ -44,7 +44,8 @@ defmodule LenraWeb.EnvsController do
 end
 
 defmodule LenraWeb.EnvsController.Policy do
-  alias Lenra.{LenraApplication, User}
+  alias Lenra.Accounts.User
+  alias Lenra.LenraApplication
 
   @impl Bouncer.Policy
   def authorize(:index, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true

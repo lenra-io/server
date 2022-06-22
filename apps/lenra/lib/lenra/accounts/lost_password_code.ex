@@ -1,10 +1,10 @@
-defmodule Lenra.PasswordCode do
+defmodule Lenra.Accounts.LostPasswordCode do
   @moduledoc """
     The password_code schema.
   """
   use Lenra.Schema
   import Ecto.Changeset
-  alias Lenra.User
+  alias Lenra.Accounts.User
 
   schema "password_codes" do
     field(:code, :string, null: false)

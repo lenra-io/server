@@ -6,7 +6,8 @@ defmodule Lenra.UserAcceptCguVersion do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Cgu, User, UserAcceptCguVersion}
+  alias Lenra.Accounts.User
+  alias Lenra.{Cgu, UserAcceptCguVersion}
 
   @derive {Jason.Encoder,
            only: [

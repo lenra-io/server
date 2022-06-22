@@ -5,7 +5,7 @@ defmodule LenraWeb.Guardian do
 
   use Guardian, otp_app: :lenra_web
 
-  alias Lenra.UserServices
+  alias Lenra.Accounts
   require Logger
 
   def subject_for_token(user, _claims) do
@@ -13,7 +13,7 @@ defmodule LenraWeb.Guardian do
   end
 
   def resource_from_claims(%{"sub" => id_string}) do
-    case UserServices.get(id_string) do
+    case Accounts.get_user(id_string) do
       nil ->
         raise "Cannot parse subject from claims"
 

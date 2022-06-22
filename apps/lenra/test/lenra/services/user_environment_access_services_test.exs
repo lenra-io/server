@@ -11,9 +11,10 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
     LenraApplication,
     LenraApplicationServices,
     Repo,
-    UserEnvironmentAccessServices,
-    UserServices
+    UserEnvironmentAccessServices
   }
+
+  alias Lenra.Accounts
 
   @app_url_prefix "https://localhost:10000/app"
 
@@ -64,7 +65,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
     test "send email after invitation", %{app: app, env: env} do
       UserEnvironmentAccessServices.create(env.id, %{"user_id" => app.creator_id})
 
-      user = UserServices.get(app.creator_id)
+      user = Accounts.get_user(app.creator_id)
       app_link = "#{@app_url_prefix}/#{app.service_name}"
 
       email = EmailService.create_invitation_email(user.email, app.name, app_link)
@@ -89,7 +90,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
 
   describe "create user env access from email" do
     test "successfully", %{app: app, env: env} do
-      user = Lenra.UserServices.get(app.creator_id)
+      user = Accounts.get_user(app.creator_id)
       UserEnvironmentAccessServices.create(env.id, %{"email" => user.email})
 
       access =

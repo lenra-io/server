@@ -20,7 +20,8 @@ defmodule LenraWeb.DeploymentsController do
 end
 
 defmodule LenraWeb.DeploymentsController.Policy do
-  alias Lenra.{Environment, User}
+  alias Lenra.Accounts.User
+  alias Lenra.Environment
 
   @impl Bouncer.Policy
   def authorize(:create, %User{id: user_id}, %Environment{creator_id: user_id}), do: true

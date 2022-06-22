@@ -9,9 +9,10 @@ defmodule Lenra.Deployment do
   alias Lenra.{
     Build,
     Deployment,
-    Environment,
-    User
+    Environment
   }
+
+  alias Lenra.Accounts.User
 
   @derive {Jason.Encoder, only: [:id, :application_id, :environment_id, :build_id, :publisher_id]}
 

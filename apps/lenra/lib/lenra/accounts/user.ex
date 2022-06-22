@@ -1,4 +1,4 @@
-defmodule Lenra.User do
+defmodule Lenra.Accounts.User do
   @moduledoc """
     The user shema.
   """
@@ -8,15 +8,18 @@ defmodule Lenra.User do
   alias Lenra.{
     Build,
     Deployment,
-    DevCode,
     Environment,
     LenraApplication,
-    Password,
-    PasswordCode,
-    RegistrationCode,
-    User,
     UserAcceptCguVersion,
     UserEnvironmentAccess
+  }
+
+  alias Lenra.Accounts.{
+    DevCode,
+    LostPasswordCode,
+    Password,
+    RegistrationCode,
+    User
   }
 
   alias ApplicationRunner.UserData
@@ -40,7 +43,7 @@ defmodule Lenra.User do
     field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)
     has_many(:applications, LenraApplication, foreign_key: :creator_id)
-    has_one(:password_code, PasswordCode)
+    has_one(:password_code, LostPasswordCode)
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)

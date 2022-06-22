@@ -3,7 +3,8 @@ defmodule Lenra.UserAcceptCguVersionServices do
     The user accept cgu version service.
   """
 
-  alias Lenra.{Cgu, Repo, User, UserAcceptCguVersion}
+  alias Lenra.Accounts.User
+  alias Lenra.{Cgu, Repo, UserAcceptCguVersion}
 
   def create(%User{} = user, %Cgu{} = cgu) do
     Ecto.Multi.new()

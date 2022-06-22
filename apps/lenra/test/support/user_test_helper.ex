@@ -3,7 +3,7 @@ defmodule UserTestHelper do
     Test helper for user
   """
 
-  alias Lenra.UserServices
+  alias Lenra.Accounts
 
   @john_doe_user_params %{
     "first_name" => "John",
@@ -24,11 +24,11 @@ defmodule UserTestHelper do
   end
 
   def register_user(params) do
-    UserServices.register(params, params["role"])
+    Accounts.register_user(params, params["role"])
   end
 
   def register_user_nb(idx, role) do
-    UserServices.register(param_user(idx), role)
+    Accounts.register_user(param_user(idx), role)
   end
 
   def register_john_doe(changes \\ %{}) do
