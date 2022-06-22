@@ -1,7 +1,7 @@
 defmodule LenraWeb.UserController do
   use LenraWeb, :controller
 
-  alias Lenra.Guardian.Plug
+  alias LenraWeb.Guardian.Plug
   alias Lenra.{PasswordServices, Repo, User, UserServices}
   alias LenraWeb.TokenHelper
 

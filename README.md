@@ -57,7 +57,7 @@ Simplified example of a "basic" controller: :
 defmodule LenraWeb.PostController do
   use LenraWeb, :controller
 
-  alias Lenra.Guardian.Plug
+  alias LenraWeb.Guardian.Plug
   alias Lenra.{PostServices}
   alias Lenra.{Repo}
 

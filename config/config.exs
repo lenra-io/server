@@ -21,12 +21,12 @@ config :lenra, Lenra.Repo,
   pool_size: 10
 
 # Configure Guardian
-config :lenra, Lenra.Guardian,
+config :lenra_web, LenraWeb.Guardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 
 # Configure Guardian
-config :lenra, Lenra.AppGuardian,
+config :lenra_web, LenraWeb.AppGuardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 

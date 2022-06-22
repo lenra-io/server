@@ -12,8 +12,7 @@ defmodule Lenra.TokenAgent do
 
     assigns = Keyword.fetch!(session_state, :assigns)
 
-    Keyword.fetch(session_state, :session_id)
-    |> case do
+    case Keyword.fetch(session_state, :session_id) do
       {:ok, session_id} ->
         with {:ok, token} <- SessionStateServices.create_token(session_id, assigns.user.id, env_id) do
           Agent.start_link(fn -> token end, name: {:global, session_id})
