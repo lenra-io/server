@@ -25,8 +25,7 @@ config :lenra_web, LenraWeb.Guardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 
-# Configure Guardian
-config :lenra_web, LenraWeb.AppGuardian,
+config :application_runner, ApplicationRunner.Guardian.AppGuardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 
@@ -71,11 +70,16 @@ config :ex_component_schema,
        {ApplicationRunner.JsonSchemata, :read_schema}
 
 config :application_runner,
-  adapter: LenraWeb.ApplicationRunnerAdapter,
-  lenra_environment_schema: Lenra.Environment,
-  lenra_user_schema: Lenra.User,
-  additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
-  additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
+  lenra_environment_table: "environments",
+  lenra_user_table: "users",
+  repo: Lenra.Repo,
+  url: System.get_env("HOST", "4000"),
+  faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
+  faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
+  faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci")
+
+# additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
+# additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
 
 config :lenra,
   faas_secrets: []

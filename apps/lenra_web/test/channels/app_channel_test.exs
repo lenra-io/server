@@ -7,12 +7,12 @@ defmodule LenraWeb.AppChannelTest do
 
   #   alias ApplicationRunner.Datastore
 
-  alias Lenra.{
-    ApplicationMainEnv,
-    Environment,
-    LenraApplication,
-    Repo
-  }
+  # alias Lenra.{
+  #   ApplicationMainEnv,
+  #   Environment,
+  #   LenraApplication,
+  #   Repo
+  # }
 
   alias LenraWeb.UserSocket
 
@@ -143,32 +143,32 @@ defmodule LenraWeb.AppChannelTest do
   #   :timer.sleep(500)
   # end
 
-  test "Join app channel with unauthorized user", %{socket: _socket, user: user} do
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(
-      :inserted_application,
-      LenraApplication.new(user.id, %{
-        name: "Counter",
-        color: "FFFFFF",
-        icon: "60189"
-      })
-    )
-    |> Ecto.Multi.insert(:inserted_env, fn %{inserted_application: app} ->
-      Environment.new(app.id, user.id, nil, %{name: "live", is_ephemeral: false, is_public: false})
-    end)
-    |> Ecto.Multi.insert(:application_main_env, fn %{inserted_application: app, inserted_env: env} ->
-      ApplicationMainEnv.new(app.id, env.id)
-    end)
-    |> Repo.transaction()
+  # test "Join app channel with unauthorized user", %{socket: _socket, user: user} do
+  #   Ecto.Multi.new()
+  #   |> Ecto.Multi.insert(
+  #     :inserted_application,
+  #     LenraApplication.new(user.id, %{
+  #       name: "Counter",
+  #       color: "FFFFFF",
+  #       icon: "60189"
+  #     })
+  #   )
+  #   |> Ecto.Multi.insert(:inserted_env, fn %{inserted_application: app} ->
+  #     Environment.new(app.id, user.id, nil, %{name: "live", is_ephemeral: false, is_public: false})
+  #   end)
+  #   |> Ecto.Multi.insert(:application_main_env, fn %{inserted_application: app, inserted_env: env} ->
+  #     ApplicationMainEnv.new(app.id, env.id)
+  #   end)
+  #   |> Repo.transaction()
 
-    app = Repo.get_by(LenraApplication, name: "Counter")
+  #   app = Repo.get_by(LenraApplication, name: "Counter")
 
-    {:ok, %{inserted_user: unauthorized_user}} = register_user_nb(1, :dev)
-    unauthorized_socket = socket(UserSocket, "socket_id", %{user: unauthorized_user})
+  #   {:ok, %{inserted_user: unauthorized_user}} = register_user_nb(1, :dev)
+  #   unauthorized_socket = socket(UserSocket, "socket_id", %{user: unauthorized_user})
 
-    assert {:error, %{reason: [%{code: 24, message: "You are not authorized to join this app."}]}} =
-             my_subscribe_and_join(unauthorized_socket, %{"app" => app.service_name})
-  end
+  #   assert {:error, %{reason: [%{code: 24, message: "You are not authorized to join this app."}]}} =
+  #            my_subscribe_and_join(unauthorized_socket, %{"app" => app.service_name})
+  # end
 
   # test "Join app channel with authorized user", %{socket: _socket, user: user} do
   #   {:ok, %{inserted_user: authorized_user}} = register_user_nb(1, :dev)

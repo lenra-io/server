@@ -28,6 +28,13 @@ config :lenra,
   template_url: System.fetch_env!("TEMPLATE_URL"),
   lenra_email: System.fetch_env!("LENRA_EMAIL")
 
+config :application_runner,
+  url: System.fetch_env!("API_ENDPOINT"),
+  faas_url: System.fetch_env!("FAAS_URL"),
+  faas_auth: System.fetch_env!("FAAS_AUTH"),
+  faas_registry: System.fetch_env!("FAAS_REGISTRY"),
+  gitlab_api_url: System.fetch_env!("GITLAB_API_URL")
+
 # Do not print debug messages in production
 config :logger, level: String.to_atom(System.get_env("LOG_LEVEL", "info"))
 

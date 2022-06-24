@@ -3,6 +3,16 @@ defmodule LenraWeb.Router do
 
   alias LenraWeb.{Pipeline, Plug}
 
+  alias Lenra.Guardian.{
+    EnsureAuthenticatedPipeline,
+    EnsureAuthenticatedQueryParamsPipeline,
+    RefreshPipeline
+  }
+
+  require ApplicationRunner.Router
+
+  ApplicationRunner.Router.app_routes()
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -13,10 +23,6 @@ defmodule LenraWeb.Router do
 
   pipeline :ensure_auth do
     plug(Pipeline.EnsureAuthed)
-  end
-
-  pipeline :ensure_auth_app do
-    plug(Pipeline.EnsureAuthedApp)
   end
 
   pipeline :ensure_resource_auth do
@@ -78,20 +84,6 @@ defmodule LenraWeb.Router do
   scope "/api", LenraWeb do
     pipe_through([:api, :ensure_resource_auth, :ensure_cgu_accepted])
     get("/apps/:service_name/resources/:resource", ResourcesController, :get_app_resource)
-  end
-
-  scope "/app", LenraWeb do
-    pipe_through([:api, :ensure_auth_app])
-
-    post("/datastores", DatastoreController, :create)
-    delete("/datastores/:_datastore", DatastoreController, :delete)
-    get("/datastores/user/data/@me", DataController, :get_me)
-    get("/datastores/:_datastore/data/:_id", DataController, :get)
-    get("/datastores/:_datastore/data", DataController, :get_all)
-    post("/datastores/:_datastore/data", DataController, :create)
-    delete("/datastores/:_datastore/data/:_id", DataController, :delete)
-    put("/datastores/:_datastore/data/:_id", DataController, :update)
-    post("/query", DataController, :query)
   end
 
   scope "/", LenraWeb do

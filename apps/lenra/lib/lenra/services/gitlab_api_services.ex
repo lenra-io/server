@@ -49,7 +49,7 @@ defmodule Lenra.GitlabApiServices do
       })
 
     Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp)
+    |> Finch.request(GitlabHttp)
     |> response()
   end
 

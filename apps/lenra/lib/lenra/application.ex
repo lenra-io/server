@@ -20,12 +20,22 @@ defmodule Lenra.Application do
       # Start the Event Queue
       {EventQueue, &Lenra.LoadWorker.load/0},
       # Start the HTTP Client
-      {Finch,
-       name: FaasHttp,
-       pools: %{
-         Application.fetch_env!(:lenra, :faas_url) => [size: 32, count: 8],
-         Application.fetch_env!(:lenra, :gitlab_api_url) => [size: 10, count: 3]
-       }},
+      Supervisor.child_spec(
+        {Finch,
+         name: FaasHttp,
+         pools: %{
+           Application.fetch_env!(:lenra, :faas_url) => [size: 32, count: 8]
+         }},
+        id: :finch_faas_http
+      ),
+      Supervisor.child_spec(
+        {Finch,
+         name: GitlabHttp,
+         pools: %{
+           Application.fetch_env!(:lenra, :gitlab_api_url) => [size: 10, count: 3]
+         }},
+        id: :finch_gitlab_http
+      ),
       {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
       AppChannelMonitor
     ]

@@ -3,7 +3,8 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas action with `run_action/3`
   """
 
-  alias Lenra.{DeploymentServices, Environment, EnvironmentStateServices, LenraApplication, SessionStateServices}
+  alias Lenra.DeploymentServices
+
   require Logger
 
   defp get_http_context do
@@ -14,172 +15,10 @@ defmodule Lenra.OpenfaasServices do
     {base_url, headers}
   end
 
-  defp get_function_name(service_name, build_number) do
+  def get_function_name(service_name, build_number) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 
     String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
-  end
-
-  @doc """
-    Run a HTTP POST request with needed headers and body to call an Openfaas Action and decode the response body.
-
-    Returns `{:ok, decoded_body}` if the HTTP Post succeed
-    Returns `{:error, reason}` if the HTTP Post fail
-  """
-
-  def run_env_listeners(
-        %LenraApplication{} = application,
-        %Environment{} = environment,
-        action,
-        props,
-        event,
-        env_id
-      ) do
-    token = EnvironmentStateServices.fetch_token(env_id)
-
-    run_listener(application, environment, action, props, event, token)
-  end
-
-  def run_session_listeners(
-        %LenraApplication{} = application,
-        %Environment{} = environment,
-        action,
-        props,
-        event,
-        session_id
-      ) do
-    token = SessionStateServices.fetch_token(session_id)
-
-    run_listener(application, environment, action, props, event, token)
-  end
-
-  @spec run_listener(LenraApplication.t(), Environment.t(), String.t(), map(), map(), String.t()) ::
-          {:ok, map()} | {:error, any()}
-  defp run_listener(
-         %LenraApplication{} = application,
-         %Environment{} = environment,
-         action,
-         props,
-         event,
-         token
-       ) do
-    {base_url, base_headers} = get_http_context()
-
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
-
-    url = "#{base_url}/function/#{function_name}"
-
-    headers = [
-      {"Content-Type", "application/json"} | base_headers
-    ]
-
-    body =
-      Jason.encode!(%{
-        action: action,
-        props: props,
-        event: event,
-        api: %{url: LenraWeb.Endpoint.url(), token: token}
-      })
-
-    Logger.debug("Call to Openfaas : #{function_name}")
-
-    Logger.debug(
-      "Run app #{application.service_name}[#{environment.deployed_build.build_number}] with action #{action}"
-    )
-
-    Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp, receive_timeout: 5000)
-    |> response(:listener)
-    |> case do
-      :ok ->
-        :ok
-
-      err ->
-        err
-    end
-  end
-
-  @spec fetch_widget(LenraApplication.t(), Environment.t(), String.t(), map(), map()) ::
-          {:ok, map()} | {:error, any()}
-  def fetch_widget(
-        %LenraApplication{} = application,
-        %Environment{} = environment,
-        widget_name,
-        data,
-        props
-      ) do
-    {base_url, base_headers} = get_http_context()
-
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
-
-    url = "#{base_url}/function/#{function_name}"
-    headers = [{"Content-Type", "application/json"} | base_headers]
-    body = Jason.encode!(%{widget: widget_name, data: data, props: props})
-
-    Finch.build(:post, url, headers, body)
-    |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:widget)
-    |> case do
-      {:ok, %{"widget" => widget}} ->
-        {:ok, widget}
-
-      :error404 ->
-        {:error, :widget_not_found}
-
-      err ->
-        err
-    end
-  end
-
-  def fetch_manifest(%LenraApplication{} = _application, %Environment{} = environment)
-      when is_nil(environment.deployed_build),
-      do: {:error, :environement_not_build}
-
-  @spec fetch_manifest(LenraApplication.t(), Environment.t()) :: {:ok, map()} | {:error, any()}
-  def fetch_manifest(%LenraApplication{} = application, %Environment{} = environment) do
-    {base_url, base_headers} = get_http_context()
-
-    function_name = get_function_name(application.service_name, environment.deployed_build.build_number)
-
-    url = "#{base_url}/function/#{function_name}"
-    headers = [{"Content-Type", "application/json"} | base_headers]
-
-    Finch.build(:post, url, headers)
-    |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:manifest)
-    |> case do
-      {:ok, %{"manifest" => manifest}} ->
-        Logger.debug("Got manifest : #{inspect(manifest)}")
-        {:ok, manifest}
-
-      :error404 ->
-        {:error, :manifest_not_found}
-
-      err ->
-        Logger.error("Error while getting manifest : #{inspect(err)}")
-        err
-    end
-  end
-
-  @doc """
-  Gets a resource from an app using a stream.
-
-  Returns an `Enum`.
-  """
-  def get_app_resource(app_name, build_number, resource) do
-    {base_url, base_headers} = get_http_context()
-    function_name = get_function_name(app_name, build_number)
-
-    url = "#{base_url}/function/#{function_name}"
-
-    headers = [{"Content-Type", "application/json"} | base_headers]
-    params = Map.put(%{}, :resource, resource)
-    body = Jason.encode!(params)
-
-    Finch.build(:post, url, headers, body)
-    |> Finch.stream(FaasHttp, [], fn
-      chunk, acc -> acc ++ [chunk]
-    end)
   end
 
   def deploy_app(service_name, build_number) do
@@ -233,14 +72,6 @@ defmodule Lenra.OpenfaasServices do
     |> response(:delete_app)
   end
 
-  defp response({:ok, %Finch.Response{status: 200, body: body}}, key) when key in [:manifest, :widget] do
-    {:ok, Jason.decode!(body)}
-  end
-
-  defp response({:ok, %Finch.Response{status: 200}}, :listener) do
-    :ok
-  end
-
   defp response({:ok, %Finch.Response{status: status_code}}, :deploy_app)
        when status_code in [200, 202] do
     {:ok, status_code}
@@ -253,6 +84,7 @@ defmodule Lenra.OpenfaasServices do
 
   defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
     Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
+
     {:error, :openfaas_delete_error}
   end
 
