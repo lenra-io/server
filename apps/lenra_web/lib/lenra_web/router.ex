@@ -24,13 +24,6 @@ defmodule LenraWeb.Router do
     plug(Pipeline.EnsureAuthed)
   end
 
-<<<<<<< HEAD
-  pipeline :ensure_auth_app do
-    plug(Pipeline.EnsureAuthedApp)
-  end
-
-=======
->>>>>>> 2fe5332 (feat: update applciation_runner)
   pipeline :ensure_resource_auth do
     plug(Pipeline.EnsureAuthedQueryParams)
   end
