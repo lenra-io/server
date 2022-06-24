@@ -25,7 +25,6 @@ config :lenra_web, LenraWeb.Guardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 
-
 config :application_runner, ApplicationRunner.Guardian.AppGuardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"

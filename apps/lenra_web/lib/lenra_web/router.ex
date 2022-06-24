@@ -2,6 +2,7 @@ defmodule LenraWeb.Router do
   use LenraWeb, :router
 
   alias LenraWeb.{Pipeline, Plug}
+
   alias Lenra.Guardian.{
     EnsureAuthenticatedPipeline,
     EnsureAuthenticatedQueryParamsPipeline,
