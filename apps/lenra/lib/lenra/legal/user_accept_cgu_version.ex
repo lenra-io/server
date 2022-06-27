@@ -1,4 +1,4 @@
-defmodule Lenra.UserAcceptCguVersion do
+defmodule Lenra.Legal.UserAcceptCGUVersion do
   @moduledoc """
     The user acceptation of the cgu version.
   """
@@ -7,7 +7,8 @@ defmodule Lenra.UserAcceptCguVersion do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.{Cgu, UserAcceptCguVersion}
+  alias Lenra.User
+  alias Lenra.Legal.CGU
 
   @derive {Jason.Encoder,
            only: [
@@ -17,7 +18,7 @@ defmodule Lenra.UserAcceptCguVersion do
   @primary_key false
   schema "user_accept_cgu_versions" do
     belongs_to(:user, User, primary_key: true)
-    belongs_to(:cgu, Cgu, primary_key: true)
+    belongs_to(:cgu, CGU, primary_key: true)
 
     timestamps()
   end
@@ -32,7 +33,7 @@ defmodule Lenra.UserAcceptCguVersion do
   end
 
   def new(params) do
-    %UserAcceptCguVersion{}
-    |> UserAcceptCguVersion.changeset(params)
+    %__MODULE__{}
+    |> __MODULE__.changeset(params)
   end
 end

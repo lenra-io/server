@@ -4,7 +4,8 @@ defmodule LenraWeb.CguControllerTest do
   """
   use LenraWeb.ConnCase, async: true
 
-  alias Lenra.{Cgu, Repo}
+  alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
+  alias Lenra.Repo
 
   @valid_cgu1 %{link: "Test", version: "1.0.0", hash: "test"}
   @valid_cgu2 %{link: "Test1", version: "1.1.0", hash: "Test1"}
@@ -13,12 +14,12 @@ defmodule LenraWeb.CguControllerTest do
 
   describe "get_latest_cgu" do
     test "test get_latest_cgu with 2 cgu in DB", %{conn: conn} do
-      @valid_cgu1 |> Cgu.new() |> Repo.insert()
+      @valid_cgu1 |> CGU.new() |> Repo.insert()
 
       date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
 
       @valid_cgu2
-      |> Cgu.new()
+      |> CGU.new()
       |> Ecto.Changeset.put_change(:inserted_at, date1)
       |> Repo.insert()
 
@@ -31,26 +32,26 @@ defmodule LenraWeb.CguControllerTest do
     end
 
     test "test get_latest_cgu with 4 cgu in DB", %{conn: conn} do
-      @valid_cgu1 |> Cgu.new() |> Repo.insert()
+      @valid_cgu1 |> CGU.new() |> Repo.insert()
 
       date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
 
       @valid_cgu2
-      |> Cgu.new()
+      |> CGU.new()
       |> Ecto.Changeset.put_change(:inserted_at, date1)
       |> Repo.insert()
 
       date2 = DateTime.utc_now() |> DateTime.add(8, :second) |> DateTime.truncate(:second)
 
       @valid_cgu3
-      |> Cgu.new()
+      |> CGU.new()
       |> Ecto.Changeset.put_change(:inserted_at, date2)
       |> Repo.insert()
 
       date3 = DateTime.utc_now() |> DateTime.add(12, :second) |> DateTime.truncate(:second)
 
       @valid_cgu4
-      |> Cgu.new()
+      |> CGU.new()
       |> Ecto.Changeset.put_change(:inserted_at, date3)
       |> Repo.insert()
 
@@ -79,7 +80,7 @@ defmodule LenraWeb.CguControllerTest do
 
       {:ok, cgu} =
         @valid_cgu2
-        |> Cgu.new()
+        |> CGU.new()
         |> Ecto.Changeset.put_change(:inserted_at, date1)
         |> Repo.insert()
 
@@ -97,7 +98,7 @@ defmodule LenraWeb.CguControllerTest do
 
       {:ok, cgu} =
         @valid_cgu2
-        |> Cgu.new()
+        |> CGU.new()
         |> Ecto.Changeset.put_change(:inserted_at, date1)
         |> Repo.insert()
 
@@ -112,11 +113,11 @@ defmodule LenraWeb.CguControllerTest do
     test "user accepted latest", %{conn: conn} do
       {:ok, cgu} =
         %{hash: "user_accepted_latest_cgu", version: "user_accepted_latest_cgu", link: "user_accepted_latest_cgu"}
-        |> Lenra.Cgu.new()
+        |> CGU.new()
         |> Lenra.Repo.insert()
 
       %{cgu_id: cgu.id, user_id: conn.assigns.user.id}
-      |> Lenra.UserAcceptCguVersion.new()
+      |> UserAcceptCGUVersion.new()
       |> Lenra.Repo.insert()
 
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
@@ -131,7 +132,7 @@ defmodule LenraWeb.CguControllerTest do
     test "user did not accept latest", %{conn: conn} do
       {:ok, _cgu} =
         %{hash: "user_accepted_latest_cgu", version: "user_accepted_latest_cgu", link: "user_accepted_latest_cgu"}
-        |> Lenra.Cgu.new()
+        |> CGU.new()
         |> Lenra.Repo.insert()
 
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
