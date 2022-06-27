@@ -1,9 +1,9 @@
 defmodule LenraWeb.AppChannel do
   use ApplicationRunner.AppChannel
 
-  alias Lenra.{LenraApplication, Repo}
   alias Lenra.Accounts
   alias Lenra.Accounts.User
+  alias Lenra.{LenraApplication, Repo}
 
   defmodule Policy do
     @moduledoc """
