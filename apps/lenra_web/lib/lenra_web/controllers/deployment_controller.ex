@@ -13,7 +13,7 @@ defmodule LenraWeb.DeploymentsController do
          {:ok, %{inserted_deployment: deployment}} <-
            DeploymentServices.create(env_id, build_id, user.id, params) do
       conn
-      |> assign_data(:deployment, deployment)
+      |> assign_data(deployment)
       |> reply
     end
   end

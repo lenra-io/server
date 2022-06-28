@@ -11,7 +11,7 @@ defmodule LenraWeb.UserController do
     with {:ok, %{inserted_user: user}} <- Accounts.register_user(params) do
       conn
       |> TokenHelper.assign_access_and_refresh_token(user)
-      |> assign_data(:user, user)
+      |> assign_data(user)
       |> reply
     end
   end
@@ -20,7 +20,7 @@ defmodule LenraWeb.UserController do
     with {:ok, user} <- Accounts.login_user(params["email"], params["password"]) do
       conn
       |> TokenHelper.assign_access_and_refresh_token(user)
-      |> assign_data(:user, user)
+      |> assign_data(user)
       |> reply
     end
   end
@@ -33,7 +33,7 @@ defmodule LenraWeb.UserController do
 
     conn
     |> TokenHelper.assign_access_token(access_token)
-    |> assign_data(:user, Plug.current_resource(conn))
+    |> assign_data(Plug.current_resource(conn))
     |> reply
   end
 
@@ -43,7 +43,7 @@ defmodule LenraWeb.UserController do
       conn
       |> TokenHelper.revoke_current_refresh()
       |> TokenHelper.assign_access_and_refresh_token(updated_user)
-      |> assign_data(:user, updated_user)
+      |> assign_data(updated_user)
       |> reply
     end
   end
@@ -54,7 +54,7 @@ defmodule LenraWeb.UserController do
       conn
       |> TokenHelper.revoke_current_refresh()
       |> TokenHelper.assign_access_and_refresh_token(updated_user)
-      |> assign_data(:user, updated_user)
+      |> assign_data(updated_user)
       |> reply
     end
   end

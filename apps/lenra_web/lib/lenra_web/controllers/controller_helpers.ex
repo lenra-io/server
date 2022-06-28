@@ -25,16 +25,10 @@ defmodule LenraWeb.ControllerHelpers do
   end
 
   def add_error(%Plug.Conn{} = conn, error) do
-    error_list = Map.get(conn.assigns, :errors, [])
-    Plug.Conn.assign(conn, :errors, [error | error_list])
+    Plug.Conn.assign(conn, :error, error)
   end
 
-  def assign_data(%Plug.Conn{} = conn, key, value) do
-    data_map = Map.get(conn.assigns, :data, %{})
-    Plug.Conn.assign(conn, :data, Map.put(data_map, key, value))
-  end
-
-  def assign_all(%Plug.Conn{} = conn, value) do
+  def assign_data(%Plug.Conn{} = conn, value) do
     Plug.Conn.assign(conn, :data, value)
   end
 

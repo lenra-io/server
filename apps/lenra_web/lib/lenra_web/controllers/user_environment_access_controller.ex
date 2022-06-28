@@ -17,7 +17,7 @@ defmodule LenraWeb.UserEnvironmentAccessController do
   def index(conn, %{"env_id" => env_id} = params) do
     with {:ok, _app} <- get_app_and_allow(conn, params) do
       conn
-      |> assign_data(:environment_user_accesses, UserEnvironmentAccessServices.all(env_id))
+      |> assign_data(UserEnvironmentAccessServices.all(env_id))
       |> reply
     end
   end
@@ -27,7 +27,7 @@ defmodule LenraWeb.UserEnvironmentAccessController do
          {:ok, %{inserted_user_access: user_env_access}} <-
            UserEnvironmentAccessServices.create(env_id, %{"user_id" => user_id}) do
       conn
-      |> assign_data(:inserted_user_access, user_env_access)
+      |> assign_data(user_env_access)
       |> reply
     end
   end
@@ -37,7 +37,7 @@ defmodule LenraWeb.UserEnvironmentAccessController do
          {:ok, %{inserted_user_access: user_env_access}} <-
            UserEnvironmentAccessServices.create(env_id, %{"email" => email}) do
       conn
-      |> assign_data(:inserted_user_access, user_env_access)
+      |> assign_data(user_env_access)
       |> reply
     end
   end

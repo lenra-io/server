@@ -65,7 +65,7 @@ defmodule LenraWeb.PostController do
     posts = PostServices.all()
 
     conn
-    |> assign_data(:posts, posts)
+    |> assign_data(posts)
     |> reply
   end
 
@@ -73,7 +73,7 @@ defmodule LenraWeb.PostController do
     post = PostServices.get(params.id)
 
     conn
-    |> assign_data(:post, post)
+    |> assign_data(post)
     |> reply
   end
 
@@ -84,7 +84,7 @@ defmodule LenraWeb.PostController do
     |> case do
       {:ok, %{inserted_post: post}} -> 
         conn
-        |> assign_data(:post, post)
+        |> assign_data(post)
         |> reply
       {:error, {_, reason, _}} ->
         conn
@@ -100,7 +100,7 @@ defmodule LenraWeb.PostController do
     |> case do
       {:ok, %{updated_post: post}} -> 
         conn
-        |> assign_data(:post, post)
+        |> assign_data(post)
         |> reply
       {:error, {_, reason, _}} ->
         conn

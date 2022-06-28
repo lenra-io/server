@@ -18,7 +18,7 @@ defmodule LenraWeb.ApplicationMainEnvController do
     with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, main_env} <- ApplicationMainEnvServices.get(app.id) do
       conn
-      |> assign_data(:main_env, main_env)
+      |> assign_data(main_env)
       |> reply
     end
   end
