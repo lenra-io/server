@@ -30,7 +30,8 @@ defmodule LenraWeb.BuildsController do
 end
 
 defmodule LenraWeb.BuildsController.Policy do
-  alias Lenra.{Build, LenraApplication, User}
+  alias Lenra.Accounts.User
+  alias Lenra.{Build, LenraApplication}
 
   @impl Bouncer.Policy
   def authorize(:index, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true

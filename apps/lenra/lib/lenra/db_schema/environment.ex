@@ -12,9 +12,10 @@ defmodule Lenra.Environment do
     Build,
     Environment,
     LenraApplication,
-    User,
     UserEnvironmentAccess
   }
+
+  alias Lenra.Accounts.User
 
   @type t :: %__MODULE__{}
 

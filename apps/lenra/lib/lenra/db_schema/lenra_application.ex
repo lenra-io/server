@@ -11,9 +11,10 @@ defmodule Lenra.LenraApplication do
     AppUserSession,
     Build,
     Environment,
-    LenraApplication,
-    User
+    LenraApplication
   }
+
+  alias Lenra.Accounts.User
 
   @type t :: %__MODULE__{}
 

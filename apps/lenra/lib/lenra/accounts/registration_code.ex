@@ -1,11 +1,11 @@
-defmodule Lenra.RegistrationCode do
+defmodule Lenra.Accounts.RegistrationCode do
   @moduledoc """
     The registration_code schema.
   """
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.User
+  alias Lenra.Accounts.User
 
   schema "registration_codes" do
     field(:code, :string)

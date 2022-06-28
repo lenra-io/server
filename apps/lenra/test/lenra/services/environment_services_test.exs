@@ -9,9 +9,10 @@ defmodule Lenra.EnvironmentServicesTest do
     EnvironmentServices,
     LenraApplication,
     LenraApplicationServices,
-    Repo,
-    User
+    Repo
   }
+
+  alias Lenra.Accounts.User
 
   setup do
     {:ok, app: create_and_return_application()}

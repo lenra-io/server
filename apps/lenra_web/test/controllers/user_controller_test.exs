@@ -5,7 +5,8 @@ defmodule LenraWeb.UserControllerTest do
   use LenraWeb.ConnCase
   use Bamboo.Test, shared: true
 
-  alias Lenra.{PasswordCode, Repo, User}
+  alias Lenra.Accounts.{LostPasswordCode, User}
+  alias Lenra.Repo
 
   @john_doe_user_params %{
     "first_name" => "John",
@@ -35,8 +36,10 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    assert %{"errors" => [%{"code" => 0, "message" => "email has invalid format"}], "success" => false} =
-             json_response(conn, 400)
+    assert %{
+             "errors" => [%{"code" => 0, "message" => "email has invalid format"}],
+             "success" => false
+           } = json_response(conn, 400)
   end
 
   test "register password format error test", %{conn: conn} do
@@ -52,8 +55,10 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    assert %{"errors" => [%{"code" => 0, "message" => "password has invalid format"}], "success" => false} =
-             json_response(conn, 400)
+    assert %{
+             "errors" => [%{"code" => 0, "message" => "password has invalid format"}],
+             "success" => false
+           } = json_response(conn, 400)
   end
 
   test "login test", %{conn: conn} do
@@ -88,7 +93,7 @@ defmodule LenraWeb.UserControllerTest do
   end
 
   test "refresh not authenticated test", %{conn: conn} do
-    conn = post(conn, Routes.user_path(conn, :refresh))
+    conn = post(conn, Routes.user_path(conn, :refresh_token))
 
     assert %{
              "errors" => [%{"code" => 401, "message" => "You are not authenticated"}],
@@ -99,7 +104,7 @@ defmodule LenraWeb.UserControllerTest do
   test "refresh authenticated test", %{conn: conn} do
     conn_register = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
-    conn = post(conn_register, Routes.user_path(conn_register, :refresh))
+    conn = post(conn_register, Routes.user_path(conn_register, :refresh_token))
 
     assert %{"data" => data, "success" => true} = json_response(conn, 200)
     assert Map.has_key?(data, "access_token")
@@ -148,7 +153,7 @@ defmodule LenraWeb.UserControllerTest do
     conn2 =
       put(
         conn,
-        Routes.user_path(conn, :password_modification, %{
+        Routes.user_path(conn, :change_password, %{
           "old_password" => "Johndoe@thefirst",
           "password" => new_password,
           "password_confirmation" => new_password
@@ -175,7 +180,7 @@ defmodule LenraWeb.UserControllerTest do
     conn =
       put(
         conn,
-        Routes.user_path(conn, :password_modification, %{
+        Routes.user_path(conn, :change_password, %{
           "old_password" => "Johndoe@thefirst",
           "password" => "Johndoe@thefirst",
           "password_confirmation" => "Johndoe@thefirst"
@@ -197,18 +202,18 @@ defmodule LenraWeb.UserControllerTest do
     conn! =
       post(
         conn!,
-        Routes.user_path(conn!, :password_lost_code, %{
+        Routes.user_path(conn!, :send_lost_password_code, %{
           "email" => @john_doe_user_params["email"]
         })
       )
 
     user = Repo.get_by(User, email: @john_doe_user_params["email"])
-    password_code = Repo.get_by(PasswordCode, user_id: user.id)
+    password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
 
     conn! =
       put(
         conn!,
-        Routes.user_path(conn!, :password_lost_modification, %{
+        Routes.user_path(conn!, :change_lost_password, %{
           "email" => @john_doe_user_params["email"],
           "code" => password_code.code,
           "password" => new_password,
@@ -238,20 +243,20 @@ defmodule LenraWeb.UserControllerTest do
     conn! =
       post(
         conn,
-        Routes.user_path(conn, :password_lost_code, %{
+        Routes.user_path(conn, :send_lost_password_code, %{
           "email" => @john_doe_user_params["email"]
         })
       )
 
     # Retrive the code (not returned by the controller)
     user = Repo.get_by(User, email: @john_doe_user_params["email"])
-    password_code = Repo.get_by(PasswordCode, user_id: user.id)
+    password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
 
     # Change password first time
     conn! =
       put(
         conn!,
-        Routes.user_path(conn!, :password_lost_modification, %{
+        Routes.user_path(conn!, :change_lost_password, %{
           "email" => @john_doe_user_params["email"],
           "code" => password_code.code,
           "password" => new_password,
@@ -266,7 +271,7 @@ defmodule LenraWeb.UserControllerTest do
     conn! =
       put(
         conn!,
-        Routes.user_path(conn!, :password_lost_modification, %{
+        Routes.user_path(conn!, :change_lost_password, %{
           "email" => @john_doe_user_params["email"],
           "code" => password_code.code,
           "password" => new_password2,
@@ -281,7 +286,7 @@ defmodule LenraWeb.UserControllerTest do
   test "change lost password wrong email test", %{conn: conn} do
     post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
-    conn = post(conn, Routes.user_path(conn, :password_lost_code, %{email: "wrong@email.me"}))
+    conn = post(conn, Routes.user_path(conn, :send_lost_password_code, %{email: "wrong@email.me"}))
 
     assert %{"success" => true} = json_response(conn, 200)
   end
@@ -289,12 +294,12 @@ defmodule LenraWeb.UserControllerTest do
   test "change lost password error code test", %{conn: conn} do
     post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
-    post(conn, Routes.user_path(conn, :password_lost_code, @john_doe_user_params))
+    post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
 
     conn =
       put(
         conn,
-        Routes.user_path(conn, :password_lost_modification, %{
+        Routes.user_path(conn, :change_lost_password, %{
           "email" => @john_doe_user_params["email"],
           "code" => "00000000",
           "password" => "Johndoe@thefirst",
@@ -311,14 +316,14 @@ defmodule LenraWeb.UserControllerTest do
   test "change lost password error password test", %{conn: conn} do
     %{assigns: %{data: %{user: user}}} = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
-    post(conn, Routes.user_path(conn, :password_lost_code, @john_doe_user_params))
+    post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
 
-    password_code = Repo.get_by(PasswordCode, user_id: user.id)
+    password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
 
     conn =
       put(
         conn,
-        Routes.user_path(conn, :password_lost_modification, %{
+        Routes.user_path(conn, :change_lost_password, %{
           "email" => @john_doe_user_params["email"],
           "code" => password_code.code,
           "password" => "Johndoe@thefirst",
@@ -343,7 +348,7 @@ defmodule LenraWeb.UserControllerTest do
     conn! =
       put(
         conn!,
-        Routes.user_path(conn!, :password_modification, %{
+        Routes.user_path(conn!, :change_password, %{
           "old_password" => "johndoethefirst",
           "password" => new_password,
           "password_confirmation" => new_password
@@ -353,7 +358,7 @@ defmodule LenraWeb.UserControllerTest do
     conn! =
       put(
         conn!,
-        Routes.user_path(conn!, :password_modification, %{
+        Routes.user_path(conn!, :change_password, %{
           "old_password" => new_password,
           "password" => new_password_2,
           "password_confirmation" => new_password_2
@@ -363,7 +368,7 @@ defmodule LenraWeb.UserControllerTest do
     conn! =
       put(
         conn!,
-        Routes.user_path(conn!, :password_modification, %{
+        Routes.user_path(conn!, :change_password, %{
           "old_password" => new_password_2,
           "password" => new_password_3,
           "password_confirmation" => new_password_3
@@ -373,7 +378,7 @@ defmodule LenraWeb.UserControllerTest do
     conn! =
       put(
         conn!,
-        Routes.user_path(conn!, :password_modification, %{
+        Routes.user_path(conn!, :change_password, %{
           "old_password" => new_password_3,
           "password" => "Johndoe@thefirst",
           "password_confirmation" => "Johndoe@thefirst"
@@ -408,8 +413,10 @@ defmodule LenraWeb.UserControllerTest do
 
     conn = put(conn, Routes.user_path(conn, :validate_dev, %{"code" => invalid_code}))
 
-    assert %{"success" => false, "errors" => [%{"code" => 13, "message" => "The code is not a valid UUID"}]} =
-             json_response(conn, 400)
+    assert %{
+             "success" => false,
+             "errors" => [%{"code" => 13, "message" => "The code is not a valid UUID"}]
+           } = json_response(conn, 400)
   end
 
   @tag :auth_user
@@ -418,8 +425,10 @@ defmodule LenraWeb.UserControllerTest do
 
     conn = put(conn, Routes.user_path(conn, :validate_dev, %{"code" => invalid_code}))
 
-    assert %{"success" => false, "errors" => [%{"code" => 14, "message" => "The code is invalid"}]} =
-             json_response(conn, 400)
+    assert %{
+             "success" => false,
+             "errors" => [%{"code" => 14, "message" => "The code is invalid"}]
+           } = json_response(conn, 400)
   end
 
   @tag auth_user: :dev
@@ -428,8 +437,10 @@ defmodule LenraWeb.UserControllerTest do
 
     conn = put(conn, Routes.user_path(conn, :validate_dev, %{"code" => invalid_code}))
 
-    assert %{"success" => false, "errors" => [%{"code" => 12, "message" => "You are already a dev"}]} =
-             json_response(conn, 400)
+    assert %{
+             "success" => false,
+             "errors" => [%{"code" => 12, "message" => "You are already a dev"}]
+           } = json_response(conn, 400)
   end
 
   @tag auth_users: [:user, :user]
@@ -442,7 +453,10 @@ defmodule LenraWeb.UserControllerTest do
 
     user2 = put(user1, Routes.user_path(user2, :validate_dev, %{"code" => valid_code}))
 
-    assert %{"success" => false, "errors" => [%{"code" => 12, "message" => "You are already a dev"}]} ==
+    assert %{
+             "success" => false,
+             "errors" => [%{"code" => 12, "message" => "You are already a dev"}]
+           } ==
              json_response(user2, 400)
   end
 end

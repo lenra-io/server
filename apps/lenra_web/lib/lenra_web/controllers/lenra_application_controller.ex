@@ -59,7 +59,8 @@ defmodule LenraWeb.AppsController do
 end
 
 defmodule LenraWeb.AppsController.Policy do
-  alias Lenra.{LenraApplication, User}
+  alias Lenra.Accounts.User
+  alias Lenra.LenraApplication
 
   @impl Bouncer.Policy
   def authorize(:index, _user, _data), do: true

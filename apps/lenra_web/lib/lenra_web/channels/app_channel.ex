@@ -1,7 +1,9 @@
 defmodule LenraWeb.AppChannel do
   use ApplicationRunner.AppChannel
 
-  alias Lenra.{LenraApplication, Repo, User}
+  alias Lenra.Accounts
+  alias Lenra.Accounts.User
+  alias Lenra.{LenraApplication, Repo}
 
   defmodule Policy do
     @moduledoc """
@@ -11,9 +13,9 @@ defmodule LenraWeb.AppChannel do
     @behaviour Bouncer.Policy
 
     @impl true
-    def authorize(_action, %Lenra.User{role: :admin}, _metadata), do: true
+    def authorize(_action, %User{role: :admin}, _metadata), do: true
 
-    def authorize(:join_app, %Lenra.User{id: id}, %Lenra.LenraApplication{creator_id: id}), do: true
+    def authorize(:join_app, %User{id: id}, %Lenra.LenraApplication{creator_id: id}), do: true
 
     def authorize(:join_app, _user, %Lenra.LenraApplication{
           main_env: %Lenra.ApplicationMainEnv{environment: %Lenra.Environment{is_public: true}}
@@ -35,10 +37,10 @@ defmodule LenraWeb.AppChannel do
 
   defp allow(user_id, app_name) do
     with %LenraApplication{} = application <- Repo.get_by(LenraApplication, service_name: app_name),
-         %User{} = user <- Repo.get(User, user_id) do
+         %User{} = user <- Accounts.get_user(user_id) do
       Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application)
     else
-      err ->
+      _err ->
         false
     end
   end

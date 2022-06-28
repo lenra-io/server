@@ -6,7 +6,8 @@ defmodule Lenra.Build do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Build, LenraApplication, User}
+  alias Lenra.Accounts.User
+  alias Lenra.{Build, LenraApplication}
 
   @derive {Jason.Encoder,
            only: [

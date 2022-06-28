@@ -2,7 +2,9 @@ defmodule Lenra.EmailWorker do
   @moduledoc """
     Worker to use for send email
   """
-  alias Lenra.{EmailService, Mailer, User}
+  alias Lenra.Accounts.User
+  alias Lenra.{EmailService, Mailer}
+
   require Logger
 
   def add_email_verification_event(user, code) do

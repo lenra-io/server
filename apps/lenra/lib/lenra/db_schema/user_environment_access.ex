@@ -6,7 +6,9 @@ defmodule Lenra.UserEnvironmentAccess do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{Environment, User}
+  alias Lenra.Environment
+
+  alias Lenra.Accounts.User
 
   @derive {Jason.Encoder,
            only: [

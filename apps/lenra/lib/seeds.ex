@@ -64,7 +64,7 @@ defmodule Lenra.Seeds do
     Enum.map(dev_codes, fn
       uuid_bin ->
         Lenra.Repo.insert(
-          %Lenra.DevCode{
+          %Lenra.Accounts.DevCode{
             code: uuid_bin
           },
           on_conflict: :nothing
