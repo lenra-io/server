@@ -52,7 +52,7 @@ defmodule LenraWeb.ErrorHelpers do
   end
 
   def translate_error(err) when is_atom(err) do
-    [Keyword.get(@errors, err, %{code: 0, message: "Unknown error"})]
+    [Keyword.get(@errors, err, %{error: "Unknown error"})]
   end
 
   def translate_ecto_error({field, {msg, opts}}) do
@@ -62,6 +62,6 @@ defmodule LenraWeb.ErrorHelpers do
         {key, value}, acc -> String.replace(acc, "%{#{key}}", to_string(value))
       end)
 
-    %{code: 0, message: message}
+    %{error: message}
   end
 end
