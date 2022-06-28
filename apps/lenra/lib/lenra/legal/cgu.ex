@@ -7,7 +7,6 @@ defmodule Lenra.Legal.CGU do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.User
   alias Lenra.Legal.UserAcceptCGUVersion
 
   @derive {Jason.Encoder,

@@ -17,6 +17,8 @@ defmodule LenraWeb.ConnCase do
 
   use ExUnit.CaseTemplate
   alias Ecto.Adapters.SQL.Sandbox
+  alias Lenra.Legal
+  alias Lenra.Legal.CGU
 
   using do
     quote do
@@ -94,9 +96,9 @@ defmodule LenraWeb.ConnCase do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(params)
 
     {:ok, cgu} =
-      %{link: "latest", hash: "latesthash", version: "latest"} |> Lenra.Legal.CGU.new() |> Lenra.Repo.insert()
+      %{link: "latest", hash: "latesthash", version: "latest"} |> CGU.new() |> Lenra.Repo.insert()
 
-    Lenra.Legal.accept_cgu(cgu.id, user.id)
+    Legal.accept_cgu(cgu.id, user.id)
     conn_user(conn, user)
   end
 
