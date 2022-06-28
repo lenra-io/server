@@ -95,8 +95,7 @@ defmodule LenraWeb.ConnCase do
   defp auth_john_doe_with_cgu(conn, params \\ %{}) do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(params)
 
-    {:ok, cgu} =
-      %{link: "latest", hash: "latesthash", version: "latest"} |> CGU.new() |> Lenra.Repo.insert()
+    {:ok, cgu} = %{link: "latest", hash: "latesthash", version: "latest"} |> CGU.new() |> Lenra.Repo.insert()
 
     Legal.accept_cgu(cgu.id, user.id)
     conn_user(conn, user)
