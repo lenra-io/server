@@ -21,7 +21,7 @@ defmodule LenraWeb.ErrorView do
   end
 
   def render("403.json", %{error: error}) do
-   error
+    error
   end
 
   def render("403.json", _assigns) do
