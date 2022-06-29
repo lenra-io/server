@@ -1,4 +1,4 @@
-defmodule Lenra.Environment do
+defmodule Lenra.Apps.Environment do
   @moduledoc """
     The environment schema.
   """
@@ -8,14 +8,9 @@ defmodule Lenra.Environment do
 
   alias ApplicationRunner.Datastore
 
-  alias Lenra.{
-    Build,
-    Environment,
-    LenraApplication,
-    UserEnvironmentAccess
-  }
-
   alias Lenra.Accounts.User
+  alias Lenra.Apps.{App, Build, Environment}
+  alias Lenra.UserEnvironmentAccess
 
   @type t :: %__MODULE__{}
 
@@ -33,7 +28,7 @@ defmodule Lenra.Environment do
     field(:name, :string)
     field(:is_ephemeral, :boolean)
     field(:is_public, :boolean)
-    belongs_to(:application, LenraApplication)
+    belongs_to(:application, App)
     belongs_to(:creator, User)
     belongs_to(:deployed_build, Build)
     many_to_many(:shared_with, User, join_through: UserEnvironmentAccess)

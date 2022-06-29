@@ -2,15 +2,13 @@ defmodule LenraWeb.DeploymentControllerTest do
   use LenraWeb.ConnCase, async: true
 
   alias Lenra.{
-    Build,
-    Deployment,
-    Environment,
-    EnvironmentServices,
     FaasStub,
     GitlabStubHelper,
-    LenraApplication,
     Repo
   }
+
+  alias Lenra.Apps.{App, Build, Deployment, Environment}
+  alias Lenra.Repo
 
   setup %{conn: conn} do
     GitlabStubHelper.create_gitlab_stub()
@@ -32,7 +30,7 @@ defmodule LenraWeb.DeploymentControllerTest do
 
       assert %{"data" => _data} = json_response(conn!, 200)
 
-      {:ok, app} = Enum.fetch(Repo.all(LenraApplication), 0)
+      {:ok, app} = Enum.fetch(Repo.all(App), 0)
 
       conn! =
         post(
@@ -97,7 +95,7 @@ defmodule LenraWeb.DeploymentControllerTest do
 
       assert %{"data" => build} = json_response(conn!, 200)
 
-      {:ok, wrong_env} = EnvironmentServices.fetch_by(application_id: wrong_app["id"])
+      {:ok, wrong_env} = Repo.fetch_by(Environment, application_id: wrong_app["id"])
 
       conn! =
         post(conn!, Routes.deployments_path(conn!, :create), %{

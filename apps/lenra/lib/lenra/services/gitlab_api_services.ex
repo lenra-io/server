@@ -4,7 +4,7 @@ defmodule Lenra.GitlabApiServices do
   Curently only support the request to create a new pipeline.
   """
 
-  alias Lenra.DeploymentServices
+  alias Lenra.Apps
   require Logger
 
   @doc """
@@ -36,7 +36,7 @@ defmodule Lenra.GitlabApiServices do
         "variables" => [
           %{
             "key" => "IMAGE_NAME",
-            "value" => DeploymentServices.image_name(service_name, build_number)
+            "value" => Apps.image_name(service_name, build_number)
           },
           %{
             "key" => "CALLBACK_URL",

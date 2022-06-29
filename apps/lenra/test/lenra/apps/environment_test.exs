@@ -1,54 +1,54 @@
-defmodule Lenra.EnvironmentServicesTest do
+defmodule Lenra.Apps.EnvironmentTest do
   @moduledoc """
     Test the environment services
   """
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{
-    Environment,
-    EnvironmentServices,
-    LenraApplication,
-    LenraApplicationServices,
-    Repo
-  }
+  alias Lenra.Repo
 
   alias Lenra.Accounts.User
+  alias Lenra.Apps
+  alias Lenra.Apps.{App, Environment}
 
   setup do
     {:ok, app: create_and_return_application()}
   end
 
+  defp fetch_env_by(clauses) do
+    Repo.fetch_by(Environment, clauses)
+  end
+
   defp create_and_return_application do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    LenraApplicationServices.create(user.id, %{
+    Apps.create_app(user.id, %{
       name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     })
 
-    Enum.at(Repo.all(LenraApplication), 0)
+    Enum.at(Repo.all(App), 0)
   end
 
-  describe "get" do
+  describe "get_env" do
     test "not existing environment", %{app: _app} do
-      assert nil == EnvironmentServices.get(0)
+      assert nil == Apps.get_env(0)
     end
 
     test "existing environment", %{app: _app} do
       {:ok, env} = Enum.fetch(Repo.all(Environment), 0)
 
-      assert nil != EnvironmentServices.get(env.id)
+      assert nil != Apps.get_env(env.id)
     end
   end
 
   describe "fetch by" do
     test "name", %{app: _app} do
-      assert {:ok, _env} = EnvironmentServices.fetch_by(name: "live")
+      assert {:ok, _env} = fetch_env_by(name: "live")
     end
 
     test "ephemeral", %{app: _app} do
-      assert {:ok, _env} = EnvironmentServices.fetch_by(is_ephemeral: false)
+      assert {:ok, _env} = fetch_env_by(is_ephemeral: false)
     end
   end
 
@@ -56,7 +56,7 @@ defmodule Lenra.EnvironmentServicesTest do
     test "environment successfully", %{app: app} do
       {:ok, user} = Enum.fetch(Repo.all(User), 0)
 
-      EnvironmentServices.create(app.id, user.id, %{
+      Apps.create_env(app.id, user.id, %{
         name: "test_env",
         is_ephemeral: false,
         is_public: false
@@ -69,7 +69,7 @@ defmodule Lenra.EnvironmentServicesTest do
       {:ok, user} = Enum.fetch(Repo.all(User), 0)
 
       error =
-        EnvironmentServices.create(app.id, user.id, %{
+        Apps.create_env(app.id, user.id, %{
           name: 1234,
           is_ephemeral: "yes",
           is_public: false
@@ -83,35 +83,23 @@ defmodule Lenra.EnvironmentServicesTest do
     test "environment successfully", %{app: app} do
       {:ok, user} = Enum.fetch(Repo.all(User), 0)
 
-      EnvironmentServices.create(app.id, user.id, %{
+      Apps.create_env(app.id, user.id, %{
         name: "test_env",
         is_ephemeral: false,
         is_public: false
       })
 
-      {:ok, env} = EnvironmentServices.fetch_by(name: "test_env")
+      {:ok, env} = fetch_env_by(name: "test_env")
 
       assert env.is_public == false
 
-      EnvironmentServices.update(env, %{
+      Apps.update_env(env, %{
         is_public: true
       })
 
-      {:ok, updated_env} = EnvironmentServices.fetch_by(name: "test_env")
+      {:ok, updated_env} = fetch_env_by(name: "test_env")
 
       assert updated_env.is_public == true
-    end
-  end
-
-  describe "delete" do
-    test "environment successfully", %{app: _app} do
-      assert {:ok, env} = EnvironmentServices.fetch_by(name: "live")
-
-      env
-      |> EnvironmentServices.delete()
-      |> Repo.transaction()
-
-      assert {:error, Lenra.Errors.error_404()} == EnvironmentServices.fetch_by(name: "live")
     end
   end
 end

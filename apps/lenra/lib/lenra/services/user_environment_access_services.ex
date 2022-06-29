@@ -9,10 +9,11 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
   alias Lenra.{
     EmailWorker,
-    EnvironmentServices,
     Repo,
     UserEnvironmentAccess
   }
+
+  alias Lenra.Apps
 
   require Logger
 
@@ -47,7 +48,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
       })
     )
     |> Ecto.Multi.run(:add_invitation_event, fn repo, %{inserted_user_access: _} ->
-      env = EnvironmentServices.get(env_id)
+      env = Apps.get_env(env_id)
       user = Accounts.get_user(user_id)
 
       env = repo.preload(env, :application)

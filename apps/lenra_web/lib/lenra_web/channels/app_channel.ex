@@ -3,7 +3,8 @@ defmodule LenraWeb.AppChannel do
 
   alias Lenra.Accounts
   alias Lenra.Accounts.User
-  alias Lenra.{LenraApplication, Repo}
+  alias Lenra.{Repo, UserEnvironmentAccessServices}
+  alias Lenra.Apps.{App, Environment, MainEnv}
 
   defmodule Policy do
     @moduledoc """
@@ -15,15 +16,15 @@ defmodule LenraWeb.AppChannel do
     @impl true
     def authorize(_action, %User{role: :admin}, _metadata), do: true
 
-    def authorize(:join_app, %User{id: id}, %Lenra.LenraApplication{creator_id: id}), do: true
+    def authorize(:join_app, %User{id: id}, %App{creator_id: id}), do: true
 
-    def authorize(:join_app, _user, %Lenra.LenraApplication{
-          main_env: %Lenra.ApplicationMainEnv{environment: %Lenra.Environment{is_public: true}}
+    def authorize(:join_app, _user, %App{
+          main_env: %MainEnv{environment: %Environment{is_public: true}}
         }),
         do: true
 
     def authorize(:join_app, user, app) do
-      case Lenra.UserEnvironmentAccessServices.fetch_by(
+      case UserEnvironmentAccessServices.fetch_by(
              environment_id: app.main_env.environment.id,
              user_id: user.id
            ) do
@@ -36,7 +37,7 @@ defmodule LenraWeb.AppChannel do
   end
 
   defp allow(user_id, app_name) do
-    with %LenraApplication{} = application <- Repo.get_by(LenraApplication, service_name: app_name),
+    with %App{} = application <- Repo.get_by(App, service_name: app_name),
          %User{} = user <- Accounts.get_user(user_id) do
       Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application)
     else
@@ -48,8 +49,8 @@ defmodule LenraWeb.AppChannel do
   defp get_function_name(app_name) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 
-    with %LenraApplication{} = app <- Repo.get_by(LenraApplication, service_name: app_name),
-         %LenraApplication{} = application <-
+    with %App{} = app <- Repo.get_by(App, service_name: app_name),
+         %App{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]) do
       build_number = application.main_env.environment.deployed_build.build_number
       %{function_name: String.downcase("#{lenra_env}-#{app_name}-#{build_number}")}
@@ -59,7 +60,7 @@ defmodule LenraWeb.AppChannel do
   defp get_env(app_name) do
     # Get first env for now
     application =
-      LenraApplication
+      App
       |> Repo.get_by(service_name: app_name)
       |> Repo.preload(:environments)
 
