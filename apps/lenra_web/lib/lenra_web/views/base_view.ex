@@ -17,7 +17,6 @@ defmodule LenraWeb.BaseView do
   end
 
   def render("error.json", %{error: error}) do
-    IO.inspect(error)
     %{"error" => translate_error(error)}
   end
 end

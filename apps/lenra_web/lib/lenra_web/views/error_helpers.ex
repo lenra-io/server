@@ -6,8 +6,7 @@ defmodule LenraWeb.ErrorHelpers do
   alias Lenra.Errors.{BusinessError, DevError, TechnicalError}
 
   def translate_error(%Ecto.Changeset{errors: errors}) do
-    IO.inspect(errors)
-    Enum.map(errors, &translate_ecto_error/1)
+    translate_ecto_error(Enum.at(errors, 0))
   end
 
   def translate_error(%BusinessError{} = err) do
@@ -27,12 +26,12 @@ defmodule LenraWeb.ErrorHelpers do
   end
 
   def translate_ecto_error({field, {msg, opts}}) do
-    message =
+    error =
       Enum.reduce(opts, "#{field} #{msg}", fn
         {_key, {:parameterized, _, _}}, acc -> acc
         {key, value}, acc -> String.replace(acc, "%{#{key}}", to_string(value))
       end)
 
-    message
+    error
   end
 end

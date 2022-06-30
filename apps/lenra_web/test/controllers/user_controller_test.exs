@@ -37,7 +37,7 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     assert %{
-             "error" => %{"code" => 0, "message" => "email has invalid format"}
+             "error" => "email has invalid format"
            } = json_response(conn, 400)
   end
 
