@@ -48,7 +48,7 @@ config :lenra, Lenra.Mailer,
 config :lenra_web, LenraWeb.Endpoint,
   url: [host: "localhost", port: System.get_env("PORT", "4000")],
   http: [port: {:system, "PORT"}],
-  render_errors: [view: LenraCommonWeb.ErrorView, accepts: ~w(json), layout: false],
+  render_errors: [view: LenraWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Lenra.PubSub,
   check_origin: false
 

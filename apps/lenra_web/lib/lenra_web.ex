@@ -21,6 +21,8 @@ defmodule LenraWeb do
     quote do
       use LenraCommonWeb, :controller
 
+      plug(:put_view, LenraWeb.BaseView)
+
       # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias LenraWeb.Router.Helpers, as: Routes
     end
@@ -29,6 +31,8 @@ defmodule LenraWeb do
   def view do
     quote do
       use LenraCommonWeb, :view
+
+      unquote(view_helpers())
     end
   end
 
@@ -51,6 +55,7 @@ defmodule LenraWeb do
     quote do
       use LenraCommonWeb, :view_helpers
 
+      import LenraWeb.ErrorHelpers
       # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias LenraWeb.Router.Helpers, as: Routes
     end
