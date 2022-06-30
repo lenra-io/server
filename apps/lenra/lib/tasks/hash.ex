@@ -19,11 +19,11 @@ defmodule Mix.Tasks.Hash do
       [paths] ->
         case File.exists?(paths) do
           true ->
-            algo = Keyword.get(opts, :algo, "md5")
+            algo = Keyword.get(opts, :algo, "sha256")
 
             paths
             |> File.stream!([], 2048)
-            |> Enum.reduce(:crypto.hash_init(String.to_existing_atom(algo)), &:crypto.hash_update(&2, &1))
+            |> Enum.reduce(:crypto.hash_init(String.to_atom(algo)), &:crypto.hash_update(&2, &1))
             |> :crypto.hash_final()
             |> Base.encode16()
             |> IO.puts()
