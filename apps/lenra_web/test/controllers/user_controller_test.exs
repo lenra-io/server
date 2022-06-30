@@ -54,9 +54,6 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    IO.inspect(conn)
-    IO.inspect(json_response(conn, 400))
-
     assert %{
              "error" => %{"code" => 0, "message" => "password has invalid format"}
            } = json_response(conn, 400)
@@ -97,7 +94,7 @@ defmodule LenraWeb.UserControllerTest do
     conn = post(conn, Routes.user_path(conn, :refresh_token))
 
     assert %{
-             "error" => %{"code" => 401, "message" => "You are not authenticated"}
+             "error" => "You are not authenticated"
            } = json_response(conn, 401)
   end
 
@@ -171,7 +168,7 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    assert %{"data" => data, "success" => true} = json_response(conn, 200)
+    assert %{"data" => data} = json_response(conn, 200)
     assert Map.has_key?(data, "access_token")
   end
 

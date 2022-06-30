@@ -26,7 +26,7 @@ defmodule LenraWeb.TokenHelper do
   end
 
   def assign_access_token(conn, access_token) do
-    LenraWeb.ControllerHelpers.assign_data(conn, access_token)
+    LenraWeb.ControllerHelpers.assign_data(conn, :access_token, access_token)
   end
 
   def create_refresh_and_store_cookie(conn, user) do

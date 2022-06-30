@@ -32,6 +32,17 @@ defmodule LenraWeb.ControllerHelpers do
     Plug.Conn.assign(conn, :data, value)
   end
 
+  def assign_data(%Plug.Conn{} = conn, key, value) do
+    conn =
+      if(!Map.has_key?(conn.assigns, :data)) do
+        Plug.Conn.assign(conn, :data, %{})
+      else
+        conn
+      end
+
+    %{conn | assigns: put_in(conn.assigns, [:data, key], value)}
+  end
+
   def reply(%Plug.Conn{assigns: %{errors: _}} = conn) do
     Phoenix.Controller.render(conn, "error.json")
   end
