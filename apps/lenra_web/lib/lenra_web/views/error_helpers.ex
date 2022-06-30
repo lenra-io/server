@@ -3,10 +3,10 @@ defmodule LenraWeb.ErrorHelpers do
   Conveniences for translating and building error messages.
   """
 
-  alias Lenra.Errors.{BusinessError, TechnicalError, DevError}
-
+  alias Lenra.Errors.{BusinessError, DevError, TechnicalError}
 
   def translate_error(%Ecto.Changeset{errors: errors}) do
+    IO.inspect(errors)
     Enum.map(errors, &translate_ecto_error/1)
   end
 
@@ -33,6 +33,6 @@ defmodule LenraWeb.ErrorHelpers do
         {key, value}, acc -> String.replace(acc, "%{#{key}}", to_string(value))
       end)
 
-    %{error: message}
+    message
   end
 end

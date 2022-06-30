@@ -34,10 +34,10 @@ defmodule LenraWeb.ControllerHelpers do
 
   def assign_data(%Plug.Conn{} = conn, key, value) do
     conn =
-      if(!Map.has_key?(conn.assigns, :data)) do
-        Plug.Conn.assign(conn, :data, %{})
-      else
+      if Map.has_key?(conn.assigns, :data) do
         conn
+      else
+        Plug.Conn.assign(conn, :data, %{})
       end
 
     %{conn | assigns: put_in(conn.assigns, [:data, key], value)}
