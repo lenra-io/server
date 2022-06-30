@@ -80,7 +80,7 @@ defmodule LenraWeb.UserController do
     else
       # Here we return :no_such_password_code instead of :incorrect_email
       # to avoid leaking whether an email address exists on Lenra
-      {:error, :incorrect_email} -> {:error, :no_such_password_code}
+      {:error, :incorrect_email} -> {:error, Lenra.Errors.no_such_password_code()}
       error -> error
     end
   end
@@ -98,11 +98,11 @@ defmodule LenraWeb.UserController do
     reply(conn)
   end
 
-  defp get_user_with_email(nil), do: {:error, :incorrect_email}
+  defp get_user_with_email(nil), do: {:error, Lenra.Errors.incorrect_email()}
 
   defp get_user_with_email(email) do
     case Repo.get_by(User, email: String.downcase(email)) do
-      nil -> {:error, :incorrect_email}
+      nil -> {:error, Lenra.Errors.incorrect_email()}
       user -> {:ok, user}
     end
   end

@@ -8,20 +8,36 @@ defmodule LenraWeb.ControllerHelpers do
     |> case do
       %Ecto.Changeset{valid?: false} ->
         Plug.Conn.put_status(conn, 400)
+        |> add_error(error)
 
       :error_404 ->
         Plug.Conn.put_status(conn, 404)
+        |> add_error(Lenra.Errors.error_404())
 
       :error_500 ->
         Plug.Conn.put_status(conn, 500)
+        |> add_error(Lenra.Errors.error_500())
 
       :forbidden ->
         Plug.Conn.put_status(conn, 403)
+        |> add_error(Lenra.Errors.forbidden())
+
+      %Lenra.Errors.BusinessError{} ->
+        Plug.Conn.put_status(conn, 400)
+        |> add_error(error)
+
+      %Lenra.Errors.TechnicalError{} ->
+        Plug.Conn.put_status(conn, 400)
+        |> add_error(error)
+
+      %Lenra.Errors.DevError{} ->
+        Plug.Conn.put_status(conn, 400)
+        |> add_error(error)
 
       _error ->
         Plug.Conn.put_status(conn, 400)
+        |> add_error(Lenra.Errors.bad_request())
     end
-    |> add_error(error)
   end
 
   def add_error(%Plug.Conn{} = conn, error) do

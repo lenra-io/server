@@ -68,7 +68,7 @@ defmodule LenraWeb.RunnerControllerTest do
           }
         )
 
-      assert %{"data" => _data} = json_response(conn, 400)
+      assert %{"error" => _error} = json_response(conn, 400)
     end
   end
 end

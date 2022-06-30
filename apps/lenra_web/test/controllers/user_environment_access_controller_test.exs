@@ -54,11 +54,11 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
              } = json_response(admin, 200)
 
       assert %{
-               "error" => %{"code" => 403, "message" => "Forbidden"}
+               "error" => "Forbidden"
              } = json_response(user, 403)
 
       assert %{
-               "error" => %{"code" => 403, "message" => "Forbidden"}
+               "error" => "Forbidden"
              } = json_response(other_dev, 403)
     end
   end

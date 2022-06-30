@@ -55,7 +55,7 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     assert %{
-             "error" => %{"code" => 0, "message" => "password has invalid format"}
+             "error" => "password has invalid format"
            } = json_response(conn, 400)
   end
 
@@ -87,7 +87,7 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    assert %{"error" => %{"code" => 4, "message" => "Incorrect email or password"}} = json_response(conn, 400)
+    assert %{"error" => "Incorrect email or password"} = json_response(conn, 400)
   end
 
   test "refresh not authenticated test", %{conn: conn} do
@@ -140,7 +140,7 @@ defmodule LenraWeb.UserControllerTest do
 
     conn! = post(conn!, Routes.user_path(conn!, :validate_user, %{"code" => "12345678"}))
 
-    assert %{"error" => %{"code" => 5, "message" => "No such registration code"}} = json_response(conn!, 400)
+    assert %{"error" => "No such registration code"} = json_response(conn!, 400)
   end
 
   @tag :auth_user
@@ -185,7 +185,7 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     assert %{
-             "error" => %{"code" => 8, "message" => "Your password cannot be equal to the last 3."}
+             "error" => "Your password cannot be equal to the last 3."
            } = json_response(conn, 400)
   end
 
@@ -302,7 +302,7 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     assert %{
-             "error" => %{"code" => 6, "message" => "No such password lost code"}
+             "error" => "No such password lost code"
            } = json_response(conn, 400)
   end
 
@@ -325,7 +325,7 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     assert %{
-             "error" => %{"code" => 8, "message" => "Your password cannot be equal to the last 3."}
+             "error" => "Your password cannot be equal to the last 3."
            } = json_response(conn, 400)
   end
 
@@ -404,7 +404,7 @@ defmodule LenraWeb.UserControllerTest do
     conn = put(conn, Routes.user_path(conn, :validate_dev, %{"code" => invalid_code}))
 
     assert %{
-             "error" => %{"code" => 13, "message" => "The code is not a valid UUID"}
+             "error" => "The code is not a valid UUID"
            } = json_response(conn, 400)
   end
 
@@ -415,7 +415,7 @@ defmodule LenraWeb.UserControllerTest do
     conn = put(conn, Routes.user_path(conn, :validate_dev, %{"code" => invalid_code}))
 
     assert %{
-             "error" => %{"code" => 14, "message" => "The code is invalid"}
+             "error" => "The code is invalid"
            } = json_response(conn, 400)
   end
 
@@ -426,7 +426,7 @@ defmodule LenraWeb.UserControllerTest do
     conn = put(conn, Routes.user_path(conn, :validate_dev, %{"code" => invalid_code}))
 
     assert %{
-             "error" => %{"code" => 12, "message" => "You are already a dev"}
+             "error" => "You are already a dev"
            } = json_response(conn, 400)
   end
 
@@ -441,7 +441,7 @@ defmodule LenraWeb.UserControllerTest do
     user2 = put(user1, Routes.user_path(user2, :validate_dev, %{"code" => valid_code}))
 
     assert %{
-             "error" => %{"code" => 12, "message" => "You are already a dev"}
+             "error" => "You are already a dev"
            } ==
              json_response(user2, 400)
   end

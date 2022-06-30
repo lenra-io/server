@@ -131,7 +131,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       conn! = delete(conn!, route)
 
-      assert %{"error" => %{"code" => 404, "message" => "Not Found."}} ==
+      assert %{"error" => "Not Found."} ==
                json_response(conn!, 404)
     end
 
@@ -139,7 +139,7 @@ defmodule LenraWeb.AppsControllerTest do
     test "create app user authenticated but not a dev or admin", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
-      assert %{"error" => %{"code" => 403, "message" => "Forbidden"}} = json_response(conn!, 403)
+      assert %{"error" => "Forbidden"} = json_response(conn!, 403)
     end
 
     @tag auth_user: :dev
@@ -164,8 +164,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       conn2! = delete(conn2!, Routes.apps_path(conn2!, :delete, id))
 
-      assert %{"error" => %{"code" => 403, "message" => "Forbidden"}} =
-               json_response(conn2!, 403)
+      assert %{"error" => "Forbidden"} = json_response(conn2!, 403)
 
       conn1! = delete(conn1!, Routes.apps_path(conn1!, :delete, id))
       assert %{} = json_response(conn1!, 200)

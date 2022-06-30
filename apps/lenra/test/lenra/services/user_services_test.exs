@@ -87,14 +87,14 @@ defmodule UserServicesTest do
   test "sign_in user should fail with wrong email" do
     {:ok, _} = register_john_doe()
 
-    assert {:error, :incorrect_email_or_password} ==
+    assert {:error, %Lenra.Errors.BusinessError{reason: :incorrect_email_or_password}} =
              Accounts.login_user("John@Lenra.FR", "Johndoe@thefirst")
   end
 
   test "sign_in user should fail with wrong password" do
     {:ok, _} = register_john_doe()
 
-    assert {:error, :incorrect_email_or_password} ==
+    assert {:error, %Lenra.Errors.BusinessError{reason: :incorrect_email_or_password}} =
              Accounts.login_user("john.doe@lenra.fr", "johndoethesecond")
   end
 
