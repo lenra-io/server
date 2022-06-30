@@ -21,7 +21,14 @@ defmodule Lenra.Errors.TechnicalError do
 end
 
 defmodule Lenra.Errors.DevError do
-  defexception [:message, :data]
+  @type t() :: %__MODULE__{
+          message: String.t(),
+          reason: atom(),
+          data: any()
+        }
+
+  @enforce_keys [:message, :reason]
+  defexception [:message, :reason, :data]
 
   def message(%{message: message}) when is_bitstring(message) do
     message
@@ -31,7 +38,6 @@ defmodule Lenra.Errors.DevError do
     "An unknown error occured."
   end
 end
-
 
 # defmodule Test do
 #   def business_error do

@@ -90,7 +90,7 @@ defmodule Lenra.OpenfaasServices do
 
   defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
     Logger.error("Openfaas could not be reached. It should not happen. \n\t\t reason: #{reason}")
-    {:error, :openfass_not_recheable}
+    {:error, :openfaas_not_reachable}
   end
 
   defp response(
@@ -117,7 +117,7 @@ defmodule Lenra.OpenfaasServices do
 
       _err ->
         Logger.error(body)
-        {:error, :unknow_error}
+        {:error, :unknown_error}
     end
   end
 end

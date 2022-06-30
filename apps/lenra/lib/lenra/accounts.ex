@@ -91,9 +91,9 @@ defmodule Lenra.Accounts do
   @doc """
     check if the user exists in the database and compare the hashed password.
     Returns {:ok, user} if the email exists and password is correct.
-    Otherwise, returns {:error, :email_or_password_incorrect}
+    Otherwise, returns {:error, :incorrect_email_or_password}
   """
-  @spec login_user(binary(), binary()) :: {:ok, User.t()} | {:error, :email_or_password_incorrect}
+  @spec login_user(binary(), binary()) :: {:ok, User.t()} | {:error, :incorrect_email_or_password}
   def login_user(email, password) do
     User
     |> Repo.get_by(email: String.downcase(email))
@@ -106,7 +106,7 @@ defmodule Lenra.Accounts do
     user_password = hd(user.password)
 
     case Argon2.verify_pass(password, user_password.password) do
-      false -> {:error, :email_or_password_incorrect}
+      false -> {:error, :incorrect_email_or_password}
       true -> {:ok, user}
     end
   end
@@ -115,7 +115,7 @@ defmodule Lenra.Accounts do
   defp check_password(_user, password) do
     # Avoid time-based hacking technique to check if email exist
     Argon2.verify_pass(password, @argon2_fake_password)
-    {:error, :email_or_password_incorrect}
+    {:error, :incorrect_email_or_password}
   end
 
   #######################
