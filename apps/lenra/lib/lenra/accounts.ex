@@ -95,7 +95,7 @@ defmodule Lenra.Accounts do
     Otherwise, returns {:error, :incorrect_email_or_password}
   """
   @spec login_user(binary(), binary()) ::
-          {:ok, User.t()} | {:error, Lenra.Errors.incorrect_email_or_password()}
+          {:ok, User.t()} | {:error, Lenra.Errors.BusinessError.t()}
   def login_user(email, password) do
     User
     |> Repo.get_by(email: String.downcase(email))
