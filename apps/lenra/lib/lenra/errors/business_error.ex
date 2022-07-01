@@ -1,4 +1,6 @@
 defmodule Lenra.Errors.BusinessError do
+  alias Lenra.Errors.BusinessError
+
   @type t() :: %__MODULE__{
           message: String.t(),
           reason: atom(),
@@ -7,8 +9,6 @@ defmodule Lenra.Errors.BusinessError do
 
   @enforce_keys [:message, :reason]
   defexception [:message, :reason, :data]
-
-  alias Lenra.Errors.BusinessError
 
   def passwords_must_match do
     %BusinessError{

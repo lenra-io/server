@@ -1,4 +1,6 @@
 defmodule Lenra.Errors.TechnicalError do
+  alias Lenra.Errors.TechnicalError
+
   @type t() :: %__MODULE__{
           message: String.t(),
           reason: atom(),
@@ -7,8 +9,6 @@ defmodule Lenra.Errors.TechnicalError do
 
   @enforce_keys [:message, :reason]
   defexception [:message, :reason, :data]
-
-  alias Lenra.Errors.TechnicalError
 
   def unknown_error do
     %TechnicalError{reason: :unknown_error, message: "Unknown error"}
