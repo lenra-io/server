@@ -32,10 +32,10 @@ defmodule LenraWeb.BuildControllerTest do
 
   defp create_app_and_build(conn!) do
     conn! = create_app(conn!)
-    assert %{"data" =>  app} = json_response(conn!, 200)
+    assert %{"data" => app} = json_response(conn!, 200)
 
     conn! = create_build(conn!, app["id"])
-    assert %{"data" =>  build} = json_response(conn!, 200)
+    assert %{"data" => build} = json_response(conn!, 200)
 
     %{conn: conn!, app: app, build: build}
   end
@@ -45,8 +45,7 @@ defmodule LenraWeb.BuildControllerTest do
       conn = get(conn, Routes.builds_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-               "error" => "You are not authenticated",
-
+               "error" => "You are not authenticated"
              }
     end
 

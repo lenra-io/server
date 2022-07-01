@@ -55,6 +55,6 @@ defmodule Lenra.ApplicationServicesTest do
 
     LenraApplicationServices.delete(app)
 
-    assert {:error, Lenra.Errors.error_404} == LenraApplicationServices.fetch_by(name: "mine-sweeper")
+    assert {:error, Lenra.Errors.error_404()} == LenraApplicationServices.fetch_by(name: "mine-sweeper")
   end
 end
