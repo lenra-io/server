@@ -20,10 +20,6 @@ defmodule LenraWeb.ErrorView do
     %{"error" => "Unauthorized"}
   end
 
-  def render("403.json", %{error: error}) do
-    error
-  end
-
   def render("403.json", _assigns) do
     %{"error" => "Forbidden"}
   end
