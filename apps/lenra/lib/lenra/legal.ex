@@ -1,15 +1,16 @@
-defmodule Lenra.CguServices do
+defmodule Lenra.Legal do
   @moduledoc """
-    The service that get the latest CGU.
+    This module handle all legal aspect for a user.
+    - CGU acceptation
+    - CGU creation
+    - ...
   """
 
   import Ecto.Query, only: [from: 2, select: 3]
 
-  alias Lenra.{Cgu, Repo, UserAcceptCguVersion}
-
-  defp get_latest_cgu_query do
-    Ecto.Query.last(Cgu, :inserted_at)
-  end
+  alias Lenra.User
+  alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
+  alias Lenra.Repo
 
   def get_latest_cgu do
     cgu = get_latest_cgu_query() |> Repo.one()
@@ -26,7 +27,7 @@ defmodule Lenra.CguServices do
     with false <-
            Repo.exists?(
              from(
-               u in Lenra.UserAcceptCguVersion,
+               u in UserAcceptCGUVersion,
                where: u.user_id == ^user_id and u.cgu_id in subquery(latest_cgu)
              )
            ) do
@@ -34,11 +35,15 @@ defmodule Lenra.CguServices do
     end
   end
 
-  def accept(cgu_id, user_id) do
+  defp get_latest_cgu_query do
+    Ecto.Query.last(CGU, :inserted_at)
+  end
+
+  def accept_cgu(cgu_id, user_id) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
       :accepted_cgu,
-      UserAcceptCguVersion.new(%{cgu_id: cgu_id, user_id: user_id})
+      UserAcceptCGUVersion.new(%{cgu_id: cgu_id, user_id: user_id})
     )
     |> Repo.transaction()
   rescue

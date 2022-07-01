@@ -1,4 +1,4 @@
-defmodule Lenra.Cgu do
+defmodule Lenra.Legal.CGU do
   @moduledoc """
     The cgu schema.
   """
@@ -7,7 +7,7 @@ defmodule Lenra.Cgu do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.{Cgu, UserAcceptCguVersion}
+  alias Lenra.Legal.UserAcceptCGUVersion
 
   @derive {Jason.Encoder,
            only: [
@@ -22,7 +22,7 @@ defmodule Lenra.Cgu do
     field(:version, :string)
     field(:hash, :string)
 
-    many_to_many(:users, User, join_through: UserAcceptCguVersion)
+    many_to_many(:users, User, join_through: UserAcceptCGUVersion)
 
     timestamps()
   end
@@ -37,7 +37,7 @@ defmodule Lenra.Cgu do
   end
 
   def new(params) do
-    %Cgu{}
-    |> Cgu.changeset(params)
+    %__MODULE__{}
+    |> __MODULE__.changeset(params)
   end
 end
