@@ -13,7 +13,8 @@ defmodule UserServicesTest do
   alias Lenra.EmailService
 
   test "register user should succeed" do
-    {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
+    {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} =
+      register_john_doe()
 
     assert user.first_name == "John"
     assert user.last_name == "Doe"
@@ -24,7 +25,8 @@ defmodule UserServicesTest do
   end
 
   test "send email after registration" do
-    {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} = register_john_doe()
+    {:ok, %{inserted_user: user, inserted_registration_code: registration_code}} =
+      register_john_doe()
 
     email = EmailService.create_welcome_email(user.email, registration_code.code)
 
@@ -34,7 +36,8 @@ defmodule UserServicesTest do
   test "send email for a password recovery" do
     {:ok, %{inserted_user: user}} = register_john_doe()
 
-    {:ok, %{password_code: %LostPasswordCode{} = password_code}} = Accounts.send_lost_password_code(user)
+    {:ok, %{password_code: %LostPasswordCode{} = password_code}} =
+      Accounts.send_lost_password_code(user)
 
     email = EmailService.create_recovery_email(user.email, password_code.code)
     assert_delivered_email(email)
@@ -48,7 +51,9 @@ defmodule UserServicesTest do
     assert not changeset.valid?
 
     assert changeset.errors == [
-             {:email, {"has already been taken", [constraint: :unique, constraint_name: "users_email_index"]}}
+             {:email,
+              {"has already been taken",
+               [constraint: :unique, constraint_name: "users_email_index"]}}
            ]
   end
 
@@ -115,7 +120,8 @@ defmodule UserServicesTest do
 
     invalid_code = "not-a-code"
 
-    assert {:error, :invalid_uuid} = Accounts.validate_dev(user, invalid_code)
+    assert {:error, %Lenra.Errors.BusinessError{reason: :invalid_uuid}} =
+             Accounts.validate_dev(user, invalid_code)
   end
 
   test "validate dev with invalid code" do
@@ -123,7 +129,8 @@ defmodule UserServicesTest do
 
     invalid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a5"
 
-    assert {:error, :invalid_code} = Accounts.validate_dev(user, invalid_code)
+    assert {:error, %Lenra.Errors.BusinessError{reason: :invalid_code}} =
+             Accounts.validate_dev(user, invalid_code)
   end
 
   test "validate dev a user that is already a dev" do
@@ -131,7 +138,8 @@ defmodule UserServicesTest do
 
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 
-    assert {:error, :already_dev} = Accounts.validate_dev(user, valid_code)
+    assert {:error, %Lenra.Errors.BusinessError{reason: :already_dev}} =
+             Accounts.validate_dev(user, valid_code)
   end
 
   test "validate dev with already used code" do
@@ -141,7 +149,9 @@ defmodule UserServicesTest do
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 
     assert {:ok, _} = Accounts.validate_dev(user, valid_code)
-    assert {:error, :dev_code_already_used} = Accounts.validate_dev(user2, valid_code)
+
+    assert {:error, %Lenra.Errors.BusinessError{reason: :dev_code_already_used}} =
+             Accounts.validate_dev(user2, valid_code)
   end
 
   test "The password code should be deleted after password modification" do
@@ -152,7 +162,10 @@ defmodule UserServicesTest do
     assert not is_nil(password_code)
 
     assert {:ok, _} =
-             Accounts.update_user_password_with_code(user!, %{"password" => "MyNewPassword42!", "code" => password_code})
+             Accounts.update_user_password_with_code(user!, %{
+               "password" => "MyNewPassword42!",
+               "code" => password_code
+             })
 
     # Force reload the password code
     user! = Repo.preload(user!, [:password_code], force: true)

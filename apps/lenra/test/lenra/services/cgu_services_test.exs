@@ -78,7 +78,7 @@ defmodule Lenra.CguServicesTest do
         )
       )
 
-      assert {:error, :not_latest_cgu} = CguServices.accept(cgu.id, user.id)
+      assert {:error, %Lenra.Errors.BusinessError{reason: :not_latest_cgu}} = CguServices.accept(cgu.id, user.id)
     end
 
     test "not existing user", %{user: _user} do
