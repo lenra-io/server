@@ -16,7 +16,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
         "icon" => 12
       })
 
-    %{"data" => %{"app" => app}} = json_response(conn, 200)
+    %{"data" => app} = json_response(conn, 200)
 
     %{conn: conn, app: app}
   end

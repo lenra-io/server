@@ -37,7 +37,7 @@ defmodule LenraWeb.RunnerControllerTest do
           }
         )
 
-      assert %{"data" => _data} = json_response(conn, 200)
+      assert %{} = json_response(conn, 200)
     end
 
     @tag auth_user: :dev
@@ -54,7 +54,7 @@ defmodule LenraWeb.RunnerControllerTest do
           }
         )
 
-      assert %{"data" => _data} = json_response(conn, 200)
+      assert %{} = json_response(conn, 200)
     end
 
     @tag auth_user: :dev

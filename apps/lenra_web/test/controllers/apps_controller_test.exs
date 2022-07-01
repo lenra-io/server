@@ -36,7 +36,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       conn! = get(conn!, Routes.apps_path(conn!, :index))
 
-      [app | _tail] = conn!.assigns.data.apps
+      [app | _tail] = conn!.assigns.data
       app_service_name = app.service_name
 
       assert %{

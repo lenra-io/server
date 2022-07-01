@@ -40,6 +40,10 @@ defmodule Lenra.Errors.DevError do
 end
 
 defmodule Lenra.Errors do
+  @moduledoc """
+    Lenra.Errors defines three error types to cover all of the possible errors accross the Lenra server.
+  """
+
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
   def unknown_error do
