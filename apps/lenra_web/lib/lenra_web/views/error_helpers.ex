@@ -10,15 +10,15 @@ defmodule LenraWeb.ErrorHelpers do
   end
 
   def translate_error(%BusinessError{} = err) do
-    err.message
+    Lenra.Errors.message(err)
   end
 
   def translate_error(%TechnicalError{} = err) do
-    err.message
+    Lenra.Errors.message(err)
   end
 
   def translate_error(%DevError{} = err) do
-    err.message
+    Lenra.Errors.message(err)
   end
 
   def translate_error(_err) do

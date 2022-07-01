@@ -25,7 +25,6 @@ defmodule LenraWeb.ErrorView do
   end
 
   def render("403.json", _assigns) do
-    IO.puts("403 Forbidden")
     %{"error" => "Forbidden"}
   end
 

@@ -29,14 +29,6 @@ defmodule Lenra.Errors.DevError do
 
   @enforce_keys [:message, :reason]
   defexception [:message, :reason, :data]
-
-  def message(%{message: message}) when is_bitstring(message) do
-    message
-  end
-
-  def message(_e) do
-    "An unknown error occured."
-  end
 end
 
 defmodule Lenra.Errors do
@@ -45,6 +37,14 @@ defmodule Lenra.Errors do
   """
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
+
+  def message(%{message: message}) when is_bitstring(message) do
+    message
+  end
+
+  def message(_e) do
+    "An unknown error occured."
+  end
 
   def unknown_error do
     %TechnicalError{reason: :unknown_error, message: "Unknown error"}
