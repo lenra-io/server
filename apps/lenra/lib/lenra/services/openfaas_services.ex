@@ -85,12 +85,12 @@ defmodule Lenra.OpenfaasServices do
   defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
     Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
 
-    {:error, :openfaas_delete_error}
+    {:error, Lenra.Errors.openfaas_delete_error()}
   end
 
   defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
     Logger.error("Openfaas could not be reached. It should not happen. \n\t\t reason: #{reason}")
-    {:error, :openfass_not_recheable}
+    {:error, Lenra.Errors.openfaas_not_reachable()}
   end
 
   defp response(
@@ -101,7 +101,7 @@ defmodule Lenra.OpenfaasServices do
     case status_code do
       400 ->
         Logger.error(body)
-        {:error, :bad_request}
+        {:error, Lenra.Errors.bad_request()}
 
       404 ->
         Logger.error(body)
@@ -113,11 +113,11 @@ defmodule Lenra.OpenfaasServices do
 
       504 ->
         Logger.error(body)
-        {:error, :timeout}
+        {:error, Lenra.Errors.timeout()}
 
       _err ->
         Logger.error(body)
-        {:error, :unknow_error}
+        {:error, Lenra.Errors.unknown_error()}
     end
   end
 end

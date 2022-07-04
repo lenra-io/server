@@ -10,7 +10,7 @@ defmodule LenraWeb.BuildsController do
     with {:ok, app} <- LenraApplicationServices.fetch(app_id),
          :ok <- allow(conn, app) do
       conn
-      |> assign_data(:builds, BuildServices.all(app.id))
+      |> assign_data(BuildServices.all(app.id))
       |> reply
     end
   end
@@ -23,7 +23,7 @@ defmodule LenraWeb.BuildsController do
          {:ok, %{inserted_build: build}} <-
            BuildServices.create_and_trigger_pipeline(user.id, app.id, params) do
       conn
-      |> assign_data(:build, build)
+      |> assign_data(build)
       |> reply
     end
   end

@@ -33,7 +33,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
     )
   end
 
-  def fetch_by(clauses, error \\ {:error, :error_404}) do
+  def fetch_by(clauses, error \\ {:error, Lenra.Errors.error_404()}) do
     Repo.fetch_by(UserEnvironmentAccess, clauses, error)
   end
 

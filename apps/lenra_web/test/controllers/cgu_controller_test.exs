@@ -26,8 +26,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test1", "link" => "Test1", "version" => "1.1.0"}},
-               "success" => true
+               "data" => %{"hash" => "Test1", "link" => "Test1", "version" => "1.1.0"}
              } = json_response(conn, 200)
     end
 
@@ -58,8 +57,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test3", "link" => "Test3", "version" => "1.3.0"}},
-               "success" => true
+               "data" => %{"hash" => "Test3", "link" => "Test3", "version" => "1.3.0"}
              } = json_response(conn, 200)
     end
 
@@ -67,8 +65,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert json_response(conn, 404) == %{
-               "errors" => [%{"code" => 404, "message" => "Not Found."}],
-               "success" => false
+               "error" => "Not Found."
              }
     end
   end
@@ -87,8 +84,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
 
       assert %{
-               "data" => %{"accepted_cgu" => %{"cgu_id" => cgu.id, "user_id" => conn.assigns[:user].id}},
-               "success" => true
+               "data" => %{"cgu_id" => cgu.id, "user_id" => conn.assigns[:user].id}
              } == json_response(conn, 200)
     end
 
@@ -104,7 +100,7 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
 
-      assert %{"success" => true} = json_response(conn, 200)
+      assert %{"data" => _data} = json_response(conn, 200)
     end
   end
 
@@ -123,8 +119,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
 
       assert json_response(conn, 200) == %{
-               "data" => %{"user_accepted_latest_cgu" => true},
-               "success" => true
+               "data" => true
              }
     end
 
@@ -138,8 +133,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
 
       assert json_response(conn, 200) == %{
-               "data" => %{"user_accepted_latest_cgu" => false},
-               "success" => true
+               "data" => false
              }
     end
   end

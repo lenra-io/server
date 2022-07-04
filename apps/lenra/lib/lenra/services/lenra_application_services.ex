@@ -51,7 +51,7 @@ defmodule Lenra.LenraApplicationServices do
     Repo.fetch(LenraApplication, app_id)
   end
 
-  def fetch_by(clauses, error \\ {:error, :error_404}) do
+  def fetch_by(clauses, error \\ {:error, Lenra.Errors.error_404()}) do
     Repo.fetch_by(LenraApplication, clauses, error)
   end
 

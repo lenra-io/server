@@ -16,7 +16,7 @@ defmodule Lenra.Legal do
     cgu = get_latest_cgu_query() |> Repo.one()
 
     case cgu do
-      nil -> {:error, :error_404}
+      nil -> {:error, Lenra.Errors.error_404()}
       cgu -> {:ok, cgu}
     end
   end
@@ -47,6 +47,6 @@ defmodule Lenra.Legal do
     )
     |> Repo.transaction()
   rescue
-    Postgrex.Error -> {:error, :not_latest_cgu}
+    Postgrex.Error -> {:error, Lenra.Errors.not_latest_cgu()}
   end
 end

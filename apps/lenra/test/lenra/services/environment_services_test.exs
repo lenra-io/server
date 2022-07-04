@@ -111,7 +111,7 @@ defmodule Lenra.EnvironmentServicesTest do
       |> EnvironmentServices.delete()
       |> Repo.transaction()
 
-      assert {:error, :error_404} == EnvironmentServices.fetch_by(name: "live")
+      assert {:error, Lenra.Errors.error_404()} == EnvironmentServices.fetch_by(name: "live")
     end
   end
 end

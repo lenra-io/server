@@ -5,27 +5,23 @@ defmodule LenraWeb.ErrorView do
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.
   def render("500.json", _assigns) do
-    %{"errors" => [%{code: 500, message: "Internal Server Error"}], "success" => false}
+    %{"error" => "Internal Server Error"}
   end
 
   def render("404.json", _assigns) do
-    %{"errors" => [%{code: 404, message: "Page not found"}], "success" => false}
+    %{"error" => "Page not found"}
   end
 
   def render("401.json", %{message: message}) do
-    %{"errors" => [%{code: 401, message: message}], "success" => false}
+    %{"error" => message}
   end
 
   def render("401.json", _assigns) do
-    %{"errors" => [%{code: 401, message: "Unauthorized"}], "success" => false}
-  end
-
-  def render("403.json", %{error: error}) do
-    %{"errors" => [error], "success" => false}
+    %{"error" => "Unauthorized"}
   end
 
   def render("403.json", _assigns) do
-    %{"errors" => [%{code: 403, message: "Forbidden"}], "success" => false}
+    %{"error" => "Forbidden"}
   end
 
   # By default, Phoenix returns the status message from

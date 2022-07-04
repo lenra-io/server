@@ -6,7 +6,7 @@ defmodule LenraWeb.CguController do
   def get_latest_cgu(conn, _params) do
     with {:ok, cgu} <- Legal.get_latest_cgu() do
       conn
-      |> assign_data(:latest_cgu, cgu)
+      |> assign_data(cgu)
       |> reply
     end
   end
@@ -16,7 +16,7 @@ defmodule LenraWeb.CguController do
 
     with {:ok, %{accepted_cgu: cgu}} <- Legal.accept_cgu(cgu_id, user_id) do
       conn
-      |> assign_data(:accepted_cgu, cgu)
+      |> assign_data(cgu)
       |> reply
     end
   end
@@ -25,7 +25,7 @@ defmodule LenraWeb.CguController do
     user_id = Guardian.Plug.current_resource(conn).id
 
     conn
-    |> assign_data(:user_accepted_latest_cgu, Legal.user_accepted_latest_cgu?(user_id))
+    |> assign_data(Legal.user_accepted_latest_cgu?(user_id))
     |> reply
   end
 end

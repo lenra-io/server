@@ -30,7 +30,7 @@ defmodule LenraWeb.DeploymentControllerTest do
           "icon" => 12
         })
 
-      assert %{"success" => true} = json_response(conn!, 200)
+      assert %{"data" => _data} = json_response(conn!, 200)
 
       {:ok, app} = Enum.fetch(Repo.all(LenraApplication), 0)
 
@@ -59,7 +59,7 @@ defmodule LenraWeb.DeploymentControllerTest do
 
       assert [] != Repo.all(Deployment)
 
-      assert %{"success" => true} = json_response(conn!, 200)
+      assert %{"data" => _data} = json_response(conn!, 200)
     end
 
     @tag auth_user: :dev
@@ -71,7 +71,7 @@ defmodule LenraWeb.DeploymentControllerTest do
           "icon" => 12
         })
 
-      assert %{"success" => true, "data" => %{"app" => app}} = json_response(conn!, 200)
+      assert %{"data" => app} = json_response(conn!, 200)
 
       conn! =
         post(conn!, Routes.apps_path(conn!, :create), %{
@@ -80,7 +80,7 @@ defmodule LenraWeb.DeploymentControllerTest do
           "icon" => 12
         })
 
-      assert %{"success" => true, "data" => %{"app" => wrong_app}} = json_response(conn!, 200)
+      assert %{"data" => wrong_app} = json_response(conn!, 200)
 
       conn! =
         post(
@@ -95,7 +95,7 @@ defmodule LenraWeb.DeploymentControllerTest do
           }
         )
 
-      assert %{"success" => true, "data" => %{"build" => build}} = json_response(conn!, 200)
+      assert %{"data" => build} = json_response(conn!, 200)
 
       {:ok, wrong_env} = EnvironmentServices.fetch_by(application_id: wrong_app["id"])
 
@@ -107,8 +107,7 @@ defmodule LenraWeb.DeploymentControllerTest do
         })
 
       assert %{
-               "errors" => [%{"code" => 0, "message" => "environment_id does not exist"}],
-               "success" => false
+               "error" => "environment_id does not exist"
              } ==
                json_response(conn!, 400)
     end
