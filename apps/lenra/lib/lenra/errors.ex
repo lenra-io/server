@@ -5,14 +5,6 @@ defmodule Lenra.Errors do
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
-  def message(%{message: message}) when is_bitstring(message) do
-    message
-  end
-
-  def message(_e) do
-    "An unknown error occured."
-  end
-
   defdelegate passwords_must_match, to: BusinessError, as: :passwords_must_match
   defdelegate null_parameters, to: BusinessError, as: :null_parameters
   defdelegate no_validation_code, to: BusinessError, as: :no_validation_code
