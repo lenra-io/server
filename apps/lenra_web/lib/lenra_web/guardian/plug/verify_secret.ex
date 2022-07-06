@@ -24,7 +24,7 @@ defmodule LenraWeb.Plug.VerifySecret do
 
   defp error(conn) do
     conn
-    |> put_view(LenraCommonWeb.ErrorView)
+    |> put_view(LenraWeb.ErrorView)
     |> put_status(401)
     |> render("401.json", message: "Unauthorized")
     |> halt

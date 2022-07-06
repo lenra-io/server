@@ -1,17 +1,11 @@
 defmodule Lenra.Errors.TechnicalError do
-  alias Lenra.Errors.TechnicalError
-
-  @type t() :: %__MODULE__{
-          message: String.t(),
-          reason: atom(),
-          data: any()
-        }
-
-  @enforce_keys [:message, :reason]
-  defexception [:message, :reason, :data]
+  @moduledoc """
+    Lenra.Errors.TechnicalError handle technical error for the Lenra app.
+    This module used LenraCommon.Errors.TechnicalError
+  """
+  alias LenraCommon.Errors.TechnicalError
 
   @errors [
-    {:unknown_error, "Unknown error"},
     {:openfaas_not_reachable, "Openfaas could not be reached."},
     {:unhandled_resource_type, "Unknown resource."},
     {:application_not_found, "The application was not found in Openfaas."},
@@ -23,10 +17,7 @@ defmodule Lenra.Errors.TechnicalError do
     {:widget_not_found, "No Widget found in app manifest."},
     {:invalid_ui, "Invalid UI"},
     {:datastore_not_found, "Datastore cannot be found"},
-    {:data_not_found, "Data cannot be found"},
-    {:bad_request, "Server cannot understand or process the request due to a client-side error."},
-    {:error_404, "Not Found."},
-    {:error_500, "Internal server error."}
+    {:data_not_found, "Data cannot be found"}
   ]
 
   @doc """

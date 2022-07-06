@@ -1,17 +1,11 @@
 defmodule Lenra.Errors.BusinessError do
-  alias Lenra.Errors.BusinessError
-
-  @type t() :: %__MODULE__{
-          message: String.t(),
-          reason: atom(),
-          data: any()
-        }
-
-  @enforce_keys [:message, :reason]
-  defexception [:message, :reason, :data]
+  @moduledoc """
+    Lenra.Errors.BusinessError handle technical error for the Lenra app.
+    This module used LenraCommon.Errors.BusinessError
+  """
+  alias LenraCommon.Errors.BusinessError
 
   @errors [
-    {:unknown_error, "Unknown error"},
     {:passwords_must_match, "Passwords must match."},
     {:null_parameters, "Parameters can't be null."},
     {:no_validation_code, "There is no validation code for this user."},
@@ -28,7 +22,6 @@ defmodule Lenra.Errors.BusinessError do
     {:invalid_build_status, "The build status should be success or failure."},
     {:no_app_authorization, "You are not authorized to join this app."},
     {:not_latest_cgu, "Not latest CGU."},
-    {:forbidden, "Forbidden"},
     {:did_not_accept_cgu, "You must accept the CGU to use Lenra"}
   ]
 

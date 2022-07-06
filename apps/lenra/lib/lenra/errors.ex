@@ -21,10 +21,10 @@ defmodule Lenra.Errors do
   defdelegate invalid_build_status, to: BusinessError, as: :invalid_build_status
   defdelegate no_app_authorization, to: BusinessError, as: :no_app_authorization
   defdelegate not_latest_cgu, to: BusinessError, as: :not_latest_cgu
-  defdelegate forbidden, to: BusinessError, as: :forbidden
+  defdelegate forbidden, to: LenraCommon.Errors.BusinessError, as: :forbidden
   defdelegate did_not_accept_cgu, to: BusinessError, as: :did_not_accept_cgu
 
-  defdelegate unknown_error, to: TechnicalError, as: :unknown_error
+  defdelegate unknown_error, to: LenraCommon.Errors.TechnicalError, as: :unknown_error
   defdelegate openfaas_not_reachable, to: TechnicalError, as: :openfaas_not_reachable
   defdelegate unhandled_resource_type, to: TechnicalError, as: :unhandled_resource_type
   defdelegate application_not_found, to: TechnicalError, as: :application_not_found
@@ -37,7 +37,7 @@ defmodule Lenra.Errors do
   defdelegate invalid_ui, to: TechnicalError, as: :invalid_ui
   defdelegate datastore_not_found, to: TechnicalError, as: :datastore_not_found
   defdelegate data_not_found, to: TechnicalError, as: :data_not_found
-  defdelegate bad_request, to: TechnicalError, as: :bad_request
-  defdelegate error_404, to: TechnicalError, as: :error_404
-  defdelegate error_500, to: TechnicalError, as: :error_500
+  defdelegate bad_request, to: LenraCommon.Errors.TechnicalError, as: :bad_request
+  defdelegate error_404, to: LenraCommon.Errors.TechnicalError, as: :error_404
+  defdelegate error_500, to: LenraCommon.Errors.TechnicalError, as: :error_500
 end

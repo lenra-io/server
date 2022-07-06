@@ -79,7 +79,8 @@ defmodule Lenra.LegalTest do
         )
       )
 
-      assert {:error, %Lenra.Errors.BusinessError{reason: :not_latest_cgu}} = Legal.accept_cgu(cgu.id, user.id)
+      assert {:error, %LenraCommon.Errors.BusinessError{reason: :not_latest_cgu}} =
+               Legal.accept_cgu(cgu.id, user.id)
     end
 
     test "not existing user", %{user: _user} do
