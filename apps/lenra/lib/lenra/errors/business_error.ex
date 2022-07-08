@@ -1,7 +1,7 @@
 defmodule Lenra.Errors.BusinessError do
   @moduledoc """
     Lenra.Errors.BusinessError handles technical errors for the Lenra app.
-    This module used LenraCommon.Errors.BusinessError
+    This module uses LenraCommon.Errors.BusinessError
   """
   alias LenraCommon.Errors.BusinessError
 
