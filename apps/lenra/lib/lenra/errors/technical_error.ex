@@ -1,6 +1,6 @@
 defmodule Lenra.Errors.TechnicalError do
   @moduledoc """
-    Lenra.Errors.TechnicalError handle technical error for the Lenra app.
+    Lenra.Errors.TechnicalError handles technical errors for the Lenra app.
     This module used LenraCommon.Errors.TechnicalError
   """
   alias LenraCommon.Errors.TechnicalError
