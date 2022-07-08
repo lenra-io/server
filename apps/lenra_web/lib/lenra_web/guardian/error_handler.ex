@@ -30,11 +30,14 @@ defmodule LenraWeb.Guardian.ErrorHandler do
 
         :no_resource_found ->
           "No token found in the request, please try again."
+
+        %LenraCommon.Errors.BusinessError{} = err ->
+          err
       end
 
     conn
     |> Phoenix.Controller.put_view(LenraWeb.ErrorView)
     |> Plug.Conn.put_status(401)
-    |> Phoenix.Controller.render("401.json", message: message)
+    |> Phoenix.Controller.render("401.json", %{message: message, reason: type})
   end
 end

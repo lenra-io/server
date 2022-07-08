@@ -24,19 +24,23 @@ defmodule Lenra.Errors.TechnicalError do
     See Lenra.Errors.BusinessError for more information.
   """
   Enum.each(@errors, fn {reason, message} ->
-    def unquote(reason)() do
-      %TechnicalError{
-        message: unquote(message),
-        reason: unquote(reason)
-      }
-    end
+    fn_tuple = (Atom.to_string(reason) <> "_tuple") |> String.to_atom()
 
-    def unquote(reason)(metadata) do
+    def unquote(reason)(metadata \\ %{}) do
       %TechnicalError{
         message: unquote(message),
         reason: unquote(reason),
-        data: metadata
+        metadata: metadata
       }
+    end
+
+    def unquote(fn_tuple)(metadata \\ %{}) do
+      {:error,
+       %TechnicalError{
+         message: unquote(message),
+         reason: unquote(reason),
+         metadata: metadata
+       }}
     end
   end)
 end

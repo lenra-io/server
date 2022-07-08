@@ -18,7 +18,8 @@ defmodule LenraWeb.EnvironmentControllerTest do
       conn = get(conn, Routes.envs_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-               "error" => "You are not authenticated"
+               "error" => "You are not authenticated",
+               "reason" => "unauthenticated"
              }
     end
 

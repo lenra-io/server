@@ -8,13 +8,14 @@ defmodule LenraWeb.ErrorViewTest do
   import Phoenix.View
 
   test "renders 404.json" do
-    assert render(LenraWeb.ErrorView, "404.json", []) == %{
-             "error" => "Page not found"
+    assert render(LenraWeb.ErrorView, "404.json", Map.to_list(Lenra.Errors.error_404())) == %{
+             "error" => "Not Found.",
+             "reason" => :error_404
            }
   end
 
   test "renders 500.json" do
-    assert render(LenraWeb.ErrorView, "500.json", []) ==
-             %{"error" => "Internal Server Error"}
+    assert render(LenraWeb.ErrorView, "500.json", Map.to_list(Lenra.Errors.error_500())) ==
+             %{"error" => "Internal server error.", "reason" => :error_500}
   end
 end

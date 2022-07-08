@@ -57,19 +57,23 @@ defmodule Lenra.Errors.BusinessError do
     ```
   """
   Enum.each(@errors, fn {reason, message} ->
-    def unquote(reason)() do
-      %BusinessError{
-        message: unquote(message),
-        reason: unquote(reason)
-      }
-    end
+    fn_tuple = (Atom.to_string(reason) <> "_tuple") |> String.to_atom()
 
-    def unquote(reason)(metadata) do
+    def unquote(reason)(metadata \\ %{}) do
       %BusinessError{
         message: unquote(message),
         reason: unquote(reason),
-        data: metadata
+        metadata: metadata
       }
+    end
+
+    def unquote(fn_tuple)(metadata \\ %{}) do
+      {:error,
+       %BusinessError{
+         message: unquote(message),
+         reason: unquote(reason),
+         metadata: metadata
+       }}
     end
   end)
 end
