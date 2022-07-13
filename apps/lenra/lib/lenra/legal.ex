@@ -9,6 +9,7 @@ defmodule Lenra.Legal do
   import Ecto.Query, only: [from: 2, select: 3]
 
   alias Lenra.User
+  alias Lenra.Legal
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
   alias Mix.Tasks.Hash
@@ -65,7 +66,7 @@ defmodule Lenra.Legal do
     hash = to_string(Hash.run([link]))
 
     %{link: link, version: version, hash: hash}
-    |> Lenra.Legal.CGU.new()
+    |> Legal.CGU.new()
     |> Repo.insert(on_conflict: :nothing)
   end
 end
