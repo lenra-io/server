@@ -26,7 +26,6 @@ defmodule Mix.Tasks.Hash do
             |> Enum.reduce(:crypto.hash_init(String.to_atom(algo)), &:crypto.hash_update(&2, &1))
             |> :crypto.hash_final()
             |> Base.encode16()
-            |> IO.puts()
 
           false ->
             IO.puts("The file does not exist or the path is invalid")

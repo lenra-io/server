@@ -50,13 +50,24 @@ defmodule Lenra.Legal do
     Postgrex.Error -> {:error, :not_latest_cgu}
   end
 
-  def add_cgu(link) do
+  def add_cgu() do
+    latest_cgu = get_latest_cgu_query() |> Repo.one()
+    version = if latest_cgu == nil do
+      1
+    else
+      latest_cgu.version
+    end
+    link = "./apps/lenra_web/priv/static/cgu/CGU_fr_#{version}.md"
     hash = to_string(Mix.Tasks.Hash.run([link]))
     latest_cgu = get_latest_cgu_query() |> Repo.one()
-    version = latest_cgu.version + 1
+    version = if latest_cgu == nil do
+      1
+    else
+      latest_cgu.version
+    end
 
     %{link: link, version: version, hash: hash}
     |> Lenra.Legal.CGU.new()
-    |> Lenra.Repo.insert()
+    |> Lenra.Repo.insert(on_conflict: :nothing)
   end
 end

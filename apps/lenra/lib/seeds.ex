@@ -5,6 +5,7 @@ defmodule Lenra.Seeds do
 
   def run do
     generate_dev_codes()
+    generate_cgu()
   end
 
   def generate_dev_codes do
@@ -70,5 +71,9 @@ defmodule Lenra.Seeds do
           on_conflict: :nothing
         )
     end)
+  end
+
+  def generate_cgu do
+    Lenra.Legal.add_cgu()
   end
 end
