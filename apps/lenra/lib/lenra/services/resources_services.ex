@@ -6,7 +6,6 @@ defmodule Lenra.ResourcesServices do
 
   alias Lenra.Apps
   alias Lenra.Repo
-
   require Logger
 
   @doc """
@@ -15,8 +14,7 @@ defmodule Lenra.ResourcesServices do
   Returns an `Enum`.
   """
   def get(user_id, service_name, resource) do
-    with {:ok, app} <-
-           Apps.fetch_app_by(service_name: service_name, creator_id: user_id),
+    with {:ok, app} <- Apps.fetch_app_by(service_name: service_name, creator_id: user_id),
          loaded_app <- Repo.preload(app, main_env: [environment: [:deployed_build]]) do
       lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 

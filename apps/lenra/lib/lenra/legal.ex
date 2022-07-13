@@ -10,12 +10,13 @@ defmodule Lenra.Legal do
 
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
+  alias Lenra.Errors.{BusinessError, TechnicalError}
 
   def get_latest_cgu do
     cgu = get_latest_cgu_query() |> Repo.one()
 
     case cgu do
-      nil -> {:error, Lenra.Errors.error_404()}
+      nil -> TechnicalError.error_404_tuple()
       cgu -> {:ok, cgu}
     end
   end
@@ -46,6 +47,6 @@ defmodule Lenra.Legal do
     )
     |> Repo.transaction()
   rescue
-    Postgrex.Error -> {:error, Lenra.Errors.not_latest_cgu()}
+    Postgrex.Error -> BusinessError.not_latest_cgu_tuple()
   end
 end

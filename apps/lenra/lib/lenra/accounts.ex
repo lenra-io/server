@@ -11,6 +11,7 @@ defmodule Lenra.Accounts do
 
   alias Lenra.{EmailWorker, Repo}
   alias Lenra.Accounts.{DevCode, LostPasswordCode, Password, RegistrationCode, User}
+  alias Lenra.Errors.BusinessError
 
   @doc """
     Register a new user, save him to the database. The email must be unique. The password is hashed before inserted to the database.
@@ -58,7 +59,7 @@ defmodule Lenra.Accounts do
       |> Ecto.Multi.update(:updated_user, User.change_role(loaded_user, :user))
       |> Repo.transaction()
     else
-      false -> {:error, Lenra.Errors.no_such_registration_code()}
+      false -> BusinessError.no_such_registration_code_tuple()
       err -> err
     end
   end
@@ -67,7 +68,7 @@ defmodule Lenra.Accounts do
     with :ok <- check_is_uuid(dev_code),
          :ok <- check_simple_user(user),
          {:ok, dev_code} <-
-           Repo.fetch_by(DevCode, [code: dev_code], {:error, Lenra.Errors.invalid_code()}),
+           Repo.fetch_by(DevCode, [code: dev_code], BusinessError.invalid_code_tuple()),
          :ok <- check_dev_code_unused(dev_code) do
       Ecto.Multi.new()
       |> Ecto.Multi.update(:updated_user, User.change_role(user, :dev))
@@ -78,16 +79,16 @@ defmodule Lenra.Accounts do
 
   defp check_is_uuid(code) do
     case Ecto.UUID.dump(code) do
-      :error -> {:error, Lenra.Errors.invalid_uuid()}
+      :error -> BusinessError.invalid_uuid_tuple()
       {:ok, _} -> :ok
     end
   end
 
   defp check_simple_user(%User{role: role}) when role in [:user, :unverified_user], do: :ok
-  defp check_simple_user(_user), do: {:error, Lenra.Errors.already_dev()}
+  defp check_simple_user(_user), do: BusinessError.already_dev_tuple()
 
   defp check_dev_code_unused(%DevCode{user_id: nil}), do: :ok
-  defp check_dev_code_unused(_devcode), do: {:error, Lenra.Errors.dev_code_already_used()}
+  defp check_dev_code_unused(_devcode), do: BusinessError.dev_code_already_used_tuple()
 
   @doc """
     check if the user exists in the database and compare the hashed password.
@@ -95,7 +96,7 @@ defmodule Lenra.Accounts do
     Otherwise, returns {:error, :incorrect_email_or_password}
   """
   @spec login_user(binary(), binary()) ::
-          {:ok, User.t()} | {:error, LenraCommon.Errors.BusinessError.t()}
+          {:ok, User.t()} | {:error, BusinessError.t()}
   def login_user(email, password) do
     User
     |> Repo.get_by(email: String.downcase(email))
@@ -109,7 +110,7 @@ defmodule Lenra.Accounts do
     user_password = hd(user.password)
 
     case Argon2.verify_pass(password, user_password.password) do
-      false -> {:error, Lenra.Errors.incorrect_email_or_password()}
+      false -> BusinessError.incorrect_email_or_password_tuple()
       true -> {:ok, user}
     end
   end
@@ -118,7 +119,7 @@ defmodule Lenra.Accounts do
   defp check_password(_user, password) do
     # Avoid time-based hacking technique to check if email exist
     Argon2.verify_pass(password, @argon2_fake_password)
-    {:error, Lenra.Errors.incorrect_email_or_password()}
+    BusinessError.incorrect_email_or_password_tuple()
   end
 
   #######################
@@ -160,7 +161,7 @@ defmodule Lenra.Accounts do
          true <- date_difference(user.password_code) do
       {:ok, user.password_code}
     else
-      false -> {:error, Lenra.Errors.no_such_password_code()}
+      false -> BusinessError.no_such_password_code_tuple()
     end
   end
 
@@ -172,7 +173,7 @@ defmodule Lenra.Accounts do
       Argon2.verify_pass(password, x.password)
     end)
     |> case do
-      true -> {:error, Lenra.Errors.password_already_used()}
+      true -> BusinessError.password_already_used_tuple()
       false -> :ok
     end
   end

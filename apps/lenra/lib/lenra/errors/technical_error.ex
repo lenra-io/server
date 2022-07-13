@@ -3,7 +3,6 @@ defmodule Lenra.Errors.TechnicalError do
     Lenra.Errors.TechnicalError handles technical errors for the Lenra app.
     This module uses LenraCommon.Errors.TechnicalError
   """
-  alias LenraCommon.Errors.TechnicalError
 
   @errors [
     {:openfaas_not_reachable, "Openfaas could not be reached."},
@@ -20,27 +19,8 @@ defmodule Lenra.Errors.TechnicalError do
     {:data_not_found, "Data cannot be found"}
   ]
 
-  @doc """
-    See Lenra.Errors.BusinessError for more information.
-  """
-  Enum.each(@errors, fn {reason, message} ->
-    fn_tuple = (Atom.to_string(reason) <> "_tuple") |> String.to_atom()
-
-    def unquote(reason)(metadata \\ %{}) do
-      %TechnicalError{
-        message: unquote(message),
-        reason: unquote(reason),
-        metadata: metadata
-      }
-    end
-
-    def unquote(fn_tuple)(metadata \\ %{}) do
-      {:error,
-       %TechnicalError{
-         message: unquote(message),
-         reason: unquote(reason),
-         metadata: metadata
-       }}
-    end
-  end)
+  use LenraCommon.Errors.ErrorGenerator,
+    errors: @errors,
+    module: LenraCommon.Errors.TechnicalError,
+    inherit: true
 end

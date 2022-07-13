@@ -4,6 +4,7 @@ defmodule Lenra.OpenfaasServices do
   """
 
   alias Lenra.Apps
+  alias Lenra.Errors.TechnicalError
 
   require Logger
 
@@ -83,14 +84,16 @@ defmodule Lenra.OpenfaasServices do
   end
 
   defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
-    Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
+    Logger.error(
+      "Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}"
+    )
 
-    {:error, Lenra.Errors.openfaas_delete_error()}
+    TechnicalError.openfaas_delete_error_tuple()
   end
 
   defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
     Logger.error("Openfaas could not be reached. It should not happen. \n\t\t reason: #{reason}")
-    {:error, Lenra.Errors.openfaas_not_reachable()}
+    TechnicalError.openfaas_not_reachable_tuple()
   end
 
   defp response(
@@ -101,7 +104,7 @@ defmodule Lenra.OpenfaasServices do
     case status_code do
       400 ->
         Logger.error(body)
-        {:error, Lenra.Errors.bad_request()}
+        TechnicalError.bad_request_tuple()
 
       404 ->
         Logger.error(body)
@@ -113,11 +116,11 @@ defmodule Lenra.OpenfaasServices do
 
       504 ->
         Logger.error(body)
-        {:error, Lenra.Errors.timeout()}
+        TechnicalError.timeout_tuple()
 
       _err ->
         Logger.error(body)
-        {:error, Lenra.Errors.unknown_error()}
+        TechnicalError.unknown_error_tuple()
     end
   end
 end

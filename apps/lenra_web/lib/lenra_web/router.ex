@@ -65,7 +65,9 @@ defmodule LenraWeb.Router do
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
 
-    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController,
+      only: [:index, :create]
+    )
 
     resources("/apps/:app_id/builds", BuildsController, only: [:index, :create])
 

@@ -7,6 +7,8 @@ defmodule LenraWeb.UserController do
   alias LenraWeb.Guardian.Plug
   alias LenraWeb.TokenHelper
 
+  alias Lenra.Errors.BusinessError
+
   def register(conn, params) do
     with {:ok, %{inserted_user: user}} <- Accounts.register_user(params) do
       conn
@@ -26,9 +28,10 @@ defmodule LenraWeb.UserController do
   end
 
   def refresh_token(conn, _params) do
-    case conn
-         |> Plug.current_token()
-         |> TokenHelper.create_access_token() do
+    conn
+    |> Plug.current_token()
+    |> TokenHelper.create_access_token()
+    |> case do
       {:ok, access_token} ->
         conn
         |> TokenHelper.assign_access_token(access_token)
@@ -83,7 +86,7 @@ defmodule LenraWeb.UserController do
     else
       # Here we return :no_such_password_code instead of :incorrect_email
       # to avoid leaking whether an email address exists on Lenra
-      {:error, :incorrect_email} -> {:error, Lenra.Errors.no_such_password_code()}
+      {:error, :incorrect_email} -> BusinessError.no_such_password_code_tuple()
       error -> error
     end
   end
@@ -101,11 +104,11 @@ defmodule LenraWeb.UserController do
     reply(conn)
   end
 
-  defp get_user_with_email(nil), do: {:error, Lenra.Errors.incorrect_email()}
+  defp get_user_with_email(nil), do: BusinessError.incorrect_email_tuple()
 
   defp get_user_with_email(email) do
     case Repo.get_by(User, email: String.downcase(email)) do
-      nil -> {:error, Lenra.Errors.incorrect_email()}
+      nil -> BusinessError.incorrect_email_tuple()
       user -> {:ok, user}
     end
   end

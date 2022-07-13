@@ -2,6 +2,7 @@ defmodule LenraWeb.TokenHelper do
   @moduledoc """
     The TokenService module handle the refresh_token and access_token operations
   """
+  alias Lenra.Errors.BusinessError
   alias LenraWeb.Guardian
   alias LenraWeb.Guardian.ErrorHandler
 
@@ -37,7 +38,7 @@ defmodule LenraWeb.TokenHelper do
   def create_access_token(refresh_token) do
     case Guardian.exchange(refresh_token, "refresh", "access") do
       {:ok, _old, {access_token, _new_claims}} -> {:ok, access_token}
-      _err -> {:error, Lenra.Errors.forbidden()}
+      _err -> BusinessError.forbidden_tuple()
     end
   end
 

@@ -6,6 +6,8 @@ defmodule Lenra.Apps.EnvironmentTest do
 
   alias Lenra.Repo
 
+  alias Lenra.Errors.TechnicalError
+
   alias Lenra.Accounts.User
   alias Lenra.Apps
   alias Lenra.Apps.{App, Environment}
@@ -100,6 +102,18 @@ defmodule Lenra.Apps.EnvironmentTest do
       {:ok, updated_env} = fetch_env_by(name: "test_env")
 
       assert updated_env.is_public == true
+    end
+  end
+
+  describe "delete" do
+    test "environment successfully", %{app: _app} do
+      assert {:ok, env} = EnvironmentServices.fetch_by(name: "live")
+
+      env
+      |> EnvironmentServices.delete()
+      |> Repo.transaction()
+
+      assert TechnicalError.error_404_tuple() == EnvironmentServices.fetch_by(name: "live")
     end
   end
 end

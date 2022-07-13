@@ -1,8 +1,9 @@
 defmodule Lenra.Errors.BusinessError do
   @moduledoc """
-    Lenra.Errors.BusinessError handles technical errors for the Lenra app.
+    Lenra.Errors.BusinessError handles business errors for the Lenra app.
     This module uses LenraCommon.Errors.BusinessError
   """
+
   alias LenraCommon.Errors.BusinessError
 
   @errors [
@@ -25,55 +26,8 @@ defmodule Lenra.Errors.BusinessError do
     {:did_not_accept_cgu, "You must accept the CGU to use Lenra"}
   ]
 
-  @doc """
-    This code takes care of generating each function corresponding to errors listed in the `@errors` array.
-    It basically loops through the array and generates two functions for each error:
-    - one that returns the error without metadata
-    - one that returns the error with metadata.
-
-    Here is an example. Imagine that the `@errors` array contains the following errors:
-    ```
-      [
-        {:unknown_error, "Unknown error"},
-      ]
-    ```
-
-    The following functions will be generated:
-    ```
-      def unknown_error() do
-        %BusinessError{
-          message: "Unknown error",
-          reason: :unknown_error
-        }
-      end
-
-      def unknown_error(metadata) do
-        %BusinessError{
-          message: "Unknown error",
-          reason: :unknown_error,
-          data: metadata
-        }
-      end
-    ```
-  """
-  Enum.each(@errors, fn {reason, message} ->
-    fn_tuple = (Atom.to_string(reason) <> "_tuple") |> String.to_atom()
-
-    def unquote(reason)(metadata \\ %{}) do
-      %BusinessError{
-        message: unquote(message),
-        reason: unquote(reason),
-        metadata: metadata
-      }
-    end
-
-    def unquote(fn_tuple)(metadata \\ %{}) do
-      {:error,
-       %BusinessError{
-         message: unquote(message),
-         reason: unquote(reason),
-         metadata: metadata
-       }}
-    end
-  end)
+  use LenraCommon.Errors.ErrorGenerator,
+    errors: @errors,
+    module: LenraCommon.Errors.BusinessError,
+    inherit: true
 end
