@@ -3,8 +3,8 @@ defmodule Lenra.Repo.Migrations.ModificationVersionCgu do
 
   def change do
     alter table("cgu") do
-      remove :version
-      add :version, :integer
+      remove(:version)
+      add(:version, :integer)
     end
   end
 end
