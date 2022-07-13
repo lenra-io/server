@@ -19,7 +19,7 @@ defmodule Lenra.Legal.CGU do
 
   schema "cgu" do
     field(:link, :string)
-    field(:version, :string)
+    field(:version, :integer)
     field(:hash, :string)
 
     many_to_many(:users, User, join_through: UserAcceptCGUVersion)
