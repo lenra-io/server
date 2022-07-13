@@ -8,10 +8,10 @@ defmodule Lenra.Legal do
 
   import Ecto.Query, only: [from: 2, select: 3]
 
-  alias Lenra.User
   alias Lenra.Legal
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
+  alias Lenra.User
   alias Mix.Tasks.Hash
 
   def get_latest_cgu do
