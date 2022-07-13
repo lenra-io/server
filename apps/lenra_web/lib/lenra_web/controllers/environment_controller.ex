@@ -17,7 +17,7 @@ defmodule LenraWeb.EnvsController do
   def index(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params) do
       conn
-      |> assign_data(:envs, Apps.all_envs_for_app(app.id))
+      |> assign_data(Apps.all_envs_for_app(app.id))
       |> reply
     end
   end

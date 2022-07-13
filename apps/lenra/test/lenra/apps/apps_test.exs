@@ -55,10 +55,6 @@ defmodule Lenra.Apps.AppsTest do
 
     Apps.delete_app(app)
 
-<<<<<<< HEAD:apps/lenra/test/lenra/services/application_services_test.exs
-    assert {:error, Lenra.Errors.error_404()} == LenraApplicationServices.fetch_by(name: "mine-sweeper")
-=======
-    assert {:error, :error_404} == Apps.fetch_app_by(name: "mine-sweeper")
->>>>>>> f56998b (refactor: Move the LenraApplication/Environment/Deployment/Build/MainEnv to the Lenra.Apps context):apps/lenra/test/lenra/apps/apps_test.exs
+    assert {:error, Lenra.Errors.error_404()} == Apps.fetch_app_by(name: "mine-sweeper")
   end
 end

@@ -10,7 +10,7 @@ defmodule LenraWeb.BuildsController do
     with {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app) do
       conn
-      |> assign_data(:builds, Apps.all_builds(app.id))
+      |> assign_data(Apps.all_builds(app.id))
       |> reply
     end
   end
