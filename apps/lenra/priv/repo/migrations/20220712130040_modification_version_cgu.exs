@@ -6,5 +6,7 @@ defmodule Lenra.Repo.Migrations.ModificationVersionCgu do
       remove(:version)
       add(:version, :integer)
     end
+
+    create(unique_index(:cgu, [:version]))
   end
 end

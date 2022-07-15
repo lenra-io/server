@@ -1,12 +1,13 @@
 defmodule Lenra.CGUTest do
   use Lenra.RepoCase, async: true
+  use ExUnit.Case
 
   alias Lenra.Legal.CGU
 
-  @valid_cgu %{link: "Test", version: "1.0.0", hash: "test"}
-  @cgu_same_hash %{link: "test", version: "1.2.0", hash: "test"}
-  @cgu_same_version %{link: "test", version: "1.0.0", hash: "Test"}
-  @cgu_same_link %{link: "Test", version: "1.2.0", hash: "Test"}
+  @valid_cgu %{link: "Test", version: 2, hash: "test"}
+  @cgu_same_hash %{link: "test", version: 3, hash: "test"}
+  @cgu_same_version %{link: "test", version: 2, hash: "Test"}
+  @cgu_same_link %{link: "Test", version: 3, hash: "Test"}
   @invalid_cgu %{link: nil, version: nil, hash: nil}
 
   describe "lenra_cgu" do
@@ -28,8 +29,8 @@ defmodule Lenra.CGUTest do
 
       assert %{valid?: true} = cgu
 
-      [head | _tail] = Repo.all(from(CGU))
-      assert head == inserted_cgu
+      all_cgu = Repo.all(from(CGU))
+      assert Enum.member?(all_cgu, inserted_cgu)
     end
 
     test "inserting an invalid cgu should not succeed" do

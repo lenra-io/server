@@ -146,7 +146,7 @@ defmodule LenraWeb.UserControllerTest do
     assert %{"errors" => [%{"code" => 5, "message" => "No such registration code"}]} = json_response(conn!, 400)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "change password test", %{conn: conn} do
     new_password = "New@password"
 
@@ -175,7 +175,7 @@ defmodule LenraWeb.UserControllerTest do
     assert Map.has_key?(data, "access_token")
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "change password error test", %{conn: conn} do
     conn =
       put(
@@ -398,7 +398,7 @@ defmodule LenraWeb.UserControllerTest do
     assert Map.has_key?(data, "access_token")
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "validate dev user", %{conn: conn} do
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 
@@ -407,7 +407,7 @@ defmodule LenraWeb.UserControllerTest do
     assert %{"success" => true} = json_response(conn, 200)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "validate dev user invalid uuid", %{conn: conn} do
     invalid_code = "not-a-uuid"
 
@@ -419,7 +419,7 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "validate dev user invalid code", %{conn: conn} do
     invalid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a5"
 
@@ -431,7 +431,7 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  @tag auth_user: :dev
+  @tag auth_user_with_cgu: :dev
   test "validate dev user already dev", %{conn: conn} do
     invalid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a5"
 
@@ -443,7 +443,7 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  @tag auth_users: [:user, :user]
+  @tag auth_users_with_cgu: [:user, :user]
   test "validate dev code already used", %{users: [user1, user2]} do
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 

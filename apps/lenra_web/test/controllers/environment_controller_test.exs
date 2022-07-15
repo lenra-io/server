@@ -23,7 +23,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
              }
     end
 
-    @tag auth_users: [:dev, :user, :dev, :admin]
+    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "get environment check authorizations", %{users: [creator!, user, other_dev, admin]} do
       creator! = create_app(creator!)
 
@@ -109,7 +109,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
   end
 
   describe "update" do
-    @tag auth_users: [:dev, :user, :dev, :admin]
+    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "environment controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
       assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
@@ -159,7 +159,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
   end
 
   describe "create" do
-    @tag auth_users: [:dev, :user, :dev, :admin]
+    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "environment controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
       assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
@@ -200,7 +200,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
       assert %{"success" => false} = json_response(other_dev!, 403)
     end
 
-    @tag auth_user: :dev
+    @tag auth_user_with_cgu: :dev
     test "environment controller authenticated but invalid params", %{conn: conn!} do
       conn! = create_app(conn!)
 

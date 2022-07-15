@@ -18,7 +18,7 @@ defmodule LenraWeb.DeploymentControllerTest do
   end
 
   describe "create" do
-    @tag auth_user: :dev
+    @tag auth_user_with_cgu: :dev
     test "deployment controller authenticated", %{conn: conn!} do
       FaasStub.create_faas_stub()
       |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
@@ -62,7 +62,7 @@ defmodule LenraWeb.DeploymentControllerTest do
       assert %{"success" => true} = json_response(conn!, 200)
     end
 
-    @tag auth_user: :dev
+    @tag auth_user_with_cgu: :dev
     test "deployment controller but wrong environment", %{conn: conn!} do
       conn! =
         post(conn!, Routes.apps_path(conn!, :create), %{

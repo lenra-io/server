@@ -11,7 +11,6 @@ defmodule Lenra.Legal do
   alias Lenra.Legal
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
-  alias Lenra.User
   alias Mix.Tasks.Hash
 
   def get_latest_cgu do

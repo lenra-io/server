@@ -7,10 +7,10 @@ defmodule LenraWeb.CguControllerTest do
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
 
-  @valid_cgu1 %{link: "Test", version: "1.0.0", hash: "test"}
-  @valid_cgu2 %{link: "Test1", version: "1.1.0", hash: "Test1"}
-  @valid_cgu3 %{link: "Test2", version: "1.2.0", hash: "Test2"}
-  @valid_cgu4 %{link: "Test3", version: "1.3.0", hash: "Test3"}
+  @valid_cgu1 %{link: "Test", version: 2, hash: "test"}
+  @valid_cgu2 %{link: "Test1", version: 3, hash: "Test1"}
+  @valid_cgu3 %{link: "Test2", version: 4, hash: "Test2"}
+  @valid_cgu4 %{link: "Test3", version: 5, hash: "Test3"}
 
   describe "get_latest_cgu" do
     test "test get_latest_cgu with 2 cgu in DB", %{conn: conn} do
@@ -26,7 +26,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test1", "link" => "Test1", "version" => "1.1.0"}},
+               "data" => %{"latest_cgu" => %{"hash" => "Test1", "link" => "Test1", "version" => 3}},
                "success" => true
              } = json_response(conn, 200)
     end
@@ -34,21 +34,21 @@ defmodule LenraWeb.CguControllerTest do
     test "test get_latest_cgu with 4 cgu in DB", %{conn: conn} do
       @valid_cgu1 |> CGU.new() |> Repo.insert()
 
-      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+      date1 = DateTime.utc_now() |> DateTime.add(10, :second) |> DateTime.truncate(:second)
 
       @valid_cgu2
       |> CGU.new()
       |> Ecto.Changeset.put_change(:inserted_at, date1)
       |> Repo.insert()
 
-      date2 = DateTime.utc_now() |> DateTime.add(8, :second) |> DateTime.truncate(:second)
+      date2 = DateTime.utc_now() |> DateTime.add(20, :second) |> DateTime.truncate(:second)
 
       @valid_cgu3
       |> CGU.new()
       |> Ecto.Changeset.put_change(:inserted_at, date2)
       |> Repo.insert()
 
-      date3 = DateTime.utc_now() |> DateTime.add(12, :second) |> DateTime.truncate(:second)
+      date3 = DateTime.utc_now() |> DateTime.add(25, :second) |> DateTime.truncate(:second)
 
       @valid_cgu4
       |> CGU.new()
@@ -58,12 +58,13 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test3", "link" => "Test3", "version" => "1.3.0"}},
+               "data" => %{"latest_cgu" => %{"hash" => "Test3", "link" => "Test3", "version" => 5}},
                "success" => true
              } = json_response(conn, 200)
     end
 
     test "test get_latest_cgu without cgu in database", %{conn: conn} do
+      Repo.delete_all(CGU)
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert json_response(conn, 404) == %{
@@ -76,7 +77,7 @@ defmodule LenraWeb.CguControllerTest do
   describe "accept" do
     @tag auth_user_with_cgu: :dev
     test "with valid cgu_id and user_id", %{conn: conn} do
-      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+      date1 = DateTime.utc_now() |> DateTime.add(10, :second) |> DateTime.truncate(:second)
 
       {:ok, cgu} =
         @valid_cgu2
@@ -94,7 +95,7 @@ defmodule LenraWeb.CguControllerTest do
 
     @tag auth_user_with_cgu: :dev
     test "with valid cgu_id and user_id but not latest cgu", %{conn: conn} do
-      date1 = DateTime.utc_now() |> DateTime.add(4, :second) |> DateTime.truncate(:second)
+      date1 = DateTime.utc_now() |> DateTime.add(10, :second) |> DateTime.truncate(:second)
 
       {:ok, cgu} =
         @valid_cgu2
@@ -112,7 +113,7 @@ defmodule LenraWeb.CguControllerTest do
     @tag auth_user: :dev
     test "user accepted latest", %{conn: conn} do
       {:ok, cgu} =
-        %{hash: "user_accepted_latest_cgu", version: "user_accepted_latest_cgu", link: "user_accepted_latest_cgu"}
+        %{hash: "user_accepted_latest_cgu", version: 2, link: "user_accepted_latest_cgu"}
         |> CGU.new()
         |> Lenra.Repo.insert()
 
@@ -131,7 +132,7 @@ defmodule LenraWeb.CguControllerTest do
     @tag auth_user: :dev
     test "user did not accept latest", %{conn: conn} do
       {:ok, _cgu} =
-        %{hash: "user_accepted_latest_cgu", version: "user_accepted_latest_cgu", link: "user_accepted_latest_cgu"}
+        %{hash: "user_accepted_latest_cgu", version: 2, link: "user_accepted_latest_cgu"}
         |> CGU.new()
         |> Lenra.Repo.insert()
 
