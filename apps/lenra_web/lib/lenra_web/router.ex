@@ -3,12 +3,6 @@ defmodule LenraWeb.Router do
 
   alias LenraWeb.{Pipeline, Plug}
 
-  alias Lenra.Guardian.{
-    EnsureAuthenticatedPipeline,
-    EnsureAuthenticatedQueryParamsPipeline,
-    RefreshPipeline
-  }
-
   require ApplicationRunner.Router
 
   ApplicationRunner.Router.app_routes()

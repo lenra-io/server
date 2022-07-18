@@ -8,7 +8,6 @@ defmodule Lenra.LenraApplication do
 
   alias Lenra.{
     ApplicationMainEnv,
-    AppUserSession,
     Build,
     Environment,
     LenraApplication
@@ -36,7 +35,6 @@ defmodule Lenra.LenraApplication do
     has_many(:environments, Environment, foreign_key: :application_id)
     has_many(:builds, Build, foreign_key: :application_id)
     has_one(:main_env, ApplicationMainEnv, foreign_key: :application_id)
-    has_many(:app_user_session, AppUserSession, foreign_key: :application_id)
     timestamps()
   end
 

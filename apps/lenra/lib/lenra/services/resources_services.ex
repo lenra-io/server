@@ -3,7 +3,7 @@ defmodule Lenra.ResourcesServices do
     The service that manages resources of lenra applications.
   """
   alias ApplicationRunner.OpenfaasServices
-  alias Lenra.{LenraApplication, LenraApplicationServices, Repo}
+  alias Lenra.{LenraApplicationServices, Repo}
   require Logger
 
   @doc """

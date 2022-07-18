@@ -7,7 +7,6 @@ defmodule Lenra.DeploymentServices do
     BuildServices,
     Deployment,
     EnvironmentServices,
-    LenraApplication,
     OpenfaasServices,
     Repo
   }

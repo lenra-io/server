@@ -8,7 +8,6 @@ defmodule Lenra.Application do
 
   def start(_type, _args) do
     Lenra.MigrationHelper.migrate()
-    Lenra.Monitor.setup()
 
     children = [
       # Start the ecto repository
@@ -36,8 +35,7 @@ defmodule Lenra.Application do
          }},
         id: :finch_gitlab_http
       ),
-      {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
-      AppChannelMonitor
+      {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
