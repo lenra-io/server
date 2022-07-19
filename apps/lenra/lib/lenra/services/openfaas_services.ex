@@ -84,9 +84,7 @@ defmodule Lenra.OpenfaasServices do
   end
 
   defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
-    Logger.error(
-      "Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}"
-    )
+    Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
 
     TechnicalError.openfaas_delete_error_tuple()
   end

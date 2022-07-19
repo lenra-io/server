@@ -104,8 +104,7 @@ defmodule Lenra.Accounts do
   end
 
   defp check_password(%User{} = user, password) do
-    user =
-      Repo.preload(user, [password: from(p in Password, order_by: [desc: p.id])], force: true)
+    user = Repo.preload(user, [password: from(p in Password, order_by: [desc: p.id])], force: true)
 
     user_password = hd(user.password)
 

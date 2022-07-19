@@ -287,8 +287,7 @@ defmodule LenraWeb.UserControllerTest do
   test "change lost password wrong email test", %{conn: conn} do
     post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
-    conn =
-      post(conn, Routes.user_path(conn, :send_lost_password_code, %{email: "wrong@email.me"}))
+    conn = post(conn, Routes.user_path(conn, :send_lost_password_code, %{email: "wrong@email.me"}))
 
     assert %{} = json_response(conn, 200)
   end
@@ -315,8 +314,7 @@ defmodule LenraWeb.UserControllerTest do
   end
 
   test "change lost password error password test", %{conn: conn} do
-    %{assigns: %{data: user}} =
-      post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+    %{assigns: %{data: user}} = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
     post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
 
