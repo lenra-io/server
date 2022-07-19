@@ -2,7 +2,9 @@ defmodule LenraWeb.TokenHelper do
   @moduledoc """
     The TokenService module handle the refresh_token and access_token operations
   """
-  alias LenraWeb.Guardian.{ErrorHandler, Plug}
+  alias Lenra.Errors.BusinessError
+  alias LenraWeb.Guardian
+  alias LenraWeb.Guardian.ErrorHandler
 
   @token_key "guardian_default_token"
 
@@ -26,22 +28,23 @@ defmodule LenraWeb.TokenHelper do
   end
 
   def assign_access_token(conn, access_token) do
-    LenraWeb.ControllerHelpers.assign_data(conn, :access_token, access_token)
+    Plug.Conn.put_resp_header(conn, "access_token", access_token)
   end
 
   def create_refresh_and_store_cookie(conn, user) do
-    Plug.remember_me(conn, user, %{typ: "refresh"})
+    Guardian.Plug.remember_me(conn, user, %{typ: "refresh"})
   end
 
   def create_access_token(refresh_token) do
-    with {:ok, _old, {access_token, _new_claims}} <- LenraWeb.Guardian.exchange(refresh_token, "refresh", "access") do
-      {:ok, access_token}
+    case Guardian.exchange(refresh_token, "refresh", "access") do
+      {:ok, _old, {access_token, _new_claims}} -> {:ok, access_token}
+      _err -> BusinessError.forbidden_tuple()
     end
   end
 
   def revoke_current_refresh(conn) do
-    refresh_token = Plug.current_token(conn)
-    LenraWeb.Guardian.revoke(refresh_token)
+    refresh_token = Guardian.Plug.current_token(conn)
+    Guardian.revoke(refresh_token)
     conn
   end
 end

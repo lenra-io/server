@@ -6,6 +6,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
   alias Lenra.Accounts
   alias Lenra.Accounts.User
+  alias Lenra.Errors.TechnicalError
 
   alias Lenra.{
     EmailWorker,
@@ -34,7 +35,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
     )
   end
 
-  def fetch_by(clauses, error \\ {:error, Lenra.Errors.error_404()}) do
+  def fetch_by(clauses, error \\ TechnicalError.error_404_tuple()) do
     Repo.fetch_by(UserEnvironmentAccess, clauses, error)
   end
 

@@ -19,29 +19,17 @@ defmodule LenraWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: LenraWeb
-
-      import LenraWeb.ControllerHelpers
-      import Plug.Conn
+      use LenraCommonWeb, :controller
 
       # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias LenraWeb.Router.Helpers, as: Routes
-      plug(:put_view, LenraWeb.BaseView)
-      action_fallback(LenraWeb.FallbackController)
     end
   end
 
   def view do
     quote do
-      use Phoenix.View,
-        root: "lib/lenra_web/templates",
-        namespace: LenraWeb
+      use LenraCommonWeb, :view
 
-      # Import convenience functions from controllers
-      import Phoenix.Controller,
-        only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
-
-      # Include shared imports and aliases for views
       unquote(view_helpers())
     end
   end
@@ -63,9 +51,7 @@ defmodule LenraWeb do
 
   defp view_helpers do
     quote do
-      # Import basic rendering functionality (render, render_layout, etc)
-      import Phoenix.View
-      import LenraWeb.ErrorHelpers
+      use LenraCommonWeb, :view_helpers
 
       # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias LenraWeb.Router.Helpers, as: Routes

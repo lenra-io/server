@@ -6,6 +6,7 @@ defmodule Lenra.Apps.AppsTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.Apps
+  alias Lenra.Errors.TechnicalError
 
   @tag :register_user
   test "fetch_app", %{user: user} do
@@ -55,6 +56,7 @@ defmodule Lenra.Apps.AppsTest do
 
     Apps.delete_app(app)
 
-    assert {:error, Lenra.Errors.error_404()} == Apps.fetch_app_by(name: "mine-sweeper")
+    assert TechnicalError.error_404_tuple() ==
+             Apps.fetch_app_by(name: "mine-sweeper")
   end
 end
