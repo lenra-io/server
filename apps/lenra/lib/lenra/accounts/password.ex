@@ -3,8 +3,10 @@ defmodule Lenra.Accounts.Password do
     The password_save shema.
   """
   use Lenra.Schema
+
   import Ecto.Changeset
-  alias Lenra.User
+
+  alias Lenra.Accounts.User
 
   @password_regex ~r/(?=.*[a-z])(?=.*[A-Z])(?=.*\W)/
 
