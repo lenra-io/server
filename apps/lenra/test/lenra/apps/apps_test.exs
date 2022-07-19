@@ -57,6 +57,6 @@ defmodule Lenra.Apps.AppsTest do
     Apps.delete_app(app)
 
     assert TechnicalError.error_404_tuple() ==
-             LenraApplicationServices.fetch_by(name: "mine-sweeper")
+             Apps.fetch_app_by(name: "mine-sweeper")
   end
 end

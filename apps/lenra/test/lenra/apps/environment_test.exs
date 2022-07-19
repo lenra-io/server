@@ -107,13 +107,12 @@ defmodule Lenra.Apps.EnvironmentTest do
 
   describe "delete" do
     test "environment successfully", %{app: _app} do
-      assert {:ok, env} = EnvironmentServices.fetch_by(name: "live")
+      assert {:ok, env} = fetch_env_by(name: "live")
 
       env
-      |> EnvironmentServices.delete()
-      |> Repo.transaction()
+      |> Repo.delete!()
 
-      assert TechnicalError.error_404_tuple() == EnvironmentServices.fetch_by(name: "live")
+      assert TechnicalError.error_404_tuple() == fetch_env_by(name: "live")
     end
   end
 end

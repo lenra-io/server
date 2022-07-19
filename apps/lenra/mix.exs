@@ -54,14 +54,13 @@ defmodule Lenra.MixProject do
         tag: "v1.0.0-beta.40",
         credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       ),
-      # private_git(
-      #   name: :lenra_common,
-      #   host: "github.com",
-      #   project: "lenra-io/lenra-common.git",
-      #   tag: "v1.2.0",
-      #   credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
-      # )
-      {:lenra_common, path: "../../../lenra-common"}
+      private_git(
+        name: :lenra_common,
+        host: "github.com",
+        project: "lenra-io/lenra-common.git",
+        tag: "v2.0.0",
+        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+      )
     ]
   end
 

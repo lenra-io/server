@@ -2,7 +2,6 @@ defmodule Lenra.Apps.AppTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.Apps.App
-  alias Lenra.AppUserSession
 
   @valide_data %{name: "Test", color: "FF0000", icon: 1111, repository: "repository"}
   @invalide_data %{name: nil, color: nil, icon: nil, repository: nil}
