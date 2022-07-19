@@ -1,7 +1,8 @@
 defmodule LenraWeb.AppsControllerTest do
   use LenraWeb.ConnCase, async: true
 
-  alias Lenra.{LenraApplication, Repo}
+  alias Lenra.Apps.App
+  alias Lenra.Repo
 
   setup %{conn: conn} do
     {:ok, conn: conn}
@@ -122,7 +123,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       assert %{} == json_response(conn!, 200)
 
-      assert [] == Repo.all(LenraApplication)
+      assert [] == Repo.all(App)
     end
 
     @tag auth_user: :dev

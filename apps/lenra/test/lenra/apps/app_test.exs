@@ -1,14 +1,15 @@
-defmodule Lenra.LenraApplicationTest do
+defmodule Lenra.Apps.AppTest do
   use Lenra.RepoCase, async: true
 
-  alias Lenra.LenraApplication
+  alias Lenra.Apps.App
+  alias Lenra.AppUserSession
 
   @valide_data %{name: "Test", color: "FF0000", icon: 1111, repository: "repository"}
   @invalide_data %{name: nil, color: nil, icon: nil, repository: nil}
 
-  describe "lenra_appliaction" do
+  describe "lenra_application" do
     test "new/2 with valid data creates a lenra_application" do
-      assert %{changes: app, valid?: true} = LenraApplication.new(1, @valide_data)
+      assert %{changes: app, valid?: true} = App.new(1, @valide_data)
       assert app.name == @valide_data.name
       assert app.color == @valide_data.color
       assert app.icon == @valide_data.icon
@@ -16,7 +17,7 @@ defmodule Lenra.LenraApplicationTest do
     end
 
     test "new/2 with invalid data creates a lenra_application" do
-      assert %{changes: _app, valid?: false} = LenraApplication.new(1, @invalide_data)
+      assert %{changes: _app, valid?: false} = App.new(1, @invalide_data)
     end
   end
 end

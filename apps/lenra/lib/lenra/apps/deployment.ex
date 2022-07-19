@@ -1,4 +1,4 @@
-defmodule Lenra.Deployment do
+defmodule Lenra.Apps.Deployment do
   @moduledoc """
     The deployment schema.
   """
@@ -6,9 +6,8 @@ defmodule Lenra.Deployment do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{
+  alias Lenra.Apps.{
     Build,
-    Deployment,
     Environment
   }
 
@@ -36,12 +35,12 @@ defmodule Lenra.Deployment do
   end
 
   def new(application_id, environment_id, build_id, user_id, params) do
-    %Deployment{
+    %__MODULE__{
       application_id: application_id,
       environment_id: environment_id,
       build_id: build_id,
       publisher_id: user_id
     }
-    |> Deployment.changeset(params)
+    |> changeset(params)
   end
 end

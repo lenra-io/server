@@ -7,12 +7,12 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
 
   alias Lenra.{
     EmailService,
-    Environment,
-    LenraApplication,
-    LenraApplicationServices,
     Repo,
     UserEnvironmentAccessServices
   }
+
+  alias Lenra.Apps
+  alias Lenra.Apps.{App, Environment}
 
   alias Lenra.Accounts
 
@@ -25,13 +25,13 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   defp create_and_return_application do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
 
-    LenraApplicationServices.create(user.id, %{
+    Apps.create_app(user.id, %{
       name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     })
 
-    %{app: Enum.at(Repo.all(LenraApplication), 0), env: Enum.at(Repo.all(Environment), 0)}
+    %{app: Enum.at(Repo.all(App), 0), env: Enum.at(Repo.all(Environment), 0)}
   end
 
   describe "all" do

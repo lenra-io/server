@@ -51,7 +51,7 @@ defmodule Lenra.Repo.Migrations.Lenra139AppVersion do
 
     execute(
       fn ->
-        from(a in Lenra.LenraApplication, update: [set: [service_name: a.name]])
+        from(a in Lenra.Apps.App, update: [set: [service_name: a.name]])
         |> repo().update_all([])
       end,
       fn -> nil end

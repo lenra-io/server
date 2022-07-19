@@ -4,11 +4,12 @@ defmodule LenraWeb.ApplicationMainEnvController do
   use LenraWeb.Policy,
     module: LenraWeb.ApplicationMainEnvController.Policy
 
-  alias Lenra.{ApplicationMainEnvServices, LenraApplicationServices}
+  alias Lenra.Apps
+  alias Lenra.Apps.App
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
     with {app_id, _} <- Integer.parse(app_id_str),
-         {:ok, app} <- LenraApplicationServices.fetch(app_id),
+         {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app) do
       {:ok, app}
     end
@@ -16,7 +17,7 @@ defmodule LenraWeb.ApplicationMainEnvController do
 
   def index(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
-         {:ok, main_env} <- ApplicationMainEnvServices.get(app.id) do
+         {:ok, main_env} <- Apps.fetch_main_env_for_app(app.id) do
       conn
       |> assign_data(main_env)
       |> reply
@@ -26,10 +27,10 @@ end
 
 defmodule LenraWeb.ApplicationMainEnvController.Policy do
   alias Lenra.Accounts.User
-  alias Lenra.LenraApplication
+  alias Lenra.Apps.App
 
   @impl Bouncer.Policy
-  def authorize(:index, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
+  def authorize(:index, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default

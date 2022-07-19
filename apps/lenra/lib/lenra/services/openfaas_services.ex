@@ -3,7 +3,7 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas action with `run_action/3`
   """
 
-  alias Lenra.DeploymentServices
+  alias Lenra.Apps
 
   require Logger
 
@@ -28,7 +28,7 @@ defmodule Lenra.OpenfaasServices do
 
     body =
       Jason.encode!(%{
-        "image" => DeploymentServices.image_name(service_name, build_number),
+        "image" => Apps.image_name(service_name, build_number),
         "service" => get_function_name(service_name, build_number),
         "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
         "limits" => %{
