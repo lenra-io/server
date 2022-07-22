@@ -24,7 +24,7 @@ defmodule Lenra.Accounts.User do
 
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
 
-  alias ApplicationRunner.UserData
+  alias ApplicationRunner.JsonStorage.UserData
 
   @type t :: %__MODULE__{}
 

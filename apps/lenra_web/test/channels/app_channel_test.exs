@@ -5,7 +5,7 @@ defmodule LenraWeb.AppChannelTest do
   use LenraWeb.ChannelCase, async: false
   #   alias ApplicationRunner.ListenersCache
 
-  #   alias ApplicationRunner.Datastore
+  #   alias ApplicationRunner.JsonStorage.Datastore
   # alias Lenra.Repo
   # alias Lenra.Apps.{
   #   App,
@@ -59,7 +59,11 @@ defmodule LenraWeb.AppChannelTest do
 
   test "No app called, should return an error", %{socket: socket} do
     res = my_subscribe_and_join(socket)
-    assert {:error, %{reason: [%{code: 21, message: "No application found for the current link."}]}} == res
+
+    assert {:error,
+            %{reason: [%{code: 21, message: "No application found for the current link."}]}} ==
+             res
+
     refute_push("ui", _)
   end
 
