@@ -63,9 +63,8 @@ defmodule LenraWeb.AppChannelTest do
     assert {:error,
             %LenraCommon.Errors.BusinessError{
               reason: :no_app_found,
-              message: "No application found for the current link",
-            }} =
-             res
+              message: "No application found for the current link"
+            }} = res
 
     refute_push("ui", _)
   end
