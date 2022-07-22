@@ -24,6 +24,7 @@ defmodule Lenra.Errors.BusinessError do
       {:invalid_build_status, "The build status should be success or failure."},
       {:no_app_authorization, "You are not authorized to join this app."},
       {:not_latest_cgu, "Not latest CGU."},
-      {:did_not_accept_cgu, "You must accept the CGU to use Lenra"}
+      {:did_not_accept_cgu, "You must accept the CGU to use Lenra"},
+      {:no_app_found, "No application found for the current link"}
     ]
 end

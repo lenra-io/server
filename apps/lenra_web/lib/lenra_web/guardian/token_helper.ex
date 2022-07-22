@@ -28,7 +28,9 @@ defmodule LenraWeb.TokenHelper do
   end
 
   def assign_access_token(conn, access_token) do
-    Plug.Conn.put_resp_header(conn, "access_token", access_token)
+    conn
+    |> Plug.Conn.put_resp_header("access_token", access_token)
+    |> Plug.Conn.put_resp_header("access-control-expose-headers", "access_token")
   end
 
   def create_refresh_and_store_cookie(conn, user) do

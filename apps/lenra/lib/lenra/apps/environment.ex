@@ -6,7 +6,7 @@ defmodule Lenra.Apps.Environment do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias ApplicationRunner.Datastore
+  alias ApplicationRunner.JsonStorage.Datastore
 
   alias Lenra.Accounts.User
   alias Lenra.Apps.{App, Build, Environment}

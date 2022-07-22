@@ -19,7 +19,7 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
-  alias ApplicationRunner.Datastore
+  alias ApplicationRunner.JsonStorage.Datastore
   alias Lenra.Repo
 
   alias Lenra.{GitlabApiServices, OpenfaasServices, UserEnvironmentAccess}

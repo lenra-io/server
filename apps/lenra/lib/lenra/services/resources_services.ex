@@ -2,7 +2,7 @@ defmodule Lenra.ResourcesServices do
   @moduledoc """
     The service that manages resources of lenra applications.
   """
-  alias ApplicationRunner.OpenfaasServices
+  alias ApplicationRunner.ApplicationServices
 
   alias Lenra.Apps
   alias Lenra.Repo
@@ -20,7 +20,7 @@ defmodule Lenra.ResourcesServices do
 
       build_number = loaded_app.main_env.environment.deployed_build.build_number
 
-      OpenfaasServices.get_app_resource(
+      ApplicationServices.get_app_resource(
         String.downcase("#{lenra_env}-#{service_name}-#{build_number}"),
         resource
       )
