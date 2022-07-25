@@ -8,7 +8,7 @@ defmodule Lenra.Legal do
 
   import Ecto.Query, only: [from: 2, select: 3]
 
-  alias Lenra.Errors.BusinessError
+  alias Lenra.Errors.{BusinessError, TechnicalError}
   alias Lenra.Legal
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
@@ -18,7 +18,7 @@ defmodule Lenra.Legal do
     cgu = get_latest_cgu_query() |> Repo.one()
 
     case cgu do
-      nil -> Lenra.Errors.TechnicalError.cgu_not_found_tuple()
+      nil -> TechnicalError.cgu_not_found_tuple()
       cgu -> {:ok, cgu}
     end
   end
