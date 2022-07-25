@@ -61,10 +61,10 @@ defmodule Lenra.Legal do
         latest_cgu.version
       end
 
-    link = "./apps/lenra_web/priv/static/cgu/CGU_fr_#{version}.md"
-    hash = to_string(Hash.run([link]))
+    path = "./apps/lenra_web/priv/static/cgu/CGU_fr_#{version}.md"
+    hash = to_string(Hash.run([path]))
 
-    %{link: link, version: version, hash: hash}
+    %{path: path, version: version, hash: hash}
     |> Legal.CGU.new()
     |> Repo.insert(on_conflict: :nothing)
   end

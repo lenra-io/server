@@ -7,10 +7,10 @@ defmodule LenraWeb.CguControllerTest do
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
 
-  @valid_cgu1 %{link: "Test", version: 2, hash: "test"}
-  @valid_cgu2 %{link: "Test1", version: 3, hash: "Test1"}
-  @valid_cgu3 %{link: "Test2", version: 4, hash: "Test2"}
-  @valid_cgu4 %{link: "Test3", version: 5, hash: "Test3"}
+  @valid_cgu1 %{path: "Test", version: 2, hash: "test"}
+  @valid_cgu2 %{path: "Test1", version: 3, hash: "Test1"}
+  @valid_cgu3 %{path: "Test2", version: 4, hash: "Test2"}
+  @valid_cgu4 %{path: "Test3", version: 5, hash: "Test3"}
 
   describe "get_latest_cgu" do
     test "test get_latest_cgu with 2 cgu in DB", %{conn: conn} do
@@ -26,7 +26,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test1", "link" => "Test1", "version" => 3}},
+               "data" => %{"latest_cgu" => %{"hash" => "Test1", "path" => "Test1", "version" => 3}},
                "success" => true
              } = json_response(conn, 200)
     end
@@ -58,7 +58,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test3", "link" => "Test3", "version" => 5}},
+               "data" => %{"latest_cgu" => %{"hash" => "Test3", "path" => "Test3", "version" => 5}},
                "success" => true
              } = json_response(conn, 200)
     end
@@ -113,7 +113,7 @@ defmodule LenraWeb.CguControllerTest do
     @tag auth_user: :dev
     test "user accepted latest", %{conn: conn} do
       {:ok, cgu} =
-        %{hash: "user_accepted_latest_cgu", version: 2, link: "user_accepted_latest_cgu"}
+        %{hash: "user_accepted_latest_cgu", version: 2, path: "user_accepted_latest_cgu"}
         |> CGU.new()
         |> Lenra.Repo.insert()
 
@@ -132,7 +132,7 @@ defmodule LenraWeb.CguControllerTest do
     @tag auth_user: :dev
     test "user did not accept latest", %{conn: conn} do
       {:ok, _cgu} =
-        %{hash: "user_accepted_latest_cgu", version: 2, link: "user_accepted_latest_cgu"}
+        %{hash: "user_accepted_latest_cgu", version: 2, path: "user_accepted_latest_cgu"}
         |> CGU.new()
         |> Lenra.Repo.insert()
 

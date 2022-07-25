@@ -4,16 +4,16 @@ defmodule Lenra.CGUTest do
 
   alias Lenra.Legal.CGU
 
-  @valid_cgu %{link: "Test", version: 2, hash: "test"}
-  @cgu_same_hash %{link: "test", version: 3, hash: "test"}
-  @cgu_same_version %{link: "test", version: 2, hash: "Test"}
-  @cgu_same_link %{link: "Test", version: 3, hash: "Test"}
-  @invalid_cgu %{link: nil, version: nil, hash: nil}
+  @valid_cgu %{path: "Test", version: 2, hash: "test"}
+  @cgu_same_hash %{path: "test", version: 3, hash: "test"}
+  @cgu_same_version %{path: "test", version: 2, hash: "Test"}
+  @cgu_same_path %{path: "Test", version: 3, hash: "Test"}
+  @invalid_cgu %{path: nil, version: nil, hash: nil}
 
   describe "lenra_cgu" do
     test "new/1 with valid data creates a cgu" do
       assert %{changes: cgu, valid?: true} = CGU.new(@valid_cgu)
-      assert cgu.link == @valid_cgu.link
+      assert cgu.path == @valid_cgu.path
       assert cgu.version == @valid_cgu.version
       assert cgu.hash == @valid_cgu.hash
     end
@@ -38,7 +38,7 @@ defmodule Lenra.CGUTest do
       cgu = CGU.new(@invalid_cgu)
 
       assert {:error,
-              %{errors: [link: {"can't be blank", _}, version: {"can't be blank", _}, hash: {"can't be blank", _}]}} =
+              %{errors: [path: {"can't be blank", _}, version: {"can't be blank", _}, hash: {"can't be blank", _}]}} =
                Repo.insert(cgu)
     end
 
@@ -49,11 +49,11 @@ defmodule Lenra.CGUTest do
                @cgu_same_hash |> CGU.new() |> Repo.insert()
     end
 
-    test "link must be unique" do
+    test "path must be unique" do
       @valid_cgu |> CGU.new() |> Repo.insert()
 
-      assert {:error, %Ecto.Changeset{errors: [link: {"has already been taken", _}]}} =
-               @cgu_same_link |> CGU.new() |> Repo.insert()
+      assert {:error, %Ecto.Changeset{errors: [path: {"has already been taken", _}]}} =
+               @cgu_same_path |> CGU.new() |> Repo.insert()
     end
 
     test "version must be unique" do

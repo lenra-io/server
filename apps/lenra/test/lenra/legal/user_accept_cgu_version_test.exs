@@ -3,8 +3,8 @@ defmodule Lenra.Legal.UserAcceptCGUVersionTest do
 
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
 
-  @valid_cgu1 %{link: "Test", version: 2, hash: "test"}
-  @valid_cgu2 %{link: "/tmp/aeg", version: 3, hash: "Test"}
+  @valid_cgu1 %{path: "Test", version: 2, hash: "test"}
+  @valid_cgu2 %{path: "/tmp/aeg", version: 3, hash: "Test"}
   @user %{
     "first_name" => "Test",
     "last_name" => "test",

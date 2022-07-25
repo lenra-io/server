@@ -12,13 +12,13 @@ defmodule Lenra.Legal.CGU do
   @derive {Jason.Encoder,
            only: [
              :id,
-             :link,
+             :path,
              :version,
              :hash
            ]}
 
   schema "cgu" do
-    field(:link, :string)
+    field(:path, :string)
     field(:version, :integer)
     field(:hash, :string)
 
@@ -29,9 +29,9 @@ defmodule Lenra.Legal.CGU do
 
   def changeset(cgu, params \\ %{}) do
     cgu
-    |> cast(params, [:link, :version, :hash])
-    |> validate_required([:link, :version, :hash])
-    |> unique_constraint([:link])
+    |> cast(params, [:path, :version, :hash])
+    |> validate_required([:path, :version, :hash])
+    |> unique_constraint([:path])
     |> unique_constraint([:version])
     |> unique_constraint([:hash])
   end
