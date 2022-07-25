@@ -338,6 +338,7 @@ defmodule LenraWeb.UserControllerTest do
 
   @tag :auth_user
   test "change password code 4 time with password 1 test", %{conn: conn!} do
+    Repo.delete_all("cgu")
     new_password = "Newpassword@"
     new_password_2 = "Newpassword@2"
     new_password_3 = "Newpassword@3"
