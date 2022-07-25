@@ -105,7 +105,8 @@ defmodule LenraWeb.DeploymentControllerTest do
         })
 
       assert %{
-               "error" => "environment_id does not exist"
+               "message" => "environment_id does not exist",
+               "reason" => "invalid_environment_id"
              } ==
                json_response(conn!, 400)
     end

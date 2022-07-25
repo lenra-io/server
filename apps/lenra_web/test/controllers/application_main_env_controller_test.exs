@@ -26,7 +26,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
       conn = get(conn, Routes.application_main_env_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-               "error" => "You are not authenticated",
+               "message" => "You are not authenticated",
                "reason" => "unauthenticated"
              }
     end
@@ -65,8 +65,8 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
                }
              } = json_response(admin, 200)
 
-      assert %{"error" => _error} = json_response(user, 403)
-      assert %{"error" => _error} = json_response(other_dev, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)
     end
   end
 end

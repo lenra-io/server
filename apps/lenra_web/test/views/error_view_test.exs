@@ -12,13 +12,13 @@ defmodule LenraWeb.ErrorViewTest do
   test "renders 404.json" do
     assert render(LenraWeb.ErrorView, "404.json", Map.to_list(TechnicalError.error_404())) ==
              %{
-               "error" => "Not Found.",
+               "message" => "Not Found.",
                "reason" => :error_404
              }
   end
 
   test "renders 500.json" do
     assert render(LenraWeb.ErrorView, "500.json", Map.to_list(TechnicalError.error_500())) ==
-             %{"error" => "Internal server error.", "reason" => :error_500}
+             %{"message" => "Internal server error.", "reason" => :error_500}
   end
 end

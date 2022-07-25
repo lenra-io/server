@@ -68,7 +68,10 @@ defmodule LenraWeb.RunnerControllerTest do
           }
         )
 
-      assert %{"error" => _error} = json_response(conn, 400)
+      assert %{
+               "message" => "Server cannot understand or process the request due to a client-side error.",
+               "reason" => "bad_request"
+             } = json_response(conn, 400)
     end
   end
 end
