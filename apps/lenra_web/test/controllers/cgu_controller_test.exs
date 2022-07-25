@@ -26,8 +26,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test1", "path" => "Test1", "version" => 3}},
-               "success" => true
+               "data" => %{"hash" => "Test1", "path" => "Test1", "version" => 3}
              } = json_response(conn, 200)
     end
 
@@ -58,8 +57,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert %{
-               "data" => %{"latest_cgu" => %{"hash" => "Test3", "path" => "Test3", "version" => 5}},
-               "success" => true
+               "data" => %{"hash" => "Test3", "path" => "Test3", "version" => 5}
              } = json_response(conn, 200)
     end
 
@@ -67,9 +65,7 @@ defmodule LenraWeb.CguControllerTest do
       Repo.delete_all(CGU)
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
-      assert json_response(conn, 404) == %{
-               "error" => "Not Found."
-             }
+      assert conn.resp_body == "{\"error\":\"Cgu cannot be found\"}"
     end
   end
 

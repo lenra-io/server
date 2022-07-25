@@ -1,6 +1,7 @@
 defmodule Lenra.LegalTest do
   use Lenra.RepoCase, async: true
 
+  alias Lenra.Errors.BusinessError
   alias Lenra.Legal
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
 
@@ -79,7 +80,7 @@ defmodule Lenra.LegalTest do
         )
       )
 
-      assert {:error, %LenraCommon.Errors.BusinessError{reason: :not_latest_cgu}} = Legal.accept_cgu(cgu.id, user.id)
+      assert BusinessError.not_latest_cgu_tuple() == Legal.accept_cgu(cgu.id, user.id)
     end
 
     test "not existing user", %{user: _user} do
