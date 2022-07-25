@@ -103,7 +103,7 @@ defmodule LenraWeb.UserControllerTest do
 
   test "refresh authenticated test", %{conn: conn} do
     conn_register = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
-
+    Repo.delete_all(Lenra.Legal.CGU)
     conn = post(conn_register, Routes.user_path(conn_register, :refresh_token))
 
     assert %{"data" => data, "success" => true} = json_response(conn, 200)

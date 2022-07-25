@@ -86,12 +86,13 @@ defmodule LenraWeb.ConnCase do
   end
 
   defp auth_users_with_cgu(users_role) do
+    {:ok, cgu} = %{link: "latest", hash: "latesthash", version: 2} |> CGU.new() |> Lenra.Repo.insert()
+
     users_role
     |> Enum.with_index()
     |> Enum.map(fn {role, idx} ->
       conn = Phoenix.ConnTest.build_conn()
       {:ok, %{inserted_user: user}} = UserTestHelper.register_user_nb(idx, role)
-      {:ok, cgu} = %{link: "latest", hash: "latesthash", version: 2} |> CGU.new() |> Lenra.Repo.insert()
 
       Legal.accept_cgu(cgu.id, user.id)
       conn_user(conn, user)
