@@ -4,11 +4,11 @@ defmodule LenraWeb.EnvsController do
   use LenraWeb.Policy,
     module: LenraWeb.EnvsController.Policy
 
-  alias Lenra.{EnvironmentServices, LenraApplicationServices}
+  alias Lenra.Apps
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
     with {app_id, _} <- Integer.parse(app_id_str),
-         {:ok, app} <- LenraApplicationServices.fetch(app_id),
+         {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app) do
       {:ok, app}
     end
@@ -17,7 +17,7 @@ defmodule LenraWeb.EnvsController do
   def index(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params) do
       conn
-      |> assign_data(:envs, EnvironmentServices.all(app.id))
+      |> assign_data(Apps.all_envs_for_app(app.id))
       |> reply
     end
   end
@@ -25,19 +25,19 @@ defmodule LenraWeb.EnvsController do
   def create(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
          user <- Guardian.Plug.current_resource(conn),
-         {:ok, %{inserted_env: env}} <- EnvironmentServices.create(app.id, user.id, params) do
+         {:ok, %{inserted_env: env}} <- Apps.create_env(app.id, user.id, params) do
       conn
-      |> assign_data(:inserted_env, env)
+      |> assign_data(env)
       |> reply
     end
   end
 
   def update(conn, %{"env_id" => env_id} = params) do
     with {:ok, _app} <- get_app_and_allow(conn, params),
-         {:ok, env} <- EnvironmentServices.fetch(env_id),
-         {:ok, %{updated_env: env}} <- EnvironmentServices.update(env, params) do
+         {:ok, env} <- Apps.fetch_env(env_id),
+         {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
       conn
-      |> assign_data(:updated_env, env)
+      |> assign_data(env)
       |> reply
     end
   end
@@ -45,12 +45,12 @@ end
 
 defmodule LenraWeb.EnvsController.Policy do
   alias Lenra.Accounts.User
-  alias Lenra.LenraApplication
+  alias Lenra.Apps.App
 
   @impl Bouncer.Policy
-  def authorize(:index, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
-  def authorize(:create, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
-  def authorize(:update, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
+  def authorize(:index, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:create, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:update, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default

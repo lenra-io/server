@@ -4,7 +4,7 @@ defmodule LenraWeb.AppsController do
   use LenraWeb.Policy,
     module: LenraWeb.AppsController.Policy
 
-  alias Lenra.LenraApplicationServices
+  alias Lenra.Apps
   alias LenraWeb.Guardian.Plug
 
   require Logger
@@ -12,9 +12,9 @@ defmodule LenraWeb.AppsController do
   def index(conn, _params) do
     with :ok <- allow(conn),
          user <- Plug.current_resource(conn),
-         apps <- LenraApplicationServices.all(user.id) do
+         apps <- Apps.all_apps(user.id) do
       conn
-      |> assign_data(:apps, apps)
+      |> assign_data(apps)
       |> reply
     end
   end
@@ -22,27 +22,27 @@ defmodule LenraWeb.AppsController do
   def create(conn, params) do
     with :ok <- allow(conn),
          user <- Plug.current_resource(conn),
-         {:ok, %{inserted_application: app}} <- LenraApplicationServices.create(user.id, params) do
+         {:ok, %{inserted_application: app}} <- Apps.create_app(user.id, params) do
       conn
-      |> assign_data(:app, app)
+      |> assign_data(app)
       |> reply
     end
   end
 
   def update(conn, %{"id" => app_id} = params) do
-    with {:ok, app} <- LenraApplicationServices.fetch(app_id),
+    with {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app),
-         {:ok, %{updated_application: app}} <- LenraApplicationServices.update(app, params) do
+         {:ok, %{updated_application: app}} <- Apps.update_app(app, params) do
       conn
-      |> assign_data(:updated_application, app)
+      |> assign_data(app)
       |> reply
     end
   end
 
   def delete(conn, %{"id" => app_id}) do
-    with {:ok, app} <- LenraApplicationServices.fetch(app_id),
+    with {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app),
-         {:ok, _} <- LenraApplicationServices.delete(app) do
+         {:ok, _} <- Apps.delete_app(app) do
       reply(conn)
     end
   end
@@ -50,9 +50,9 @@ defmodule LenraWeb.AppsController do
   def get_user_apps(conn, _params) do
     with :ok <- allow(conn),
          user <- Plug.current_resource(conn),
-         apps <- LenraApplicationServices.all_for_user(user.id) do
+         apps <- Apps.all_apps_for_user(user.id) do
       conn
-      |> assign_data(:apps, apps)
+      |> assign_data(apps)
       |> reply
     end
   end
@@ -60,13 +60,13 @@ end
 
 defmodule LenraWeb.AppsController.Policy do
   alias Lenra.Accounts.User
-  alias Lenra.LenraApplication
+  alias Lenra.Apps.App
 
   @impl Bouncer.Policy
   def authorize(:index, _user, _data), do: true
   def authorize(:create, %User{role: :dev}, _data), do: true
-  def authorize(:update, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
-  def authorize(:delete, %User{id: user_id}, %LenraApplication{creator_id: user_id}), do: true
+  def authorize(:update, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:delete, %User{id: user_id}, %App{creator_id: user_id}), do: true
   def authorize(:get_user_apps, %User{role: :dev}, _data), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout

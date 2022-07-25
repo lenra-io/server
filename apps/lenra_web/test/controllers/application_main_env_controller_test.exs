@@ -16,7 +16,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
         "icon" => 12
       })
 
-    %{"data" => %{"app" => app}} = json_response(conn, 200)
+    %{"data" => app} = json_response(conn, 200)
 
     %{conn: conn, app: app}
   end
@@ -26,8 +26,8 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
       conn = get(conn, Routes.application_main_env_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-               "errors" => [%{"code" => 401, "message" => "You are not authenticated"}],
-               "success" => false
+               "error" => "You are not authenticated",
+               "reason" => "unauthenticated"
              }
     end
 
@@ -43,36 +43,30 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
 
       assert %{
                "data" => %{
-                 "main_env" => %{
-                   "application_id" => _,
-                   "name" => "live",
-                   "creator_id" => _,
-                   "deployed_build_id" => _,
-                   "id" => _,
-                   "is_ephemeral" => false,
-                   "is_public" => false
-                 }
-               },
-               "success" => true
+                 "application_id" => _,
+                 "name" => "live",
+                 "creator_id" => _,
+                 "deployed_build_id" => _,
+                 "id" => _,
+                 "is_ephemeral" => false,
+                 "is_public" => false
+               }
              } = json_response(creator!, 200)
 
       assert %{
                "data" => %{
-                 "main_env" => %{
-                   "application_id" => _,
-                   "name" => "live",
-                   "creator_id" => _,
-                   "deployed_build_id" => _,
-                   "id" => _,
-                   "is_ephemeral" => false,
-                   "is_public" => false
-                 }
-               },
-               "success" => true
+                 "application_id" => _,
+                 "name" => "live",
+                 "creator_id" => _,
+                 "deployed_build_id" => _,
+                 "id" => _,
+                 "is_ephemeral" => false,
+                 "is_public" => false
+               }
              } = json_response(admin, 200)
 
-      assert %{"success" => false} = json_response(user, 403)
-      assert %{"success" => false} = json_response(other_dev, 403)
+      assert %{"error" => _error} = json_response(user, 403)
+      assert %{"error" => _error} = json_response(other_dev, 403)
     end
   end
 end

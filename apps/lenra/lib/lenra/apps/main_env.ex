@@ -1,4 +1,4 @@
-defmodule Lenra.ApplicationMainEnv do
+defmodule Lenra.Apps.MainEnv do
   @moduledoc """
     The application main env schema.
   """
@@ -6,15 +6,14 @@ defmodule Lenra.ApplicationMainEnv do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{
-    ApplicationMainEnv,
-    Environment,
-    LenraApplication
+  alias Lenra.Apps.{
+    App,
+    Environment
   }
 
   @derive {Jason.Encoder, only: [:id, :application_id, :environment_id]}
   schema "application_main_environment" do
-    belongs_to(:application, LenraApplication)
+    belongs_to(:application, App)
     belongs_to(:environment, Environment)
 
     timestamps()
@@ -29,7 +28,7 @@ defmodule Lenra.ApplicationMainEnv do
   end
 
   def new(application_id, environment_id) do
-    %ApplicationMainEnv{application_id: application_id, environment_id: environment_id}
-    |> ApplicationMainEnv.changeset()
+    %__MODULE__{application_id: application_id, environment_id: environment_id}
+    |> __MODULE__.changeset()
   end
 end

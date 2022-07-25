@@ -5,13 +5,12 @@ defmodule LenraWeb.AppChannelTest do
   use LenraWeb.ChannelCase, async: false
   #   alias ApplicationRunner.ListenersCache
 
-  #   alias ApplicationRunner.Datastore
-
-  # alias Lenra.{
-  #   ApplicationMainEnv,
-  #   Environment,
-  #   LenraApplication,
-  #   Repo
+  #   alias ApplicationRunner.JsonStorage.Datastore
+  # alias Lenra.Repo
+  # alias Lenra.Apps.{
+  #   App,
+  #   MainEnv,
+  #   Environment
   # }
 
   alias LenraWeb.UserSocket
@@ -60,7 +59,13 @@ defmodule LenraWeb.AppChannelTest do
 
   test "No app called, should return an error", %{socket: socket} do
     res = my_subscribe_and_join(socket)
-    assert {:error, %{reason: [%{code: 21, message: "No application found for the current link."}]}} == res
+
+    assert {:error,
+            %LenraCommon.Errors.BusinessError{
+              reason: :no_app_found,
+              message: "No application found for the current link"
+            }} = res
+
     refute_push("ui", _)
   end
 
@@ -71,7 +76,7 @@ defmodule LenraWeb.AppChannelTest do
   #   Ecto.Multi.new()
   #   |> Ecto.Multi.insert(
   #     :inserted_application,
-  #     LenraApplication.new(user.id, %{
+  #     App.new(user.id, %{
   #       name: "Counter",
   #       color: "FFFFFF",
   #       icon: "60189"
@@ -101,7 +106,7 @@ defmodule LenraWeb.AppChannelTest do
   #   end)
   #   |> Repo.transaction()
 
-  #   app = Repo.get_by(LenraApplication, name: "Counter")
+  #   app = Repo.get_by(App, name: "Counter")
 
   #   owstub =
   #     FaasStub.create_faas_stub()
@@ -147,7 +152,7 @@ defmodule LenraWeb.AppChannelTest do
   #   Ecto.Multi.new()
   #   |> Ecto.Multi.insert(
   #     :inserted_application,
-  #     LenraApplication.new(user.id, %{
+  #     App.new(user.id, %{
   #       name: "Counter",
   #       color: "FFFFFF",
   #       icon: "60189"
@@ -161,7 +166,7 @@ defmodule LenraWeb.AppChannelTest do
   #   end)
   #   |> Repo.transaction()
 
-  #   app = Repo.get_by(LenraApplication, name: "Counter")
+  #   app = Repo.get_by(App, name: "Counter")
 
   #   {:ok, %{inserted_user: unauthorized_user}} = register_user_nb(1, :dev)
   #   unauthorized_socket = socket(UserSocket, "socket_id", %{user: unauthorized_user})
@@ -177,7 +182,7 @@ defmodule LenraWeb.AppChannelTest do
   #   Ecto.Multi.new()
   #   |> Ecto.Multi.insert(
   #     :inserted_application,
-  #     LenraApplication.new(user.id, %{
+  #     App.new(user.id, %{
   #       name: "Counter",
   #       color: "FFFFFF",
   #       icon: "60189"
@@ -208,7 +213,7 @@ defmodule LenraWeb.AppChannelTest do
   #   end)
   #   |> Repo.transaction()
 
-  #   app = Repo.get_by(LenraApplication, name: "Counter")
+  #   app = Repo.get_by(App, name: "Counter")
 
   #   owstub =
   #     FaasStub.create_faas_stub()

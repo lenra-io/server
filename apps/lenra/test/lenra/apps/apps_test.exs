@@ -1,23 +1,24 @@
-defmodule Lenra.ApplicationServicesTest do
+defmodule Lenra.Apps.AppsTest do
   @moduledoc """
     Test the application services
   """
 
   use Lenra.RepoCase, async: true
 
-  alias Lenra.LenraApplicationServices
+  alias Lenra.Apps
+  alias Lenra.Errors.TechnicalError
 
   @tag :register_user
-  test "fetch app", %{user: user} do
+  test "fetch_app", %{user: user} do
     params = %{
       name: "mine-sweeper",
       color: "FFFFFF",
       icon: "60189"
     }
 
-    case LenraApplicationServices.create(user.id, params) do
+    case Apps.create_app(user.id, params) do
       {:ok, %{inserted_application: app}} ->
-        assert {:ok, _app} = LenraApplicationServices.fetch(app.id)
+        assert {:ok, _app} = Apps.fetch_app(app.id)
 
       {:error, _} ->
         assert false, "adding app failed"
@@ -32,9 +33,9 @@ defmodule Lenra.ApplicationServicesTest do
       icon: "60189"
     }
 
-    case LenraApplicationServices.create(user.id, params) do
+    case Apps.create_app(user.id, params) do
       {:ok, %{inserted_application: app}} ->
-        assert {:ok, _value} = LenraApplicationServices.fetch_by(name: app.name)
+        assert {:ok, _value} = Apps.fetch_app_by(name: app.name)
 
       {:error, _} ->
         assert false, "adding app failed"
@@ -49,12 +50,13 @@ defmodule Lenra.ApplicationServicesTest do
       icon: "60189"
     }
 
-    {:ok, %{inserted_application: app}} = LenraApplicationServices.create(user.id, params)
+    {:ok, %{inserted_application: app}} = Apps.create_app(user.id, params)
 
-    assert {:ok, _app} = LenraApplicationServices.fetch_by(name: "mine-sweeper")
+    assert {:ok, _app} = Apps.fetch_app_by(name: "mine-sweeper")
 
-    LenraApplicationServices.delete(app)
+    Apps.delete_app(app)
 
-    assert {:error, :error_404} == LenraApplicationServices.fetch_by(name: "mine-sweeper")
+    assert TechnicalError.error_404_tuple() ==
+             Apps.fetch_app_by(name: "mine-sweeper")
   end
 end

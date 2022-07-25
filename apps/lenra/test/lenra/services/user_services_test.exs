@@ -87,14 +87,14 @@ defmodule UserServicesTest do
   test "sign_in user should fail with wrong email" do
     {:ok, _} = register_john_doe()
 
-    assert {:error, :email_or_password_incorrect} ==
+    assert {:error, %LenraCommon.Errors.BusinessError{reason: :incorrect_email_or_password}} =
              Accounts.login_user("John@Lenra.FR", "Johndoe@thefirst")
   end
 
   test "sign_in user should fail with wrong password" do
     {:ok, _} = register_john_doe()
 
-    assert {:error, :email_or_password_incorrect} ==
+    assert {:error, %LenraCommon.Errors.BusinessError{reason: :incorrect_email_or_password}} =
              Accounts.login_user("john.doe@lenra.fr", "johndoethesecond")
   end
 
@@ -115,7 +115,8 @@ defmodule UserServicesTest do
 
     invalid_code = "not-a-code"
 
-    assert {:error, :invalid_uuid} = Accounts.validate_dev(user, invalid_code)
+    assert {:error, %LenraCommon.Errors.BusinessError{reason: :invalid_uuid}} =
+             Accounts.validate_dev(user, invalid_code)
   end
 
   test "validate dev with invalid code" do
@@ -123,7 +124,8 @@ defmodule UserServicesTest do
 
     invalid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a5"
 
-    assert {:error, :invalid_code} = Accounts.validate_dev(user, invalid_code)
+    assert {:error, %LenraCommon.Errors.BusinessError{reason: :invalid_code}} =
+             Accounts.validate_dev(user, invalid_code)
   end
 
   test "validate dev a user that is already a dev" do
@@ -131,7 +133,7 @@ defmodule UserServicesTest do
 
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 
-    assert {:error, :already_dev} = Accounts.validate_dev(user, valid_code)
+    assert {:error, %LenraCommon.Errors.BusinessError{reason: :already_dev}} = Accounts.validate_dev(user, valid_code)
   end
 
   test "validate dev with already used code" do
@@ -141,7 +143,9 @@ defmodule UserServicesTest do
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 
     assert {:ok, _} = Accounts.validate_dev(user, valid_code)
-    assert {:error, :dev_code_already_used} = Accounts.validate_dev(user2, valid_code)
+
+    assert {:error, %LenraCommon.Errors.BusinessError{reason: :dev_code_already_used}} =
+             Accounts.validate_dev(user2, valid_code)
   end
 
   test "The password code should be deleted after password modification" do
@@ -152,7 +156,10 @@ defmodule UserServicesTest do
     assert not is_nil(password_code)
 
     assert {:ok, _} =
-             Accounts.update_user_password_with_code(user!, %{"password" => "MyNewPassword42!", "code" => password_code})
+             Accounts.update_user_password_with_code(user!, %{
+               "password" => "MyNewPassword42!",
+               "code" => password_code
+             })
 
     # Force reload the password code
     user! = Repo.preload(user!, [:password_code], force: true)

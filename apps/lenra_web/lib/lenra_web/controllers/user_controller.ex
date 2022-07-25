@@ -7,11 +7,13 @@ defmodule LenraWeb.UserController do
   alias LenraWeb.Guardian.Plug
   alias LenraWeb.TokenHelper
 
+  alias Lenra.Errors.BusinessError
+
   def register(conn, params) do
     with {:ok, %{inserted_user: user}} <- Accounts.register_user(params) do
       conn
       |> TokenHelper.assign_access_and_refresh_token(user)
-      |> assign_data(:user, user)
+      |> assign_data(user)
       |> reply
     end
   end
@@ -20,21 +22,25 @@ defmodule LenraWeb.UserController do
     with {:ok, user} <- Accounts.login_user(params["email"], params["password"]) do
       conn
       |> TokenHelper.assign_access_and_refresh_token(user)
-      |> assign_data(:user, user)
+      |> assign_data(user)
       |> reply
     end
   end
 
   def refresh_token(conn, _params) do
-    {:ok, access_token} =
-      conn
-      |> Plug.current_token()
-      |> TokenHelper.create_access_token()
-
     conn
-    |> TokenHelper.assign_access_token(access_token)
-    |> assign_data(:user, Plug.current_resource(conn))
-    |> reply
+    |> Plug.current_token()
+    |> TokenHelper.create_access_token()
+    |> case do
+      {:ok, access_token} ->
+        conn
+        |> TokenHelper.assign_access_token(access_token)
+        |> assign_data(Plug.current_resource(conn))
+        |> reply
+
+      err ->
+        err
+    end
   end
 
   def validate_user(conn, params) do
@@ -43,7 +49,7 @@ defmodule LenraWeb.UserController do
       conn
       |> TokenHelper.revoke_current_refresh()
       |> TokenHelper.assign_access_and_refresh_token(updated_user)
-      |> assign_data(:user, updated_user)
+      |> assign_data(updated_user)
       |> reply
     end
   end
@@ -54,7 +60,7 @@ defmodule LenraWeb.UserController do
       conn
       |> TokenHelper.revoke_current_refresh()
       |> TokenHelper.assign_access_and_refresh_token(updated_user)
-      |> assign_data(:user, updated_user)
+      |> assign_data(updated_user)
       |> reply
     end
   end
@@ -78,9 +84,9 @@ defmodule LenraWeb.UserController do
          {:ok, _password} <- Accounts.update_user_password_with_code(user, params) do
       reply(conn)
     else
-      # Here we return :no_such_password_code instead of :email_incorrect
+      # Here we return :no_such_password_code instead of :incorrect_email
       # to avoid leaking whether an email address exists on Lenra
-      {:error, :email_incorrect} -> {:error, :no_such_password_code}
+      {:error, :incorrect_email} -> BusinessError.no_such_password_code_tuple()
       error -> error
     end
   end
@@ -98,11 +104,11 @@ defmodule LenraWeb.UserController do
     reply(conn)
   end
 
-  defp get_user_with_email(nil), do: {:error, :email_incorrect}
+  defp get_user_with_email(nil), do: BusinessError.incorrect_email_tuple()
 
   defp get_user_with_email(email) do
     case Repo.get_by(User, email: String.downcase(email)) do
-      nil -> {:error, :email_incorrect}
+      nil -> BusinessError.incorrect_email_tuple()
       user -> {:ok, user}
     end
   end

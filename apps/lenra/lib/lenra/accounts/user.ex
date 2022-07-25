@@ -5,13 +5,7 @@ defmodule Lenra.Accounts.User do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{
-    Build,
-    Deployment,
-    Environment,
-    LenraApplication,
-    UserEnvironmentAccess
-  }
+  alias Lenra.UserEnvironmentAccess
 
   alias Lenra.Accounts.{
     DevCode,
@@ -21,9 +15,16 @@ defmodule Lenra.Accounts.User do
     User
   }
 
+  alias Lenra.Apps.{
+    App,
+    Build,
+    Deployment,
+    Environment
+  }
+
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
 
-  alias ApplicationRunner.UserData
+  alias ApplicationRunner.JsonStorage.UserData
 
   @type t :: %__MODULE__{}
 
@@ -43,7 +44,7 @@ defmodule Lenra.Accounts.User do
     has_many(:password, Password)
     field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)
-    has_many(:applications, LenraApplication, foreign_key: :creator_id)
+    has_many(:applications, App, foreign_key: :creator_id)
     has_one(:password_code, LostPasswordCode)
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)

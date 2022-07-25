@@ -6,13 +6,15 @@ defmodule Lenra.UserEnvironmentAccessServices do
 
   alias Lenra.Accounts
   alias Lenra.Accounts.User
+  alias Lenra.Errors.TechnicalError
 
   alias Lenra.{
     EmailWorker,
-    EnvironmentServices,
     Repo,
     UserEnvironmentAccess
   }
+
+  alias Lenra.Apps
 
   require Logger
 
@@ -33,7 +35,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
     )
   end
 
-  def fetch_by(clauses, error \\ {:error, :error_404}) do
+  def fetch_by(clauses, error \\ TechnicalError.error_404_tuple()) do
     Repo.fetch_by(UserEnvironmentAccess, clauses, error)
   end
 
@@ -47,7 +49,7 @@ defmodule Lenra.UserEnvironmentAccessServices do
       })
     )
     |> Ecto.Multi.run(:add_invitation_event, fn repo, %{inserted_user_access: _} ->
-      env = EnvironmentServices.get(env_id)
+      env = Apps.get_env(env_id)
       user = Accounts.get_user(user_id)
 
       env = repo.preload(env, :application)

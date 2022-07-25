@@ -1,4 +1,4 @@
-defmodule Lenra.Build do
+defmodule Lenra.Apps.Build do
   @moduledoc """
     The build schema.
   """
@@ -7,7 +7,7 @@ defmodule Lenra.Build do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.{Build, LenraApplication}
+  alias Lenra.Apps.{App, Build}
 
   @derive {Jason.Encoder,
            only: [
@@ -24,7 +24,7 @@ defmodule Lenra.Build do
     field(:build_number, :integer)
     field(:status, Ecto.Enum, values: [:pending, :failure, :success])
     belongs_to(:creator, User)
-    belongs_to(:application, LenraApplication)
+    belongs_to(:application, App)
 
     timestamps()
   end
@@ -43,7 +43,7 @@ defmodule Lenra.Build do
   end
 
   def new(creator_id, application_id, build_number, params) do
-    %Build{
+    %__MODULE__{
       creator_id: creator_id,
       application_id: application_id,
       build_number: build_number,

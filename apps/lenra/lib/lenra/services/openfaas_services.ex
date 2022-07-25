@@ -3,7 +3,8 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas action with `run_action/3`
   """
 
-  alias Lenra.DeploymentServices
+  alias Lenra.Apps
+  alias Lenra.Errors.TechnicalError
 
   require Logger
 
@@ -28,7 +29,7 @@ defmodule Lenra.OpenfaasServices do
 
     body =
       Jason.encode!(%{
-        "image" => DeploymentServices.image_name(service_name, build_number),
+        "image" => Apps.image_name(service_name, build_number),
         "service" => get_function_name(service_name, build_number),
         "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
         "limits" => %{
@@ -85,12 +86,12 @@ defmodule Lenra.OpenfaasServices do
   defp response({:ok, %Finch.Response{body: body}}, :delete_app) do
     Logger.error("Openfaas could not delete the application. It should not happen. \n\t\t reason: #{body}")
 
-    {:error, :openfaas_delete_error}
+    TechnicalError.openfaas_delete_error_tuple()
   end
 
   defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
     Logger.error("Openfaas could not be reached. It should not happen. \n\t\t reason: #{reason}")
-    {:error, :openfass_not_recheable}
+    TechnicalError.openfaas_not_reachable_tuple()
   end
 
   defp response(
@@ -101,7 +102,7 @@ defmodule Lenra.OpenfaasServices do
     case status_code do
       400 ->
         Logger.error(body)
-        {:error, :bad_request}
+        TechnicalError.bad_request_tuple()
 
       404 ->
         Logger.error(body)
@@ -113,11 +114,11 @@ defmodule Lenra.OpenfaasServices do
 
       504 ->
         Logger.error(body)
-        {:error, :timeout}
+        TechnicalError.timeout_tuple()
 
       _err ->
         Logger.error(body)
-        {:error, :unknow_error}
+        TechnicalError.unknown_error_tuple()
     end
   end
 end

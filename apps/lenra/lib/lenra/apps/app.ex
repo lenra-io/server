@@ -1,4 +1,4 @@
-defmodule Lenra.LenraApplication do
+defmodule Lenra.Apps.App do
   @moduledoc """
     The application schema.
   """
@@ -6,15 +6,9 @@ defmodule Lenra.LenraApplication do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.{
-    ApplicationMainEnv,
-    AppUserSession,
-    Build,
-    Environment,
-    LenraApplication
-  }
-
   alias Lenra.Accounts.User
+  alias Lenra.AppUserSession
+  alias Lenra.Apps.{Build, Environment, MainEnv}
 
   @type t :: %__MODULE__{}
 
@@ -35,8 +29,7 @@ defmodule Lenra.LenraApplication do
     belongs_to(:creator, User)
     has_many(:environments, Environment, foreign_key: :application_id)
     has_many(:builds, Build, foreign_key: :application_id)
-    has_one(:main_env, ApplicationMainEnv, foreign_key: :application_id)
-    has_many(:app_user_session, AppUserSession, foreign_key: :application_id)
+    has_one(:main_env, MainEnv, foreign_key: :application_id)
     timestamps()
   end
 
@@ -51,7 +44,7 @@ defmodule Lenra.LenraApplication do
   end
 
   def new(creator_id, params) do
-    %LenraApplication{creator_id: creator_id, service_name: Ecto.UUID.generate()}
+    %__MODULE__{creator_id: creator_id, service_name: Ecto.UUID.generate()}
     |> changeset(params)
   end
 

@@ -18,8 +18,8 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       conn = get(conn, Routes.user_environment_access_path(conn, :index, 0, 0))
 
       assert json_response(conn, 401) == %{
-               "errors" => [%{"code" => 401, "message" => "You are not authenticated"}],
-               "success" => false
+               "error" => "You are not authenticated",
+               "reason" => "unauthenticated"
              }
     end
 
@@ -27,10 +27,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     test "get user environment access check authorizations", %{users: [creator!, user, other_dev, admin]} do
       creator! = create_app(creator!)
 
-      assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
+      assert %{"data" => app} = json_response(creator!, 200)
 
-      assert %{"data" => %{"envs" => envs}, "success" => true} =
-               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert %{"data" => envs} = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 
@@ -39,7 +38,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
           "user_id" => Guardian.Plug.current_resource(creator!).id
         })
 
-      assert %{"success" => true} = json_response(creator!, 200)
+      assert %{} = json_response(creator!, 200)
 
       get_route_name = Routes.user_environment_access_path(creator!, :index, app["id"], env["id"])
       user = get(user, get_route_name)
@@ -48,27 +47,19 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       creator! = get(creator!, get_route_name)
 
       assert %{
-               "data" => %{
-                 "environment_user_accesses" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
-               },
-               "success" => true
+               "data" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
              } = json_response(creator!, 200)
 
       assert %{
-               "data" => %{
-                 "environment_user_accesses" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
-               },
-               "success" => true
+               "data" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
              } = json_response(admin, 200)
 
       assert %{
-               "success" => false,
-               "errors" => [%{"code" => 403, "message" => "Forbidden"}]
+               "error" => "Forbidden"
              } = json_response(user, 403)
 
       assert %{
-               "success" => false,
-               "errors" => [%{"code" => 403, "message" => "Forbidden"}]
+               "error" => "Forbidden"
              } = json_response(other_dev, 403)
     end
   end
@@ -77,10 +68,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "user environment access controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
-      assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
+      assert %{"data" => app} = json_response(creator!, 200)
 
-      assert %{"data" => %{"envs" => envs}, "success" => true} =
-               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert %{"data" => envs} = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 
@@ -106,28 +96,24 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
           "user_id" => Guardian.Plug.current_resource(creator!).id
         })
 
-      assert %{"success" => true} = json_response(creator!, 200)
+      assert %{} = json_response(creator!, 200)
 
       assert %{
-               "success" => false,
-               "errors" => [
-                 %{"code" => 0, "message" => "user_id has already been taken"}
-               ]
+               "error" => "user_id has already been taken"
              } ==
                json_response(admin!, 400)
 
-      assert %{"success" => false} = json_response(user!, 403)
-      assert %{"success" => false} = json_response(other_dev!, 403)
+      assert %{"error" => _error} = json_response(user!, 403)
+      assert %{"error" => _error} = json_response(other_dev!, 403)
     end
 
     @tag auth_user_with_cgu: :dev
     test "user environment access controller authenticated but invalid params", %{conn: conn!} do
       conn! = create_app(conn!)
 
-      assert %{"success" => true, "data" => %{"app" => app}} = json_response(conn!, 200)
+      assert %{"data" => app} = json_response(conn!, 200)
 
-      assert %{"data" => %{"envs" => envs}, "success" => true} =
-               json_response(get(conn!, Routes.envs_path(conn!, :index, app["id"])), 200)
+      assert %{"data" => envs} = json_response(get(conn!, Routes.envs_path(conn!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 
@@ -136,7 +122,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
           "user_id" => "wrong"
         })
 
-      assert %{"errors" => _errors, "success" => false} = json_response(conn!, 400)
+      assert %{"error" => _error} = json_response(conn!, 400)
     end
   end
 
@@ -144,10 +130,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "successfull authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
-      assert %{"success" => true, "data" => %{"app" => app}} = json_response(creator!, 200)
+      assert %{"data" => app} = json_response(creator!, 200)
 
-      assert %{"data" => %{"envs" => envs}, "success" => true} =
-               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert %{"data" => envs} = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 
@@ -173,18 +158,15 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
           "email" => Guardian.Plug.current_resource(creator!).email
         })
 
-      assert %{"success" => true} = json_response(creator!, 200)
+      assert %{} = json_response(creator!, 200)
 
       assert %{
-               "success" => false,
-               "errors" => [
-                 %{"code" => 0, "message" => "user_id has already been taken"}
-               ]
+               "error" => "user_id has already been taken"
              } ==
                json_response(admin!, 400)
 
-      assert %{"success" => false} = json_response(user!, 403)
-      assert %{"success" => false} = json_response(other_dev!, 403)
+      assert %{} = json_response(user!, 403)
+      assert %{} = json_response(other_dev!, 403)
     end
   end
 end
