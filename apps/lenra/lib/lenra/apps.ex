@@ -219,6 +219,8 @@ defmodule Lenra.Apps do
 
     env = get_env(environment_id)
 
+    # TODO: back previous deployed build, check if it's present in another env and if not, remove it from OpenFaaS
+
     Ecto.Multi.new()
     |> Ecto.Multi.update(:updated_env, Ecto.Changeset.change(env, deployed_build_id: build.id))
     |> Ecto.Multi.insert(
@@ -226,6 +228,7 @@ defmodule Lenra.Apps do
       Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
     )
     |> Ecto.Multi.run(:openfaas_deploy, fn _repo, _result ->
+      # TODO: check if this build is already deployed on another env
       OpenfaasServices.deploy_app(
         build.application.service_name,
         build.build_number

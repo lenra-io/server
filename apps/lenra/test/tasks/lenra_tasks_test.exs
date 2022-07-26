@@ -4,13 +4,15 @@ defmodule Mix.Tasks.HashTest do
   alias Mix.Tasks.Hash
 
   @path "/tmp/hash_test"
+  @path2 "/tmp/hash_test2"
   describe "mix tasks" do
     test "hash/1 test generating hash with mix hash" do
       File.write!(@path, "test")
-      hash = Hash.run([@path, "--algo", "sha256"])
+      hash = capture_io(fn -> Hash.run([@path, "--algo", "sha256"]) end)
 
       hash1 =
         hash
+        |> String.trim()
         |> String.downcase()
 
       assert hash1 == "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
@@ -40,7 +42,7 @@ defmodule Mix.Tasks.HashTest do
     end
 
     test "hash/1 test mix hash with invlaid path" do
-      hash = capture_io(fn -> Hash.run([@path]) end)
+      hash = capture_io(fn -> Hash.run([@path2]) end)
 
       hash1 =
         hash

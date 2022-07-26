@@ -12,7 +12,7 @@ defmodule Lenra.Legal do
   alias Lenra.Legal
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
-  alias Mix.Tasks.Hash
+  alias Lenra.Utils
 
   def get_latest_cgu do
     cgu = get_latest_cgu_query() |> Repo.one()
@@ -52,18 +52,8 @@ defmodule Lenra.Legal do
     Postgrex.Error -> BusinessError.not_latest_cgu_tuple()
   end
 
-  def add_cgu do
-    latest_cgu = get_latest_cgu_query() |> Repo.one()
-
-    version =
-      if latest_cgu == nil do
-        1
-      else
-        latest_cgu.version
-      end
-
-    path = "./apps/lenra_web/priv/static/cgu/CGU_fr_#{version}.md"
-    hash = to_string(Hash.run([path]))
+  def add_cgu(path, version) do
+    hash = to_string(Utils.hash_file(path, :sha256))
 
     %{path: path, version: version, hash: hash}
     |> Legal.CGU.new()
