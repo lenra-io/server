@@ -13,7 +13,7 @@ defmodule Lenra.Utils do
         |> Base.encode16()
 
       false ->
-        "File not found"
+        {:error, "File not found"}
     end
   end
 end
