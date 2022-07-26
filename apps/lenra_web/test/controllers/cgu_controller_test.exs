@@ -64,7 +64,7 @@ defmodule LenraWeb.CguControllerTest do
     test "test get_latest_cgu without cgu in database", %{conn: conn} do
       Repo.delete_all(CGU)
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
-      assert conn.resp_body == "{\"error\":\"Cgu cannot be found\"}"
+      assert conn.resp_body == "{\"message\":\"Cgu cannot be found\",\"reason\":\"cgu_not_found\"}"
     end
   end
 
