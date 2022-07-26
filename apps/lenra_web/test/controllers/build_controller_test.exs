@@ -45,7 +45,7 @@ defmodule LenraWeb.BuildControllerTest do
       conn = get(conn, Routes.builds_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-               "error" => "You are not authenticated",
+               "message" => "You are not authenticated",
                "reason" => "unauthenticated"
              }
     end
@@ -86,8 +86,8 @@ defmodule LenraWeb.BuildControllerTest do
                ]
              } = json_response(admin, 200)
 
-      assert %{"error" => _error} = json_response(user, 403)
-      assert %{"error" => _error} = json_response(other_dev, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)
     end
   end
 
@@ -105,9 +105,9 @@ defmodule LenraWeb.BuildControllerTest do
       assert %{"data" => _} = json_response(creator!, 200)
       assert %{"data" => _} = json_response(admin, 200)
 
-      assert %{"error" => "Forbidden"} = json_response(user, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
 
-      assert %{"error" => "Forbidden"} = json_response(other_dev, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)
     end
 
     @tag auth_user_with_cgu: :dev
@@ -152,11 +152,13 @@ defmodule LenraWeb.BuildControllerTest do
         )
 
       assert %{
-               "error" => "commit_hash is invalid"
+               "message" => "commit_hash is invalid",
+               "reason" => "invalid_commit_hash"
              } = json_response(conn!, 400)
 
       assert %{
-               "error" => "commit_hash is invalid"
+               "message" => "commit_hash is invalid",
+               "reason" => "invalid_commit_hash"
              } == json_response(conn!, 400)
     end
   end

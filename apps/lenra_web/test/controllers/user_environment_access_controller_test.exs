@@ -18,7 +18,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       conn = get(conn, Routes.user_environment_access_path(conn, :index, 0, 0))
 
       assert json_response(conn, 401) == %{
-               "error" => "You are not authenticated",
+               "message" => "You are not authenticated",
                "reason" => "unauthenticated"
              }
     end
@@ -55,11 +55,13 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
              } = json_response(admin, 200)
 
       assert %{
-               "error" => "Forbidden"
+               "message" => "Forbidden",
+               "reason" => "forbidden"
              } = json_response(user, 403)
 
       assert %{
-               "error" => "Forbidden"
+               "message" => "Forbidden",
+               "reason" => "forbidden"
              } = json_response(other_dev, 403)
     end
   end
@@ -99,12 +101,13 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       assert %{} = json_response(creator!, 200)
 
       assert %{
-               "error" => "user_id has already been taken"
+               "message" => "user_id has already been taken",
+               "reason" => "invalid_user_id"
              } ==
                json_response(admin!, 400)
 
-      assert %{"error" => _error} = json_response(user!, 403)
-      assert %{"error" => _error} = json_response(other_dev!, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
     end
 
     @tag auth_user_with_cgu: :dev
@@ -122,7 +125,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
           "user_id" => "wrong"
         })
 
-      assert %{"error" => _error} = json_response(conn!, 400)
+      assert %{"message" => "user_id is invalid", "reason" => "invalid_user_id"} = json_response(conn!, 400)
     end
   end
 
@@ -161,7 +164,8 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       assert %{} = json_response(creator!, 200)
 
       assert %{
-               "error" => "user_id has already been taken"
+               "message" => "user_id has already been taken",
+               "reason" => "invalid_user_id"
              } ==
                json_response(admin!, 400)
 

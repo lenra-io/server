@@ -3,6 +3,8 @@ defmodule LenraWeb.Plug.VerifyCgu do
   Plug that checks whether the latest cgu has been accepted or not
   """
 
+  alias Lenra.Errors.BusinessError
+
   def init(opts), do: opts
 
   def call(conn, _opts) do
@@ -11,7 +13,7 @@ defmodule LenraWeb.Plug.VerifyCgu do
     if Lenra.Legal.user_accepted_latest_cgu?(user.id) do
       conn
     else
-      [translated_error] = LenraCommonWeb.ErrorHelpers.translate_error(:did_not_accept_cgu)
+      translated_error = LenraCommonWeb.ErrorHelpers.translate_error(BusinessError.did_not_accept_cgu_tuple())
 
       conn
       |> Phoenix.Controller.put_view(LenraWeb.ErrorView)

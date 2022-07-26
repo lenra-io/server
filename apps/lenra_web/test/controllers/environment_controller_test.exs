@@ -18,7 +18,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
       conn = get(conn, Routes.envs_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-               "error" => "You are not authenticated",
+               "message" => "You are not authenticated",
                "reason" => "unauthenticated"
              }
     end
@@ -91,11 +91,13 @@ defmodule LenraWeb.EnvironmentControllerTest do
              } = json_response(admin, 200)
 
       assert %{
-               "error" => "Forbidden"
+               "message" => "Forbidden",
+               "reason" => "forbidden"
              } = json_response(user, 403)
 
       assert %{
-               "error" => "Forbidden"
+               "message" => "Forbidden",
+               "reason" => "forbidden"
              } = json_response(other_dev, 403)
     end
   end
@@ -144,8 +146,8 @@ defmodule LenraWeb.EnvironmentControllerTest do
 
       assert %{"data" => _data} = json_response(creator!, 200)
       assert %{"data" => _data} = json_response(admin!, 200)
-      assert %{"error" => _error} = json_response(user!, 403)
-      assert %{"error" => _error} = json_response(other_dev!, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
     end
   end
 
@@ -187,8 +189,8 @@ defmodule LenraWeb.EnvironmentControllerTest do
 
       assert %{"data" => _data} = json_response(creator!, 200)
       assert %{"data" => _data} = json_response(admin!, 200)
-      assert %{"error" => _error} = json_response(user!, 403)
-      assert %{"error" => _error} = json_response(other_dev!, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
     end
 
     @tag auth_user_with_cgu: :dev
@@ -204,7 +206,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
           "is_public" => false
         })
 
-      assert %{"error" => _error} = json_response(conn!, 400)
+      assert %{"message" => "name is invalid", "reason" => "invalid_name"} = json_response(conn!, 400)
     end
   end
 end

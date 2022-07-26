@@ -7,7 +7,8 @@ defmodule LenraWeb.Guardian.ErrorHandler do
 
   @impl Guardian.Plug.ErrorHandler
   def auth_error(conn, {:error, :did_not_accept_cgu}, _opts) do
-    [translated_error] = LenraCommonWeb.ErrorHelpers.translate_error(:did_not_accept_cgu)
+    translated_error =
+      LenraCommonWeb.ErrorHelpers.translate_error(Lenra.Errors.BusinessError.did_not_accept_cgu_tuple())
 
     conn
     |> Phoenix.Controller.put_view(LenraWeb.ErrorView)
