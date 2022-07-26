@@ -74,11 +74,13 @@ defmodule Lenra.Seeds do
   end
 
   def generate_cgu do
-    "CGU_fr_" <> version =
+    wildcard =
       "./apps/lenra_web/priv/static/cgu/CGU_fr_*.md"
       |> Path.wildcard()
-      |> Path.basename(".md")
 
-    Lenra.Legal.add_cgu("./apps/lenra_web/priv/static/cgu/CGU_fr_#{version}.md", version)
+    Enum.each(wildcard, fn path ->
+      "CGU_fr_" <> version = path |> Path.basename(".md")
+      Lenra.Legal.add_cgu("./apps/lenra_web/priv/static/cgu/CGU_fr_#{version}.md", version)
+    end)
   end
 end
