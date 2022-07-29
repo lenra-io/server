@@ -1,14 +1,67 @@
+<div id="top"></div>
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
 
-# Lenra Server
 
-Requirement : 
-  * Start database with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![AGPL License][license-shield]][license-url]
+
+
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <!-- <a href="https://github.com/lenra-io/template-hello-world-node12">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  </a> -->
+
+<h3 align="center">Lenra Server</h3>
+
+  <p align="center">
+    This repository the Lenra server application.
+    <br />
+    <br />
+    <!-- <a href="https://github.com/lenra-io/template-hello-world-node12">View Demo</a>
+    · -->
+    <a href="https://github.com/lenra-io/template-hello-world-node12/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/lenra-io/template-hello-world-node12/issues">Request Feature</a>
+  </p>
+</div>
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+### Prerequisites
+
+* Start database with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
   * Install erlang in version 24.2 and elixir in version 1.12.3 otp-24
   * Create the database and start migration `mix setup`. This is equivalent to running the following commands : 
     * `mix deps.get` to install the dependencies
     * `mix ecto.create` to create database
     * `mix ecto.migrate` to start all migration and have an up-to-date database
     * `mix run priv/repo/seeds.exs` to fill database with default values
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Start UP
 
 Now you can start the server with this command `mix phx.server`
 
@@ -36,7 +89,7 @@ Code quality check :
   * Source: https://github.com/phoenixframework/phoenix
 
 
-## Some rules to respect the layer model 
+### Some rules to respect the layer model 
 Use 3 layers : 
  - The Controller to manage the conn object, call the service and handle errors. He’s the only one who resolves the transactions.
  - The Entity Model to manage changes on the object such as add/modify and database associations.
@@ -220,3 +273,39 @@ defmodule Lenra.PostServices do
   end
 end
 ```
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please open an issue with the tag "enhancement" or "bug".
+Don't forget to give the project a star! Thanks again!
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the **MIT** License. See [LICENSE](./LICENSE) for more information.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/server.svg?style=for-the-badge
+[contributors-url]: https://github.com/lenra-io/server/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/lenra-io/server.svg?style=for-the-badge
+[forks-url]: https://github.com/lenra-io/server/network/members
+[stars-shield]: https://img.shields.io/github/stars/lenra-io/server.svg?style=for-the-badge
+[stars-url]: https://github.com/lenra-io/server/stargazers
+[issues-shield]: https://img.shields.io/github/issues/lenra-io/server.svg?style=for-the-badge
+[issues-url]: https://github.com/lenra-io/server/issues
+[license-shield]: https://img.shields.io/github/license/lenra-io/server.svg?style=for-the-badge
+[license-url]: https://github.com/lenra-io/server/blob/master/LICENSE.txt
