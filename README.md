@@ -232,7 +232,7 @@ def validate_user(id, code) do
 end
 ```
 #### Exemple
-Exemple simplifié de service "de base" : 
+Simplified example of a "basic" service : 
 ```elixir
 defmodule Lenra.PostServices do
   alias Lenra.{Repo, Post}
