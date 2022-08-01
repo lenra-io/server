@@ -231,7 +231,7 @@ def validate_user(id, code) do
   |> Ecto.Multi.merge(fn _ -> UserServices.update(user, %{role: User.const_user_role()}) end) # Update l'utilisateur
 end
 ```
-#### Exemple
+#### Example
 Simplified example of a "basic" service : 
 ```elixir
 defmodule Lenra.PostServices do
