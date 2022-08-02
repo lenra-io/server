@@ -11,10 +11,6 @@ defmodule Lenra.Repo.Migrations.ModificationVersionCgu do
       """
     )
 
-    alter table("cgu") do
-      modify(:version, :integer, from: :string)
-    end
-
     drop(unique_index(:cgu, [:link]))
     rename(table("cgu"), :link, to: :path)
     create(unique_index(:cgu, [:path]))
