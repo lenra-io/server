@@ -4,6 +4,7 @@ defmodule Mix.Tasks.HashTest do
   alias Mix.Tasks.Hash
 
   @path "/tmp/hash_test"
+  @path2 "/tmp/hash_test2"
   describe "mix tasks" do
     test "hash/1 test generating hash with mix hash" do
       File.write!(@path, "test")
@@ -41,7 +42,7 @@ defmodule Mix.Tasks.HashTest do
     end
 
     test "hash/1 test mix hash with invlaid path" do
-      hash = capture_io(fn -> Hash.run([@path]) end)
+      hash = capture_io(fn -> Hash.run([@path2]) end)
 
       hash1 =
         hash

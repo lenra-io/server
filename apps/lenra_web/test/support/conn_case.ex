@@ -48,6 +48,7 @@ defmodule LenraWeb.ConnCase do
       |> auth_user(tags)
       |> auth_users(tags)
       |> auth_user_with_cgu(tags)
+      |> auth_users_with_cgu(tags)
 
     {:ok, map}
   end
@@ -55,6 +56,13 @@ defmodule LenraWeb.ConnCase do
   defp auth_users(map, tags) do
     case tags[:auth_users] do
       roles when is_list(roles) -> Map.put(map, :users, auth_users(roles))
+      _roles -> Map.put(map, :users, [])
+    end
+  end
+
+  defp auth_users_with_cgu(map, tags) do
+    case tags[:auth_users_with_cgu] do
+      roles when is_list(roles) -> Map.put(map, :users, auth_users_with_cgu(roles))
       _roles -> Map.put(map, :users, [])
     end
   end
@@ -77,6 +85,20 @@ defmodule LenraWeb.ConnCase do
     end
   end
 
+  defp auth_users_with_cgu(users_role) do
+    {:ok, cgu} = %{path: "latest", hash: "latesthash", version: 2} |> CGU.new() |> Lenra.Repo.insert()
+
+    users_role
+    |> Enum.with_index()
+    |> Enum.map(fn {role, idx} ->
+      conn = Phoenix.ConnTest.build_conn()
+      {:ok, %{inserted_user: user}} = UserTestHelper.register_user_nb(idx, role)
+
+      Legal.accept_cgu(cgu.id, user.id)
+      conn_user(conn, user)
+    end)
+  end
+
   defp auth_users(users_role) do
     users_role
     |> Enum.with_index()
@@ -95,7 +117,7 @@ defmodule LenraWeb.ConnCase do
   defp auth_john_doe_with_cgu(conn, params \\ %{}) do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(params)
 
-    {:ok, cgu} = %{link: "latest", hash: "latesthash", version: "latest"} |> CGU.new() |> Lenra.Repo.insert()
+    {:ok, cgu} = %{path: "latest", hash: "latesthash", version: 2} |> CGU.new() |> Lenra.Repo.insert()
 
     Legal.accept_cgu(cgu.id, user.id)
     conn_user(conn, user)

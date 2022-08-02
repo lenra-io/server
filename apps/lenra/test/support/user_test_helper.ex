@@ -13,6 +13,7 @@ defmodule UserTestHelper do
     "password_confirmation" => "Johndoe@thefirst"
   }
 
+  @spec param_user(any) :: %{optional(<<_::40, _::_*8>>) => <<_::32, _::_*8>>}
   def param_user(idx) do
     %{
       "first_name" => "John #{idx}",

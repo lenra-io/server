@@ -7,25 +7,24 @@ defmodule Mix.Tasks.Hash do
 
   properties : --algo {desired algorithm to hash the file}"
   use Mix.Task
+  alias Lenra.Utils
 
   @impl true
   def run(args) do
-    {opts, paths} = OptionParser.parse!(args, strict: [algo: :string])
+    {opts, path} = OptionParser.parse!(args, strict: [algo: :string])
 
-    case paths do
+    case path do
       [] ->
         IO.puts("no argument found. use mix help hash for more information")
 
-      [paths] ->
-        case File.exists?(paths) do
+      [path] ->
+        case File.exists?(path) do
           true ->
-            algo = Keyword.get(opts, :algo, "md5")
+            # credo:disable-for-next-line
+            algo = String.to_atom(Keyword.get(opts, :algo, "sha256"))
 
-            paths
-            |> File.stream!([], 2048)
-            |> Enum.reduce(:crypto.hash_init(String.to_existing_atom(algo)), &:crypto.hash_update(&2, &1))
-            |> :crypto.hash_final()
-            |> Base.encode16()
+            path
+            |> Utils.hash_file(algo)
             |> IO.puts()
 
           false ->

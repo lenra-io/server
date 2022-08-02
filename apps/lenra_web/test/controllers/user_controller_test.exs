@@ -106,7 +106,7 @@ defmodule LenraWeb.UserControllerTest do
 
   test "refresh authenticated test", %{conn: conn} do
     conn_register = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
-
+    Repo.delete_all(Lenra.Legal.CGU)
     conn = post(conn_register, Routes.user_path(conn_register, :refresh_token))
 
     assert %{"data" => _data} = json_response(conn, 200)
@@ -151,7 +151,7 @@ defmodule LenraWeb.UserControllerTest do
              json_response(conn!, 400)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "change password test", %{conn: conn} do
     new_password = "New@password"
 
@@ -181,7 +181,7 @@ defmodule LenraWeb.UserControllerTest do
     assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "change password error test", %{conn: conn} do
     conn =
       put(
@@ -346,6 +346,7 @@ defmodule LenraWeb.UserControllerTest do
 
   @tag :auth_user
   test "change password code 4 time with password 1 test", %{conn: conn!} do
+    Repo.delete_all("cgu")
     new_password = "Newpassword@"
     new_password_2 = "Newpassword@2"
     new_password_3 = "Newpassword@3"
@@ -406,7 +407,7 @@ defmodule LenraWeb.UserControllerTest do
            end)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "validate dev user", %{conn: conn} do
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 
@@ -415,7 +416,7 @@ defmodule LenraWeb.UserControllerTest do
     assert %{} = json_response(conn, 200)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "validate dev user invalid uuid", %{conn: conn} do
     invalid_code = "not-a-uuid"
 
@@ -427,7 +428,7 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  @tag :auth_user
+  @tag :auth_user_with_cgu
   test "validate dev user invalid code", %{conn: conn} do
     invalid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a5"
 
@@ -439,7 +440,7 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  @tag auth_user: :dev
+  @tag auth_user_with_cgu: :dev
   test "validate dev user already dev", %{conn: conn} do
     invalid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a5"
 
@@ -451,7 +452,7 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  @tag auth_users: [:user, :user]
+  @tag auth_users_with_cgu: [:user, :user]
   test "validate dev code already used", %{users: [user1, user2]} do
     valid_code = "fbd1ff7e-5751-4617-afaa-ef3be4cc43a6"
 

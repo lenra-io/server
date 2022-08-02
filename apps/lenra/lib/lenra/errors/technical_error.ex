@@ -19,6 +19,8 @@ defmodule Lenra.Errors.TechnicalError do
       {:widget_not_found, "No Widget found in app manifest."},
       {:invalid_ui, "Invalid UI"},
       {:datastore_not_found, "Datastore cannot be found"},
-      {:data_not_found, "Data cannot be found"}
+      {:data_not_found, "Data cannot be found"},
+      {:cgu_not_found, "Cgu cannot be found"},
+      {:file_not_found, "File not found"}
     ]
 end

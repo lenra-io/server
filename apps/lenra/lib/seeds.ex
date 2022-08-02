@@ -5,6 +5,7 @@ defmodule Lenra.Seeds do
 
   def run do
     generate_dev_codes()
+    generate_cgu()
   end
 
   def generate_dev_codes do
@@ -69,6 +70,15 @@ defmodule Lenra.Seeds do
           },
           on_conflict: :nothing
         )
+    end)
+  end
+
+  def generate_cgu do
+    "./apps/lenra_web/priv/static/cgu/CGU_fr_*.md"
+    |> Path.wildcard()
+    |> Enum.each(fn path ->
+      "CGU_fr_" <> version = path |> Path.basename(".md")
+      Lenra.Legal.add_cgu("./apps/lenra_web/priv/static/cgu/CGU_fr_#{version}.md", version)
     end)
   end
 end

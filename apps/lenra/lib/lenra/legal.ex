@@ -8,15 +8,17 @@ defmodule Lenra.Legal do
 
   import Ecto.Query, only: [from: 2, select: 3]
 
+  alias Lenra.Errors.{BusinessError, TechnicalError}
+  alias Lenra.Legal
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
   alias Lenra.Repo
-  alias Lenra.Errors.{BusinessError, TechnicalError}
+  alias Lenra.Utils
 
   def get_latest_cgu do
     cgu = get_latest_cgu_query() |> Repo.one()
 
     case cgu do
-      nil -> TechnicalError.error_404_tuple()
+      nil -> TechnicalError.cgu_not_found_tuple()
       cgu -> {:ok, cgu}
     end
   end
@@ -48,5 +50,13 @@ defmodule Lenra.Legal do
     |> Repo.transaction()
   rescue
     Postgrex.Error -> BusinessError.not_latest_cgu_tuple()
+  end
+
+  def add_cgu(path, version) do
+    hash = to_string(Utils.hash_file(path, :sha256))
+
+    %{path: path, version: version, hash: hash}
+    |> Legal.CGU.new()
+    |> Repo.insert(on_conflict: :nothing)
   end
 end

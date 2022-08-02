@@ -31,7 +31,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
              }
     end
 
-    @tag auth_users: [:dev, :user, :dev, :admin]
+    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "application main env controller authenticated", %{users: [creator!, user, other_dev, admin]} do
       %{conn: creator!, app: app} = create_app(creator!)
 
