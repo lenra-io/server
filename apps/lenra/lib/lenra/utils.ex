@@ -3,6 +3,7 @@ defmodule Lenra.Utils do
     This module handle all utils for a user.
     - Hash a file
   """
+  alias Lenra.Errors.TechnicalError
 
   def hash_file(path, algo) do
     case File.exists?(path) do
@@ -14,7 +15,7 @@ defmodule Lenra.Utils do
         |> Base.encode16()
 
       false ->
-        Lenra.Errors.TechnicalError.file_not_found_tuple()
+        TechnicalError.file_not_found_tuple()
     end
   end
 end
