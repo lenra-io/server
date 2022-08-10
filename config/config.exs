@@ -76,7 +76,8 @@ config :application_runner,
   url: System.get_env("HOST", "4000"),
   faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
   faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
-  faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci")
+  faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
+  env: "dev"
 
 # additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
 # additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
