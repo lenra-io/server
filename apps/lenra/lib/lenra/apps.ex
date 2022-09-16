@@ -129,9 +129,6 @@ defmodule Lenra.Apps do
     |> Ecto.Multi.insert(:inserted_env, fn %{inserted_application: app} ->
       Environment.new(app.id, creator_id, nil, params)
     end)
-    |> Ecto.Multi.insert(:inserted_datastore, fn %{inserted_env: env} ->
-      Datastore.new(env.id, %{"name" => "_users"})
-    end)
   end
 
   def update_env(env, params) do

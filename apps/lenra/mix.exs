@@ -33,6 +33,7 @@ defmodule Lenra.MixProject do
   defp deps do
     [
       {:phoenix_pubsub, "~> 2.0"},
+      {:telemetry, "~> 0.4.3", override: true},
       {:ecto_sql, "~> 3.4"},
       {:bamboo, "~> 2.1.0"},
       {:bamboo_smtp, "~> 4.0.1"},
@@ -51,14 +52,14 @@ defmodule Lenra.MixProject do
         name: :application_runner,
         host: "github.com",
         project: "lenra-io/application-runner.git",
-        tag: "v1.0.0-beta.51",
+        tag: "mongo",
         credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       ),
       private_git(
         name: :lenra_common,
         host: "github.com",
         project: "lenra-io/lenra-common.git",
-        tag: "v2.0.4",
+        tag: "v2.2.0",
         credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       )
     ]

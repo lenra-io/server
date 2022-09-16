@@ -14,8 +14,7 @@ defmodule LenraWeb.AppsController do
          user <- Plug.current_resource(conn),
          apps <- Apps.all_apps(user.id) do
       conn
-      |> assign_data(apps)
-      |> reply
+      |> reply(apps)
     end
   end
 
@@ -24,8 +23,7 @@ defmodule LenraWeb.AppsController do
          user <- Plug.current_resource(conn),
          {:ok, %{inserted_application: app}} <- Apps.create_app(user.id, params) do
       conn
-      |> assign_data(app)
-      |> reply
+      |> reply(app)
     end
   end
 
@@ -34,8 +32,7 @@ defmodule LenraWeb.AppsController do
          :ok <- allow(conn, app),
          {:ok, %{updated_application: app}} <- Apps.update_app(app, params) do
       conn
-      |> assign_data(app)
-      |> reply
+      |> reply(app)
     end
   end
 
@@ -52,8 +49,7 @@ defmodule LenraWeb.AppsController do
          user <- Plug.current_resource(conn),
          apps <- Apps.all_apps_for_user(user.id) do
       conn
-      |> assign_data(apps)
-      |> reply
+      |> reply(apps)
     end
   end
 end

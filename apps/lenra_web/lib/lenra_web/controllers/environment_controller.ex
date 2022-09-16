@@ -17,8 +17,7 @@ defmodule LenraWeb.EnvsController do
   def index(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params) do
       conn
-      |> assign_data(Apps.all_envs_for_app(app.id))
-      |> reply
+      |> reply(Apps.all_envs_for_app(app.id))
     end
   end
 
@@ -27,8 +26,7 @@ defmodule LenraWeb.EnvsController do
          user <- Guardian.Plug.current_resource(conn),
          {:ok, %{inserted_env: env}} <- Apps.create_env(app.id, user.id, params) do
       conn
-      |> assign_data(env)
-      |> reply
+      |> reply(env)
     end
   end
 
@@ -37,8 +35,7 @@ defmodule LenraWeb.EnvsController do
          {:ok, env} <- Apps.fetch_env(env_id),
          {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
       conn
-      |> assign_data(env)
-      |> reply
+      |> reply(env)
     end
   end
 end

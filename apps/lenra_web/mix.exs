@@ -34,6 +34,7 @@ defmodule LenraWeb.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.5.9"},
+      {:telemetry, "~> 0.4.3", override: true},
       {:phoenix_live_dashboard, "~> 0.4"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
@@ -47,7 +48,7 @@ defmodule LenraWeb.MixProject do
         name: :lenra_common,
         host: "github.com",
         project: "lenra-io/lenra-common.git",
-        tag: "v2.0.4",
+        tag: "v2.2.0",
         credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
       )
     ]
