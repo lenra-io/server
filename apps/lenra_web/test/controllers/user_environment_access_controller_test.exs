@@ -46,11 +46,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       admin = get(admin, get_route_name)
       creator! = get(creator!, get_route_name)
 
-      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] =
-               json_response(creator!, 200)
+      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] = json_response(creator!, 200)
 
-      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] =
-               json_response(admin, 200)
+      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] = json_response(admin, 200)
 
       assert %{
                "message" => "Forbidden",

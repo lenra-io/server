@@ -80,8 +80,7 @@ defmodule LenraWeb.BuildControllerTest do
                  "creator_id" => _,
                  "id" => _
                }
-             ] =
-               json_response(admin, 200)
+             ] = json_response(admin, 200)
 
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)

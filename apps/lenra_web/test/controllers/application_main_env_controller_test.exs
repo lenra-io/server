@@ -59,8 +59,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
                "id" => _,
                "is_ephemeral" => false,
                "is_public" => false
-             } =
-               json_response(admin, 200)
+             } = json_response(admin, 200)
 
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)
