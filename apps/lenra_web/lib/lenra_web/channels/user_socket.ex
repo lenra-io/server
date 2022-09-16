@@ -6,7 +6,7 @@ defmodule LenraWeb.UserSocket do
       {:ok, user, _claims} ->
         {:ok, user.id}
 
-      error ->
+      _error ->
         :error
     end
   end

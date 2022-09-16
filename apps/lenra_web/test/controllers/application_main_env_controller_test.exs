@@ -16,7 +16,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
         "icon" => 12
       })
 
-    %{"data" => app} = json_response(conn, 200)
+    app = json_response(conn, 200)
 
     %{conn: conn, app: app}
   end
@@ -42,28 +42,25 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
       admin = get(admin, get_application_main_env_path)
 
       assert %{
-               "data" => %{
-                 "application_id" => _,
-                 "name" => "live",
-                 "creator_id" => _,
-                 "deployed_build_id" => _,
-                 "id" => _,
-                 "is_ephemeral" => false,
-                 "is_public" => false
-               }
+               "application_id" => _,
+               "name" => "live",
+               "creator_id" => _,
+               "deployed_build_id" => _,
+               "id" => _,
+               "is_ephemeral" => false,
+               "is_public" => false
              } = json_response(creator!, 200)
 
       assert %{
-               "data" => %{
-                 "application_id" => _,
-                 "name" => "live",
-                 "creator_id" => _,
-                 "deployed_build_id" => _,
-                 "id" => _,
-                 "is_ephemeral" => false,
-                 "is_public" => false
-               }
-             } = json_response(admin, 200)
+               "application_id" => _,
+               "name" => "live",
+               "creator_id" => _,
+               "deployed_build_id" => _,
+               "id" => _,
+               "is_ephemeral" => false,
+               "is_public" => false
+             } =
+               json_response(admin, 200)
 
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)

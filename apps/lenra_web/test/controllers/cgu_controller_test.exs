@@ -25,9 +25,7 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
-      assert %{
-               "data" => %{"hash" => "Test1", "path" => "Test1", "version" => 3}
-             } = json_response(conn, 200)
+      assert %{"hash" => "Test1", "path" => "Test1", "version" => 3} = json_response(conn, 200)
     end
 
     test "test get_latest_cgu with 4 cgu in DB", %{conn: conn} do
@@ -56,9 +54,7 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
-      assert %{
-               "data" => %{"hash" => "Test3", "path" => "Test3", "version" => 5}
-             } = json_response(conn, 200)
+      assert %{"hash" => "Test3", "path" => "Test3", "version" => 5} = json_response(conn, 200)
     end
 
     test "test get_latest_cgu without cgu in database", %{conn: conn} do
@@ -81,9 +77,8 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
 
-      assert %{
-               "data" => %{"cgu_id" => cgu.id, "user_id" => conn.assigns[:user].id}
-             } == json_response(conn, 200)
+      assert %{"cgu_id" => cgu.id, "user_id" => conn.assigns[:user].id} ==
+               json_response(conn, 200)
     end
 
     @tag auth_user_with_cgu: :dev
@@ -97,8 +92,6 @@ defmodule LenraWeb.CguControllerTest do
         |> Repo.insert()
 
       conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
-
-      assert %{"data" => _data} = json_response(conn, 200)
     end
   end
 
@@ -116,9 +109,8 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
 
-      assert json_response(conn, 200) == %{
-               "data" => true
-             }
+      assert json_response(conn, 200) ==
+               true
     end
 
     @tag auth_user: :dev
@@ -130,9 +122,8 @@ defmodule LenraWeb.CguControllerTest do
 
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
 
-      assert json_response(conn, 200) == %{
-               "data" => false
-             }
+      assert json_response(conn, 200) ==
+               false
     end
   end
 end

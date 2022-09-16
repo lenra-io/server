@@ -18,10 +18,10 @@ defmodule LenraWeb.RunnerControllerTest do
           "repository" => "https://gitlab.com/myname/test.git"
         })
 
-      assert %{"data" => app} = json_response(conn!, 200)
+      assert app = json_response(conn!, 200)
 
       conn! = post(conn!, Routes.builds_path(conn!, :create, app["id"]))
-      assert %{"data" => build} = json_response(conn!, 200)
+      assert build = json_response(conn!, 200)
 
       {:ok, %{conn: conn!, app: app, build: build}}
     end

@@ -19,7 +19,13 @@ defmodule LenraWeb.UserControllerTest do
   test "register test", %{conn: conn} do
     conn = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
-    assert %{"data" => _data} = json_response(conn, 200)
+    assert %{
+             "email" => "john.doe@lenra.fr",
+             "first_name" => "John",
+             "id" => _id,
+             "last_name" => "Doe",
+             "role" => "unverified_user"
+           } = json_response(conn, 200)
 
     assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
   end
@@ -74,8 +80,6 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    assert %{"data" => _data} = json_response(conn, 200)
-
     assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
   end
 
@@ -108,8 +112,6 @@ defmodule LenraWeb.UserControllerTest do
     conn_register = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
     Repo.delete_all(Lenra.Legal.CGU)
     conn = post(conn_register, Routes.user_path(conn_register, :refresh_token))
-
-    assert %{"data" => _data} = json_response(conn, 200)
 
     assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
   end
@@ -176,7 +178,13 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    assert %{"data" => _data} = json_response(conn, 200)
+    assert %{
+             "email" => "john.doe@lenra.fr",
+             "first_name" => "John",
+             "id" => _id,
+             "last_name" => "Doe",
+             "role" => "unverified_user"
+           } = json_response(conn, 200)
 
     assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
   end
@@ -233,8 +241,6 @@ defmodule LenraWeb.UserControllerTest do
           "password" => new_password
         })
       )
-
-    assert %{"data" => _data} = json_response(conn!, 200)
 
     assert Enum.any?(conn!.resp_headers, fn element ->
              "access_token" in Tuple.to_list(element)
@@ -321,7 +327,7 @@ defmodule LenraWeb.UserControllerTest do
   end
 
   test "change lost password error password test", %{conn: conn} do
-    %{assigns: %{data: user}} = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+    %{assigns: %{root: user}} = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
 
     post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
 
@@ -399,8 +405,6 @@ defmodule LenraWeb.UserControllerTest do
           "password" => "Johndoe@thefirst"
         })
       )
-
-    assert %{"data" => _data} = json_response(conn!, 200)
 
     assert Enum.any?(conn!.resp_headers, fn element ->
              "access_token" in Tuple.to_list(element)
