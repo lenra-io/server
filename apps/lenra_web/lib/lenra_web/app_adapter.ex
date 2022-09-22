@@ -13,7 +13,7 @@ defmodule LenraWeb.AppAdapter do
   def allow(user_id, app_name) do
     with %App{} = application <- Repo.get_by(App, service_name: app_name),
          %User{} = user <- Accounts.get_user(user_id) do
-      Bouncer.allow(LenraWeb.AppChannel.Policy, :join_app, user, application)
+      Bouncer.allow(LenraWeb.AppAdapter.Policy, :join_app, user, application)
     else
       _err ->
         false
@@ -28,7 +28,7 @@ defmodule LenraWeb.AppAdapter do
          %App{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]) do
       build_number = application.main_env.environment.deployed_build.build_number
-      %{function_name: String.downcase("#{lenra_env}-#{app_name}-#{build_number}")}
+      String.downcase("#{lenra_env}-#{app_name}-#{build_number}")
     end
   end
 
