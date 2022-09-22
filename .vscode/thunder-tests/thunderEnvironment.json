@@ -5,7 +5,7 @@
     "default": true,
     "sortNum": 10000,
     "created": "2022-02-07T13:10:08.908Z",
-    "modified": "2022-06-21T13:30:59.433Z",
+    "modified": "2022-09-22T08:33:12.317Z",
     "data": [
       {
         "name": "endpoint",
@@ -17,7 +17,7 @@
       },
       {
         "name": "email",
-        "value": "flavien@lenra.io"
+        "value": "test@lenra.io"
       },
       {
         "name": "password",
@@ -29,7 +29,7 @@
       },
       {
         "name": "app_repo",
-        "value": "https://github.com/lenra-io/template-hello-world-node12.git"
+        "value": "https://github.com/lenra-io/template-node.git"
       },
       {
         "name": "app_id",
@@ -49,7 +49,7 @@
       },
       {
         "name": "access_token",
-        "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZW5yYSIsImV4cCI6MTY1ODIzNzQ1MSwiaWF0IjoxNjU1ODE4MjUxLCJpc3MiOiJsZW5yYSIsImp0aSI6ImZhMzU0MDFjLTI0YmUtNGVlZC05YjllLTBiZGUzYTRkZTQxZiIsIm5iZiI6MTY1NTgxODI1MCwic3ViIjoiMSIsInR5cCI6ImFjY2VzcyJ9.aYAk64p6ZE1ZsJuLO5AE0rLD1Jg1a9MlCBIMPth9Fq3SOiKIOWa_OKfOcY-S-NeHpRRvpN4svucjK_MI6WjBNg"
+        "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZW5yYSIsImV4cCI6MTY2NjI1NDc3OSwiaWF0IjoxNjYzODM1NTc5LCJpc3MiOiJsZW5yYSIsImp0aSI6IjBhNTk4MTM3LTA1ZTgtNDU0Ny04Mzg5LTk3NzUwZDE5ZTJmOCIsIm5iZiI6MTY2MzgzNTU3OCwic3ViIjoiMSIsInR5cCI6ImFjY2VzcyJ9.ovt3JTCBvrcreBjw4hjiiOlCKkA88gJ_6ARcMUBF-q-f374ruwmIHlwOwep1l1nhaeNaCvEdphADHEG6u41J3w"
       },
       {
         "name": "app_name",
