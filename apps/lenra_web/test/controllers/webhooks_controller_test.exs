@@ -1,6 +1,8 @@
 defmodule LenraWeb.WebhooksControllerTest do
   use LenraWeb.ConnCase, async: true
 
+  alias ApplicationRunner.Webhooks.WebhookServices
+
   setup %{conn: conn} do
     conn = create_app(conn)
     user = Guardian.Plug.current_resource(conn)
@@ -27,7 +29,7 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   @tag auth_user_with_cgu: :dev
   test "Get env webhooks should work properly", %{conn: conn, env: env} do
-    ApplicationRunner.Webhooks.WebhookServices.create(env.id, %{"action" => "test"})
+    WebhookServices.create(env.id, %{"action" => "test"})
 
     conn = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id})
 
@@ -38,7 +40,7 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   @tag auth_user_with_cgu: :dev
   test "Get session webhooks should work properly", %{conn: conn, user: user, env: env} do
-    ApplicationRunner.Webhooks.WebhookServices.create(env.id, %{
+    WebhookServices.create(env.id, %{
       "action" => "test",
       "user_id" => user.id
     })

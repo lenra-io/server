@@ -1,14 +1,16 @@
 defmodule LenraWeb.WebhooksController do
   use LenraWeb, :controller
 
+  alias ApplicationRunner.Webhooks.WebhookServices
+
   def index(conn, %{"env_id" => env_id, "user_id" => user_id} = params) do
     conn
-    |> reply(ApplicationRunner.Webhooks.WebhookServices.get(env_id, user_id))
+    |> reply(WebhookServices.get(env_id, user_id))
   end
 
   def index(conn, %{"env_id" => env_id} = params) do
     conn
-    |> reply(ApplicationRunner.Webhooks.WebhookServices.get(env_id))
+    |> reply(WebhookServices.get(env_id))
   end
 
   def index(_conn, _params) do
