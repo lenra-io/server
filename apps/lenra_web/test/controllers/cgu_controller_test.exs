@@ -60,7 +60,9 @@ defmodule LenraWeb.CguControllerTest do
     test "test get_latest_cgu without cgu in database", %{conn: conn} do
       Repo.delete_all(CGU)
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
-      assert conn.resp_body == "{\"message\":\"Cgu cannot be found\",\"reason\":\"cgu_not_found\"}"
+
+      assert conn.resp_body ==
+               "{\"message\":\"Cgu cannot be found\",\"reason\":\"cgu_not_found\"}"
     end
   end
 
@@ -110,7 +112,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
 
       assert json_response(conn, 200) ==
-               true
+               %{"accepted" => true}
     end
 
     @tag auth_user: :dev
@@ -123,7 +125,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :user_accepted_latest_cgu))
 
       assert json_response(conn, 200) ==
-               false
+               %{"accepted" => false}
     end
   end
 end
