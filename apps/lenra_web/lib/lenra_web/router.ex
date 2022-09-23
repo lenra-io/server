@@ -65,7 +65,9 @@ defmodule LenraWeb.Router do
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
 
-    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController,
+      only: [:index, :create]
+    )
 
     resources("/apps/:app_id/builds", BuildsController, only: [:index, :create])
 
@@ -73,6 +75,8 @@ defmodule LenraWeb.Router do
     put("/password", UserController, :change_password)
     put("/verify/dev", UserController, :validate_dev)
     get("/me/apps", AppsController, :get_user_apps)
+
+    get("/webhooks", WebhooksController, :index)
   end
 
   scope "/api", LenraWeb do
