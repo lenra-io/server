@@ -24,8 +24,6 @@ defmodule Lenra.Accounts.User do
 
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
 
-  alias ApplicationRunner.JsonStorage.UserData
-
   @type t :: %__MODULE__{}
 
   @email_regex ~r/[^@]+@[^\.]+\..+/
@@ -51,7 +49,6 @@ defmodule Lenra.Accounts.User do
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
     has_one(:dev_code, DevCode)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
-    has_many(:user_datas, UserData, foreign_key: :user_id)
     many_to_many(:cgus, CGU, join_through: UserAcceptCGUVersion)
     timestamps()
   end

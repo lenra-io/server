@@ -6,8 +6,6 @@ defmodule Lenra.Apps.Environment do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias ApplicationRunner.JsonStorage.Datastore
-
   alias Lenra.Accounts.User
   alias Lenra.Apps.{App, Build, Environment}
   alias Lenra.UserEnvironmentAccess
@@ -32,7 +30,6 @@ defmodule Lenra.Apps.Environment do
     belongs_to(:creator, User)
     belongs_to(:deployed_build, Build)
     many_to_many(:shared_with, User, join_through: UserEnvironmentAccess)
-    has_many(:datastore, Datastore, foreign_key: :environment_id)
 
     timestamps()
   end

@@ -17,7 +17,7 @@ defmodule LenraWeb.Plug.VerifySecret do
       %{"secret" => ^secret} ->
         conn
 
-      e ->
+      _e ->
         error(conn)
     end
   end

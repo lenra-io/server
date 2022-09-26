@@ -27,9 +27,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     test "get user environment access check authorizations", %{users: [creator!, user, other_dev, admin]} do
       creator! = create_app(creator!)
 
-      assert %{"data" => app} = json_response(creator!, 200)
+      assert app = json_response(creator!, 200)
 
-      assert %{"data" => envs} = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert envs = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 
@@ -46,13 +46,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       admin = get(admin, get_route_name)
       creator! = get(creator!, get_route_name)
 
-      assert %{
-               "data" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
-             } = json_response(creator!, 200)
+      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] = json_response(creator!, 200)
 
-      assert %{
-               "data" => [%{"environment_id" => _, "user_id" => _, "email" => _}]
-             } = json_response(admin, 200)
+      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] = json_response(admin, 200)
 
       assert %{
                "message" => "Forbidden",
@@ -70,9 +66,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "user environment access controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
-      assert %{"data" => app} = json_response(creator!, 200)
+      assert app = json_response(creator!, 200)
 
-      assert %{"data" => envs} = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert envs = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 
@@ -114,9 +110,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     test "user environment access controller authenticated but invalid params", %{conn: conn!} do
       conn! = create_app(conn!)
 
-      assert %{"data" => app} = json_response(conn!, 200)
+      assert app = json_response(conn!, 200)
 
-      assert %{"data" => envs} = json_response(get(conn!, Routes.envs_path(conn!, :index, app["id"])), 200)
+      assert envs = json_response(get(conn!, Routes.envs_path(conn!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 
@@ -133,9 +129,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
     test "successfull authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
-      assert %{"data" => app} = json_response(creator!, 200)
+      assert app = json_response(creator!, 200)
 
-      assert %{"data" => envs} = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert envs = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       env = Enum.at(envs, 0)
 

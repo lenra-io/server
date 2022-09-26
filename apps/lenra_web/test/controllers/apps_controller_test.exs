@@ -38,20 +38,18 @@ defmodule LenraWeb.AppsControllerTest do
 
       conn! = get(conn!, Routes.apps_path(conn!, :index))
 
-      [app | _tail] = conn!.assigns.data
+      [app | _tail] = conn!.assigns.root
       app_service_name = app.service_name
 
-      assert %{
-               "data" => [
-                 %{
-                   "name" => "test",
-                   "service_name" => ^app_service_name,
-                   "color" => "ffffff",
-                   "icon" => 31,
-                   "id" => _
-                 }
-               ]
-             } = json_response(conn!, 200)
+      assert [
+               %{
+                 "name" => "test",
+                 "service_name" => ^app_service_name,
+                 "color" => "ffffff",
+                 "icon" => 31,
+                 "id" => _
+               }
+             ] = json_response(conn!, 200)
     end
   end
 
@@ -59,7 +57,7 @@ defmodule LenraWeb.AppsControllerTest do
     @tag auth_user_with_cgu: :dev
     test "apps controller authenticated", %{conn: conn} do
       conn = create_app_test(conn)
-      assert %{"data" => app} = json_response(conn, 200)
+      assert app = json_response(conn, 200)
 
       user_id = Guardian.Plug.current_resource(conn).id
 
@@ -96,7 +94,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       conn! = get(conn, Routes.apps_path(conn, :get_user_apps))
 
-      assert %{"data" => apps} = json_response(conn!, 200)
+      assert apps = json_response(conn!, 200)
 
       user_id = Guardian.Plug.current_resource(conn!).id
 
@@ -119,7 +117,7 @@ defmodule LenraWeb.AppsControllerTest do
     test "apps controller authenticated", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
-      assert %{"data" => app} = json_response(conn!, 200)
+      assert app = json_response(conn!, 200)
       conn! = delete(conn!, Routes.apps_path(conn!, :delete, app["id"]))
 
       assert %{} == json_response(conn!, 200)
@@ -148,21 +146,21 @@ defmodule LenraWeb.AppsControllerTest do
     test "create app user authenticated and is a dev", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
-      assert %{"data" => _data} = json_response(conn!, 200)
+      assert _data = json_response(conn!, 200)
     end
 
     @tag auth_user_with_cgu: :admin
     test "create app user authenticated and is admin", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
-      assert %{"data" => _data} = json_response(conn!, 200)
+      assert _data = json_response(conn!, 200)
     end
 
     @tag auth_users_with_cgu: [:dev, :dev]
     test "delete app not same user", %{users: [conn1!, conn2!]} do
       conn1! = create_app_test(conn1!)
 
-      assert %{"data" => %{"id" => id}} = json_response(conn1!, 200)
+      assert %{"id" => id} = json_response(conn1!, 200)
 
       conn2! = delete(conn2!, Routes.apps_path(conn2!, :delete, id))
 
@@ -175,7 +173,7 @@ defmodule LenraWeb.AppsControllerTest do
     @tag auth_users_with_cgu: [:dev, :admin]
     test "delete app not same user but is admin", %{users: [conn1, conn2]} do
       conn1 = create_app_test(conn1)
-      assert %{"data" => app} = json_response(conn1, 200)
+      assert app = json_response(conn1, 200)
 
       conn2 = delete(conn2, Routes.apps_path(conn2, :delete, app["id"]))
       assert %{} = json_response(conn2, 200)

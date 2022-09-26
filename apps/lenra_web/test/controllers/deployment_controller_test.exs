@@ -28,8 +28,6 @@ defmodule LenraWeb.DeploymentControllerTest do
           "icon" => 12
         })
 
-      assert %{"data" => _data} = json_response(conn!, 200)
-
       {:ok, app} = Enum.fetch(Repo.all(App), 0)
 
       conn! =
@@ -56,8 +54,6 @@ defmodule LenraWeb.DeploymentControllerTest do
         })
 
       assert [] != Repo.all(Deployment)
-
-      assert %{"data" => _data} = json_response(conn!, 200)
     end
 
     @tag auth_user_with_cgu: :dev
@@ -69,7 +65,7 @@ defmodule LenraWeb.DeploymentControllerTest do
           "icon" => 12
         })
 
-      assert %{"data" => app} = json_response(conn!, 200)
+      assert app = json_response(conn!, 200)
 
       conn! =
         post(conn!, Routes.apps_path(conn!, :create), %{
@@ -78,7 +74,7 @@ defmodule LenraWeb.DeploymentControllerTest do
           "icon" => 12
         })
 
-      assert %{"data" => wrong_app} = json_response(conn!, 200)
+      assert wrong_app = json_response(conn!, 200)
 
       conn! =
         post(
@@ -93,7 +89,7 @@ defmodule LenraWeb.DeploymentControllerTest do
           }
         )
 
-      assert %{"data" => build} = json_response(conn!, 200)
+      assert build = json_response(conn!, 200)
 
       {:ok, wrong_env} = Repo.fetch_by(Environment, application_id: wrong_app["id"])
 

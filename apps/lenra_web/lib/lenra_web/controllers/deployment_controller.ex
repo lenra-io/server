@@ -13,8 +13,7 @@ defmodule LenraWeb.DeploymentsController do
          {:ok, %{inserted_deployment: deployment}} <-
            Apps.create_deployment(env_id, build_id, user.id, params) do
       conn
-      |> assign_data(deployment)
-      |> reply
+      |> reply(deployment)
     end
   end
 end
