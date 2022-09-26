@@ -73,6 +73,8 @@ defmodule LenraWeb.Router do
     put("/password", UserController, :change_password)
     put("/verify/dev", UserController, :validate_dev)
     get("/me/apps", AppsController, :get_user_apps)
+
+    get("/webhooks", WebhooksController, :index)
   end
 
   scope "/api", LenraWeb do
