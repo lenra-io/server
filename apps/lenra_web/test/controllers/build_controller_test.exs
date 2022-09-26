@@ -98,8 +98,8 @@ defmodule LenraWeb.BuildControllerTest do
       user = create_build(user, app["id"])
       other_dev = create_build(other_dev, app["id"])
 
-      # assert %{"data" => _} = json_response(creator!, 200)
-      # assert %{"data" => _} = json_response(admin, 200)
+      assert %{} = json_response(creator!, 200)
+      assert %{} = json_response(admin, 200)
 
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
 
