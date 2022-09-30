@@ -59,4 +59,18 @@ defmodule LenraWeb.WebhooksControllerTest do
 
     assert [] == json_response(conn, 200)
   end
+
+  @tag auth_user_with_cgu: :dev
+  test "Create webhook should work properly", %{conn: conn, user: user, env: env} do
+    conn =
+      post(conn, Routes.webhooks_path(conn, :api_create), %{"env_id" => env.id, "action" => "test", "user_id" => user.id})
+
+    assert %{"action" => "test"} = json_response(conn, 200)
+
+    conn = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id})
+
+    assert [webhook] = json_response(conn, 200)
+    assert webhook["action"] == "test"
+    assert webhook["environment_id"] == env.id
+  end
 end

@@ -75,6 +75,7 @@ defmodule LenraWeb.Router do
     get("/me/apps", AppsController, :get_user_apps)
 
     get("/webhooks", WebhooksController, :index)
+    post("/webhooks", WebhooksController, :api_create)
   end
 
   scope "/api", LenraWeb do
