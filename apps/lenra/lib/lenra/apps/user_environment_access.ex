@@ -19,6 +19,7 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
            ]}
   @primary_key {:uuid, Ecto.UUID, autogenerate: true}
   schema "users_environments_access" do
+    field(:email, :string)
     belongs_to(:user, User)
     belongs_to(:environment, Environment)
 
@@ -27,8 +28,8 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
 
   def changeset(user_env_access, params \\ %{}) do
     user_env_access
-    |> cast(params, [:user_id, :environment_id])
-    |> validate_required([:environment_id])
+    |> cast(params, [:user_id, :environment_id, :email])
+    |> validate_required([:environment_id, :email])
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:environment_id)
     |> unique_constraint([:user_id, :environment_id], name: :users_environments_access_pkey)

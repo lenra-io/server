@@ -32,7 +32,7 @@ defmodule Lenra.Apps do
     UserEnvironmentAccess
   }
 
-  alias Lenra.Errors.TechnicalError
+  alias Lenra.Errors.{BusinessError, TechnicalError}
 
   #######
   # App #
@@ -256,10 +256,8 @@ defmodule Lenra.Apps do
   def all_user_env_access(env_id) do
     Repo.all(
       from(e in UserEnvironmentAccess,
-        join: u in Accounts.User,
-        on: u.id == e.user_id,
         where: e.environment_id == ^env_id,
-        select: %{user_id: e.user_id, environment_id: e.environment_id, email: u.email}
+        select: %{environment_id: e.environment_id, email: e.email}
       )
     )
   end
@@ -268,40 +266,41 @@ defmodule Lenra.Apps do
     Repo.fetch_by(UserEnvironmentAccess, clauses, error)
   end
 
-  def create_user_env_access(env_id, %{"user_id" => user_id}) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(
-      :inserted_user_access,
-      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
-        user_id: user_id,
-        environment_id: env_id
-      })
-    )
-    |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
-      %{application: app} =
-        get_env(env_id)
-        |> repo.preload(:application)
-
-      user = Accounts.get_user(user_id)
-
-      add_invitation_events(app, inserted_user_access, user.email)
-    end)
-    |> Repo.transaction()
+  def accept_invite(uuid, %Accounts.User{} = user) do
+    with %UserEnvironmentAccess{} = access <- Repo.get_by(UserEnvironmentAccess, uuid: uuid),
+         true <- access.email == user.email do
+      UserEnvironmentAccess.changeset(access, %{user_id: user.id})
+      |> Repo.update()
+    else
+      false -> BusinessError.invite_wrong_email(:wrong_email)
+      err -> err
+    end
   end
+
+  # def create_user_env_access(env_id, %{"user_id" => user_id}) do
+  #   Ecto.Multi.new()
+  #   |> Ecto.Multi.insert(
+  #     :inserted_user_access,
+  #     UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
+  #       user_id: user_id,
+  #       environment_id: env_id
+  #     })
+  #   )
+  #   |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
+  #     %{application: app} =
+  #       get_env(env_id)
+  #       |> repo.preload(:application)
+
+  #     user = Accounts.get_user(user_id)
+
+  #     add_invitation_events(app, inserted_user_access, user.email)
+  #   end)
+  #   |> Repo.transaction()
+  # end
 
   def create_user_env_access(env_id, %{"email" => email}) do
     Lenra.Repo.get_by(Accounts.User, email: email)
     |> handle_create_user_env_access(env_id, email)
-  end
-
-  defp handle_create_user_env_access(nil, env_id, email) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(
-      :inserted_user_access,
-      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
-        environment_id: env_id
-      })
-    )
     |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
       %{application: app} =
         get_env(env_id)
@@ -312,16 +311,27 @@ defmodule Lenra.Apps do
     |> Repo.transaction()
   end
 
-  defp handle_create_user_env_access(%Accounts.User{} = user, env_id, _email) do
+  defp handle_create_user_env_access(nil, env_id, email) do
     Ecto.Multi.new()
-    |> Ecto.Multi.run(:inserted_user_access, fn _repo, _params ->
-      case create_user_env_access(env_id, %{"user_id" => user.id}) do
-        {:ok, %{inserted_user_access: user_access}} -> {:ok, user_access}
-        {:error, :inserted_user_access, failed_value, _changes_so_far} -> {:error, failed_value}
-        other -> other
-      end
-    end)
-    |> Repo.transaction()
+    |> Ecto.Multi.insert(
+      :inserted_user_access,
+      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
+        email: email,
+        environment_id: env_id
+      })
+    )
+  end
+
+  defp handle_create_user_env_access(%Accounts.User{} = user, env_id, email) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_user_access,
+      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
+        user_id: user.id,
+        email: email,
+        environment_id: env_id
+      })
+    )
   end
 
   defp add_invitation_events(app, user_access, email) do

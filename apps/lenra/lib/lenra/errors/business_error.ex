@@ -25,6 +25,7 @@ defmodule Lenra.Errors.BusinessError do
       {:no_app_authorization, "You are not authorized to join this app."},
       {:not_latest_cgu, "Not latest CGU."},
       {:did_not_accept_cgu, "You must accept the CGU to use Lenra"},
-      {:no_app_found, "No application found for the current link"}
+      {:no_app_found, "No application found for the current link"},
+      {:invite_wrong_email, "Cannot accept the invitation with this email."}
     ]
 end

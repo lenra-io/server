@@ -21,15 +21,20 @@ defmodule LenraWeb.UserEnvironmentAccessController do
     end
   end
 
-  # Client never call with user_id param
-  # def create(conn, %{"env_id" => env_id, "user_id" => user_id} = params) do
-  #   with {:ok, _app} <- get_app_and_allow(conn, params),
-  #        {:ok, %{inserted_user_access: user_env_access}} <-
-  #          Apps.create_user_env_access(env_id, %{"user_id" => user_id}) do
-  #     conn
-  #     |> reply(user_env_access)
-  #   end
-  # end
+  def fetch_one(conn, %{"uuid" => uuid}) do
+    with {:ok, invite} <- Apps.fetch_user_env_access(uuid: uuid) do
+      conn
+      |> reply(invite)
+    end
+  end
+
+  def accept(conn, %{"uuid" => uuid}) do
+    with user <- Guardian.Plug.current_resource(conn),
+         {:ok, invite} <- Apps.accept_invite(uuid, user) do
+      conn
+      |> reply(invite)
+    end
+  end
 
   def create(conn, %{"env_id" => env_id, "email" => email} = params) do
     with {:ok, _app} <- get_app_and_allow(conn, params),
