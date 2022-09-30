@@ -33,6 +33,7 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:environment_id)
     |> unique_constraint([:user_id, :environment_id], name: :users_environments_access_pkey)
+    |> unique_constraint([:email, :environment_id], name: :email_environment_id_unique_index)
   end
 
   def new(env_id, params) do

@@ -271,32 +271,20 @@ defmodule Lenra.Apps do
          true <- access.email == user.email do
       UserEnvironmentAccess.changeset(access, %{user_id: user.id})
       |> Repo.update()
+
+      Repo.one(
+        from(a in App,
+          join: e in Environment,
+          on: e.application_id == a.id,
+          where: e.id == ^access.environment_id,
+          select: a.service_name
+        )
+      )
     else
       false -> BusinessError.invite_wrong_email(:wrong_email)
       err -> err
     end
   end
-
-  # def create_user_env_access(env_id, %{"user_id" => user_id}) do
-  #   Ecto.Multi.new()
-  #   |> Ecto.Multi.insert(
-  #     :inserted_user_access,
-  #     UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
-  #       user_id: user_id,
-  #       environment_id: env_id
-  #     })
-  #   )
-  #   |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
-  #     %{application: app} =
-  #       get_env(env_id)
-  #       |> repo.preload(:application)
-
-  #     user = Accounts.get_user(user_id)
-
-  #     add_invitation_events(app, inserted_user_access, user.email)
-  #   end)
-  #   |> Repo.transaction()
-  # end
 
   def create_user_env_access(env_id, %{"email" => email}) do
     Lenra.Repo.get_by(Accounts.User, email: email)
@@ -337,7 +325,7 @@ defmodule Lenra.Apps do
   defp add_invitation_events(app, user_access, email) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 
-    invitation_url_prefix = Map.get(@lenra_url_prefix, lenra_env, "https://localhost:10000/invitation")
+    invitation_url_prefix = Map.get(@lenra_url_prefix, lenra_env, "https://localhost:10000/app/invitation")
 
     invitation_link = "#{invitation_url_prefix}/#{user_access.uuid}"
 
