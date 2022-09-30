@@ -71,9 +71,9 @@ defmodule LenraWeb.WebhooksControllerTest do
 
     assert %{"action" => "test"} = json_response(conn, 200)
 
-    conn = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id})
+    conn! = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id})
 
-    assert [webhook] = json_response(conn, 200)
+    assert [webhook] = json_response(conn!, 200)
     assert webhook["action"] == "test"
     assert webhook["environment_id"] == env.id
   end
