@@ -7,8 +7,8 @@ defmodule Lenra.Apps.Environment do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.Apps.{App, Build, Environment}
-  alias Lenra.UserEnvironmentAccess
+  alias Lenra.Apps.{App, Build}
+  alias Lenra.Apps.UserEnvironmentAccess
 
   @type t :: %__MODULE__{}
 
@@ -49,11 +49,11 @@ defmodule Lenra.Apps.Environment do
   end
 
   def new(application_id, creator_id, deployed_build_id, params) do
-    %Environment{
+    %__MODULE__{
       application_id: application_id,
       creator_id: creator_id,
       deployed_build_id: deployed_build_id
     }
-    |> Environment.changeset(params)
+    |> __MODULE__.changeset(params)
   end
 end

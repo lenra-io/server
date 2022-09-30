@@ -5,7 +5,6 @@ defmodule LenraWeb.UserEnvironmentAccessController do
     module: LenraWeb.UserEnvironmentAccessController.Policy
 
   alias Lenra.Apps
-  alias Lenra.UserEnvironmentAccessServices
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
     with {app_id, _} <- Integer.parse(app_id_str),
@@ -18,23 +17,24 @@ defmodule LenraWeb.UserEnvironmentAccessController do
   def index(conn, %{"env_id" => env_id} = params) do
     with {:ok, _app} <- get_app_and_allow(conn, params) do
       conn
-      |> reply(UserEnvironmentAccessServices.all(env_id))
+      |> reply(Apps.all_user_env_access(env_id))
     end
   end
 
-  def create(conn, %{"env_id" => env_id, "user_id" => user_id} = params) do
-    with {:ok, _app} <- get_app_and_allow(conn, params),
-         {:ok, %{inserted_user_access: user_env_access}} <-
-           UserEnvironmentAccessServices.create(env_id, %{"user_id" => user_id}) do
-      conn
-      |> reply(user_env_access)
-    end
-  end
+  # Client never call with user_id param
+  # def create(conn, %{"env_id" => env_id, "user_id" => user_id} = params) do
+  #   with {:ok, _app} <- get_app_and_allow(conn, params),
+  #        {:ok, %{inserted_user_access: user_env_access}} <-
+  #          Apps.create_user_env_access(env_id, %{"user_id" => user_id}) do
+  #     conn
+  #     |> reply(user_env_access)
+  #   end
+  # end
 
   def create(conn, %{"env_id" => env_id, "email" => email} = params) do
     with {:ok, _app} <- get_app_and_allow(conn, params),
          {:ok, %{inserted_user_access: user_env_access}} <-
-           UserEnvironmentAccessServices.create(env_id, %{"email" => email}) do
+           Apps.create_user_env_access(env_id, %{"email" => email}) do
       conn
       |> reply(user_env_access)
     end

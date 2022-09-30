@@ -7,7 +7,7 @@ defmodule Lenra.Apps.App do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.AppUserSession
+
   alias Lenra.Apps.{Build, Environment, MainEnv}
 
   @type t :: %__MODULE__{}
@@ -45,7 +45,7 @@ defmodule Lenra.Apps.App do
 
   def new(creator_id, params) do
     %__MODULE__{creator_id: creator_id, service_name: Ecto.UUID.generate()}
-    |> changeset(params)
+    |> __MODULE__.changeset(params)
   end
 
   def update(app, params) do
