@@ -53,9 +53,9 @@ defmodule Lenra.GitlabApiServices do
     |> response()
   end
 
-  defp response({:ok, %Finch.Response{status: status_code}})
+  defp response({:ok, %Finch.Response{status: status_code, body: body}})
        when status_code in [200, 201, 202] do
-    {:ok, nil}
+    {:ok, body}
   end
 
   defp response({:error, %Mint.TransportError{reason: _}}) do

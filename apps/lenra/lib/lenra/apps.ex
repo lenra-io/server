@@ -170,6 +170,7 @@ defmodule Lenra.Apps do
           build.build_number
         )
       end)
+      |> update_build_after_pipeline()
       |> Repo.transaction()
     end
   end
@@ -187,6 +188,15 @@ defmodule Lenra.Apps do
     end)
     |> Ecto.Multi.insert(:inserted_build, fn %{build_number: build_number} ->
       Build.new(creator_id, app_id, build_number, params)
+    end)
+  end
+
+  defp update_build_after_pipeline(multi) do
+    multi
+    |> Ecto.Multi.update(:update_build_after_pipeline, fn
+      %{inserted_build: %Build{} = build, gitlab_pipeline: pipeline} ->
+        pipeline = Jason.decode!(pipeline)
+        Build.changeset(build, %{"pipeline_id" => pipeline["id"]})
     end)
   end
 

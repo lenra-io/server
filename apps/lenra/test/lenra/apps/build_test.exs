@@ -44,6 +44,16 @@ defmodule Lenra.Apps.BuildTest do
 
       assert %Build{commit_hash: "abcdef", status: :pending} = Repo.get(Build, build.id)
     end
+
+    test "and check that pipeline_id is properly set", %{app: app} do
+      Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+        commit_hash: "abcdef"
+      })
+
+      build = Enum.at(Repo.all(Build), 0)
+
+      assert %Build{commit_hash: "abcdef", status: :pending, pipeline_id: 1} = Repo.get(Build, build.id)
+    end
   end
 
   describe("get by") do
