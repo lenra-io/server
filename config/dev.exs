@@ -60,19 +60,15 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :lenra,
   faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
-  faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
+  faas_auth: System.fetch_env!("FAAS_AUTH"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
   runner_callback_url: System.get_env("LOCAL_TUNNEL_URL"),
   lenra_env: "dev",
   gitlab_api_url: System.get_env("GITLAB_API_URL", "https://gitlab.com/api/v4"),
-  gitlab_api_token: System.get_env("GITLAB_API_TOKEN", "Zuz-dZc834q3CtU-bnX5"),
+  gitlab_api_token: System.fetch_env!("GITLAB_API_TOKEN"),
   gitlab_project_id: System.get_env("GITLAB_PROJECT_ID", "26231009"),
   gitlab_ci_ref: System.get_env("GITLAB_CI_REF", "master"),
-  runner_secret:
-    System.get_env(
-      "RUNNER_SECRET",
-      "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
-    ),
+  runner_secret: System.fetch_env!("RUNNER_SECRET"),
   faas_secrets: ["gitlab-registry"],
   template_url: System.get_env("TEMPLATE_URL", "https://github.com/lenra-io/templates.git#beta"),
   lenra_email: System.get_env("LENRA_EMAIL", "contact@lenra.io")
