@@ -32,7 +32,7 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
     |> validate_required([:environment_id, :email])
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:environment_id)
-    |> unique_constraint([:user_id, :environment_id], name: :users_environments_access_pkey)
+    |> unique_constraint([:user_id, :environment_id], name: :user_id_environment_id_unique_index)
     |> unique_constraint([:email, :environment_id], name: :email_environment_id_unique_index)
   end
 

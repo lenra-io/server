@@ -266,10 +266,11 @@ defmodule Lenra.Apps do
     Repo.fetch_by(UserEnvironmentAccess, clauses, error)
   end
 
-  def accept_invite(uuid, %Accounts.User{} = user) do
+  def accept_invitation(uuid, %Accounts.User{} = user) do
     with %UserEnvironmentAccess{} = access <- Repo.get_by(UserEnvironmentAccess, uuid: uuid),
          true <- access.email == user.email do
-      UserEnvironmentAccess.changeset(access, %{user_id: user.id})
+      access
+      |> UserEnvironmentAccess.changeset(%{user_id: user.id})
       |> Repo.update()
 
       Repo.one(
@@ -281,17 +282,19 @@ defmodule Lenra.Apps do
         )
       )
     else
-      false -> BusinessError.invite_wrong_email(:wrong_email)
+      false -> BusinessError.invitation_wrong_email(:wrong_email)
       err -> err
     end
   end
 
   def create_user_env_access(env_id, %{"email" => email}) do
-    Lenra.Repo.get_by(Accounts.User, email: email)
+    Accounts.User
+    |> Lenra.Repo.get_by(email: email)
     |> handle_create_user_env_access(env_id, email)
     |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
       %{application: app} =
-        get_env(env_id)
+        env_id
+        |> get_env()
         |> repo.preload(:application)
 
       add_invitation_events(app, inserted_user_access, email)

@@ -30,7 +30,7 @@ defmodule LenraWeb.UserEnvironmentAccessController do
 
   def accept(conn, %{"uuid" => uuid}) do
     with user <- Guardian.Plug.current_resource(conn),
-         app_name <- Apps.accept_invite(uuid, user) do
+         app_name <- Apps.accept_invitation(uuid, user) do
       conn
       |> reply(%{app_name: app_name})
     end
