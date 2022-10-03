@@ -8,7 +8,7 @@ defmodule LenraWeb.WebhooksController do
     |> reply(WebhookServices.get(env_id, user_id))
   end
 
-  def index(conn, %{"env_id" => env_id} = _params) do
+  def index(conn, %{"env_id" => env_id}) do
     conn
     |> reply(WebhookServices.get(env_id))
   end
