@@ -41,6 +41,6 @@ defmodule Lenra.Apps.Deployment do
       build_id: build_id,
       publisher_id: user_id
     }
-    |> changeset(params)
+    |> __MODULE__.changeset(params)
   end
 end

@@ -49,6 +49,6 @@ defmodule Lenra.Apps.Build do
       build_number: build_number,
       status: :pending
     }
-    |> Build.changeset(params)
+    |> __MODULE__.changeset(params)
   end
 end

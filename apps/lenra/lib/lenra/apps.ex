@@ -21,15 +21,18 @@ defmodule Lenra.Apps do
 
   alias Lenra.Repo
 
-  alias Lenra.{GitlabApiServices, OpenfaasServices, UserEnvironmentAccess}
+  alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices}
 
   alias Lenra.Apps.{
     App,
     Build,
     Deployment,
     Environment,
-    MainEnv
+    MainEnv,
+    UserEnvironmentAccess
   }
+
+  alias Lenra.Errors.{BusinessError, TechnicalError}
 
   #######
   # App #
@@ -238,5 +241,96 @@ defmodule Lenra.Apps do
     faas_registry = Application.fetch_env!(:lenra, :faas_registry)
 
     "#{faas_registry}/#{lenra_env}/#{service_name}:#{build_number}"
+  end
+
+  #########################
+  # USerEnvironmentAccess #
+  #########################
+
+  def all_user_env_access(env_id) do
+    Repo.all(
+      from(e in UserEnvironmentAccess,
+        where: e.environment_id == ^env_id,
+        select: %{environment_id: e.environment_id, email: e.email}
+      )
+    )
+  end
+
+  def fetch_user_env_access(clauses, error \\ TechnicalError.error_404_tuple()) do
+    Repo.fetch_by(UserEnvironmentAccess, clauses, error)
+  end
+
+  def accept_invitation(uuid, %Accounts.User{} = user) do
+    with %UserEnvironmentAccess{} = access <- Repo.get_by(UserEnvironmentAccess, uuid: uuid),
+         true <- access.email == user.email do
+      access
+      |> UserEnvironmentAccess.changeset(%{user_id: user.id})
+      |> Repo.update()
+
+      Repo.one(
+        from(a in App,
+          join: e in Environment,
+          on: e.application_id == a.id,
+          where: e.id == ^access.environment_id,
+          select: a.service_name
+        )
+      )
+    else
+      false -> BusinessError.invitation_wrong_email(:wrong_email)
+      err -> err
+    end
+  end
+
+  def create_user_env_access(env_id, %{"email" => email}) do
+    Accounts.User
+    |> Lenra.Repo.get_by(email: email)
+    |> handle_create_user_env_access(env_id, email)
+    |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
+      %{application: app} =
+        env_id
+        |> get_env()
+        |> repo.preload(:application)
+
+      add_invitation_events(app, inserted_user_access, email)
+    end)
+    |> Repo.transaction()
+  end
+
+  defp handle_create_user_env_access(nil, env_id, email) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_user_access,
+      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
+        email: email,
+        environment_id: env_id
+      })
+    )
+  end
+
+  defp handle_create_user_env_access(%Accounts.User{} = user, env_id, email) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_user_access,
+      UserEnvironmentAccess.changeset(%UserEnvironmentAccess{}, %{
+        user_id: user.id,
+        email: email,
+        environment_id: env_id
+      })
+    )
+  end
+
+  defp add_invitation_events(app, user_access, email) do
+    lenra_app_url = Application.fetch_env!(:lenra, :lenra_app_url)
+    invitation_link = "https://#{lenra_app_url}/app/invitation/#{user_access.uuid}"
+
+    EmailWorker.add_email_invitation_event(email, app.name, invitation_link)
+  end
+
+  def delete_user_env_access(%{environment_id: env_id, user_id: user_id} = _params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:user_access, fn _repo, _changes ->
+      fetch_user_env_access(environment_id: env_id, user_id: user_id)
+    end)
+    |> Ecto.Multi.delete(:deleted_user_access, fn %{user_access: user_access} -> user_access end)
   end
 end

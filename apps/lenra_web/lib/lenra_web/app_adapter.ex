@@ -6,7 +6,7 @@ defmodule LenraWeb.AppAdapter do
 
   alias Lenra.Accounts
   alias Lenra.Accounts.User
-  alias Lenra.{Repo, UserEnvironmentAccessServices}
+  alias Lenra.{Apps, Repo}
   alias Lenra.Apps.{App, Environment, MainEnv}
 
   @impl ApplicationRunner.Adapter
@@ -60,7 +60,7 @@ defmodule LenraWeb.AppAdapter do
         do: true
 
     def authorize(:join_app, user, app) do
-      case UserEnvironmentAccessServices.fetch_by(
+      case Apps.fetch_user_env_access(
              environment_id: app.main_env.environment.id,
              user_id: user.id
            ) do
