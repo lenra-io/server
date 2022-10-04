@@ -76,7 +76,7 @@ config :lenra,
   faas_secrets: ["gitlab-registry"],
   template_url: System.get_env("TEMPLATE_URL", "https://github.com/lenra-io/templates.git#beta"),
   lenra_email: System.get_env("LENRA_EMAIL", "contact@lenra.io"),
-  lenra_app_url: System.get_env!("LENRA_APP_URL", "localhost:10000")
+  lenra_app_url: System.get_env("LENRA_APP_URL", "localhost:10000")
 
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
 
