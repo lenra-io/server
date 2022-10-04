@@ -247,11 +247,7 @@ defmodule Lenra.Apps do
   # USerEnvironmentAccess #
   #########################
 
-  @lenra_url_prefix %{
-    "production" => "https://app.lenra.io/invitation",
-    "staging" => "https://app.staging.lenra.io/invitation",
-    "dev" => "https://localhost:10000/invitation"
-  }
+  @lenra_app_url Application.fetch_env!(:lenra, :lenra_app_url)
 
   def all_user_env_access(env_id) do
     Repo.all(
@@ -326,11 +322,7 @@ defmodule Lenra.Apps do
   end
 
   defp add_invitation_events(app, user_access, email) do
-    lenra_env = Application.fetch_env!(:lenra, :lenra_env)
-
-    invitation_url_prefix = Map.get(@lenra_url_prefix, lenra_env, "https://localhost:10000/app/invitation")
-
-    invitation_link = "#{invitation_url_prefix}/#{user_access.uuid}"
+    invitation_link = "https://#{@lenra_app_url}/app/invitation/#{user_access.uuid}"
 
     EmailWorker.add_email_invitation_event(email, app.name, invitation_link)
   end
