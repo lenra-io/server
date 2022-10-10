@@ -62,7 +62,7 @@ defmodule LenraWeb.CguControllerTest do
       conn = get(conn, Routes.cgu_path(conn, :get_latest_cgu))
 
       assert conn.resp_body ==
-               "{\"message\":\"Cgu cannot be found\",\"reason\":\"cgu_not_found\"}"
+               "{\"message\":\"Cgu cannot be found\",\"metadata\":{},\"reason\":\"cgu_not_found\"}"
     end
   end
 

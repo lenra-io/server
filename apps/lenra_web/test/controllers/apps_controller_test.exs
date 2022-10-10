@@ -131,7 +131,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       conn! = delete(conn!, route)
 
-      assert %{"message" => "Not Found.", "reason" => "error_404"} ==
+      assert %{"message" => "Not Found.", "reason" => "error_404", "metadata" => %{}} ==
                json_response(conn!, 404)
     end
 
