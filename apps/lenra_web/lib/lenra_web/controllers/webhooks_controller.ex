@@ -2,6 +2,7 @@ defmodule LenraWeb.WebhooksController do
   use LenraWeb, :controller
 
   alias ApplicationRunner.Webhooks.WebhookServices
+  alias Lenra.Errors.BusinessError
 
   def index(conn, %{"env_id" => env_id, "user_id" => user_id}) do
     conn
@@ -14,7 +15,7 @@ defmodule LenraWeb.WebhooksController do
   end
 
   def index(_conn, _params) do
-    {:error, :null_parameters}
+    BusinessError.null_parameters_tuple()
   end
 
   def api_create(conn, %{"env_id" => env_id} = params) do
@@ -25,6 +26,6 @@ defmodule LenraWeb.WebhooksController do
   end
 
   def api_create(_conn, _params) do
-    {:error, :null_parameters}
+    BusinessError.null_parameters_tuple()
   end
 end
