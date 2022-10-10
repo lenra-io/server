@@ -67,6 +67,9 @@ defmodule LenraWeb.Router do
 
     resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
 
+    get("/apps/invitations/:uuid", UserEnvironmentAccessController, :fetch_one)
+    post("/apps/invitations/:uuid", UserEnvironmentAccessController, :accept)
+
     resources("/apps/:app_id/builds", BuildsController, only: [:index, :create])
 
     resources("/apps/deployments", DeploymentsController, only: [:create])

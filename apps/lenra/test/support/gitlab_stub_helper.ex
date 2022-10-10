@@ -19,6 +19,17 @@ defmodule Lenra.GitlabStubHelper do
   end
 
   defp handle_resp(conn) do
-    Plug.Conn.resp(conn, 200, "ok")
+    {:ok, body, conn} = Plug.Conn.read_body(conn)
+    body_decoded = Jason.decode!(body)
+
+    Plug.Conn.resp(
+      conn,
+      200,
+      Jason.encode!(%{
+        "id" => Enum.at(String.split(Enum.at(body_decoded["variables"], 0)["value"], ":"), 1),
+        "status" => "pending",
+        "project_id" => Enum.at(conn.path_info, 1)
+      })
+    )
   end
 end

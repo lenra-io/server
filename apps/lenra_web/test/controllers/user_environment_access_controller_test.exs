@@ -35,7 +35,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       creator! =
         post(creator!, Routes.user_environment_access_path(creator!, :create, app["id"], env["id"]), %{
-          "user_id" => Guardian.Plug.current_resource(creator!).id
+          "email" => Guardian.Plug.current_resource(creator!).email
         })
 
       assert %{} = json_response(creator!, 200)
@@ -46,9 +46,9 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
       admin = get(admin, get_route_name)
       creator! = get(creator!, get_route_name)
 
-      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] = json_response(creator!, 200)
+      assert [%{"environment_id" => _, "email" => _}] = json_response(creator!, 200)
 
-      assert [%{"environment_id" => _, "user_id" => _, "email" => _}] = json_response(admin, 200)
+      assert [%{"environment_id" => _, "email" => _}] = json_response(admin, 200)
 
       assert %{
                "message" => "Forbidden",
@@ -76,22 +76,22 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       creator! =
         post(creator!, create_user_access, %{
-          "user_id" => Guardian.Plug.current_resource(creator!).id
+          "email" => Guardian.Plug.current_resource(creator!).email
         })
 
       admin! =
         post(admin!, create_user_access, %{
-          "user_id" => Guardian.Plug.current_resource(creator!).id
+          "email" => Guardian.Plug.current_resource(creator!).email
         })
 
       user! =
         post(user!, create_user_access, %{
-          "user_id" => Guardian.Plug.current_resource(creator!).id
+          "email" => Guardian.Plug.current_resource(creator!).email
         })
 
       other_dev! =
         post(other_dev!, create_user_access, %{
-          "user_id" => Guardian.Plug.current_resource(creator!).id
+          "email" => Guardian.Plug.current_resource(creator!).email
         })
 
       assert %{} = json_response(creator!, 200)
@@ -104,24 +104,6 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
-    end
-
-    @tag auth_user_with_cgu: :dev
-    test "user environment access controller authenticated but invalid params", %{conn: conn!} do
-      conn! = create_app(conn!)
-
-      assert app = json_response(conn!, 200)
-
-      assert envs = json_response(get(conn!, Routes.envs_path(conn!, :index, app["id"])), 200)
-
-      env = Enum.at(envs, 0)
-
-      conn! =
-        post(conn!, Routes.user_environment_access_path(conn!, :create, app["id"], env["id"]), %{
-          "user_id" => "wrong"
-        })
-
-      assert %{"message" => "user_id is invalid", "reason" => "invalid_user_id"} = json_response(conn!, 400)
     end
   end
 
