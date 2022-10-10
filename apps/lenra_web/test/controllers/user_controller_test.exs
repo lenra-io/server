@@ -468,7 +468,8 @@ defmodule LenraWeb.UserControllerTest do
 
     assert %{
              "message" => "You are already a dev",
-             "reason" => "already_dev"
+             "reason" => "already_dev",
+             "metadata" => %{}
            } ==
              json_response(user2, 400)
   end
