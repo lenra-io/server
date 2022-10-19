@@ -8,10 +8,12 @@ defmodule LenraWeb.AppAdapter do
   alias Lenra.Accounts.User
   alias Lenra.{Apps, Repo}
   alias Lenra.Apps.{App, Environment, MainEnv}
+  alias Lenra.Errors.BusinessError
 
   @impl ApplicationRunner.Adapter
   def allow(user_id, app_name) do
-    with %App{} = application <- Repo.get_by(App, service_name: app_name),
+    with %App{} = app <- get_app(app_name),
+         %App{} = application <- Repo.preload(app, main_env: [:environment]),
          %User{} = user <- Accounts.get_user(user_id) do
       Bouncer.allow(LenraWeb.AppAdapter.Policy, :join_app, user, application)
     else
@@ -24,11 +26,24 @@ defmodule LenraWeb.AppAdapter do
   def get_function_name(app_name) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 
-    with %App{} = app <- Repo.get_by(App, service_name: app_name),
+    with %App{} = app <- get_app(app_name),
          %App{} = application <-
            Repo.preload(app, main_env: [environment: [:deployed_build]]) do
-      build_number = application.main_env.environment.deployed_build.build_number
-      String.downcase("#{lenra_env}-#{app_name}-#{build_number}")
+      build = application.main_env.environment.deployed_build
+
+      if build do
+        String.downcase("#{lenra_env}-#{app_name}-#{build.build_number}")
+      else
+        BusinessError.appllication_not_build_tuple() |> IO.inspect()
+      end
+    end
+  end
+
+  defp get_app(app_name) do
+    Repo.get_by(App, service_name: app_name)
+    |> case do
+      nil -> BusinessError.no_app_found_tuple()
+      %App{} = app -> app
     end
   end
 
