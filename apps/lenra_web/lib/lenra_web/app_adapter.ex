@@ -34,7 +34,7 @@ defmodule LenraWeb.AppAdapter do
       if build do
         String.downcase("#{lenra_env}-#{app_name}-#{build.build_number}")
       else
-        BusinessError.appllication_not_build_tuple() |> IO.inspect()
+        BusinessError.application_not_built_tuple()
       end
     end
   end
