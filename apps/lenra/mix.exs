@@ -21,7 +21,7 @@ defmodule Lenra.MixProject do
   def application do
     [
       mod: {Lenra.Application, []},
-      extra_applications: [:logger, :runtime_tools, :guardian, :bamboo, :application_runner]
+      extra_applications: [:logger, :runtime_tools, :guardian, :bamboo]
     ]
   end
 
@@ -49,9 +49,9 @@ defmodule Lenra.MixProject do
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3"},
       {:application_runner,
-       git: "https://github.com/lenra-io/application-runner.git",
-       tag: "v1.0.0-beta.70",
-       submodules: true},
+       path: "../../../application-runner",
+       submodules: true,
+       runtime: false},
        {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.3.1"}
 
     ]

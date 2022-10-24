@@ -187,11 +187,11 @@
     "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
     "containerId": "62ce82a7-3adf-421e-ab6f-a82a6c3d3b30",
     "name": "/apps/:app_id/builds",
-    "url": "{{endpoint}}/api/apps/{{app_id}}/builds",
+    "url": "{{endpoint}}/api/apps/1/builds",
     "method": "GET",
     "sortNum": 140000,
     "created": "2022-02-07T14:40:42.762Z",
-    "modified": "2022-02-07T14:40:50.556Z",
+    "modified": "2022-10-24T08:12:54.189Z",
     "headers": [],
     "params": [],
     "tests": []
@@ -424,6 +424,31 @@
     "modified": "2022-04-11T12:05:18.130Z",
     "headers": [],
     "params": [],
+    "tests": []
+  },
+  {
+    "_id": "c75003a6-702b-43be-8ffa-5f051dddb0fe",
+    "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
+    "containerId": "b5625d79-ed88-47fa-ba81-6ddf5309e4fb",
+    "name": "/crons",
+    "url": "{{endpoint}}/api/apps/1/environments/1/crons?listener_name=test&schedule=* * * * *",
+    "method": "POST",
+    "sortNum": 320000,
+    "created": "2022-10-24T07:31:28.069Z",
+    "modified": "2022-10-24T08:49:01.203Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "listener_name",
+        "value": "test",
+        "isPath": false
+      },
+      {
+        "name": "schedule",
+        "value": "* * * * *",
+        "isPath": false
+      }
+    ],
     "tests": []
   }
 ]

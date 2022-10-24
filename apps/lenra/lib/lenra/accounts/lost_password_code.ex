@@ -7,7 +7,7 @@ defmodule Lenra.Accounts.LostPasswordCode do
   alias Lenra.Accounts.User
 
   schema "password_codes" do
-    field(:code, :string, null: false)
+    field(:code, :string)
     belongs_to(:user, User)
     timestamps()
   end
