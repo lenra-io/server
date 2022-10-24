@@ -40,7 +40,8 @@ defmodule LenraWeb.AppAdapter do
   end
 
   defp get_app(app_name) do
-    Repo.get_by(App, service_name: app_name)
+    App
+    |> Repo.get_by(service_name: app_name)
     |> case do
       nil -> BusinessError.no_app_found_tuple()
       %App{} = app -> app
