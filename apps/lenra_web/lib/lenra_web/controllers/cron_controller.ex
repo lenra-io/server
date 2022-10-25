@@ -5,11 +5,23 @@ defmodule LenraWeb.CronController do
 
   def create(conn, %{"env_id" => env_id} = params) do
     {env_id_int, ""} = Integer.parse(env_id)
-    function_name = Lenra.Repo.get(Lenra.Apps.App, Map.get(params, "app_id")).service_name
+
+    app =
+      Lenra.Repo.get(Lenra.Apps.App, Map.get(params, "app_id"))
+      |> Lenra.Repo.preload(main_env: [environment: [:deployed_build]])
 
     with {:ok, cron} <-
            env_id_int
-           |> CronServices.create(Map.put(params, "function_name", function_name)) do
+           |> CronServices.create(
+             Map.put(
+               params,
+               "function_name",
+               Lenra.OpenfaasServices.get_function_name(
+                 app.service_name,
+                 app.main_env.environment.deployed_build.build_number
+               )
+             )
+           ) do
       conn
       |> reply(cron)
     end
