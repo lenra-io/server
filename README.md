@@ -52,7 +52,7 @@
 ### Prerequisites
 
 * Start PostgreSQL with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
-* Start MongoDB with Docker `docker run --restart always -p 27017:27017 --name lenra-mongo -e MONGO_INITDB_DATABASE=test -e CONFIG='{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "mongodb:27017"}]}' mongo:5.0.11-focal`
+* Start MongoDB with Docker `docker run --restart always -p 27017:27017 --name lenra-mongo -e MONGO_INITDB_DATABASE=test -e CONFIG='{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "mongodb:27017"}]}' -d mongo:5.0.11-focal mongod --replSet rs0`
 * Install erlang in version 24.2 and elixir in version 1.12.3 otp-24
 * Create the database and start migration `mix setup`. This is equivalent to running the following commands : 
   * `mix deps.get` to install the dependencies
