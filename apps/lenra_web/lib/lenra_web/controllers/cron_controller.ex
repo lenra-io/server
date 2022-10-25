@@ -5,9 +5,11 @@ defmodule LenraWeb.CronController do
 
   def create(conn, %{"env_id" => env_id} = params) do
     {env_id_int, ""} = Integer.parse(env_id)
+    function_name = Lenra.Repo.get(Lenra.Apps.App, Map.get(params, "app_id")).service_name
+
     with {:ok, cron} <-
            env_id_int
-           |> CronServices.create(params) do
+           |> CronServices.create(Map.put(params, "function_name", function_name)) do
       conn
       |> reply(cron)
     end
@@ -21,21 +23,14 @@ defmodule LenraWeb.CronController do
     end
   end
 
-  def all(conn, %{"user_id" => user_id}) do
-    with {:ok, crons} <-
-           Guardian.Plug.current_resource(conn)
-           |> CronServices.all(user_id) do
-      conn
-      |> reply(crons)
-    end
+  def all(conn, %{"env_id" => env_id, "user_id" => user_id} = _params) do
+    conn
+    |> reply(CronServices.all(env_id, user_id))
   end
 
-  def all(conn, _params) do
-    with {:ok, crons} <-
-           CronServices.all() do
-      conn
-      |> reply(crons)
-    end
+  def all(conn, %{"env_id" => env_id} = _params) do
+    conn
+    |> reply(CronServices.all(env_id))
   end
 
   def update(conn, %{"id" => cron_id} = params) do
