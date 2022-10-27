@@ -51,8 +51,17 @@
 
 ### Prerequisites
 
+You will first need to start two databases, postgres and mongo. Postgres will be used by the server to store general data and Mongo will store the data of the applications that you run.
+You can do this by using the 
+
+`docker compose up` 
+
+command at the root of this project or running by hand the docker commands like so :
 * Start PostgreSQL with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
 * Start MongoDB with Docker `docker run --restart always -p 27017:27017 --name lenra-mongo -e MONGO_INITDB_DATABASE=test -e CONFIG='{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "mongodb:27017"}]}' -d mongo:5 mongod --replSet rs0`
+
+You will then need to install and setup some prerequisites for the server to run properly :
+
 * Install erlang in version 24.2 and elixir in version 1.12.3 otp-24
 * Create the database and start migration `mix setup`. This is equivalent to running the following commands : 
   * `mix deps.get` to install the dependencies
