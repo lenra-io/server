@@ -431,24 +431,18 @@
     "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
     "containerId": "b5625d79-ed88-47fa-ba81-6ddf5309e4fb",
     "name": "/crons",
-    "url": "{{endpoint}}/api/apps/1/environments/1/crons?listener_name=test&schedule=* * * * *",
+    "url": "{{endpoint}}/api/apps/1/environments/1/crons?",
     "method": "POST",
     "sortNum": 320000,
     "created": "2022-10-24T07:31:28.069Z",
-    "modified": "2022-10-24T08:49:01.203Z",
+    "modified": "2022-11-04T15:31:54.099Z",
     "headers": [],
-    "params": [
-      {
-        "name": "listener_name",
-        "value": "test",
-        "isPath": false
-      },
-      {
-        "name": "schedule",
-        "value": "* * * * *",
-        "isPath": false
-      }
-    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"listener_name\": \"increment\",\n  \"schedule\": \"* * * * *\",\n  \"props\": {\n    \"id\": \"6357fa689c5ddd4782166117\"\n  }\n}",
+      "form": []
+    },
     "tests": []
   }
 ]

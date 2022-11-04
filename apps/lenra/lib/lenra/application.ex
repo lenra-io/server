@@ -16,7 +16,6 @@ defmodule Lenra.Application do
       {Phoenix.PubSub, name: Lenra.PubSub},
       # Start guardian Sweeper to delete all expired tokens
       {Guardian.DB.Token.SweeperServer, []},
-      ApplicationRunner.Application,
       # Start the Event Queue
       {EventQueue, &Lenra.LoadWorker.load/0},
       # Start the HTTP Client
@@ -45,6 +44,8 @@ defmodule Lenra.Application do
 
     Logger.info("Lenra Supervisor Starting")
     res = Supervisor.start_link(children, opts)
+    Application.ensure_all_started(:application_runner) |> IO.inspect
+
     Lenra.Seeds.run()
     Logger.info("Lenra Supervisor Started")
     res
