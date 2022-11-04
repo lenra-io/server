@@ -49,6 +49,7 @@ defmodule Lenra.MixProject do
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3"},
+      {:mongodb_driver, "~> 0.9.1"},
       {:application_runner,
        path: "../../../application-runner",
        submodules: true,

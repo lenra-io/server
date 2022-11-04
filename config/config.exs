@@ -25,7 +25,7 @@ config :lenra_web, LenraWeb.Guardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 
-config :application_runner, ApplicationRunner.Guardian.AppGuardian,
+config :lenra, ApplicationRunner.Guardian.AppGuardian,
   issuer: "lenra",
   secret_key: "5oIBVh2Hauo3LT4knNFu29lX9DYu74SWZfjZzYn+gfr0aryxuYIdpjm8xd0qGGqK"
 
@@ -78,7 +78,8 @@ config :application_runner,
   faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
   env: Mix.env() |> Atom.to_string(),
-  mongo_url: System.get_env("MONGO_URL", "mongodb://localhost:27017")
+  mongo_url: System.get_env("MONGO_URL", "mongodb://localhost:27017"),
+  otp_app: :lenra
 
 config :application_runner, ApplicationRunner.Scheduler,
   storage: ApplicationRunner.Storage,
