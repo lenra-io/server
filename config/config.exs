@@ -78,7 +78,8 @@ config :application_runner,
   faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
   env: Mix.env() |> Atom.to_string(),
-  mongo_url: System.get_env("MONGO_URL", "mongodb://localhost:27017")
+  mongo_url: System.get_env("MONGO_URL", "mongodb://localhost:27017"),
+  listeners_timeout: 1 * 60 * 60 * 1000
 
 # additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
 # additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
