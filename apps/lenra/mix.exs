@@ -52,7 +52,7 @@ defmodule Lenra.MixProject do
       # {:mongodb_driver, "~> 0.9.1"},
       {:application_runner,
       git: "https://github.com/lenra-io/application-runner.git",
-       tag: "def695f",
+       tag: "383adee",
        submodules: true,
        runtime: false},
        {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.3.1"}
