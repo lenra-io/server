@@ -50,20 +50,20 @@ defmodule LenraWeb.AppChannelTest do
   #   "patch" => [%{"op" => "replace", "path" => "/root/children/0/value", "value" => "Hello Bob"}]
   # }
 
-  setup do
-    {:ok, %{inserted_user: user}} = register_john_doe()
-    socket = socket(UserSocket, "socket_id", %{user: user})
+  # setup do
+  #   {:ok, %{inserted_user: user}} = register_john_doe()
+  #   socket = socket(UserSocket, "socket_id", %{user: user})
 
-    %{socket: socket, user: user}
-  end
+  #   %{socket: socket, user: user}
+  # end
 
-  test "No app called, should return an error", %{socket: socket} do
-    res = my_subscribe_and_join(socket)
+  # test "No app called, should return an error", %{socket: socket} do
+  #   res = my_subscribe_and_join(socket)
 
-    assert {:error, %{"message" => "No application found for the current link", "reason" => :no_app_found}} = res
+  #   assert {:error, %{"message" => "No application found for the current link", "reason" => :no_app_found}} = res
 
-    refute_push("ui", _)
-  end
+  #   refute_push("ui", _)
+  # end
 
   # test "Base use case with simple app", %{socket: socket, user: user} do
   #   # owstub
