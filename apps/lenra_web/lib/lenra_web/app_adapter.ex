@@ -8,6 +8,7 @@ defmodule LenraWeb.AppAdapter do
   alias Lenra.Accounts.User
   alias Lenra.{Apps, Repo}
   alias Lenra.Apps.{App, Environment, MainEnv}
+  alias Lenra.Errors.BusinessError
 
   @impl ApplicationRunner.Adapter
   def allow(user_id, app_name) do
@@ -55,7 +56,7 @@ defmodule LenraWeb.AppAdapter do
         {:ok, user.id}
 
       _error ->
-        :error
+        BusinessError.forbidden_tuple()
     end
   end
 
