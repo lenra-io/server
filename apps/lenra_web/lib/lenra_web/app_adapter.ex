@@ -18,7 +18,7 @@ defmodule LenraWeb.AppAdapter do
       Bouncer.allow(LenraWeb.AppAdapter.Policy, :join_app, user, application)
     else
       _err ->
-        false
+        BusinessError.forbidden_tuple()
     end
   end
 
