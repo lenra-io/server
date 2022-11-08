@@ -49,11 +49,10 @@ defmodule Lenra.MixProject do
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3"},
       {:application_runner,
-      git: "https://github.com/lenra-io/application-runner.git",
-       tag: "c823031",
+      path: "../../../application-runner",
        submodules: true,
        runtime: false},
-       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.3.1"}
+       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"}
 
     ]
   end
