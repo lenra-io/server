@@ -8,7 +8,7 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-02-07T13:14:55.835Z",
-    "modified": "2022-02-08T10:38:10.992Z",
+    "modified": "2022-11-08T10:07:54.823Z",
     "headers": [],
     "params": [],
     "body": {
@@ -19,7 +19,7 @@
     "tests": [
       {
         "type": "set-env-var",
-        "custom": "json.data.access_token",
+        "custom": "header.access_token",
         "action": "setto",
         "value": "{{access_token}}"
       }
@@ -34,7 +34,7 @@
     "method": "POST",
     "sortNum": 20000,
     "created": "2022-02-07T13:20:09.115Z",
-    "modified": "2022-02-08T10:38:17.865Z",
+    "modified": "2022-11-08T09:29:59.166Z",
     "headers": [],
     "params": [],
     "body": {
@@ -45,7 +45,7 @@
     "tests": [
       {
         "type": "set-env-var",
-        "custom": "json.data.access_token",
+        "custom": "header.access_token",
         "action": "setto",
         "value": "{{access_token}}"
       }

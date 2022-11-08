@@ -13,7 +13,7 @@ defmodule LenraWeb.Endpoint do
     signing_salt: "MFyEizGS"
   ]
 
-  socket "/socket", LenraWeb.UserSocket,
+  socket "/socket", LenraWeb.AppSocket,
     websocket: true,
     longpoll: false
 
