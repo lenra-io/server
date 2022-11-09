@@ -46,23 +46,22 @@ defmodule Lenra.Application do
 
     Logger.info("Lenra Supervisor Starting")
     res = Supervisor.start_link(children, opts)
-    Application.ensure_all_started(:application_runner) |> IO.inspect()
+    Application.ensure_all_started(:application_runner)
 
-    Lenra.Repo.all(ApplicationRunner.Crons.Cron)
+    Lenra.Repo.all(Lenra.Crons.Cron)
     |> Enum.each(fn cron ->
       {:ok, schedule} = Parser.parse(cron.schedule)
 
-      IO.inspect(cron)
+      app_name = Lenra.Repo.preload(cron, environment: :application).environment.application.name
 
       ApplicationRunner.Scheduler.new_job(
         name: cron.name,
         overlap: cron.overlap,
-        state: cron.state,
-        timezone: cron.timezone,
+        state: String.to_atom(cron.state),
         schedule: schedule
       )
       |> Quantum.Job.set_task(
-        {CronServices, :run_cron, [cron.app_name, cron.listener_name, cron.props, %{}, cron.env_id]}
+        {CronServices, :run_cron, [app_name, cron.listener_name, cron.props, %{}, cron.environment_id]}
       )
       |> ApplicationRunner.Scheduler.add_job()
     end)

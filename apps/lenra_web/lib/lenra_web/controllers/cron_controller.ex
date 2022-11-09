@@ -21,7 +21,6 @@ defmodule LenraWeb.CronController do
                  Map.merge(
                    params,
                    %{
-                     "app_name" => app.name,
                      "function_name" =>
                        Lenra.OpenfaasServices.get_function_name(
                          app.service_name,
