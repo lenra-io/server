@@ -10,20 +10,29 @@ defmodule LenraWeb.CronController do
       Lenra.Repo.get(Lenra.Apps.App, Map.get(params, "app_id"))
       |> Lenra.Repo.preload(main_env: [environment: [:deployed_build]])
 
-    with {:ok, cron} <-
-           env_id_int
-           |> CronServices.create(
-             Map.put(
-               params,
-               "function_name",
-               Lenra.OpenfaasServices.get_function_name(
-                 app.service_name,
-                 app.main_env.environment.deployed_build.build_number
-               )
-             )
-           ) do
-      conn
-      |> reply(cron)
+    case app.main_env.environment.deployed_build do
+      nil ->
+        Lenra.Errors.BusinessError.application_not_built_tuple()
+
+      _ ->
+        with {:ok, cron} <-
+               env_id_int
+               |> CronServices.create(
+                 Map.merge(
+                   params,
+                   %{
+                     "app_name" => app.name,
+                     "function_name" =>
+                       Lenra.OpenfaasServices.get_function_name(
+                         app.service_name,
+                         app.main_env.environment.deployed_build.build_number
+                       )
+                   }
+                 )
+               ) do
+          conn
+          |> reply(cron)
+        end
     end
   end
 
