@@ -4,9 +4,10 @@ defmodule Lenra.Application do
   @moduledoc false
 
   use Application
-  require Logger
 
   alias Crontab.CronExpression.Parser
+
+  require Logger
 
   def start(_type, _args) do
     Lenra.MigrationHelper.migrate()
@@ -48,7 +49,8 @@ defmodule Lenra.Application do
     res = Supervisor.start_link(children, opts)
     Application.ensure_all_started(:application_runner)
 
-    Lenra.Repo.all(Lenra.Crons.Cron)
+    Lenra.Crons.Cron
+    |> Lenra.Repo.all()
     |> Enum.each(fn cron ->
       {:ok, schedule} = Parser.parse(cron.schedule)
 
@@ -57,7 +59,7 @@ defmodule Lenra.Application do
       ApplicationRunner.Scheduler.new_job(
         name: cron.name,
         overlap: cron.overlap,
-        state: String.to_atom(cron.state),
+        state: String.to_existing_atom(cron.state),
         schedule: schedule
       )
       |> Quantum.Job.set_task(

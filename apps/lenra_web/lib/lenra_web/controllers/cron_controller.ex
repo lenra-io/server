@@ -2,19 +2,21 @@ defmodule LenraWeb.CronController do
   use LenraWeb, :controller
 
   alias ApplicationRunner.Crons.CronServices
+  alias Lenra.Errors.BusinessError
 
   def create(conn, %{"env_id" => env_id} = params) do
     {env_id_int, ""} = Integer.parse(env_id)
 
     app =
-      Lenra.Repo.get(Lenra.Apps.App, Map.get(params, "app_id"))
+      Lenra.Apps.App
+      |> Lenra.Repo.get(Map.get(params, "app_id"))
       |> Lenra.Repo.preload(main_env: [environment: [:deployed_build]])
 
     case app.main_env.environment.deployed_build do
       nil ->
-        Lenra.Errors.BusinessError.application_not_built_tuple()
+        BusinessError.application_not_built_tuple()
 
-      _ ->
+      _other ->
         with {:ok, cron} <-
                env_id_int
                |> CronServices.create(

@@ -6,9 +6,9 @@ defmodule Lenra.Crons.Cron do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Crontab.CronExpression.Parser
   alias Lenra.Accounts.User
   alias Lenra.Apps.Environment
-  alias Crontab.CronExpression.Parser
 
   @derive {Jason.Encoder,
            only: [
@@ -20,7 +20,7 @@ defmodule Lenra.Crons.Cron do
              :environment_id,
              :user_id,
              :overlap,
-             :state,
+             :state
            ]}
   schema "crons" do
     belongs_to(:environment, Environment)
@@ -49,13 +49,13 @@ defmodule Lenra.Crons.Cron do
       :user_id,
       :name,
       :overlap,
-      :state,
+      :state
     ])
     |> validate_required([:environment_id, :listener_name, :schedule])
     |> validate_change(:schedule, fn :schedule, cron ->
       case Parser.parse(cron) do
         {:ok, _cron_expr} -> []
-        _ -> [schedule: "Schedule is malformed."]
+        _err -> [schedule: "Schedule is malformed."]
       end
     end)
     |> foreign_key_constraint(:environment_id)
