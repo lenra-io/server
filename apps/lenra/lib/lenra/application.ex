@@ -58,12 +58,15 @@ defmodule Lenra.Application do
 
       app_service_name = Lenra.Repo.preload(cron, environment: :application).environment.application.service_name
 
-      ApplicationRunner.Scheduler.new_job(
-        name: cron.name,
-        overlap: cron.overlap,
-        state: String.to_existing_atom(cron.state),
-        schedule: schedule
-      )
+      job =
+        ApplicationRunner.Scheduler.new_job(
+          name: cron.name,
+          overlap: cron.overlap,
+          state: String.to_existing_atom(cron.state),
+          schedule: schedule
+        )
+
+      job
       |> Quantum.Job.set_task(
         {CronServices, :run_cron,
          [
