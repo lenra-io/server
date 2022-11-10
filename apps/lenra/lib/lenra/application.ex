@@ -5,7 +5,9 @@ defmodule Lenra.Application do
 
   use Application
 
+  alias ApplicationRunner.Crons.CronServices
   alias Crontab.CronExpression.Parser
+  alias LenraWeb.AppAdapter
 
   require Logger
 
@@ -54,7 +56,7 @@ defmodule Lenra.Application do
     |> Enum.each(fn cron ->
       {:ok, schedule} = Parser.parse(cron.schedule)
 
-      app_name = Lenra.Repo.preload(cron, environment: :application).environment.application.name
+      app_service_name = Lenra.Repo.preload(cron, environment: :application).environment.application.service_name
 
       ApplicationRunner.Scheduler.new_job(
         name: cron.name,
@@ -63,7 +65,14 @@ defmodule Lenra.Application do
         schedule: schedule
       )
       |> Quantum.Job.set_task(
-        {CronServices, :run_cron, [app_name, cron.listener_name, cron.props, %{}, cron.environment_id]}
+        {CronServices, :run_cron,
+         [
+           AppAdapter.get_function_name(app_service_name),
+           cron.listener_name,
+           cron.props,
+           %{},
+           cron.environment_id
+         ]}
       )
       |> ApplicationRunner.Scheduler.add_job()
     end)
