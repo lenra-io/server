@@ -65,10 +65,6 @@ defmodule LenraWeb.Router do
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
 
-    get("/apps/:app_id/environments/:env_id/crons", CronController, :all)
-    get("/apps/:app_id/environments/:env_id/crons/:id", CronController, :get)
-    post("/apps/:app_id/environments/:env_id/crons", CronController, :create)
-
     resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
 
     get("/apps/invitations/:uuid", UserEnvironmentAccessController, :fetch_one)

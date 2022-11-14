@@ -5,10 +5,6 @@ defmodule Lenra.Application do
 
   use Application
 
-  alias ApplicationRunner.Crons.CronServices
-  alias Crontab.CronExpression.Parser
-  alias LenraWeb.AppAdapter
-
   require Logger
 
   def start(_type, _args) do
@@ -50,35 +46,6 @@ defmodule Lenra.Application do
     Logger.info("Lenra Supervisor Starting")
     res = Supervisor.start_link(children, opts)
     Application.ensure_all_started(:application_runner)
-
-    Lenra.Crons.Cron
-    |> Lenra.Repo.all()
-    |> Enum.each(fn cron ->
-      {:ok, schedule} = Parser.parse(cron.schedule)
-
-      app_service_name = Lenra.Repo.preload(cron, environment: :application).environment.application.service_name
-
-      job =
-        ApplicationRunner.Scheduler.new_job(
-          name: cron.name,
-          overlap: cron.overlap,
-          state: String.to_existing_atom(cron.state),
-          schedule: schedule
-        )
-
-      job
-      |> Quantum.Job.set_task(
-        {CronServices, :run_cron,
-         [
-           AppAdapter.get_function_name(app_service_name),
-           cron.listener_name,
-           cron.props,
-           %{},
-           cron.environment_id
-         ]}
-      )
-      |> ApplicationRunner.Scheduler.add_job()
-    end)
 
     Lenra.Seeds.run()
     Logger.info("Lenra Supervisor Started")
