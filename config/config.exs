@@ -81,8 +81,6 @@ config :application_runner,
   mongo_url: System.get_env("MONGO_URL", "mongodb://localhost:27017"),
   listeners_timeout: 1 * 60 * 60 * 1000
 
-config :application_runner, ApplicationRunner.Scheduler, storage: ApplicationRunner.Storage
-
 # additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
 # additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
 
