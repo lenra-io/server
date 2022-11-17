@@ -35,8 +35,8 @@ defmodule Lenra.MixProject do
       {:phoenix_pubsub, "~> 2.0"},
       {:telemetry, "~> 0.4.3", override: true},
       {:ecto_sql, "~> 3.4"},
-      {:bamboo, "~> 2.1.0"},
-      {:bamboo_smtp, "~> 4.0.1"},
+      {:bamboo, "~> 2.2.0"},
+      {:bamboo_smtp, "~> 4.2.2"},
       {:postgrex, "~> 0.15.8"},
       {:jason, "~> 1.2"},
       {:json_diff, "~> 0.1.0"},
@@ -48,10 +48,11 @@ defmodule Lenra.MixProject do
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3"},
-      {:application_runner,
-       git: "https://github.com/lenra-io/application-runner.git",
-       tag: "v1.0.0-beta.83",
-       submodules: true},
+      # {:application_runner,
+      #  git: "https://github.com/lenra-io/application-runner.git",
+      #  tag: "v1.0.0-beta.83",
+      #  submodules: true},
+      {:application_runner, path: "/home/emric/Documents/lenra/application-runner"},
        {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"}
 
     ]
