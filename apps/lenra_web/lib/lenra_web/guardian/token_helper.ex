@@ -9,7 +9,7 @@ defmodule LenraWeb.TokenHelper do
   @token_key "guardian_default_token"
 
   def assign_access_and_refresh_token(conn, user) do
-    IO.inspect(conn)
+    IO.inspect({conn, user})
     conn = create_refresh_and_store_cookie(conn, user)
 
     with {:ok, refresh_token} <- get_cookie_from_resp(conn),
@@ -34,7 +34,7 @@ defmodule LenraWeb.TokenHelper do
     |> Plug.Conn.put_resp_header("access-control-expose-headers", "access_token")
   end
 
-  def create_refresh_and_store_cookie(%{"keep" => true} = conn, user) do
+  def create_refresh_and_store_cookie(%{params: %{"keep" => "true"}} = conn, user) do
     Guardian.Plug.remember_me(conn, user, %{typ: "refresh"})
   end
 
