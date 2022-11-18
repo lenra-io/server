@@ -9,7 +9,6 @@ defmodule LenraWeb.TokenHelper do
   @token_key "guardian_default_token"
 
   def assign_access_and_refresh_token(conn, user) do
-    IO.inspect({conn, user})
     conn = create_refresh_and_store_cookie(conn, user)
 
     with {:ok, refresh_token} <- get_cookie_from_resp(conn),
