@@ -40,7 +40,6 @@ defmodule LenraWeb.Router do
 
     pipe_through(:ensure_auth_refresh)
     post("/logout", UserController, :logout)
-    post("/verify", UserController, :validate_user)
 
     pipe_through([:ensure_cgu_accepted])
     post("/refresh", UserController, :refresh_token)
@@ -60,6 +59,7 @@ defmodule LenraWeb.Router do
     get("/cgu/me/accepted_latest", CguController, :user_accepted_latest_cgu)
 
     pipe_through([:ensure_cgu_accepted])
+    post("/verify", UserController, :validate_user)
     resources("/apps", AppsController, only: [:index, :create, :update, :delete])
     get("/apps/:app_id/main_environment", ApplicationMainEnvController, :index)
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
