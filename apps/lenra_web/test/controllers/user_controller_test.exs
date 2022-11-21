@@ -124,29 +124,24 @@ defmodule LenraWeb.UserControllerTest do
     assert %{} = json_response(conn!, 200)
   end
 
-  # send verification email disabled
-  # test "code verification test", %{conn: conn} do
-  #  conn = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
-  #  assert_receive({:delivered_email, _email})
-  #
-  #  email = @john_doe_user_params["email"]
-  #  user = Repo.get_by(User, email: email)
-  #
-  #  user = Repo.preload(user, :registration_code)
-  #
-  #  conn =
-  #    post(
-  #      conn,
-  #      Routes.user_path(conn, :validate_user, %{"code" => user.registration_code.code})
-  #    )
-  #
-  #  assert %{"data" => data, "success" => true} = json_response(conn, 200)
-  #  assert Map.has_key?(data, "access_token")
-  # end
+  @tag auth_user_with_cgu: :unverified_user
+  test "code verification test", %{conn: conn} do
+    email = @john_doe_user_params["email"]
+    user = Repo.get_by(User, email: email)
 
+    user = Repo.preload(user, :registration_code)
+
+    conn =
+      post(
+        conn,
+        Routes.user_path(conn, :validate_user, %{"code" => user.registration_code.code})
+      )
+
+    assert %{"first_name" => "John", "last_name" => "Doe"} = json_response(conn, 200)
+  end
+
+  @tag auth_user_with_cgu: :unverified_user
   test "code verification error test", %{conn: conn!} do
-    conn! = post(conn!, Routes.user_path(conn!, :register, @john_doe_user_params))
-
     conn! = post(conn!, Routes.user_path(conn!, :validate_user, %{"code" => "12345678"}))
 
     assert %{"message" => "No such registration code", "reason" => "no_such_registration_code"} =
