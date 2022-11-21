@@ -3,10 +3,11 @@ defmodule Lenra.Apps.AppsTest do
     Test the application services
   """
 
-  use Lenra.RepoCase, async: true
+  use Lenra.RepoCase, async: false
 
   alias Lenra.Apps
   alias Lenra.Errors.TechnicalError
+  alias Lenra.Repo
 
   @tag :register_user
   test "fetch_app", %{user: user} do
@@ -22,6 +23,122 @@ defmodule Lenra.Apps.AppsTest do
 
       {:error, _} ->
         assert false, "adding app failed"
+    end
+  end
+
+  describe "all_apps_user_opened" do
+    @tag :register_user
+    test "should work properly", %{user: user} do
+      assert {:ok, %{inserted_application: app}} =
+               Apps.create_app(user.id, %{
+                 name: "mine-sweeper",
+                 color: "FFFFFF",
+                 icon: "60189"
+               })
+
+      # This app is not opened by the user and should not appear in the result list.
+      assert {:ok, %{inserted_application: _app}} =
+               Apps.create_app(user.id, %{
+                 name: "mine-sweeper2",
+                 color: "FFFFFF",
+                 icon: "60189"
+               })
+
+      env_id = Repo.preload(app, :main_env).main_env.environment_id
+
+      start_supervised({ApplicationRunner.EventHandler, %{mode: :session, id: env_id}})
+
+      start_supervised(
+        {ApplicationRunner.Session.MetadataAgent,
+         %ApplicationRunner.Session.Metadata{
+           session_id: 1,
+           env_id: env_id,
+           user_id: user.id,
+           function_name: "",
+           token: ApplicationRunner.AppSocket.do_create_session_token(env_id, 1, user.id) |> elem(1),
+           context: %{}
+         }}
+      )
+
+      start_supervised(
+        {ApplicationRunner.Session.Events.OnUserFirstJoin,
+         [
+           session_id: 1,
+           env_id: env_id,
+           user_id: user.id
+         ]}
+      )
+
+      assert [%Lenra.Apps.App{name: "mine-sweeper"}] = Apps.all_apps_user_opened(user.id)
+    end
+
+    @tag :register_user
+    test "with multiple apps opened", %{user: user} do
+      assert {:ok, %{inserted_application: app}} =
+               Apps.create_app(user.id, %{
+                 name: "mine-sweeper",
+                 color: "FFFFFF",
+                 icon: "60189"
+               })
+
+      assert {:ok, %{inserted_application: app2}} =
+               Apps.create_app(user.id, %{
+                 name: "mine-sweeper2",
+                 color: "FFFFFF",
+                 icon: "60189"
+               })
+
+      env_id = Repo.preload(app, :main_env).main_env.environment_id
+      env_id2 = Repo.preload(app2, :main_env).main_env.environment_id
+
+      start_supervised({ApplicationRunner.EventHandler, %{mode: :session, id: env_id}})
+
+      start_supervised(
+        {ApplicationRunner.Session.MetadataAgent,
+         %ApplicationRunner.Session.Metadata{
+           session_id: 1,
+           env_id: env_id,
+           user_id: user.id,
+           function_name: "",
+           token: ApplicationRunner.AppSocket.do_create_session_token(env_id, 1, user.id) |> elem(1),
+           context: %{}
+         }}
+      )
+
+      start_supervised(
+        {ApplicationRunner.Session.Events.OnUserFirstJoin,
+         [
+           session_id: 1,
+           env_id: env_id,
+           user_id: user.id
+         ]}
+      )
+
+      start_supervised({ApplicationRunner.EventHandler, %{mode: :session, id: env_id2}})
+
+      start_supervised(
+        {ApplicationRunner.Session.MetadataAgent,
+         %ApplicationRunner.Session.Metadata{
+           session_id: 1,
+           env_id: env_id2,
+           user_id: user.id,
+           function_name: "",
+           token: ApplicationRunner.AppSocket.do_create_session_token(env_id2, 1, user.id) |> elem(1),
+           context: %{}
+         }}
+      )
+
+      start_supervised(
+        {ApplicationRunner.Session.Events.OnUserFirstJoin,
+         [
+           session_id: 1,
+           env_id: env_id2,
+           user_id: user.id
+         ]}
+      )
+
+      assert [%Lenra.Apps.App{name: "mine-sweeper"}, %Lenra.Apps.App{name: "mine-sweeper2"}] =
+               Apps.all_apps_user_opened(user.id)
     end
   end
 
