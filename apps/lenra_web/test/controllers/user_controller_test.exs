@@ -127,9 +127,11 @@ defmodule LenraWeb.UserControllerTest do
   @tag auth_user_with_cgu: :unverified_user
   test "code verification test", %{conn: conn} do
     email = @john_doe_user_params["email"]
-    user = Repo.get_by(User, email: email)
 
-    user = Repo.preload(user, :registration_code)
+    user =
+      User
+      |> Repo.get_by(email: email)
+      |> Repo.preload(:registration_code)
 
     conn =
       post(

@@ -24,9 +24,10 @@ defmodule LenraWeb.TokenHelper do
     conn = Guardian.Plug.remember_me(conn, user, %{typ: "refresh"}, ttl: {0, :days})
 
     # Do not use create_access_token because sometimes the function returns an error because refresh_token has expired.
-    with {:ok, access_token, _claims} <- Guardian.encode_and_sign(user, %{typ: "access"}) do
-      assign_access_token(conn, access_token)
-    else
+    case Guardian.encode_and_sign(user, %{typ: "access"}) do
+      {:ok, access_token, _claims} ->
+        assign_access_token(conn, access_token)
+
       error ->
         ErrorHandler.auth_error(conn, error, [])
     end
