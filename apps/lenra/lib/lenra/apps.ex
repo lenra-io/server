@@ -32,6 +32,8 @@ defmodule Lenra.Apps do
     UserEnvironmentAccess
   }
 
+  alias ApplicationRunner.MongoStorage.MongoUserLink
+
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
   #######
@@ -66,6 +68,22 @@ defmodule Lenra.Apps do
           repository: a.repository,
           repository_branch: a.repository_branch
         }
+      )
+    )
+  end
+
+  @doc """
+    The `all_apps_user_opened` method takes a `user_id` and returns a list of Applications that the user has opened at least one.
+    This means that the user has an account on these applications and that the `MongoUserLink` relation has already been created.
+  """
+  def all_apps_user_opened(user_id) do
+    Repo.all(
+      from(a in App,
+        left_join: e in Environment,
+        on: a.id == e.application_id,
+        left_join: m in MongoUserLink,
+        on: e.id == m.environment_id,
+        where: m.user_id == ^user_id
       )
     )
   end
