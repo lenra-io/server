@@ -1,0 +1,24 @@
+services:
+  postgres:
+    container_name: lenra-postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: lenra_dev
+      POSTGRES_PASSWORD: postgres
+    restart: always
+  mongodb:
+    container_name: lenra-mongo
+    image: mongo:5.0.11-focal
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: test
+      CONFIG: '{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "localhost:27017"}]}'
+    healthcheck:
+      test: test $$(echo "rs.initiate($$CONFIG).ok || rs.status().ok" | mongo --quiet) -eq 1
+      interval: 10s
+      start_period: 10s
+    command: mongod --replSet rs0
+    restart: always
