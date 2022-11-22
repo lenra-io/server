@@ -83,7 +83,7 @@ defmodule LenraWeb.Router do
 
   scope "/api", LenraWeb do
     pipe_through([:api, :ensure_resource_auth, :ensure_cgu_accepted])
-    get("/apps/:service_name/resources/:resource", ResourcesController, :get_app_resource)
+    ApplicationRunner.Router.resource_route(ResourcesController)
   end
 
   scope "/", LenraWeb do
