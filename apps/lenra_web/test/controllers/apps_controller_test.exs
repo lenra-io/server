@@ -179,4 +179,16 @@ defmodule LenraWeb.AppsControllerTest do
       assert %{} = json_response(conn2, 200)
     end
   end
+
+  describe "all_apps_user_opened" do
+    @tag auth_user_with_cgu: :dev
+    test "but never opened apps", %{conn: conn} do
+      conn = get(conn, Routes.apps_path(conn, :index))
+
+      user_id = Guardian.Plug.current_resource(conn).id
+
+      conn! = get(conn, Routes.apps_path(conn, :all_apps_user_opened))
+      assert [] = json_response(conn!, 200)
+    end
+  end
 end

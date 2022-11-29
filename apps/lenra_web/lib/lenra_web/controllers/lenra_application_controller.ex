@@ -52,6 +52,14 @@ defmodule LenraWeb.AppsController do
       |> reply(apps)
     end
   end
+
+  def all_apps_user_opened(conn, _params) do
+    with :ok <- allow(conn),
+         user <- Plug.current_resource(conn),
+         apps <- Apps.all_apps_user_opened(user.id) do
+      reply(conn, apps)
+    end
+  end
 end
 
 defmodule LenraWeb.AppsController.Policy do
@@ -64,6 +72,7 @@ defmodule LenraWeb.AppsController.Policy do
   def authorize(:update, %User{id: user_id}, %App{creator_id: user_id}), do: true
   def authorize(:delete, %User{id: user_id}, %App{creator_id: user_id}), do: true
   def authorize(:get_user_apps, %User{role: :dev}, _data), do: true
+  def authorize(:all_apps_user_opened, _user, _data), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
