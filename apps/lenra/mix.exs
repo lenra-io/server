@@ -50,7 +50,7 @@ defmodule Lenra.MixProject do
       {:libcluster, "~> 3.3"},
       {:application_runner,
         git: "https://github.com/lenra-io/application-runner.git",
-        tag: "4bc2e2c",
+        tag: "6e1cc99d64cf055eff9259688d57578f30ef8cf9",
         submodules: true
       },
       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"}
