@@ -44,10 +44,17 @@ config :lenra, Lenra.Mailer,
     connect_timeout: :timer.minutes(1)
   ]
 
+dispatch = [
+  _: [
+    {"/up/:topic/ws", LenraWeb.NtfySocket, []},
+    {:_, Phoenix.Endpoint.Cowboy2Handler, {LenraWeb.Endpoint, []}}
+  ]
+]
+
 # Configures the endpoint
 config :lenra_web, LenraWeb.Endpoint,
   url: [host: "localhost", port: System.get_env("PORT", "4000")],
-  http: [port: {:system, "PORT"}],
+  http: [port: {:system, "PORT"}, dispatch: dispatch],
   render_errors: [view: LenraWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Lenra.PubSub,
   check_origin: false
