@@ -50,9 +50,9 @@ defmodule LenraWeb.UserController do
     end
   end
 
-  def validate_dev(conn, params) do
+  def validate_dev(conn, _params) do
     with user <- Plug.current_resource(conn),
-         {:ok, %{updated_user: updated_user}} <- Accounts.validate_dev(user, params["code"]) do
+         {:ok, %{updated_user: updated_user}} <- Accounts.validate_dev(user) do
       conn
       |> TokenHelper.revoke_current_refresh()
       |> TokenHelper.assign_access_and_refresh_token(updated_user)
