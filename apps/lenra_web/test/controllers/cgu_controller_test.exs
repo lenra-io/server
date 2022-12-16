@@ -67,7 +67,7 @@ defmodule LenraWeb.CguControllerTest do
   end
 
   describe "accept" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgu: :user
     test "with valid cgu_id and user_id", %{conn: conn} do
       date1 = DateTime.utc_now() |> DateTime.add(10, :second) |> DateTime.truncate(:second)
 
@@ -83,7 +83,7 @@ defmodule LenraWeb.CguControllerTest do
                json_response(conn, 200)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgu: :user
     test "with valid cgu_id and user_id but not latest cgu", %{conn: conn} do
       date1 = DateTime.utc_now() |> DateTime.add(10, :second) |> DateTime.truncate(:second)
 
@@ -98,7 +98,7 @@ defmodule LenraWeb.CguControllerTest do
   end
 
   describe "user_accepted_latest_cgu" do
-    @tag auth_user: :dev
+    @tag auth_user: :user
     test "user accepted latest", %{conn: conn} do
       {:ok, cgu} =
         %{hash: "user_accepted_latest_cgu", version: 2, path: "user_accepted_latest_cgu"}
@@ -115,7 +115,7 @@ defmodule LenraWeb.CguControllerTest do
                %{"accepted" => true}
     end
 
-    @tag auth_user: :dev
+    @tag auth_user: :user
     test "user did not accept latest", %{conn: conn} do
       {:ok, _cgu} =
         %{hash: "user_accepted_latest_cgu", version: 2, path: "user_accepted_latest_cgu"}

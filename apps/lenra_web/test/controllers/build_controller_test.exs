@@ -50,14 +50,13 @@ defmodule LenraWeb.BuildControllerTest do
              }
     end
 
-    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
-    test "build controller authenticated", %{users: [creator!, user, other_dev, admin]} do
+    @tag auth_users_with_cgu: [:user, :user, :admin]
+    test "build controller authenticated", %{users: [creator!, other_user, admin]} do
       %{conn: creator!, app: app} = create_app_and_build(creator!)
 
       get_build_path = Routes.builds_path(creator!, :index, app["id"])
       creator! = get(creator!, get_build_path)
-      user = get(user, get_build_path)
-      other_dev = get(other_dev, get_build_path)
+      other_user = get(other_user, get_build_path)
       admin = get(admin, get_build_path)
 
       assert [
@@ -82,31 +81,27 @@ defmodule LenraWeb.BuildControllerTest do
                }
              ] = json_response(admin, 200)
 
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_user, 403)
     end
   end
 
   describe "create" do
-    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
-    test "build controller authenticated", %{users: [creator!, user, other_dev, admin]} do
+    @tag auth_users_with_cgu: [:user, :user, :admin]
+    test "build controller authenticated", %{users: [creator!, other_user, admin]} do
       creator! = create_app(creator!)
       assert app = json_response(creator!, 200)
 
       creator! = create_build(creator!, app["id"])
       admin = create_build(admin, app["id"])
-      user = create_build(user, app["id"])
-      other_dev = create_build(other_dev, app["id"])
+      other_user = create_build(other_user, app["id"])
 
       assert %{} = json_response(creator!, 200)
       assert %{} = json_response(admin, 200)
 
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
-
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_user, 403)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgu: :user
     test "build controller authenticated check build_number incremented", %{conn: conn!} do
       %{conn: conn!, app: app, build: build} = create_app_and_build(conn!)
 
@@ -128,7 +123,7 @@ defmodule LenraWeb.BuildControllerTest do
       assert %{"build_number" => 2} = json_response(conn!, 200)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgu: :user
     test "build controller authenticated but invalid params", %{conn: conn!} do
       conn! = create_app(conn!)
 

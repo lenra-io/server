@@ -31,14 +31,13 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
              }
     end
 
-    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
-    test "application main env controller authenticated", %{users: [creator!, user, other_dev, admin]} do
+    @tag auth_users_with_cgu: [:user, :user, :admin]
+    test "application main env controller authenticated", %{users: [creator!, other_user, admin]} do
       %{conn: creator!, app: app} = create_app(creator!)
 
       get_application_main_env_path = Routes.application_main_env_path(creator!, :index, app["id"])
       creator! = get(creator!, get_application_main_env_path)
-      user = get(user, get_application_main_env_path)
-      other_dev = get(other_dev, get_application_main_env_path)
+      other_user = get(other_user, get_application_main_env_path)
       admin = get(admin, get_application_main_env_path)
 
       assert %{
@@ -61,8 +60,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
                "is_public" => false
              } = json_response(admin, 200)
 
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user, 403)
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev, 403)
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_user, 403)
     end
   end
 end
