@@ -68,10 +68,10 @@ defmodule LenraWeb.AppsController.Policy do
 
   @impl Bouncer.Policy
   def authorize(:index, _user, _data), do: true
-  def authorize(:create, %User{role: :dev}, _data), do: true
+  def authorize(:create, %User{role: :user}, _data), do: true
   def authorize(:update, %User{id: user_id}, %App{creator_id: user_id}), do: true
   def authorize(:delete, %User{id: user_id}, %App{creator_id: user_id}), do: true
-  def authorize(:get_user_apps, %User{role: :dev}, _data), do: true
+  def authorize(:get_user_apps, %User{role: :user}, _data), do: true
   def authorize(:all_apps_user_opened, _user, _data), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout

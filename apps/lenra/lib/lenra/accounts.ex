@@ -3,14 +3,14 @@ defmodule Lenra.Accounts do
     Lenra.Accounts is the context that handle the user account with :
     - Register the user
     - Login the user
-    - Validate the user with registration and/or dev codes
+    - Validate the user with registration code
     - Handle the user password (reset and change)
   """
 
   import Ecto.Query
 
   alias Lenra.{EmailWorker, Repo}
-  alias Lenra.Accounts.{DevCode, LostPasswordCode, Password, RegistrationCode, User}
+  alias Lenra.Accounts.{LostPasswordCode, Password, RegistrationCode, User}
   alias Lenra.Errors.BusinessError
 
   @doc """
@@ -64,19 +64,6 @@ defmodule Lenra.Accounts do
     end
   end
 
-  def validate_dev(user, dev_code) do
-    with :ok <- check_is_uuid(dev_code),
-         :ok <- check_simple_user(user),
-         {:ok, dev_code} <-
-           Repo.fetch_by(DevCode, [code: dev_code], BusinessError.invalid_code_tuple()),
-         :ok <- check_dev_code_unused(dev_code) do
-      Ecto.Multi.new()
-      |> Ecto.Multi.update(:updated_user, User.change_role(user, :dev))
-      |> Ecto.Multi.update(:updated_code, DevCode.update(dev_code, %{user_id: user.id}))
-      |> Repo.transaction()
-    end
-  end
-
   defp check_is_uuid(code) do
     case Ecto.UUID.dump(code) do
       :error -> BusinessError.invalid_uuid_tuple()
@@ -86,9 +73,6 @@ defmodule Lenra.Accounts do
 
   defp check_simple_user(%User{role: role}) when role in [:user, :unverified_user], do: :ok
   defp check_simple_user(_user), do: BusinessError.already_dev_tuple()
-
-  defp check_dev_code_unused(%DevCode{user_id: nil}), do: :ok
-  defp check_dev_code_unused(_devcode), do: BusinessError.dev_code_already_used_tuple()
 
   @doc """
     check if the user exists in the database and compare the hashed password.

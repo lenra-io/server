@@ -8,7 +8,6 @@ defmodule Lenra.Accounts.User do
   alias Lenra.UserEnvironmentAccess
 
   alias Lenra.Accounts.{
-    DevCode,
     LostPasswordCode,
     Password,
     RegistrationCode,
@@ -30,9 +29,8 @@ defmodule Lenra.Accounts.User do
 
   @unverified_user_role :unverified_user
   @user_role :user
-  @dev_role :dev
   @admin_role :admin
-  @all_roles [@unverified_user_role, @user_role, @admin_role, @dev_role]
+  @all_roles [@unverified_user_role, @user_role, @admin_role]
 
   @derive {Jason.Encoder, only: [:id, :role, :first_name, :last_name, :email]}
   schema "users" do
@@ -40,14 +38,13 @@ defmodule Lenra.Accounts.User do
     field(:last_name, :string)
     field(:email, :string)
     has_many(:password, Password)
-    field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
+    field(:role, Ecto.Enum, values: [:admin, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)
     has_many(:applications, App, foreign_key: :creator_id)
     has_one(:password_code, LostPasswordCode)
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
-    has_one(:dev_code, DevCode)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
     many_to_many(:cgus, CGU, join_through: UserAcceptCGUVersion)
     timestamps()
