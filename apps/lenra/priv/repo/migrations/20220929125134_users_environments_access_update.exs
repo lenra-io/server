@@ -11,8 +11,7 @@ defmodule Lenra.Repo.Migrations.UsersEnvironmentsAccessUpdate do
 
     rename(table(:users_environments_access), to: table(:users_environments_access_old))
 
-    create table(:users_environments_access, primary_key: false) do
-      add(:uuid, :binary_id, primary_key: true)
+    create table(:users_environments_access) do
       add(:email, :string)
       add(:user_id, references(:users, on_delete: :delete_all), null: true)
       add(:environment_id, references(:environments, on_delete: :delete_all))
