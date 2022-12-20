@@ -20,7 +20,7 @@ defmodule Lenra.Repo.Migrations.UsersEnvironmentsAccessUpdate do
     end
 
     execute(
-      "INSERT INTO users_environments_access(user_id, environment_id) SELECT old.user_id, old.environment_id FROM users_environments_access_old AS old"
+      "INSERT INTO users_environments_access(user_id, environment_id, inserted_at, updated_at) SELECT old.user_id, old.environment_id, old.inserted_at, old.updated_at FROM users_environments_access_old AS old"
     )
 
     drop(table(:users_environments_access_old))
