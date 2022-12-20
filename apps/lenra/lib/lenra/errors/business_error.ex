@@ -17,7 +17,6 @@ defmodule Lenra.Errors.BusinessError do
       {:password_already_used, "Your password cannot be equal to the last 3."},
       {:incorrect_email, "Incorrect email"},
       {:wrong_environment, "Deployment env does not match build env"},
-      {:dev_code_already_used, "The code is already used"},
       {:already_dev, "You are already a dev"},
       {:invalid_uuid, "The code is not a valid UUID"},
       {:invalid_code, "The code is invalid"},
