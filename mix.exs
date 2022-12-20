@@ -61,7 +61,8 @@ defmodule Lenra.Umbrella.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": [
         "ecto.create",
-        "ecto.migrate --migrations-path apps/lenra/priv/repo/migrations --migrations-path deps/application_runner/priv/repo/migrations"
+        "ecto.migrate --migrations-path apps/lenra/priv/repo/migrations --migrations-path deps/application_runner/priv/repo/migrations",
+        "run apps/lenra/priv/repo/seeds.exs"
       ],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
