@@ -53,7 +53,7 @@ jobs:
         uses: erlef/setup-beam@v1
         id: beam
         with:
-          elixir-version: "1.12" # Define the elixir version [required]
+          elixir-version: "1.13" # Define the elixir version [required]
           otp-version: "24" # Define the OTP version [required]
       - name: Restore dependencies & build cache
         uses: actions/cache@v2

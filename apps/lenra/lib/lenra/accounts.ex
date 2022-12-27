@@ -10,7 +10,7 @@ defmodule Lenra.Accounts do
   import Ecto.Query
 
   alias Lenra.{EmailWorker, Repo}
-  alias Lenra.Accounts.{DevCode, LostPasswordCode, Password, RegistrationCode, User}
+  alias Lenra.Accounts.{LostPasswordCode, Password, RegistrationCode, User}
   alias Lenra.Errors.BusinessError
 
   @doc """
@@ -73,12 +73,13 @@ defmodule Lenra.Accounts do
     end
   end
 
-  defp check_is_uuid(code) do
-    case Ecto.UUID.dump(code) do
-      :error -> BusinessError.invalid_uuid_tuple()
-      {:ok, _} -> :ok
-    end
-  end
+  # Unused function
+  # defp check_is_uuid(code) do
+  #   case Ecto.UUID.dump(code) do
+  #     :error -> BusinessError.invalid_uuid_tuple()
+  #     {:ok, _} -> :ok
+  #   end
+  # end
 
   defp check_simple_user(%User{role: role}) when role in [:user, :unverified_user], do: :ok
   defp check_simple_user(_user), do: BusinessError.already_dev_tuple()
