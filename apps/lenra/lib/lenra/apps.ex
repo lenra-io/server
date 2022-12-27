@@ -288,8 +288,8 @@ defmodule Lenra.Apps do
     Repo.fetch_by(UserEnvironmentAccess, clauses, error)
   end
 
-  def accept_invitation(uuid, %Accounts.User{} = user) do
-    with %UserEnvironmentAccess{} = access <- Repo.get_by(UserEnvironmentAccess, uuid: uuid),
+  def accept_invitation(id, %Accounts.User{} = user) do
+    with %UserEnvironmentAccess{} = access <- Repo.get_by(UserEnvironmentAccess, id: id),
          true <- access.email == user.email do
       access
       |> UserEnvironmentAccess.changeset(%{user_id: user.id})
@@ -349,7 +349,7 @@ defmodule Lenra.Apps do
 
   defp add_invitation_events(app, user_access, email) do
     lenra_app_url = Application.fetch_env!(:lenra, :lenra_app_url)
-    invitation_link = "https://#{lenra_app_url}/app/invitation/#{user_access.uuid}"
+    invitation_link = "https://#{lenra_app_url}/app/invitation/#{user_access.id}"
 
     EmailWorker.add_email_invitation_event(email, app.name, invitation_link)
   end
