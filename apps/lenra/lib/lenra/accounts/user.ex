@@ -5,7 +5,7 @@ defmodule Lenra.Accounts.User do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.UserEnvironmentAccess
+  alias Lenra.Apps.UserEnvironmentAccess
 
   alias Lenra.Accounts.{
     LostPasswordCode,
