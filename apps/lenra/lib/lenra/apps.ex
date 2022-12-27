@@ -289,7 +289,7 @@ defmodule Lenra.Apps do
   end
 
   def accept_invitation(id, %Accounts.User{} = user) do
-    with %UserEnvironmentAccess{} = access <- Repo.get_by(UserEnvironmentAccess, id: id),
+    with %UserEnvironmentAccess{} = access <- Repo.get(UserEnvironmentAccess, id),
          true <- access.email == user.email do
       access
       |> UserEnvironmentAccess.changeset(%{user_id: user.id})
