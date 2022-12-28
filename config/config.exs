@@ -14,7 +14,7 @@
 import Config
 # Configure the repo
 config :lenra,
-  ecto_repos: [Lenra.Repo]
+  ecto_repos: [Lenra.Repo, ApplicationRunner.Repo]
 
 config :lenra, Lenra.Repo,
   migration_timestamps: [type: :utc_datetime],
