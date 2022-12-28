@@ -1,4 +1,4 @@
-FROM elixir:1.12-alpine AS build
+FROM elixir:1.13-alpine AS build
 
 ARG CI
 ARG GH_PERSONNAL_TOKEN
