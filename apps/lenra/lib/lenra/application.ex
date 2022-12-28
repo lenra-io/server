@@ -7,8 +7,6 @@ defmodule Lenra.Application do
   require Logger
 
   def start(_type, _args) do
-    Lenra.MigrationHelper.migrate()
-
     children = [
       # Start the ecto repository
       Lenra.Repo,
@@ -44,6 +42,7 @@ defmodule Lenra.Application do
 
     Logger.info("Lenra Supervisor Starting")
     res = Supervisor.start_link(children, opts)
+    Lenra.MigrationHelper.migrate()
     Lenra.Seeds.run()
     Logger.info("Lenra Supervisor Started")
     res
