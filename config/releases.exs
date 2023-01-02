@@ -34,7 +34,7 @@ config :application_runner,
   faas_url: System.fetch_env!("FAAS_URL"),
   faas_auth: System.fetch_env!("FAAS_AUTH"),
   faas_registry: System.fetch_env!("FAAS_REGISTRY"),
-  gitlab_api_url: System.fetch_env!("GITLAB_API_URL"),
+  gitlab_api_url: System.fetch_env!("GITLAB_API_URL")
 
 config :application_runner, :mongo,
   hostname: System.fetch_env!("MONGO_HOSTNAME"),
