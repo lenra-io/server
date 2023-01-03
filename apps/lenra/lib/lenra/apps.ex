@@ -295,14 +295,17 @@ defmodule Lenra.Apps do
       |> UserEnvironmentAccess.changeset(%{user_id: user.id})
       |> Repo.update()
 
-      Repo.one(
-        from(a in App,
-          join: e in Environment,
-          on: e.application_id == a.id,
-          where: e.id == ^access.environment_id,
-          select: a.service_name
+      service_name =
+        Repo.one(
+          from(a in App,
+            join: e in Environment,
+            on: e.application_id == a.id,
+            where: e.id == ^access.environment_id,
+            select: a.service_name
+          )
         )
-      )
+
+      {:ok, %{app_name: service_name}}
     else
       false -> BusinessError.invitation_wrong_email(:wrong_email)
       err -> err
@@ -349,7 +352,7 @@ defmodule Lenra.Apps do
 
   defp add_invitation_events(app, user_access, email) do
     lenra_app_url = Application.fetch_env!(:lenra, :lenra_app_url)
-    invitation_link = "#{lenra_app_url}/app/invitation/#{user_access.id}"
+    invitation_link = "#{lenra_app_url}/#/app/invitations/#{user_access.id}"
 
     EmailWorker.add_email_invitation_event(email, app.name, invitation_link)
   end
