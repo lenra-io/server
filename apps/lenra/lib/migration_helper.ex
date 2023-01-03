@@ -6,21 +6,32 @@ defmodule Lenra.MigrationHelper do
   @app :lenra
 
   def migrate do
-    Ecto.Migrator.migrations(
-      Lenra.Repo,
-      [
-        Ecto.Migrator.migrations_path(Lenra.Repo, "apps/lenra/priv/repo/migrations"),
-        Ecto.Migrator.migrations_path(Lenra.Repo, "deps/application_runner/priv/repo/migrations")
-      ]
-    )
+    for repo <- repos() do
+      {:ok, _fun_return, _apps} =
+        Ecto.Migrator.with_repo(
+          repo,
+          &Ecto.Migrator.run(&1, all_migration_paths(), :up, all: true)
+        )
+    end
   end
 
-  def rollback(repo, version) do
-    {:ok, _fun_return, _apps} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
+  def all_migration_paths do
+    [
+      Application.app_dir(:lenra, "priv/repo/migrations"),
+      Application.app_dir(:application_runner, "priv/repo/migrations")
+    ]
   end
 
-  # defp repos do
-  #   Application.load(@app)
-  #   Application.fetch_env!(@app, :ecto_repos)
-  # end
+  def rollback(repo, _version) do
+    {:ok, _fun_return, _apps} =
+      Ecto.Migrator.with_repo(
+        repo,
+        &Ecto.Migrator.run(&1, all_migration_paths(), :down, all: true)
+      )
+  end
+
+  defp repos do
+    Application.load(@app)
+    Application.fetch_env!(@app, :ecto_repos)
+  end
 end
