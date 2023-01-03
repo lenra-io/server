@@ -23,6 +23,8 @@ defmodule Lenra.Accounts.User do
 
   alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
 
+  alias Lenra.Notifications.NotifyProvider
+
   @type t :: %__MODULE__{}
 
   @email_regex ~r/[^@]+@[^\.]+\..+/
@@ -46,6 +48,7 @@ defmodule Lenra.Accounts.User do
     has_many(:builds, Build, foreign_key: :creator_id)
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
+    has_many(:notif_providers, NotifyProvider)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
     many_to_many(:cgus, CGU, join_through: UserAcceptCGUVersion)
     timestamps()

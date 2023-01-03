@@ -4,7 +4,9 @@ defmodule LenraWeb.NtfyProxyController do
 
   require Logger
 
-  def auth(conn, _params) do
+  def auth(conn, params) do
+    Logger.info(inspect(params))
+    Logger.info(inspect(conn.req_headers))
     dispatch_stream(conn)
   end
 

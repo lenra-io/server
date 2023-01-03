@@ -425,5 +425,24 @@
     "headers": [],
     "params": [],
     "tests": []
+  },
+  {
+    "_id": "adb60f75-7c6c-4417-a5c6-c6f4c442ef41",
+    "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
+    "containerId": "218855f8-9f59-41fb-8da4-163a31e28110",
+    "name": "notify_provider",
+    "url": "{{endpoint}}/api/devices/{{device_id}}/notify_provider",
+    "method": "PUT",
+    "sortNum": 310000,
+    "created": "2023-01-03T15:17:29.268Z",
+    "modified": "2023-01-03T15:20:36.492Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"endpoint\": \"http://localhost:4000/up/upDgrbsMX3yh7K?up=1\",\n  \"system\": \"unified_push\"\n}",
+      "form": []
+    },
+    "tests": []
   }
 ]

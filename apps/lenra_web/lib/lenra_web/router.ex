@@ -1,6 +1,7 @@
 defmodule LenraWeb.Router do
   use LenraWeb, :router
 
+  alias LenraWeb.NotificationController
   alias LenraWeb.NtfyProxyController
   alias LenraWeb.{Pipeline, Plug}
 
@@ -83,6 +84,8 @@ defmodule LenraWeb.Router do
 
     get("/webhooks", WebhooksController, :index)
     post("/webhooks", WebhooksController, :api_create)
+
+    put("/devices/:device_id/notify_provider", NotificationController, :put_provider)
   end
 
   scope "/api", LenraWeb do
@@ -95,10 +98,10 @@ defmodule LenraWeb.Router do
   end
 
   scope "/up" do
-    get("/:topic/auth", NtfyProxyController, :auth)
+    # get("/:topic/auth", NtfyProxyController, :auth)
     put("/:topic", NtfyProxyController, :push)
     post("/:topic", NtfyProxyController, :push)
-    get("/:topic/json", NtfyProxyController, :json)
+    # get("/:topic/json", NtfyProxyController, :json)
   end
 
   # Enables LiveDashboard only for development

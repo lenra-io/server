@@ -2,6 +2,7 @@ defmodule LenraWeb.NtfySocket do
   @moduledoc """
   Simple Websocket handler that echos back any data it receives
   """
+  alias Lenra.Accounts
 
   require Logger
 
@@ -35,7 +36,23 @@ defmodule LenraWeb.NtfySocket do
   @impl :cowboy_websocket
   def init(req, _opts) do
     proxy_url = proxy_path(req)
-    Logger.info("Connecting to websocket. Proxy url : #{proxy_url}")
+    # "Basic " <> auth_base64 = Map.get(req.headers, "authorization")
+
+    # [email, password] =
+    #   auth_base64
+    #   |> Base.decode64!()
+    #   |> String.split(":")
+
+    # case Accounts.login_user(email, password) do
+    #   {:ok, _user} ->
+    #     Logger.info("Connecting to websocket. Proxy url : #{proxy_url}")
+    #     {:cowboy_websocket, req, [proxy_path: proxy_url]}
+
+    #   {:error, reason} ->
+    #     Logger.error(reason)
+    #     {:ok, :cowboy_req.reply(401, req), []}
+    # end
+
     {:cowboy_websocket, req, [proxy_path: proxy_url]}
   end
 
@@ -45,7 +62,7 @@ defmodule LenraWeb.NtfySocket do
   # This function is where you might want to  implement `Phoenix.Presence`, schedule an `after_join` message etc.
   @impl :cowboy_websocket
   def websocket_init(opts) do
-    Logger.info("Init websocket client")
+    Logger.debug("Init websocket client")
 
     connect_opts = %{
       connect_timeout: :timer.minutes(1),
@@ -78,7 +95,6 @@ defmodule LenraWeb.NtfySocket do
   @impl :cowboy_websocket
   # :ping is not handled for us like in Phoenix Channels.
   # We must explicitly send :pong messages back.
-  def websocket_handle(:ping, state), do: {[:pong], state}
 
   def websocket_handle(data, %{gun: gun} = state) do
     Logger.info("Dispatch data TO the WS Provider : #{inspect(data)}")

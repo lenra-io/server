@@ -54,6 +54,10 @@
       {
         "name": "app_name",
         "value": "Lenra Test 3"
+      },
+      {
+        "name": "device_id",
+        "value": "randomdeviceid42"
       }
     ]
   }
