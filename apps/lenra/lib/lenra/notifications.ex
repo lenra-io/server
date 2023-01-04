@@ -1,7 +1,8 @@
 defmodule Lenra.Notifications do
   alias Lenra.NotifyWorker
   alias Lenra.Repo
-  alias Lenra.Notifications.{NotifyProvider, NotificationBody}
+  alias Lenra.Notifications.{NotifyProvider}
+  alias ApplicationRunner.Notifications.Notif
   import Ecto.Query, only: [from: 2]
 
   def set_notify_provider(params) do
@@ -28,14 +29,14 @@ defmodule Lenra.Notifications do
     end)
   end
 
-  def send_up_notification(%NotifyProvider{} = provider, %NotificationBody{} = notif_body) do
-    string_params_body = construct_string_body(notif_body)
+  def send_up_notification(%NotifyProvider{} = provider, %Notif{} = notif) do
+    string_params_body = construct_string_body(notif)
 
     Finch.build(:post, provider.endpoint, [], string_params_body)
     |> Finch.request(GitlabHttp)
   end
 
-  defp construct_string_body(%NotificationBody{} = body) do
+  defp construct_string_body(%Notif{} = body) do
     [:message, :title, :tags, :priority, :attach, :actions, :click, :at]
     |> Enum.reduce("", fn elem, url_params ->
       case Map.get(body, elem) do
