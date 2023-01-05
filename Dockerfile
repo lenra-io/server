@@ -47,8 +47,5 @@ WORKDIR /app
 
 COPY --from=build --chown=lenra /app/_build/prod/rel/lenra .
 
-# THIS IS A TEMPORARY FIX FOR THE MIGRATIONS IN APPLICATION RUNNER
-RUN cp lib/application_runner-0.0.0-dev/priv/repo/migrations/* lib/lenra-0.1.0/priv/repo/migrations/
-
 ENTRYPOINT [ "bin/lenra" ]
 CMD ["start"]
