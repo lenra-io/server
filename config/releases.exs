@@ -35,9 +35,9 @@ config :application_runner,
   faas_auth: System.fetch_env!("FAAS_AUTH"),
   faas_registry: System.fetch_env!("FAAS_REGISTRY"),
   gitlab_api_url: System.fetch_env!("GITLAB_API_URL"),
-  listeners_timeout: System.fetch_env!("LISTENERS_TIMEOUT"),
-  view_timeout: System.fetch_env!("VIEW_TIMEOUT"),
-  manifest_timeout: System.fetch_env!("MANIFEST_TIMEOUT")
+  listeners_timeout: String.to_integer(System.fetch_env!("LISTENERS_TIMEOUT")),
+  view_timeout: String.to_integer(System.fetch_env!("VIEW_TIMEOUT")),
+  manifest_timeout: String.to_integer(System.fetch_env!("MANIFEST_TIMEOUT"))
 
 config :application_runner, :mongo,
   hostname: System.fetch_env!("MONGO_HOSTNAME"),
