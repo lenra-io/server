@@ -13,7 +13,7 @@ defmodule LenraWeb.AppChannelTest do
   #   Environment
   # }
 
-  alias LenraWeb.UserSocket
+  # alias LenraWeb.UserSocket
 
   # @build_number 1
   # @listener_name "HiBob"
@@ -227,7 +227,7 @@ defmodule LenraWeb.AppChannelTest do
   #   :timer.sleep(500)
   # end
 
-  defp my_subscribe_and_join(socket, params \\ %{}) do
-    subscribe_and_join(socket, LenraWeb.AppChannel, "app", params)
-  end
+  # defp my_subscribe_and_join(socket, params \\ %{}) do
+  #   subscribe_and_join(socket, LenraWeb.AppChannel, "app", params)
+  # end
 end

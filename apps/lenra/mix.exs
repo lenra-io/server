@@ -32,28 +32,27 @@ defmodule Lenra.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:phoenix_pubsub, "~> 2.0"},
-      {:telemetry, "~> 0.4.3", override: true},
-      {:ecto_sql, "~> 3.4"},
+      {:phoenix_pubsub, "~> 2.1.1"},
+      {:telemetry, "~> 1.2.0", override: true},
+      {:ecto_sql, "~> 3.9.2"},
       {:bamboo, "~> 2.2.0"},
       {:bamboo_smtp, "~> 4.2.2"},
-      {:postgrex, "~> 0.15.8"},
-      {:jason, "~> 1.2"},
-      {:json_diff, "~> 0.1.0"},
-      {:guardian, "~> 2.1.1"},
-      {:guardian_db, "~> 2.0"},
-      {:argon2_elixir, "~> 2.0"},
-      {:sentry, "~> 8.0"},
-      {:bypass, "~> 2.0", only: :test},
+      {:postgrex, "~> 0.16.5"},
+      {:jason, "~> 1.4"},
+      {:json_diff, "~> 0.1.3"},
+      {:guardian, "~> 2.3.1"},
+      {:guardian_db, "~> 2.1"},
+      {:argon2_elixir, "~> 3.0"},
+      {:sentry, "~> 8.0.6"},
+      {:bypass, "~> 2.1", only: :test},
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
-      {:libcluster, "~> 3.3"},
+      {:libcluster, "~> 3.3.1"},
       {:application_runner,
        git: "https://github.com/lenra-io/application-runner.git",
        ref: "v1.0.0-beta.102",
        submodules: true},
-       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"}
-
+      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.5.0"}
     ]
   end
 end

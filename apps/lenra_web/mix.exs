@@ -33,18 +33,18 @@ defmodule LenraWeb.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:phoenix, "~> 1.5.9"},
-      {:telemetry, "~> 0.4.3", override: true},
-      {:phoenix_live_dashboard, "~> 0.4"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
-      {:plug_cowboy, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.1"},
+      {:phoenix, "~> 1.6.15"},
+      {:telemetry, "~> 1.2.0", override: true},
+      {:phoenix_live_dashboard, "~> 0.6"},
+      {:telemetry_metrics, "~> 0.6.1"},
+      {:telemetry_poller, "~> 1.0.0"},
+      {:plug_cowboy, "~> 2.6"},
+      {:phoenix_ecto, "~> 4.4"},
       {:sentry, "~> 8.0"},
       {:lenra, in_umbrella: true},
       {:cors_plug, "~> 3.0", only: :dev, runtime: false},
       {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},
-      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"}
+      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.5.0"}
     ]
   end
 end
