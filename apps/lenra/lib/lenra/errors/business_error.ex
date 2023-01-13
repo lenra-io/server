@@ -26,6 +26,7 @@ defmodule Lenra.Errors.BusinessError do
       {:did_not_accept_cgu, "You must accept the CGU to use Lenra"},
       {:no_app_found, "No application found for the current link"},
       {:invitation_wrong_email, "Cannot accept the invitation with this email."},
-      {:application_not_built, "Your application has not been built yet."}
+      {:application_not_built, "Your application has not been built yet."},
+      {:build_in_progress, "Your application has a pending build, please wait before building your application again."}
     ]
 end
