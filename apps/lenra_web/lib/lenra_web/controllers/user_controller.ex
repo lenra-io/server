@@ -50,6 +50,13 @@ defmodule LenraWeb.UserController do
     end
   end
 
+  def resend_registration_token(conn, _params) do
+    with user <- Plug.current_resource(conn),
+         {:ok, _any} <- Accounts.resend_registration_code(user) do
+      reply(conn)
+    end
+  end
+
   def validate_dev(conn, _params) do
     with user <- Plug.current_resource(conn),
          {:ok, %{updated_user: updated_user}} <- Accounts.validate_dev(user) do
