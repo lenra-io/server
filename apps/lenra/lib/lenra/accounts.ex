@@ -32,6 +32,21 @@ defmodule Lenra.Accounts do
     |> Repo.transaction()
   end
 
+  def resend_registration_code(user) do
+    loaded_user = Repo.preload(user, :registration_code)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete(:deleted_registration_code, loaded_user.registration_code)
+    |> Ecto.Multi.insert(:inserted_registration_code, fn _params ->
+      registration_code_changeset(user)
+    end)
+    |> Ecto.Multi.run(:add_event, fn
+      _repo, %{inserted_registration_code: registration_code} ->
+        EmailWorker.add_email_verification_event(user, registration_code.code)
+    end)
+    |> Repo.transaction()
+  end
+
   defp registration_code_changeset(%User{} = user) do
     user
     |> Ecto.build_assoc(:registration_code)

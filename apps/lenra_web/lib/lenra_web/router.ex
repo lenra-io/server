@@ -60,6 +60,7 @@ defmodule LenraWeb.Router do
 
     pipe_through([:ensure_cgu_accepted])
     post("/verify", UserController, :validate_user)
+    post("/verify/lost", UserController, :resend_registration_token)
     resources("/apps", AppsController, only: [:index, :create, :update, :delete])
     get("/apps/:app_id/main_environment", ApplicationMainEnvController, :index)
     resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
