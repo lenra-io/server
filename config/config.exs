@@ -77,7 +77,7 @@ config :application_runner,
   faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
   faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
-  env: Mix.env() |> Atom.to_string(),
+  env: System.get_env("ENVIRONMENT", "dev"),
   listeners_timeout: 1 * 60 * 60 * 1000,
   view_timeout: 1 * 30 * 1000,
   manifest_timeout: 1 * 30 * 1000
