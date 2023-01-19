@@ -260,11 +260,11 @@
     "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
     "containerId": "880bc176-0b50-44c1-b255-0b804958e79a",
     "name": "/runner/builds/:build_id",
-    "url": "{{endpoint}}/runner/builds/{{build_id}}?secret={{runner_secret}}",
+    "url": "{{endpoint}}/runner/builds/9?secret={{runner_secret}}",
     "method": "PUT",
     "sortNum": 200000,
     "created": "2022-02-07T14:46:14.276Z",
-    "modified": "2022-02-07T14:52:24.876Z",
+    "modified": "2023-01-19T16:06:34.079Z",
     "headers": [],
     "params": [
       {
