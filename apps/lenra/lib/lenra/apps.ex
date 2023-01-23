@@ -192,9 +192,7 @@ defmodule Lenra.Apps do
         )
       end)
       |> update_build_after_pipeline()
-      |> IO.inspect()
       |> Repo.transaction()
-      |> IO.inspect()
     end
   end
 
