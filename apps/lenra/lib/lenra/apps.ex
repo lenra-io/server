@@ -201,22 +201,13 @@ defmodule Lenra.Apps do
   defp create_build(creator_id, app_id, params) do
     Ecto.Multi.new()
     |> Ecto.Multi.run(:build_number, fn repo, _result ->
-      last_build =
-        Repo.one(
-          from(b in Build, where: b.application_id == ^app_id and b.status == :pending, order_by: :inserted_at, limit: 1)
-        )
-
-      if last_build == nil do
-        {:ok,
-         repo.one(
-           from(b in Build,
-             select: (b.build_number |> max() |> coalesce(0)) + 1,
-             where: b.application_id == ^app_id
-           )
-         )}
-      else
-        BusinessError.build_in_progress_tuple(%{app_id: app_id})
-      end
+      {:ok,
+       repo.one(
+         from(b in Build,
+           select: (b.build_number |> max() |> coalesce(0)) + 1,
+           where: b.application_id == ^app_id
+         )
+       )}
     end)
     |> Ecto.Multi.insert(:inserted_build, fn %{build_number: build_number} ->
       Build.new(creator_id, app_id, build_number, params)
