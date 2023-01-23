@@ -36,6 +36,7 @@ defmodule Lenra.Apps.Build do
     |> cast(params, [:commit_hash, :status, :pipeline_id])
     |> validate_required([:build_number, :status, :creator_id, :application_id])
     |> validate_inclusion(:status, Ecto.Enum.values(Build, :status))
+    |> unique_constraint(:build_number, name: :builds_build_number_application_id_index)
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:application_id)
   end
