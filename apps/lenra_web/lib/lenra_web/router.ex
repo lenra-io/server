@@ -99,8 +99,8 @@ defmodule LenraWeb.Router do
 
   scope "/up" do
     # get("/:topic/auth", NtfyProxyController, :auth)
-    put("/:topic", NtfyProxyController, :push)
-    post("/:topic", NtfyProxyController, :push)
+    # put("/:topic", NtfyProxyController, :push)
+    # post("/:topic", NtfyProxyController, :push)
     # get("/:topic/json", NtfyProxyController, :json)
   end
 
