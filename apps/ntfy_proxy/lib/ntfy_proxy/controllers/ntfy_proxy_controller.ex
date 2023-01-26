@@ -7,11 +7,11 @@ defmodule NtfyProxy.NtfyProxyController do
   def auth(conn, params) do
     Logger.info(inspect(params))
     Logger.info(inspect(conn.req_headers))
-    dispatch_stream(conn)
+    dispatch(conn)
   end
 
   def push(conn, _params) do
-    dispatch_stream(conn)
+    dispatch(conn)
   end
 
   def json(conn, _params) do
@@ -46,7 +46,7 @@ defmodule NtfyProxy.NtfyProxyController do
   end
 
   def dispatch(%Plug.Conn{} = conn) do
-    {:ok, status, headers, client} =
+    {:ok, status, _headers, client} =
       conn.method
       |> String.downcase()
       |> String.to_existing_atom()
@@ -57,7 +57,7 @@ defmodule NtfyProxy.NtfyProxyController do
       )
 
     {:ok, body} = :hackney.body(client)
-    send_resp(%{conn | resp_headers: headers}, status, body)
+    send_resp(conn, status, body)
   end
 
   def write_proxy(conn, client) do
@@ -88,9 +88,10 @@ defmodule NtfyProxy.NtfyProxyController do
   def stream_proxy(conn, client) do
     case :hackney.start_response(client) do
       {:ok, status, headers, _client} ->
-        Logger.debug("Proxy response :ok. Status : #{status}")
+        Logger.debug("Proxy response :ok. Status : #{status} ; #{inspect(headers)}")
 
         %{conn | resp_headers: headers}
+        |> IO.inspect()
         |> send_chunked(status)
         |> stream_resp(client)
 

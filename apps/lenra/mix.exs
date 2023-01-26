@@ -34,13 +34,13 @@ defmodule Lenra.MixProject do
     [
       {:phoenix_pubsub, "~> 2.0"},
       {:telemetry, "~> 0.4.3", override: true},
-      {:ecto_sql, "~> 3.4"},
+      {:ecto_sql, "~> 3.9.2"},
       {:bamboo, "~> 2.2.0"},
       {:bamboo_smtp, "~> 4.2.2"},
-      {:postgrex, "~> 0.15.8"},
+      {:postgrex, "~> 0.16.0"},
       {:jason, "~> 1.2"},
       {:json_diff, "~> 0.1.0"},
-      {:guardian, "~> 2.1.1"},
+      {:guardian, "~> 2.3.1"},
       {:guardian_db, "~> 2.0"},
       {:argon2_elixir, "~> 2.0"},
       {:sentry, "~> 8.0"},
@@ -55,7 +55,7 @@ defmodule Lenra.MixProject do
       #  submodules: true
         path: "../../../application-runner"
        },
-       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"}
+       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.5.0"}
     ]
   end
 end

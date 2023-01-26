@@ -13,12 +13,8 @@ defmodule LenraWeb.NotificationController do
 
   def put_provider(conn, params) do
     with :ok <- allow(conn),
-         user <- Plug.current_resource(conn) do
-      provider =
-        params
-        |> Map.put("user_id", user.id)
-        |> Notifications.set_notify_provider()
-
+         user <- Plug.current_resource(conn),
+         {:ok, provider} <- params |> Map.put("user_id", user.id) |> Notifications.set_notify_provider() do
       reply(conn, provider)
     end
   end

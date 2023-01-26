@@ -6,8 +6,7 @@ defmodule NtfyProxy.NtfySocket do
   require Logger
 
   def proxy_path(req) do
-    "/up" <> path = req.path
-    '#{path}?#{req.qs}'
+    '#{req.path}?#{req.qs}'
   end
 
   def proxy_host() do

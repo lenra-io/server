@@ -33,7 +33,7 @@ defmodule Lenra.Notifications do
     string_params_body = construct_string_body(notif)
 
     Finch.build(:post, provider.endpoint, [], string_params_body)
-    |> Finch.request(GitlabHttp)
+    |> Finch.request(UnifiedPushHttp)
   end
 
   defp construct_string_body(%Notif{} = body) do

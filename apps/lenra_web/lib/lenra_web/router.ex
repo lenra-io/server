@@ -84,7 +84,7 @@ defmodule LenraWeb.Router do
     get("/webhooks", WebhooksController, :index)
     post("/webhooks", WebhooksController, :api_create)
 
-    # put("/devices/:device_id/notify_provider", NotificationController, :put_provider)
+    put("/devices/:device_id/notify_provider", NotificationController, :put_provider)
   end
 
   scope "/api", LenraWeb do

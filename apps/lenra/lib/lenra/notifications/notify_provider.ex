@@ -5,6 +5,14 @@ defmodule Lenra.Notifications.NotifyProvider do
   alias Lenra.Notifications.NotifyProvider
   alias Lenra.Accounts.User
 
+  @derive {Jason.Encoder,
+           only: [
+             :device_id,
+             :endpoint,
+             :system,
+             :user_id
+           ]}
+
   schema "notify_provider" do
     field(:device_id, :string)
     field(:endpoint, :string)
