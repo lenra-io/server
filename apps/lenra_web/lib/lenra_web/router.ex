@@ -2,7 +2,6 @@ defmodule LenraWeb.Router do
   use LenraWeb, :router
 
   alias LenraWeb.NotificationController
-  alias LenraWeb.NtfyProxyController
   alias LenraWeb.{Pipeline, Plug}
 
   require ApplicationRunner.Router
@@ -95,13 +94,6 @@ defmodule LenraWeb.Router do
 
   scope "/", LenraWeb do
     get("/health", HealthController, :index)
-  end
-
-  scope "/up" do
-    # get("/:topic/auth", NtfyProxyController, :auth)
-    # put("/:topic", NtfyProxyController, :push)
-    # post("/:topic", NtfyProxyController, :push)
-    # get("/:topic/json", NtfyProxyController, :json)
   end
 
   # Enables LiveDashboard only for development

@@ -8,6 +8,15 @@ config :lenra_web, LenraWeb.Endpoint,
   secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
   url: [host: System.fetch_env!("API_ENDPOINT"), port: System.fetch_env!("PORT")]
 
+config :ntfy_proxy, NtfyProxy.Endpoint,
+  http: [
+    # Enable IPv6 and bind on all interfaces.
+    # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
+    ip: {0, 0, 0, 0, 0, 0, 0, 0},
+    port: String.to_integer(System.get_env("NTFY_PROXY_PORT"))
+  ],
+  secret_key_base: System.fetch_env!("NTFY_SECRET_KEY_BASE")
+
 config :lenra, Lenra.Repo,
   username: System.fetch_env!("POSTGRES_USER"),
   password: System.fetch_env!("POSTGRES_PASSWORD"),

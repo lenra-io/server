@@ -1,9 +1,9 @@
-defmodule LenraWeb.MixProject do
+defmodule NtfyProxy.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :lenra_web,
+      app: :ntfy_proxy,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -11,17 +11,19 @@ defmodule LenraWeb.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix] ++ Mix.compilers(),
+      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
-      test_coverage: [tool: ExCoveralls],
+      aliases: aliases(),
       deps: deps()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
+  # Configuration for the OTP application.
+  #
+  # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {LenraWeb.Application, []},
+      mod: {NtfyProxy.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -30,22 +32,29 @@ defmodule LenraWeb.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  # Run "mix help deps" to learn about dependencies.
+  # Specifies your project dependencies.
+  #
+  # Type `mix help deps` for examples and options.
   defp deps do
     [
       {:phoenix, "~> 1.5.9"},
       {:telemetry, "~> 0.4.3", override: true},
-      {:phoenix_live_dashboard, "~> 0.4"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:plug_cowboy, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.1"},
-      {:sentry, "~> 8.0"},
-      {:lenra, in_umbrella: true},
-      {:ntfy_proxy, in_umbrella: true},
-      {:cors_plug, "~> 3.0", only: :dev, runtime: false},
-      {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},
-      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"},
+      {:hackney, "~> 1.18"},
+      {:gun, "~> 1.3"},
+      {:cowlib, "~> 2.11.0", override: true},
+      {:lenra, in_umbrella: true}
+    ]
+  end
+
+  # Aliases are shortcuts or tasks specific to the current project.
+  #
+  # See the documentation for `Mix` for more info on aliases.
+  defp aliases do
+    [
+      setup: ["deps.get"]
     ]
   end
 end

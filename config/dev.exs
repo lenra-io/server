@@ -2,6 +2,23 @@
 # DO NOT USE THESE SECRET ON PRODUCTION !
 
 import Config
+
+# For development, we disable any cache and enable
+# debugging and code reloading.
+#
+# The watchers configuration can be used to run external
+# watchers to your application. For example, we use it
+# with esbuild to bundle .js and .css sources.
+config :ntfy_proxy, NtfyProxy.Endpoint,
+  # Binding to loopback ipv4 address prevents access from other machines.
+  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  http: [ip: {0, 0, 0, 0}, port: 4100],
+  check_origin: false,
+  code_reloader: true,
+  debug_errors: true,
+  secret_key_base: "xWrF2kbHKL2hs392U07ahvIWKAhZqT1KJnkzc1z3WCfW91DAmk9m9ZUbQPvfKPJo",
+  watchers: []
+
 # Configure your database
 config :lenra, Lenra.Repo,
   username: System.get_env("POSTGRES_USER", "postgres"),

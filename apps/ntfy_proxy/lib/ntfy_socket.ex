@@ -1,8 +1,7 @@
-defmodule LenraWeb.NtfySocket do
+defmodule NtfyProxy.NtfySocket do
   @moduledoc """
   Simple Websocket handler that echos back any data it receives
   """
-  alias Lenra.Accounts
 
   require Logger
 
@@ -112,6 +111,7 @@ defmodule LenraWeb.NtfySocket do
   end
 
   def websocket_info(info, state) do
+    Logger.debug("Ntfy Proxy ws info : #{inspect(info)}")
     {[], state}
   end
 end

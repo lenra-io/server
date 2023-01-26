@@ -1,5 +1,5 @@
-defmodule LenraWeb.NtfyProxyController do
-  use LenraWeb, :controller
+defmodule NtfyProxy.NtfyProxyController do
+  use NtfyProxy, :controller
   import Plug.Conn
 
   require Logger
@@ -112,9 +112,7 @@ defmodule LenraWeb.NtfyProxyController do
   end
 
   def uri(conn) do
-    "/up" <> path = conn.request_path
-
-    "#{proxy()}#{path}?#{conn.query_string}"
+    "#{proxy()}#{conn.request_path}?#{conn.query_string}"
   end
 
   def proxy() do

@@ -1,4 +1,12 @@
 import Config
+
+# We don't run a server during test. If one is required,
+# you can enable the server option below.
+config :ntfy_proxy, NtfyProxy.Endpoint,
+  http: [ip: {127, 0, 0, 1}, port: 4102],
+  secret_key_base: "qralrxQCgcf2rruZmpCDPgaM+81vbcZlqBzeZ8unzz7fL8NfVxXii/6QNWJZQBBm",
+  server: false
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :lenra_web, LenraWeb.Endpoint,

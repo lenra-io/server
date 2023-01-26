@@ -12,6 +12,25 @@
 
 # General application configuration
 import Config
+
+config :ntfy_proxy,
+  generators: [context_app: false]
+
+# Configures the endpoint
+dispatch = [
+  _: [
+    {"/:topic/ws", NtfyProxy.NtfySocket, []},
+    {:_, Phoenix.Endpoint.Cowboy2Handler, {NtfyProxy.Endpoint, []}}
+  ]
+]
+
+config :ntfy_proxy, NtfyProxy.Endpoint,
+  url: [host: "localhost"],
+  http: [port: {:system, "PORT"}, dispatch: dispatch],
+  render_errors: [view: NtfyProxy.ErrorView, accepts: ~w(json), layout: false],
+  pubsub_server: NtfyProxy.PubSub,
+  live_view: [signing_salt: "FVzjWv3z"]
+
 # Configure the repo
 config :lenra,
   ecto_repos: [Lenra.Repo]
@@ -44,17 +63,10 @@ config :lenra, Lenra.Mailer,
     connect_timeout: :timer.minutes(1)
   ]
 
-dispatch = [
-  _: [
-    {"/up/:topic/ws", LenraWeb.NtfySocket, []},
-    {:_, Phoenix.Endpoint.Cowboy2Handler, {LenraWeb.Endpoint, []}}
-  ]
-]
-
 # Configures the endpoint
 config :lenra_web, LenraWeb.Endpoint,
   url: [host: "localhost", port: System.get_env("PORT", "4000")],
-  http: [port: {:system, "PORT"}, dispatch: dispatch],
+  http: [port: {:system, "PORT"}],
   render_errors: [view: LenraWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Lenra.PubSub,
   check_origin: false

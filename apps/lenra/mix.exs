@@ -56,7 +56,6 @@ defmodule Lenra.MixProject do
         path: "../../../application-runner"
        },
        {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.4.0"}
-
     ]
   end
 end

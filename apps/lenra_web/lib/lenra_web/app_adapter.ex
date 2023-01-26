@@ -9,6 +9,7 @@ defmodule LenraWeb.AppAdapter do
   alias Lenra.{Apps, Repo}
   alias Lenra.Apps.{App, Environment, MainEnv}
   alias Lenra.Errors.BusinessError
+  alias ApplicationRunner.Notifications.Notif
 
   @impl ApplicationRunner.Adapter
   def allow(user_id, app_name) do
@@ -67,6 +68,13 @@ defmodule LenraWeb.AppAdapter do
       nil -> BusinessError.no_app_found_tuple()
       %App{} = app -> app
     end
+  end
+
+  @impl ApplicationRunner.Adapter
+  def send_notification(%Notif{} = notif) do
+    Lenra.Notifications.notify(notif)
+
+    :ok
   end
 
   defmodule Policy do

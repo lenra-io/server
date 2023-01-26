@@ -57,14 +57,6 @@ defmodule LenraWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
-  def copy_req_body(conn, _) do
-    {:ok, body, _conn} = Plug.Conn.read_body(conn)
-
-    Plug.Conn.put_private(conn, :raw_body, body)
-  end
-
-  plug :copy_req_body
-
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],

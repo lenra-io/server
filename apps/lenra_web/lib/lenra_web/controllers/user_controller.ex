@@ -9,7 +9,11 @@ defmodule LenraWeb.UserController do
 
   alias Lenra.Errors.BusinessError
 
+  require Logger
+
   def register(conn, params) do
+    Logger.debug(inspect(params))
+
     with {:ok, %{inserted_user: user}} <- Accounts.register_user(params) do
       conn
       |> TokenHelper.assign_access_and_refresh_token(user)
