@@ -10,7 +10,7 @@ defmodule Lenra.Accounts do
   import Ecto.Query
 
   alias Lenra.{EmailWorker, Repo}
-  alias Lenra.Accounts.{DevCode, LostPasswordCode, Password, RegistrationCode, User}
+  alias Lenra.Accounts.{LostPasswordCode, Password, RegistrationCode, User}
   alias Lenra.Errors.BusinessError
 
   @doc """
@@ -27,6 +27,21 @@ defmodule Lenra.Accounts do
     end)
     |> Ecto.Multi.run(:add_event, fn
       _repo, %{inserted_registration_code: registration_code, inserted_user: user} ->
+        EmailWorker.add_email_verification_event(user, registration_code.code)
+    end)
+    |> Repo.transaction()
+  end
+
+  def resend_registration_code(user) do
+    loaded_user = Repo.preload(user, :registration_code)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete(:deleted_registration_code, loaded_user.registration_code)
+    |> Ecto.Multi.insert(:inserted_registration_code, fn _params ->
+      registration_code_changeset(user)
+    end)
+    |> Ecto.Multi.run(:add_event, fn
+      _repo, %{inserted_registration_code: registration_code} ->
         EmailWorker.add_email_verification_event(user, registration_code.code)
     end)
     |> Repo.transaction()
@@ -73,12 +88,13 @@ defmodule Lenra.Accounts do
     end
   end
 
-  defp check_is_uuid(code) do
-    case Ecto.UUID.dump(code) do
-      :error -> BusinessError.invalid_uuid_tuple()
-      {:ok, _} -> :ok
-    end
-  end
+  # Unused function
+  # defp check_is_uuid(code) do
+  #   case Ecto.UUID.dump(code) do
+  #     :error -> BusinessError.invalid_uuid_tuple()
+  #     {:ok, _} -> :ok
+  #   end
+  # end
 
   defp check_simple_user(%User{role: role}) when role in [:user, :unverified_user], do: :ok
   defp check_simple_user(_user), do: BusinessError.already_dev_tuple()

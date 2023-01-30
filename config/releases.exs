@@ -34,7 +34,19 @@ config :application_runner,
   faas_url: System.fetch_env!("FAAS_URL"),
   faas_auth: System.fetch_env!("FAAS_AUTH"),
   faas_registry: System.fetch_env!("FAAS_REGISTRY"),
-  gitlab_api_url: System.fetch_env!("GITLAB_API_URL")
+  gitlab_api_url: System.fetch_env!("GITLAB_API_URL"),
+  listeners_timeout: String.to_integer(System.fetch_env!("LISTENERS_TIMEOUT")),
+  view_timeout: String.to_integer(System.fetch_env!("VIEW_TIMEOUT")),
+  manifest_timeout: String.to_integer(System.fetch_env!("MANIFEST_TIMEOUT")),
+  env: System.fetch_env!("ENVIRONMENT")
+
+config :application_runner, :mongo,
+  hostname: System.fetch_env!("MONGO_HOSTNAME"),
+  port: System.get_env("MONGO_PORT", "27017"),
+  username: System.get_env("MONGO_USERNAME"),
+  password: System.get_env("MONGO_PASSWORD"),
+  ssl: System.get_env("MONGO_SSL", "false"),
+  auth_source: System.get_env("MONGO_AUTH_SOURCE")
 
 # Do not print debug messages in production
 config :logger, level: String.to_atom(System.get_env("LOG_LEVEL", "info"))

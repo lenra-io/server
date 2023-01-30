@@ -46,12 +46,11 @@ defmodule LenraWeb.DeploymentControllerTest do
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
 
-      conn! =
-        post(conn!, Routes.deployments_path(conn!, :create), %{
-          environment_id: env.id,
-          build_id: build.id,
-          application_id: app.id
-        })
+      post(conn!, Routes.deployments_path(conn!, :create), %{
+        environment_id: env.id,
+        build_id: build.id,
+        application_id: app.id
+      })
 
       assert [] != Repo.all(Deployment)
     end

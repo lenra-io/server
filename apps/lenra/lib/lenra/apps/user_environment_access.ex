@@ -17,7 +17,6 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
              :user_id,
              :environment_id
            ]}
-  @primary_key {:uuid, Ecto.UUID, autogenerate: true}
   schema "users_environments_access" do
     field(:email, :string)
     belongs_to(:user, User)

@@ -93,7 +93,7 @@ defmodule LenraWeb.CguControllerTest do
         |> Ecto.Changeset.put_change(:inserted_at, date1)
         |> Repo.insert()
 
-      conn = post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
+      post(conn, Routes.cgu_path(conn, :accept, cgu.id), %{"user_id" => conn.assigns[:user].id})
     end
   end
 

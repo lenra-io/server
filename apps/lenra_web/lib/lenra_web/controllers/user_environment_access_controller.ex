@@ -21,18 +21,18 @@ defmodule LenraWeb.UserEnvironmentAccessController do
     end
   end
 
-  def fetch_one(conn, %{"uuid" => uuid}) do
-    with {:ok, invite} <- Apps.fetch_user_env_access(uuid: uuid) do
+  def fetch_one(conn, %{"id" => id}) do
+    with {:ok, invite} <- Apps.fetch_user_env_access(id: id) do
       conn
       |> reply(invite)
     end
   end
 
-  def accept(conn, %{"uuid" => uuid}) do
+  def accept(conn, %{"id" => id}) do
     with user <- Guardian.Plug.current_resource(conn),
-         app_name <- Apps.accept_invitation(uuid, user) do
+         {:ok, res} <- Apps.accept_invitation(id, user) do
       conn
-      |> reply(%{app_name: app_name})
+      |> reply(res)
     end
   end
 

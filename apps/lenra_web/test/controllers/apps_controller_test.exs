@@ -185,7 +185,7 @@ defmodule LenraWeb.AppsControllerTest do
     test "but never opened apps", %{conn: conn} do
       conn = get(conn, Routes.apps_path(conn, :index))
 
-      user_id = Guardian.Plug.current_resource(conn).id
+      Guardian.Plug.current_resource(conn).id
 
       conn! = get(conn, Routes.apps_path(conn, :all_apps_user_opened))
       assert [] = json_response(conn!, 200)

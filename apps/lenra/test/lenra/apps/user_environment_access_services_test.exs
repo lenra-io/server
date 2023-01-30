@@ -13,7 +13,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   alias Lenra.Apps
   alias Lenra.Apps.{App, Environment}
 
-  @app_url_prefix "https://localhost:10000/app/invitation"
+  @app_url_prefix "https://localhost:10000/#/app/invitations"
 
   setup do
     {:ok, create_and_return_application()}
@@ -62,7 +62,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
     test "send email after invitation", %{app: app, env: env, user: user} do
       {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => user.email})
 
-      app_link = "#{@app_url_prefix}/#{user_access.uuid}"
+      app_link = "#{@app_url_prefix}/#{user_access.id}"
 
       email = EmailService.create_invitation_email(user.email, app.name, app_link)
 
@@ -105,9 +105,9 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
 
       {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(%{"email" => "test@lenra.io"})
 
-      Apps.accept_invitation(user_access.uuid, user)
+      Apps.accept_invitation(user_access.id, user)
 
-      access = Repo.get_by(Apps.UserEnvironmentAccess, uuid: user_access.uuid)
+      access = Repo.get_by(Apps.UserEnvironmentAccess, id: user_access.id)
 
       assert access.environment_id == env.id
       assert access.user_id == user.id
@@ -119,7 +119,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
       {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => user.email})
 
       Apps.UserEnvironmentAccess
-      |> Repo.get_by(uuid: user_access.uuid)
+      |> Repo.get_by(id: user_access.id)
       |> Apps.delete_user_env_access()
       |> Repo.transaction()
 
