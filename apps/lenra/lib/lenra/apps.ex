@@ -352,7 +352,7 @@ defmodule Lenra.Apps do
 
   defp add_invitation_events(app, user_access, email) do
     lenra_app_url = Application.fetch_env!(:lenra, :lenra_app_url)
-    invitation_link = "#{lenra_app_url}/#/app/invitations/#{user_access.id}"
+    invitation_link = "#{lenra_app_url}/app/invitations/#{user_access.id}"
 
     EmailWorker.add_email_invitation_event(email, app.name, invitation_link)
   end
