@@ -49,7 +49,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                  "name" => "live",
                  "application_id" => _,
                  "creator_id" => _,
-                 "deployed_build_id" => _,
+                 "deployment_id" => _,
                  "id" => _
                },
                %{
@@ -58,7 +58,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                  "name" => "test",
                  "application_id" => _,
                  "creator_id" => _,
-                 "deployed_build_id" => _,
+                 "deployment_id" => _,
                  "id" => _
                }
              ] = json_response(creator!, 200)
@@ -70,7 +70,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                  "name" => "live",
                  "application_id" => _,
                  "creator_id" => _,
-                 "deployed_build_id" => _,
+                 "deployment_id" => _,
                  "id" => _
                },
                %{
@@ -79,7 +79,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
                  "name" => "test",
                  "application_id" => _,
                  "creator_id" => _,
-                 "deployed_build_id" => _,
+                 "deployment_id" => _,
                  "id" => _
                }
              ] = json_response(admin, 200)

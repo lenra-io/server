@@ -7,7 +7,7 @@ defmodule Lenra.Apps.Environment do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.Apps.{App, Build}
+  alias Lenra.Apps.{App, Deployment}
   alias Lenra.Apps.UserEnvironmentAccess
 
   @type t :: %__MODULE__{}
@@ -20,7 +20,7 @@ defmodule Lenra.Apps.Environment do
              :is_public,
              :application_id,
              :creator_id,
-             :deployed_build_id
+             :deployment_id
            ]}
   schema "environments" do
     field(:name, :string)
@@ -28,7 +28,7 @@ defmodule Lenra.Apps.Environment do
     field(:is_public, :boolean)
     belongs_to(:application, App)
     belongs_to(:creator, User)
-    belongs_to(:deployed_build, Build)
+    belongs_to(:deployment, Deployment)
     many_to_many(:shared_with, User, join_through: UserEnvironmentAccess)
 
     timestamps()
@@ -48,11 +48,11 @@ defmodule Lenra.Apps.Environment do
     changeset(env, params)
   end
 
-  def new(application_id, creator_id, deployed_build_id, params) do
+  def new(application_id, creator_id, deployment_id, params) do
     %__MODULE__{
       application_id: application_id,
       creator_id: creator_id,
-      deployed_build_id: deployed_build_id
+      deployment_id: deployment_id
     }
     |> __MODULE__.changeset(params)
   end

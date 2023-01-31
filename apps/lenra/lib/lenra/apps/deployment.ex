@@ -8,7 +8,8 @@ defmodule Lenra.Apps.Deployment do
 
   alias Lenra.Apps.{
     Build,
-    Environment
+    Environment,
+    App
   }
 
   alias Lenra.Accounts.User
@@ -16,7 +17,8 @@ defmodule Lenra.Apps.Deployment do
   @derive {Jason.Encoder, only: [:id, :application_id, :environment_id, :build_id, :publisher_id]}
 
   schema "deployments" do
-    field(:application_id, :integer)
+    field(:status, Ecto.Enum, values: [:created, :pending, :failure, :success])
+    belongs_to(:application_id, App)
     belongs_to(:environment, Environment)
     belongs_to(:build, Build)
     belongs_to(:publisher, User)
@@ -27,7 +29,7 @@ defmodule Lenra.Apps.Deployment do
   def changeset(deployment, params \\ %{}) do
     deployment
     |> cast(params, [])
-    |> validate_required([:environment_id, :build_id, :publisher_id, :application_id])
+    |> validate_required([:environment_id, :build_id, :publisher_id, :application_id, :status])
     |> unique_constraint([:environment_id, :build_id])
     |> foreign_key_constraint(:environment_id)
     |> foreign_key_constraint(:build_id)
@@ -36,6 +38,7 @@ defmodule Lenra.Apps.Deployment do
 
   def new(application_id, environment_id, build_id, user_id, params) do
     %__MODULE__{
+      status: :created,
       application_id: application_id,
       environment_id: environment_id,
       build_id: build_id,

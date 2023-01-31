@@ -178,6 +178,14 @@ defmodule Lenra.Apps do
     Repo.fetch(Build, build_id)
   end
 
+  def create_build_and_deploy(creator_id, app_id, params) do
+    with {:ok, %App{} = app} <- fetch_app(app_id),
+         preloaded_app <- Repo.preload(app, :main_env) do
+      %{inserted_build: inserted_build} = create_build_and_trigger_pipeline(creator_id, app_id, params)
+      create_deployment(preloaded_app.main_env.id, inserted_build, creator_id, params)
+    end
+  end
+
   def create_build_and_trigger_pipeline(creator_id, app_id, params) do
     with {:ok, %App{} = app} <- fetch_app(app_id) do
       creator_id
@@ -233,8 +241,13 @@ defmodule Lenra.Apps do
 
   def deploy_in_main_env(%Build{} = build) do
     with loaded_build <- Repo.preload(build, :application),
-         loaded_app <- Repo.preload(loaded_build.application, :main_env) do
-      create_deployment(loaded_app.main_env.environment_id, build.id, build.creator_id)
+         loaded_app <- Repo.preload(loaded_build.application, :main_env),
+         {:ok, _status} <- OpenfaasServices.deploy_app(build.application.service_name, build.build_number) do
+      update_deployement(loaded_app.main_env.deployement, status: :pending)
+
+      spawn(
+        update_deployement_after_deploy(loaded_app.main_env.deployement, loaded_app.main_env, build, build.build_number)
+      )
     end
   end
 
@@ -244,24 +257,34 @@ defmodule Lenra.Apps do
       |> Repo.get(build_id)
       |> Repo.preload(:application)
 
-    env = get_env(environment_id)
-
     # TODO: back previous deployed build, check if it's present in another env and if not, remove it from OpenFaaS
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:updated_env, Ecto.Changeset.change(env, deployed_build_id: build.id))
     |> Ecto.Multi.insert(
       :inserted_deployment,
       Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
     )
-    |> Ecto.Multi.run(:openfaas_deploy, fn _repo, _result ->
-      # TODO: check if this build is already deployed on another env
-      OpenfaasServices.deploy_app(
-        build.application.service_name,
-        build.build_number
-      )
-    end)
     |> Repo.transaction()
+  end
+
+  def update_deployement_after_deploy(deployment, env, service_name, build_number) do
+    if OpenfaasServices.deploy?(service_name, build_number) do
+      Ecto.Multi.new()
+      |> Ecto.Multi.update(:updated_deployment, Ecto.Changeset.change(deployment, status: :success))
+      |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
+        Ecto.Changeset.change(env, deployment_id: updated_deployment.id)
+        |> Repo.update()
+      end)
+      |> Repo.transaction()
+    else
+      Process.sleep(1000)
+      update_deployement_after_deploy(deployment, env, service_name, build_number)
+    end
+  end
+
+  defp update_deployement(deployement, change) do
+    Ecto.Changeset.change(deployement, change)
+    |> Repo.update()
   end
 
   def image_name(service_name, build_number) do
