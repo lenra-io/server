@@ -36,8 +36,6 @@ RUN mix phx.digest
 # compile and build release
 RUN mix do compile, release lenra
 
-RUN mix ecto.setup
-
 # prepare release image
 FROM erlang:24-alpine
 
