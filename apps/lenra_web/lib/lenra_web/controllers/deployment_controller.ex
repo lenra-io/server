@@ -6,6 +6,14 @@ defmodule LenraWeb.DeploymentsController do
 
   alias Lenra.Apps
 
+  def index(conn, %{"app_id" => app_id}) do
+    with {:ok, app} <- Apps.fetch_app(app_id),
+         :ok <- allow(conn, app) do
+      conn
+      |> reply(Apps.all_deployements(app.id))
+    end
+  end
+
   def create(conn, %{"environment_id" => env_id, "build_id" => build_id} = params) do
     with user <- Guardian.Plug.current_resource(conn),
          {:ok, environment} <- Apps.fetch_env(env_id),

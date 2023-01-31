@@ -14,7 +14,7 @@ defmodule Lenra.Apps.Deployment do
 
   alias Lenra.Accounts.User
 
-  @derive {Jason.Encoder, only: [:id, :application_id, :environment_id, :build_id, :publisher_id]}
+  @derive {Jason.Encoder, only: [:id, :application_id, :environment_id, :build_id, :publisher_id, :status]}
 
   schema "deployments" do
     field(:status, Ecto.Enum, values: [:created, :pending, :failure, :success])

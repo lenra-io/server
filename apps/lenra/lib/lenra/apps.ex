@@ -239,6 +239,10 @@ defmodule Lenra.Apps do
   # Deployments #
   ###############
 
+  def all_deployements(app_id) do
+    Repo.all(from(d in Deployment, where: d.application_id == ^app_id))
+  end
+
   def deploy_in_main_env(%Build{} = build) do
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, :main_env),

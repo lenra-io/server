@@ -6,7 +6,7 @@ defmodule LenraWeb.RunnerController do
   defp maybe_deploy_in_main_env(build, "success"),
     do: Apps.deploy_in_main_env(build)
 
-  defp maybe_deploy_in_main_env(build, "failure") do
+  defp maybe_deploy_in_main_env(_build, "failure") do
     {:ok, :not_deployed}
   end
 
