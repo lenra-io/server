@@ -54,10 +54,10 @@ defmodule Lenra.OpenfaasServices do
     |> response(:deploy_app)
   end
 
-  def deploy?(service_name, build_number) do
+  def is_deploy(service_name, build_number) do
     {base_url, headers} = get_http_context()
 
-    url = "#{base_url}/system/functions/#{get_function_name(service_name, build_number)}"
+    url = "#{base_url}/system/function/#{get_function_name(service_name, build_number)}"
 
     Finch.build(
       :get,
@@ -65,7 +65,6 @@ defmodule Lenra.OpenfaasServices do
       headers
     )
     |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> IO.inspect()
     |> response(:deploy_status)
   end
 
@@ -93,20 +92,14 @@ defmodule Lenra.OpenfaasServices do
     {:ok, status_code}
   end
 
-  # defp response(
-  #        {:ok, %Finch.Response{status: status_code, body: %{"availableReplicas" => availableReplicas}}},
-  #        :deploy_status
-  #      )
-  #      when status_code in [200, 202] and availableReplicas != 0 do
-  #   {:ok, :success}
-  # end
-
   defp response(
-         {:ok, %Finch.Response{status: status_code}},
+         {:ok, %Finch.Response{status: status_code, body: body}},
          :deploy_status
        )
        when status_code in [200, 202] do
-    false
+    json_body = Jason.decode!(body)
+    available_replicas = Map.get(json_body, "availableReplicas")
+    available_replicas != 0 && available_replicas != nil
   end
 
   defp response({:ok, %Finch.Response{status: status_code}}, :delete_app)

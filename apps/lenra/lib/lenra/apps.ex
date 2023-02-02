@@ -181,8 +181,11 @@ defmodule Lenra.Apps do
   def create_build_and_deploy(creator_id, app_id, params) do
     with {:ok, %App{} = app} <- fetch_app(app_id),
          preloaded_app <- Repo.preload(app, :main_env) do
-      %{inserted_build: inserted_build} = create_build_and_trigger_pipeline(creator_id, app_id, params)
-      create_deployment(preloaded_app.main_env.id, inserted_build, creator_id, params)
+      {:ok, %{inserted_build: inserted_build}} = create_build_and_trigger_pipeline(creator_id, app_id, params)
+
+      create_deployment(preloaded_app.main_env.id, inserted_build.id, creator_id, params)
+
+      {:ok, %{inserted_build: inserted_build}}
     end
   end
 
@@ -243,15 +246,27 @@ defmodule Lenra.Apps do
     Repo.all(from(d in Deployment, where: d.application_id == ^app_id))
   end
 
+  def get_deployement(build_id, env_id) do
+    Repo.one(from(d in Deployment, where: d.build_id == ^build_id and d.environment_id == ^env_id))
+  end
+
   def deploy_in_main_env(%Build{} = build) do
     with loaded_build <- Repo.preload(build, :application),
-         loaded_app <- Repo.preload(loaded_build.application, :main_env),
-         {:ok, _status} <- OpenfaasServices.deploy_app(build.application.service_name, build.build_number) do
-      update_deployement(loaded_app.main_env.deployement, status: :pending)
+         loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
+         deployment <- get_deployement(build.id, loaded_app.main_env.environment.id),
+         {:ok, _status} <- OpenfaasServices.deploy_app(loaded_build.application.service_name, build.build_number) do
+      update_deployement(deployment, status: :pending)
 
-      spawn(
-        update_deployement_after_deploy(loaded_app.main_env.deployement, loaded_app.main_env, build, build.build_number)
-      )
+      spawn(fn ->
+        update_deployement_after_deploy(
+          deployment,
+          loaded_app.main_env.environment,
+          loaded_app.service_name,
+          build.build_number
+        )
+      end)
+
+      {:ok, build}
     end
   end
 
@@ -271,20 +286,28 @@ defmodule Lenra.Apps do
     |> Repo.transaction()
   end
 
-  def update_deployement_after_deploy(deployment, env, service_name, build_number) do
-    if OpenfaasServices.deploy?(service_name, build_number) do
-      Ecto.Multi.new()
-      |> Ecto.Multi.update(:updated_deployment, Ecto.Changeset.change(deployment, status: :success))
-      |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
-        Ecto.Changeset.change(env, deployment_id: updated_deployment.id)
-        |> Repo.update()
-      end)
-      |> Repo.transaction()
-    else
-      Process.sleep(1000)
-      update_deployement_after_deploy(deployment, env, service_name, build_number)
+  def update_deployement_after_deploy(deployment, env, service_name, build_number),
+    do: update_deployement_after_deploy(deployment, env, service_name, build_number, 0)
+
+  def update_deployement_after_deploy(deployment, env, service_name, build_number, retry) when retry <= 120 do
+    case OpenfaasServices.is_deploy(service_name, build_number) do
+      true ->
+        Ecto.Multi.new()
+        |> Ecto.Multi.update(:updated_deployment, Ecto.Changeset.change(deployment, status: :success))
+        |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
+          Ecto.Changeset.change(env, deployment_id: updated_deployment.id)
+          |> Repo.update()
+        end)
+        |> Repo.transaction()
+
+      _any ->
+        Process.sleep(5000)
+        update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
     end
   end
+
+  def update_deployement_after_deploy(deployment, _env, _service_name, _build_number, _retry),
+    do: update_deployement(deployment, status: :failure)
 
   defp update_deployement(deployement, change) do
     Ecto.Changeset.change(deployement, change)

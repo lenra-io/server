@@ -14,11 +14,12 @@ defmodule Lenra.Apps.Deployment do
 
   alias Lenra.Accounts.User
 
-  @derive {Jason.Encoder, only: [:id, :application_id, :environment_id, :build_id, :publisher_id, :status]}
+  @derive {Jason.Encoder,
+           only: [:id, :application_id, :environment_id, :build_id, :publisher_id, :status, :inserted_at]}
 
   schema "deployments" do
     field(:status, Ecto.Enum, values: [:created, :pending, :failure, :success])
-    belongs_to(:application_id, App)
+    belongs_to(:application, App)
     belongs_to(:environment, Environment)
     belongs_to(:build, Build)
     belongs_to(:publisher, User)
