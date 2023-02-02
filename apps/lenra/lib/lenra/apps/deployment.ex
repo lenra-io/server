@@ -7,9 +7,9 @@ defmodule Lenra.Apps.Deployment do
   import Ecto.Changeset
 
   alias Lenra.Apps.{
+    App,
     Build,
-    Environment,
-    App
+    Environment
   }
 
   alias Lenra.Accounts.User

@@ -36,6 +36,8 @@ defmodule Lenra.Apps do
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
+  require Logger
+
   #######
   # App #
   #######
@@ -295,10 +297,24 @@ defmodule Lenra.Apps do
         Ecto.Multi.new()
         |> Ecto.Multi.update(:updated_deployment, Ecto.Changeset.change(deployment, status: :success))
         |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
-          Ecto.Changeset.change(env, deployment_id: updated_deployment.id)
+          env
+          |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
           |> Repo.update()
         end)
         |> Repo.transaction()
+
+      # Function not found in openfaas, 2 retry (10s),
+      # To let openfaas deploy in case of overload, after 2 retry -> failure
+      :error404 ->
+        if retry == 3 do
+          Logger.critical("Function #{service_name} not deploy on openfaas, this should not appens")
+          update_deployement(deployment, status: :failure)
+        else
+          Process.sleep(5000)
+          update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
+        end
+
+        :error500
 
       _any ->
         Process.sleep(5000)
@@ -310,7 +326,8 @@ defmodule Lenra.Apps do
     do: update_deployement(deployment, status: :failure)
 
   defp update_deployement(deployement, change) do
-    Ecto.Changeset.change(deployement, change)
+    deployement
+    |> Ecto.Changeset.change(change)
     |> Repo.update()
   end
 
