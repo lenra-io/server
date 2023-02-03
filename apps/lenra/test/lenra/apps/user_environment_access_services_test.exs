@@ -13,7 +13,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   alias Lenra.Apps
   alias Lenra.Apps.{App, Environment}
 
-  @app_url_prefix "https://localhost:10000/#/app/invitations"
+  @app_url_prefix "https://localhost:10000/app/invitations"
 
   setup do
     {:ok, create_and_return_application()}
