@@ -76,10 +76,10 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :lenra,
-  faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
-  faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
+  faas_url: System.get_env("FAAS_URL", "http://localhost:8080"),
+  faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46c0c1Y1ZKZFg0dXBx"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
-  runner_callback_url: System.get_env("LOCAL_TUNNEL_URL"),
+  runner_callback_url: System.get_env("LOCAL_TUNNEL_URL", "http://bf4a-2803-9810-40cf-7910-00-c78.ngrok.io"),
   lenra_env: "dev",
   gitlab_api_url: System.get_env("GITLAB_API_URL", "https://gitlab.com/api/v4"),
   gitlab_api_token: System.get_env("GITLAB_API_TOKEN", "Zuz-dZc834q3CtU-bnX5"),
@@ -98,5 +98,6 @@ config :lenra,
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
 
 config :cors_plug,
-  origin: System.get_env("ALLOWED_CLIENT_ORIGINS", "http://localhost:10000") |> String.split(","),
+  origin:
+    System.get_env("ALLOWED_CLIENT_ORIGINS", "http://localhost:10000,http://localhost:10001") |> String.split(","),
   methods: ["GET", "POST", "PUT", "PATCH", "OPTION"]

@@ -1,12 +1,11 @@
 defmodule LenraWeb.Router do
   use LenraWeb, :router
 
-  # alias LenraWeb.NotificationController
   alias LenraWeb.{Pipeline, Plug}
 
   require ApplicationRunner.Router
 
-  ApplicationRunner.Router.app_routes()
+  ApplicationRunner.Router.app_routes(notification_controller: LenraWeb.NotificationController)
 
   pipeline :api do
     plug(:accepts, ["json"])

@@ -18,10 +18,6 @@ defmodule NtfyProxy.NtfyProxyController do
     dispatch_stream(conn, true)
   end
 
-  # def ws(conn, _params) do
-  #   dispatch_stream(conn, true)
-  # end
-
   def client(conn, long_polling? \\ false) do
     conn.method
     |> String.downcase()

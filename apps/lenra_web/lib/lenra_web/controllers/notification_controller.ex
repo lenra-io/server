@@ -1,5 +1,5 @@
 defmodule LenraWeb.NotificationController do
-  use LenraWeb, :controller
+  use ApplicationRunner.NotificationsController, adapter: LenraWeb.AppAdapter
 
   use LenraWeb.Policy,
     module: LenraWeb.NotificationController.Policy
