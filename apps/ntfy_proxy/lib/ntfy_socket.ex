@@ -34,22 +34,6 @@ defmodule NtfyProxy.NtfySocket do
   @impl :cowboy_websocket
   def init(req, _opts) do
     proxy_url = proxy_path(req)
-    # "Basic " <> auth_base64 = Map.get(req.headers, "authorization")
-
-    # [email, password] =
-    #   auth_base64
-    #   |> Base.decode64!()
-    #   |> String.split(":")
-
-    # case Accounts.login_user(email, password) do
-    #   {:ok, _user} ->
-    #     Logger.info("Connecting to websocket. Proxy url : #{proxy_url}")
-    #     {:cowboy_websocket, req, [proxy_path: proxy_url]}
-
-    #   {:error, reason} ->
-    #     Logger.error(reason)
-    #     {:ok, :cowboy_req.reply(401, req), []}
-    # end
 
     {:cowboy_websocket, req, [proxy_path: proxy_url]}
   end

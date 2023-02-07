@@ -4,16 +4,6 @@ defmodule NtfyProxy.NtfyProxyController do
 
   require Logger
 
-  def auth(conn, params) do
-    Logger.info(inspect(params))
-    Logger.info(inspect(conn.req_headers))
-    dispatch(conn)
-  end
-
-  def push(conn, _params) do
-    dispatch(conn)
-  end
-
   def json(conn, _params) do
     dispatch_stream(conn, true)
   end
