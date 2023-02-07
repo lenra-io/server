@@ -6,7 +6,7 @@ defmodule :"Elixir.Lenra.Repo.Migrations.Deployment-change" do
       add(:status, :string, null: true)
     end
 
-    execute("UPDATE deployments SET status = 'success'")
+    execute("UPDATE deployments SET status = 'failed'")
 
     alter table(:deployments) do
       modify(:status, :string, null: false)
