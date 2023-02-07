@@ -1,8 +1,8 @@
 defmodule LenraWeb.RunnerControllerTest do
   use LenraWeb.ConnCase, async: true
 
-  alias Lenra.{FaasStub, GitlabStubHelper}
   alias Lenra.Apps.App
+  alias Lenra.{FaasStub, GitlabStubHelper}
 
   setup %{conn: conn} do
     GitlabStubHelper.create_gitlab_stub()
