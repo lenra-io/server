@@ -18,9 +18,6 @@ defmodule LenraWeb.DeploymentControllerTest do
   describe "create" do
     @tag auth_user_with_cgu: :dev
     test "deployment controller authenticated", %{conn: conn!} do
-      FaasStub.create_faas_stub()
-      |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
-
       conn! =
         post(conn!, Routes.apps_path(conn!, :create), %{
           "name" => "test",

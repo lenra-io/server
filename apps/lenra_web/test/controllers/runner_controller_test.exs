@@ -2,6 +2,7 @@ defmodule LenraWeb.RunnerControllerTest do
   use LenraWeb.ConnCase, async: true
 
   alias Lenra.{FaasStub, GitlabStubHelper}
+  alias Lenra.Apps.App
 
   setup %{conn: conn} do
     GitlabStubHelper.create_gitlab_stub()
@@ -20,8 +21,18 @@ defmodule LenraWeb.RunnerControllerTest do
 
       assert app = json_response(conn!, 200)
 
+      preloaded_app = Lenra.Repo.preload(Lenra.Repo.get(App, app["id"]), :main_env)
+
       conn! = post(conn!, Routes.builds_path(conn!, :create, app["id"]))
       assert build = json_response(conn!, 200)
+
+      post(conn!, Routes.deployments_path(conn!, :create), %{
+        environment_id: preloaded_app.main_env.environment_id,
+        build_id: build["id"],
+        application_id: app["id"]
+      })
+
+      assert deployment = json_response(conn!, 200)
 
       {:ok, %{conn: conn!, app: app, build: build}}
     end

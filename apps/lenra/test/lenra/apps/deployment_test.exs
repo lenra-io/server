@@ -36,15 +36,29 @@ defmodule Lenra.Apps.DeploymentTest do
     app
   end
 
+  def get_function_name(service_name, build_number) do
+    lenra_env = Application.fetch_env!(:lenra, :lenra_env)
+
+    String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
+  end
+
   describe "create" do
     test "deployment successfully", %{app: app} do
-      FaasStub.create_faas_stub()
-      |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
+      bypass = FaasStub.create_faas_stub()
+      FaasStub.expect_deploy_app_once(bypass, %{"ok" => "200"})
 
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
 
+      FaasStub.expect_get_function_once(
+        bypass,
+        %{"ok" => "200"},
+        get_function_name(app.service_name, build.build_number)
+      )
+
       Apps.create_deployment(env.id, build.id, app.creator_id)
+
+      Apps.deploy_in_main_env(build)
 
       assert nil != Enum.at(Repo.all(Deployment), 0)
       assert nil != Repo.get_by(Deployment, environment_id: env.id, build_id: build.id)

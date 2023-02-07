@@ -182,9 +182,8 @@ defmodule Lenra.Apps do
 
   def create_build_and_deploy(creator_id, app_id, params) do
     with {:ok, %App{} = app} <- fetch_app(app_id),
-         preloaded_app <- Repo.preload(app, :main_env) do
-      {:ok, %{inserted_build: inserted_build}} = create_build_and_trigger_pipeline(creator_id, app_id, params)
-
+         preloaded_app <- Repo.preload(app, :main_env),
+         {:ok, %{inserted_build: inserted_build}} <- create_build_and_trigger_pipeline(creator_id, app_id, params) do
       create_deployment(preloaded_app.main_env.id, inserted_build.id, creator_id, params)
 
       {:ok, %{inserted_build: inserted_build}}
@@ -255,9 +254,9 @@ defmodule Lenra.Apps do
   def deploy_in_main_env(%Build{} = build) do
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
-         deployment <- get_deployement(build.id, loaded_app.main_env.environment.id),
+         %Deployment{} = deployment <- get_deployement(build.id, loaded_app.main_env.environment.id),
          {:ok, _status} <- OpenfaasServices.deploy_app(loaded_build.application.service_name, build.build_number) do
-      update_deployement(deployment, status: :pending)
+      update_deployement(deployment, status: :waitingForAppReady)
 
       spawn(fn ->
         update_deployement_after_deploy(
