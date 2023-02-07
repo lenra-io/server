@@ -18,7 +18,7 @@ defmodule Lenra.Apps.Deployment do
            only: [:id, :application_id, :environment_id, :build_id, :publisher_id, :status, :inserted_at]}
 
   schema "deployments" do
-    field(:status, Ecto.Enum, values: [:created, :pending, :failure, :success])
+    field(:status, Ecto.Enum, values: [:created, :waitingForBuild, :waitingForAppReady, :failure, :success])
     belongs_to(:application, App)
     belongs_to(:environment, Environment)
     belongs_to(:build, Build)
@@ -39,7 +39,7 @@ defmodule Lenra.Apps.Deployment do
 
   def new(application_id, environment_id, build_id, user_id, params) do
     %__MODULE__{
-      status: :created,
+      status: :waitingForBuild,
       application_id: application_id,
       environment_id: environment_id,
       build_id: build_id,
