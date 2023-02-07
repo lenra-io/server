@@ -5,11 +5,17 @@ defmodule Lenra.NotifyWorker do
   alias Lenra.Notifications
   require Logger
 
-  def add_unified_push_notif(provider, notif) do
-    EventQueue.add_event(:unified_push, [provider, notif])
+  def add_push_notif(provider, notif) do
+    EventQueue.add_event(:push_notif, [provider, notif])
   end
 
-  def unified_push(provider, notif) do
-    Notifications.send_up_notification(provider, notif)
+  def push_notif(provider, notif) do
+    case provider.system do
+      :unified_push ->
+        Notifications.send_up_notification(provider, notif)
+
+      _ ->
+        raise "Not implemented"
+    end
   end
 end

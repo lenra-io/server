@@ -22,10 +22,7 @@ defmodule Lenra.Notifications do
   def notify(%Notif{} = notif) do
     get_providers(notif.to_uids)
     |> Enum.map(fn %NotifyProvider{} = provider ->
-      case provider.system do
-        :unified_push -> NotifyWorker.add_unified_push_notif(provider, notif)
-        _ -> raise "Not implemented"
-      end
+      NotifyWorker.add_push_notif(provider, notif)
     end)
   end
 
