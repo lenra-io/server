@@ -60,14 +60,6 @@ defmodule LenraWeb.AppAdapter do
     end
   end
 
-  @impl ApplicationRunner.Adapter
-  def get_service_name(env_id) do
-    with %Environment{} = env <- Repo.get(Environment, env_id),
-         %Environment{} = environment <- Repo.preload(env, :application) do
-      environment.application.service_name
-    end
-  end
-
   defp get_app(app_name) do
     App
     |> Repo.get_by(service_name: app_name)

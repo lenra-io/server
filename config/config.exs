@@ -80,8 +80,7 @@ config :application_runner,
   env: System.get_env("ENVIRONMENT", "dev"),
   listeners_timeout: 1 * 60 * 60 * 1000,
   view_timeout: 1 * 30 * 1000,
-  manifest_timeout: 1 * 30 * 1000,
-  adapter: LenraWeb.AppAdapter
+  manifest_timeout: 1 * 30 * 1000
 
 config :application_runner, :mongo,
   hostname: System.get_env("MONGO_HOSTNAME", "localhost"),
