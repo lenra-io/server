@@ -1,3 +1,3 @@
 defmodule LenraWeb.ResourcesController do
-  use ApplicationRunner.ResourcesController
+  use ApplicationRunner.ResourcesController, adapter: LenraWeb.AppAdapter
 end
