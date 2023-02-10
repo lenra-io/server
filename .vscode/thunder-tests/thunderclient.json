@@ -431,7 +431,7 @@
     "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
     "containerId": "b5625d79-ed88-47fa-ba81-6ddf5309e4fb",
     "name": "/crons",
-    "url": "{{endpoint}}/api/apps/1/environments/1/crons?",
+    "url": "{{endpoint}}/api/apps/{{app_id}}/environments/1/crons?",
     "method": "POST",
     "sortNum": 320000,
     "created": "2022-10-24T07:31:28.069Z",
