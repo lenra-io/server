@@ -74,6 +74,7 @@ defmodule LenraWeb.Router do
     resources("/apps/:app_id/builds", BuildsController, only: [:index, :create])
 
     resources("/apps/deployments", DeploymentsController, only: [:create])
+    get("/apps/:app_id/deployments", DeploymentsController, :index)
     put("/password", UserController, :change_password)
     put("/verify/dev", UserController, :validate_dev)
 

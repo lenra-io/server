@@ -36,6 +36,8 @@ defmodule Lenra.Apps do
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
+  require Logger
+
   #######
   # App #
   #######
@@ -178,6 +180,16 @@ defmodule Lenra.Apps do
     Repo.fetch(Build, build_id)
   end
 
+  def create_build_and_deploy(creator_id, app_id, params) do
+    with {:ok, %App{} = app} <- fetch_app(app_id),
+         preloaded_app <- Repo.preload(app, :main_env),
+         {:ok, %{inserted_build: inserted_build}} <- create_build_and_trigger_pipeline(creator_id, app_id, params) do
+      create_deployment(preloaded_app.main_env.id, inserted_build.id, creator_id, params)
+
+      {:ok, %{inserted_build: inserted_build}}
+    end
+  end
+
   def create_build_and_trigger_pipeline(creator_id, app_id, params) do
     with {:ok, %App{} = app} <- fetch_app(app_id) do
       creator_id
@@ -231,10 +243,31 @@ defmodule Lenra.Apps do
   # Deployments #
   ###############
 
+  def all_deployements(app_id) do
+    Repo.all(from(d in Deployment, where: d.application_id == ^app_id))
+  end
+
+  def get_deployement(build_id, env_id) do
+    Repo.one(from(d in Deployment, where: d.build_id == ^build_id and d.environment_id == ^env_id))
+  end
+
   def deploy_in_main_env(%Build{} = build) do
     with loaded_build <- Repo.preload(build, :application),
-         loaded_app <- Repo.preload(loaded_build.application, :main_env) do
-      create_deployment(loaded_app.main_env.environment_id, build.id, build.creator_id)
+         loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
+         %Deployment{} = deployment <- get_deployement(build.id, loaded_app.main_env.environment.id),
+         {:ok, _status} <- OpenfaasServices.deploy_app(loaded_build.application.service_name, build.build_number) do
+      update_deployement(deployment, status: :waitingForAppReady)
+
+      spawn(fn ->
+        update_deployement_after_deploy(
+          deployment,
+          loaded_app.main_env.environment,
+          loaded_app.service_name,
+          build.build_number
+        )
+      end)
+
+      {:ok, build}
     end
   end
 
@@ -244,24 +277,57 @@ defmodule Lenra.Apps do
       |> Repo.get(build_id)
       |> Repo.preload(:application)
 
-    env = get_env(environment_id)
-
     # TODO: back previous deployed build, check if it's present in another env and if not, remove it from OpenFaaS
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:updated_env, Ecto.Changeset.change(env, deployed_build_id: build.id))
     |> Ecto.Multi.insert(
       :inserted_deployment,
       Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
     )
-    |> Ecto.Multi.run(:openfaas_deploy, fn _repo, _result ->
-      # TODO: check if this build is already deployed on another env
-      OpenfaasServices.deploy_app(
-        build.application.service_name,
-        build.build_number
-      )
-    end)
     |> Repo.transaction()
+  end
+
+  def update_deployement_after_deploy(deployment, env, service_name, build_number),
+    do: update_deployement_after_deploy(deployment, env, service_name, build_number, 0)
+
+  def update_deployement_after_deploy(deployment, env, service_name, build_number, retry) when retry <= 120 do
+    case OpenfaasServices.is_deploy(service_name, build_number) do
+      true ->
+        Ecto.Multi.new()
+        |> Ecto.Multi.update(:updated_deployment, Ecto.Changeset.change(deployment, status: :success))
+        |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
+          env
+          |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
+          |> Repo.update()
+        end)
+        |> Repo.transaction()
+
+      # Function not found in openfaas, 2 retry (10s),
+      # To let openfaas deploy in case of overload, after 2 retry -> failure
+      :error404 ->
+        if retry == 3 do
+          Logger.critical("Function #{service_name} not deploy on openfaas, this should not appens")
+          update_deployement(deployment, status: :failure)
+        else
+          Process.sleep(5000)
+          update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
+        end
+
+        :error500
+
+      _any ->
+        Process.sleep(5000)
+        update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
+    end
+  end
+
+  def update_deployement_after_deploy(deployment, _env, _service_name, _build_number, _retry),
+    do: update_deployement(deployment, status: :failure)
+
+  defp update_deployement(deployement, change) do
+    deployement
+    |> Ecto.Changeset.change(change)
+    |> Repo.update()
   end
 
   def image_name(service_name, build_number) do
