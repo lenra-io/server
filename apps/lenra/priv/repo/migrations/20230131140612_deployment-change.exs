@@ -16,9 +16,8 @@ defmodule :"Elixir.Lenra.Repo.Migrations.Deployment-change" do
       add(:deployment_id, references(:deployments))
     end
 
-    execute("UPDATE environments SET deployment_id =
-      (SELECT d.id FROM environments AS e
-      JOIN deployments AS d ON d.build_id = e.deployed_build_id)")
+    execute("UPDATE environments AS e SET deployment_id =
+      (SELECT d.id FROM deployments AS d WHERE d.build_id = e.deployed_build_id)")
 
     alter table(:environments) do
       remove(:deployed_build_id, references(:builds))
@@ -34,10 +33,9 @@ defmodule :"Elixir.Lenra.Repo.Migrations.Deployment-change" do
       add(:deployed_build_id, references(:builds))
     end
 
-    execute("UPDATE environments SET deployed_build_id = (
-      SELECT b.id FROM environments AS e
-      JOIN deployments AS d ON d.id = e.deployment_id
-      JOIN builds as b ON d.build_id = b.id)")
+    execute("UPDATE environments AS e SET deployed_build_id = (
+      SELECT b.id FROM builds as b
+      JOIN deployments AS d ON d.id = e.deployment_id)")
 
     alter table(:environments) do
       remove(:deployment_id, references(:deployments))
