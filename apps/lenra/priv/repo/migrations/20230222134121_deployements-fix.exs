@@ -1,4 +1,4 @@
-defmodule :"Elixir.Lenra.Repo.Migrations.Deployements-fix" do
+defmodule Lenra.Repo.Migrations.DeployementsFix do
   use Ecto.Migration
 
   def change do
