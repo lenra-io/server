@@ -9,6 +9,7 @@ defmodule LenraWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
+    plug(:fetch_session)
   end
 
   pipeline :runner do
