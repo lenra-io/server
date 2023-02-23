@@ -90,6 +90,8 @@ config :application_runner, :mongo,
   ssl: System.get_env("MONGO_SSL", "false"),
   auth_source: System.get_env("MONGO_AUTH_SOURCE")
 
+config :application_runner, ApplicationRunner.Scheduler, storage: ApplicationRunner.Storage
+
 # additional_session_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_session_modules},
 # additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
 
