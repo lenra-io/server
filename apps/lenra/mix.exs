@@ -49,10 +49,9 @@ defmodule Lenra.MixProject do
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3.1"},
       {:application_runner,
-        git: "https://github.com/lenra-io/application-runner.git",
-        tag: "3f81e6119bead9e73c2cde9a74405a3197dd1b4e",
-        submodules: true
-      },
+       git: "https://github.com/lenra-io/application-runner.git",
+       ref: "v1.0.0-beta.111",
+       submodules: true},
       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.5.0"}
     ]
   end

@@ -28,8 +28,8 @@ defmodule LenraWeb.AppAdapter do
 
     with %App{} = app <- get_app(app_name),
          %App{} = application <-
-           Repo.preload(app, main_env: [environment: [:deployed_build]]) do
-      build = application.main_env.environment.deployed_build
+           Repo.preload(app, main_env: [environment: [deployment: [:build]]]) do
+      build = application.main_env.environment.deployment.build
 
       if build do
         String.downcase("#{lenra_env}-#{app_name}-#{build.build_number}")

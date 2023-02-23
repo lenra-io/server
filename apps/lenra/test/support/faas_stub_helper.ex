@@ -27,20 +27,22 @@ defmodule Lenra.FaasStub do
   end
 
   def expect_app_list_once(bypass, result) do
-    expect_once("GET", bypass, result)
+    expect_once("/system/functions", "GET", bypass, result)
+  end
+
+  def expect_get_function_once(bypass, result, service_name) do
+    expect_once("/system/function/#{service_name}", "GET", bypass, result)
   end
 
   def expect_deploy_app_once(bypass, result) do
-    expect_once("POST", bypass, result)
+    expect_once("/system/functions", "POST", bypass, result)
   end
 
   def expect_delete_app_once(bypass, result) do
-    expect_once("DELETE", bypass, result)
+    expect_once("/system/functions", "DELETE", bypass, result)
   end
 
-  defp expect_once(http_method, bypass, result) do
-    url = "/system/functions"
-
+  defp expect_once(url, http_method, bypass, result) do
     Bypass.expect_once(bypass, http_method, url, fn conn ->
       case result do
         {:error, code, message} ->

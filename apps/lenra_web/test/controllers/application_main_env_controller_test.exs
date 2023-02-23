@@ -45,7 +45,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
                "application_id" => _,
                "name" => "live",
                "creator_id" => _,
-               "deployed_build_id" => _,
+               "deployment_id" => _,
                "id" => _,
                "is_ephemeral" => false,
                "is_public" => false
@@ -55,7 +55,7 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
                "application_id" => _,
                "name" => "live",
                "creator_id" => _,
-               "deployed_build_id" => _,
+               "deployment_id" => _,
                "id" => _,
                "is_ephemeral" => false,
                "is_public" => false
