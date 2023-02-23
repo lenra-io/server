@@ -1,4 +1,4 @@
-defmodule Lenra.Repo.Migrations.DeployementsFix do
+defmodule Lenra.Repo.Migrations.DeploymentsFix do
   use Ecto.Migration
 
   def change do
