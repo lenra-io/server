@@ -3,6 +3,7 @@ import Config
 # you can enable the server option below.
 config :lenra_web, LenraWeb.Endpoint,
   http: [port: 4002],
+  secret_key_base: "FuEn07fjnCLaC53BiDoBagPYdsv/S65QTfxWgusKP1BA5NiaFzXGYMHLZ6JAYxt1",
   server: false
 
 # Hide logs during test
