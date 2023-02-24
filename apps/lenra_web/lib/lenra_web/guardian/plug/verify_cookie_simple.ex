@@ -33,7 +33,7 @@ defmodule LenraWeb.Plug.VerifyCookieSimple do
   end
 
   defp get_token(conn, opts) do
-    conn = Plug.Conn.fetch_session(conn, :guardian_default_token)
+    conn = Plug.Conn.fetch_session(conn)
 
     if Plug.Conn.get_session(conn, :guardian_default_token) == nil do
       Guardian.Plug.find_token_from_cookies(conn, opts)
