@@ -4,7 +4,7 @@ defmodule LenraWeb.UserController do
   alias Lenra.Accounts
   alias Lenra.Accounts.User
   alias Lenra.Repo
-  alias LenraWeb.Guardian.Plug
+  alias LenraWeb.Guardian
   alias LenraWeb.TokenHelper
 
   alias Lenra.Errors.BusinessError
@@ -26,14 +26,15 @@ defmodule LenraWeb.UserController do
   end
 
   def refresh_token(conn, _params) do
-    conn
-    |> Plug.current_token()
+    token = Guardian.Plug.current_token(conn) || Plug.Conn.get_session(conn, :guardian_default_token)
+
+    token
     |> TokenHelper.create_access_token()
     |> case do
       {:ok, access_token} ->
         conn
         |> TokenHelper.assign_access_token(access_token)
-        |> reply(Plug.current_resource(conn))
+        |> reply(Guardian.Plug.current_resource(conn))
 
       err ->
         err
@@ -41,7 +42,7 @@ defmodule LenraWeb.UserController do
   end
 
   def validate_user(conn, params) do
-    with user <- Plug.current_resource(conn),
+    with user <- Guardian.Plug.current_resource(conn),
          {:ok, %{updated_user: updated_user}} <- Accounts.validate_user(user, params["code"]) do
       conn
       |> TokenHelper.revoke_current_refresh()
@@ -51,14 +52,14 @@ defmodule LenraWeb.UserController do
   end
 
   def resend_registration_token(conn, _params) do
-    with user <- Plug.current_resource(conn),
+    with user <- Guardian.Plug.current_resource(conn),
          {:ok, _any} <- Accounts.resend_registration_code(user) do
       reply(conn)
     end
   end
 
   def validate_dev(conn, _params) do
-    with user <- Plug.current_resource(conn),
+    with user <- Guardian.Plug.current_resource(conn),
          {:ok, %{updated_user: updated_user}} <- Accounts.validate_dev(user) do
       conn
       |> TokenHelper.revoke_current_refresh()
@@ -70,12 +71,13 @@ defmodule LenraWeb.UserController do
   def logout(conn, _params) do
     conn
     |> TokenHelper.revoke_current_refresh()
-    |> Plug.clear_remember_me()
+    |> Guardian.Plug.clear_remember_me()
+    |> Plug.Conn.clear_session()
     |> reply()
   end
 
   def change_password(conn, params) do
-    with user <- Plug.current_resource(conn),
+    with user <- Guardian.Plug.current_resource(conn),
          {:ok, _} <- Accounts.update_user_password(user, params) do
       reply(conn)
     end
