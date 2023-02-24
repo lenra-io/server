@@ -72,6 +72,7 @@ defmodule LenraWeb.UserController do
     conn
     |> TokenHelper.revoke_current_refresh()
     |> Guardian.Plug.clear_remember_me()
+    |> Plug.Conn.clear_session()
     |> reply()
   end
 
