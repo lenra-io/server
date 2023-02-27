@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - beta
+      - alpha
       - "*.x"
 jobs:
   release:
