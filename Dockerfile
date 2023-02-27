@@ -47,7 +47,7 @@ WORKDIR /app
 
 COPY entrypoint.sh /entrypoint.sh
 
-COPY --from=build --chown=lenra /app/_build/prod/rel/server .
+COPY --from=build --chown=lenra /app/_build/prod/rel/lenra .
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD ["start"]
