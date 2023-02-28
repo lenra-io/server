@@ -1,4 +1,4 @@
 #!/bin/bash
 
-/app/bin/lenra migrate
-/app/bin/lenra $@
+/app/bin/server migrate
+/app/bin/server $@
