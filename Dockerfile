@@ -34,7 +34,8 @@ RUN mix do deps.compile --force
 RUN mix phx.digest
 
 # compile and build release
-RUN mix do compile, release lenra
+RUN mix compile
+RUN mix distillery.release
 
 # prepare release image
 FROM erlang:24-alpine
@@ -47,7 +48,7 @@ WORKDIR /app
 
 COPY entrypoint.sh /entrypoint.sh
 
-COPY --from=build --chown=lenra /app/_build/prod/rel/lenra .
+COPY --from=build --chown=lenra /app/_build/prod/rel/server .
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD ["start"]
