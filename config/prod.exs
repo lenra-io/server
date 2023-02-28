@@ -16,7 +16,9 @@ config :lenra_web, LenraWeb.Endpoint,
     transport_options: [socket_opts: [:inet6]]
   ],
   server: true,
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  root: ".",
+  version: Application.spec(:phoenix_distillery, :vsn)
 
 config :lenra,
   faas_secrets: ["gitlab-registry"]

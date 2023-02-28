@@ -22,11 +22,11 @@ COPY . .
 # install mix dependencies
 # Change token for application_runner/component-api submodule
 RUN mix do deps.get \
- || [[ "${CI}" == "true" ]] \
- && cd deps/application_runner \
- && git config submodule."priv/components-api".url "https://shiipou:${GH_PERSONNAL_TOKEN}@github.com/lenra-io/components-api.git" \
- && cd ../.. \
- && mix do deps.get
+    || [[ "${CI}" == "true" ]] \
+    && cd deps/application_runner \
+    && git config submodule."priv/components-api".url "https://shiipou:${GH_PERSONNAL_TOKEN}@github.com/lenra-io/components-api.git" \
+    && cd ../.. \
+    && mix do deps.get
 
 RUN mix do deps.compile --force
 
@@ -34,7 +34,6 @@ RUN mix do deps.compile --force
 RUN mix phx.digest
 
 # compile and build release
-RUN mix compile
 RUN mix distillery.release
 
 # prepare release image
@@ -46,9 +45,8 @@ USER lenra
 
 WORKDIR /app
 
-COPY entrypoint.sh /entrypoint.sh
-
 COPY --from=build --chown=lenra /app/_build/prod/rel/server .
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "bin/server" ]
+
 CMD ["start"]
