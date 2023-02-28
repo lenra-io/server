@@ -7,6 +7,8 @@
 |> Path.wildcard()
 |> Enum.map(&Code.eval_file(&1))
 
+alias Distillery.Releases.Config.Providers.Elixir, as: RuntimeConfig
+
 use Distillery.Releases.Config,
     # This sets the default release built by `mix distillery.release`
     default_release: :default,
@@ -47,7 +49,9 @@ end
 # will be used by default
 
 release :server do
-  set version: "0.1.0"
+  set config_providers: [{RuntimeConfig, ["${RELEASE_ROOT_DIR}/etc/runtime.exs"]}]
+  set overlays: [{:copy, "config/releases.exs", "etc/runtime.exs"}]
+  set version: current_version(:lenra)
   set applications: [
     :runtime_tools,
     lenra: :permanent,
