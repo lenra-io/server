@@ -184,9 +184,12 @@ defmodule Lenra.Apps do
     with {:ok, %App{} = app} <- fetch_app(app_id),
          preloaded_app <- Repo.preload(app, :main_env),
          {:ok, %{inserted_build: inserted_build}} <- create_build_and_trigger_pipeline(creator_id, app_id, params) do
-      create_deployment(preloaded_app.main_env.id, inserted_build.id, creator_id, params)
-
-      {:ok, %{inserted_build: inserted_build}}
+      with {:error, reason} <- create_deployment(preloaded_app.main_env.id, inserted_build.id, creator_id, params) do
+        Logger.critical("Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}")
+        TechnicalError.unknown_error_tuple(reason)
+      else
+        {:ok, _} -> {:ok, %{inserted_build: inserted_build}}
+      end
     end
   end
 
@@ -279,16 +282,12 @@ defmodule Lenra.Apps do
 
     # TODO: back previous deployed build, check if it's present in another env and if not, remove it from OpenFaaS
 
-    with {:error, reason} <-
-           Ecto.Multi.new()
-           |> Ecto.Multi.insert(
-             :inserted_deployment,
-             Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
-           )
-           |> Repo.transaction() do
-      Logger.critical("Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}")
-      TechnicalError.unknown_error_tuple(reason)
-    end
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_deployment,
+      Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
+    )
+    |> Repo.transaction()
   end
 
   def update_deployement_after_deploy(deployment, env, service_name, build_number),
