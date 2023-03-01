@@ -279,12 +279,16 @@ defmodule Lenra.Apps do
 
     # TODO: back previous deployed build, check if it's present in another env and if not, remove it from OpenFaaS
 
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(
-      :inserted_deployment,
-      Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
-    )
-    |> Repo.transaction()
+    with {:error, reason} <-
+           Ecto.Multi.new()
+           |> Ecto.Multi.insert(
+             :inserted_deployment,
+             Deployment.new(build.application.id, environment_id, build_id, publisher_id, params)
+           )
+           |> Repo.transaction() do
+      Logger.critical("Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}")
+      TechnicalError.unknown_error_tuple(reason)
+    end
   end
 
   def update_deployement_after_deploy(deployment, env, service_name, build_number),
