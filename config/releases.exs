@@ -40,6 +40,14 @@ config :application_runner,
   manifest_timeout: String.to_integer(System.fetch_env!("MANIFEST_TIMEOUT")),
   env: System.fetch_env!("ENVIRONMENT")
 
+config :application_runner, ApplicationRunner.Repo,
+  username: System.fetch_env!("POSTGRES_USER"),
+  password: System.fetch_env!("POSTGRES_PASSWORD"),
+  database: System.fetch_env!("POSTGRES_DB"),
+  hostname: System.fetch_env!("POSTGRES_HOST"),
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
+
 config :application_runner, :mongo,
   hostname: System.fetch_env!("MONGO_HOSTNAME"),
   port: System.get_env("MONGO_PORT", "27017"),

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-/app/bin/server migrate
-/app/bin/server $@
+/app/bin/lenra eval "Lenra.MigrationHelper.migrate"
+/app/bin/lenra $@

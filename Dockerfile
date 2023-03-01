@@ -2,7 +2,6 @@ FROM elixir:1.13-alpine AS build
 
 ARG CI
 ARG GH_PERSONNAL_TOKEN
-
 # prepare build dir
 WORKDIR /app
 
@@ -35,7 +34,7 @@ RUN mix phx.digest
 
 # compile and build release
 RUN mix compile
-RUN mix distillery.release
+RUN mix release lenra
 
 # prepare release image
 FROM erlang:24-alpine
@@ -48,7 +47,7 @@ WORKDIR /app
 
 COPY entrypoint.sh /entrypoint.sh
 
-COPY --from=build --chown=lenra /app/_build/prod/rel/server .
+COPY --from=build --chown=lenra /app/_build/prod/rel/lenra .
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD ["start"]
