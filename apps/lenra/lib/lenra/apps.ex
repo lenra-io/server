@@ -189,7 +189,7 @@ defmodule Lenra.Apps do
           Logger.critical("Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}")
           TechnicalError.unknown_error_tuple(reason)
 
-        _ ->
+        _res ->
           {:ok, %{inserted_build: inserted_build}}
       end
     end
