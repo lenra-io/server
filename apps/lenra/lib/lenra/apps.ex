@@ -191,7 +191,7 @@ defmodule Lenra.Apps do
     with {:ok, %App{} = app} <- fetch_app(app_id),
          preloaded_app <- Repo.preload(app, :main_env),
          {:ok, %{inserted_build: inserted_build}} <- create_build_and_trigger_pipeline(creator_id, app_id, params) do
-      case create_deployment(preloaded_app.main_env.w, inserted_build.id, creator_id, params) do
+      case create_deployment(preloaded_app.main_env.environment_id, inserted_build.id, creator_id, params) do
         {:error, reason} ->
           Logger.critical("Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}")
           TechnicalError.unknown_error_tuple(reason)
