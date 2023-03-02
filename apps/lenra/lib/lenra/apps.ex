@@ -173,14 +173,21 @@ defmodule Lenra.Apps do
   ##########
 
   def all_builds(app_id) do
+    Logger.debug("#{__MODULE__} all builds for app id #{app_id}")
     Repo.all(from(b in Build, where: b.application_id == ^app_id))
   end
 
   def fetch_build(build_id) do
+    Logger.debug("#{__MODULE__} fetch builds for build id #{build_id}")
+
     Repo.fetch(Build, build_id)
   end
 
   def create_build_and_deploy(creator_id, app_id, params) do
+    Logger.debug(
+      "#{__MODULE__} create_build_and_deploy with params #{inspect(%{creator_id: creator_id, app_id: app_id, params: params})}"
+    )
+
     with {:ok, %App{} = app} <- fetch_app(app_id),
          preloaded_app <- Repo.preload(app, :main_env),
          {:ok, %{inserted_build: inserted_build}} <- create_build_and_trigger_pipeline(creator_id, app_id, params) do
@@ -190,30 +197,45 @@ defmodule Lenra.Apps do
           TechnicalError.unknown_error_tuple(reason)
 
         _res ->
+          Logger.debug("#{__MODULE__} create_build_and_deploy exit successfully")
+
           {:ok, %{inserted_build: inserted_build}}
       end
     end
   end
 
   def create_build_and_trigger_pipeline(creator_id, app_id, params) do
-    with {:ok, %App{} = app} <- fetch_app(app_id) do
-      creator_id
-      |> create_build(app.id, params)
-      |> Ecto.Multi.run(:gitlab_pipeline, fn _repo, %{inserted_build: %Build{} = build} ->
-        GitlabApiServices.create_pipeline(
-          app.service_name,
-          app.repository,
-          app.repository_branch,
-          build.id,
-          build.build_number
-        )
-      end)
-      |> update_build_after_pipeline()
-      |> Repo.transaction()
-    end
+    Logger.debug(
+      "#{__MODULE__} create_build_and_trigger_pipeline with params #{inspect(%{creator_id: creator_id, app_id: app_id, params: params})}"
+    )
+
+    res =
+      with {:ok, %App{} = app} <- fetch_app(app_id) do
+        creator_id
+        |> create_build(app.id, params)
+        |> Ecto.Multi.run(:gitlab_pipeline, fn _repo, %{inserted_build: %Build{} = build} ->
+          GitlabApiServices.create_pipeline(
+            app.service_name,
+            app.repository,
+            app.repository_branch,
+            build.id,
+            build.build_number
+          )
+        end)
+        |> update_build_after_pipeline()
+        |> Repo.transaction()
+      end
+
+    Logger.debug("#{__MODULE__} create_build_and_trigger_pipeline exit with res #{inspect(res)}")
+
+    res
   end
 
   defp create_build(creator_id, app_id, params) do
+    Logger.debug(
+      "#{__MODULE__} create_build with params #{inspect(%{creator_id: creator_id, app_id: app_id, params: params})}"
+    )
+
     Ecto.Multi.new()
     |> Ecto.Multi.run(:build_number, fn repo, _result ->
       {:ok,
@@ -277,6 +299,10 @@ defmodule Lenra.Apps do
   end
 
   def create_deployment(environment_id, build_id, publisher_id, params \\ %{}) do
+    Logger.debug(
+      "#{__MODULE__} create_deployment with params #{inspect(%{environment_id: environment_id, build_id: build_id, publisher_id: publisher_id, params: params})}"
+    )
+
     build =
       Build
       |> Repo.get(build_id)
@@ -284,6 +310,7 @@ defmodule Lenra.Apps do
 
     # TODO: back previous deployed build, check if it's present in another env and if not, remove it from OpenFaaS
 
+    # TODO: remove useless multi
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
       :inserted_deployment,
