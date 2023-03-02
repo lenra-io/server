@@ -278,6 +278,10 @@ defmodule Lenra.Apps do
     Repo.one(from(d in Deployment, where: d.build_id == ^build_id and d.environment_id == ^env_id))
   end
 
+  def get_deployement_for_build(build_id) do
+    Repo.one(from(d in Deployment, where: d.build_id == ^build_id))
+  end
+
   def deploy_in_main_env(%Build{} = build) do
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),

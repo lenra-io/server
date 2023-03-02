@@ -1,21 +1,14 @@
 defmodule LenraWeb.RunnerController do
   use LenraWeb, :controller
 
-  import Ecto.Query
-
-  alias Lenra.Apps.Deployment
-  alias Lenra.{Apps, Repo}
+  alias Lenra.Apps
   require Logger
 
   defp maybe_deploy_in_main_env(build, "success"),
     do: Apps.deploy_in_main_env(build)
 
   defp maybe_deploy_in_main_env(build, "failure") do
-    Repo.one(
-      from(d in Deployment,
-        select: d.build_id == ^build.id
-      )
-    )
+    Apps.get_deployement_for_build(build)
     |> Apps.update_deployement(%{status: "failure"})
 
     {:ok, :not_deployed}
