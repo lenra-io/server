@@ -1,12 +1,17 @@
 defmodule LenraWeb.RunnerController do
   use LenraWeb, :controller
+
   alias Lenra.Apps
   require Logger
 
   defp maybe_deploy_in_main_env(build, "success"),
     do: Apps.deploy_in_main_env(build)
 
-  defp maybe_deploy_in_main_env(_build, "failure") do
+  defp maybe_deploy_in_main_env(build, "failure") do
+    build.id
+    |> Apps.get_deployement_for_build()
+    |> Apps.update_deployement(%{status: :failure})
+
     {:ok, :not_deployed}
   end
 
