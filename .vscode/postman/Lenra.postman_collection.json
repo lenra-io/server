@@ -1,0 +1,858 @@
+{
+    "_": {
+        "postman_id": "cab1dd7c-6805-4605-9c93-4e579113a7d0"
+    },
+    "item": [
+        {
+            "id": "29ff32f7-b16c-486b-9457-3961b8f1214d",
+            "name": "/auth",
+            "item": [
+                {
+                    "id": "143032b6-be20-4905-8166-4bdbf5da49f5",
+                    "name": "/register",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "auth",
+                                "register"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"first_name\": \"Test\",\n  \"last_name\": \"Truc\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"password_confirmation\": \"{{password}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": []
+                },
+                {
+                    "id": "b00eb53f-e55b-4949-9628-d60db3a6ffe7",
+                    "name": "/login",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "auth",
+                                "login"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"password\": \"{{password}}\",\n    \"email\": \"{{email}}\"\n}\n"
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "7c9020f6-a640-413f-949e-e634f7798ccf",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "\r",
+                                    "var myValue = pm.response.json('$.path.to.value');\r",
+                                    ""
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "4d90795b-0709-4944-a02b-38f93e47eeae",
+                    "name": "/verify",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "auth",
+                                "verify"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"{{verify_code}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": []
+                },
+                {
+                    "id": "d7024ae8-b4df-4fb8-b1c9-8d1157e0621b",
+                    "name": "/password/lost",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "auth",
+                                "password",
+                                "lost"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{email}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": []
+                },
+                {
+                    "id": "daf1e89d-49e8-487a-a4fe-f3e68c57d41e",
+                    "name": "/password/lost",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "auth",
+                                "password",
+                                "lost"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "PUT",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{email}}\",\n    \"code\": \"{{password_lost_code}}\",\n    \"password\": \"{{new_password}}\",\n    \"password_confirmation\": \"{{new_password}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": []
+                }
+            ],
+            "event": []
+        },
+        {
+            "id": "0da9b966-21ec-441b-8098-4eb511e3b9ee",
+            "name": "/api",
+            "item": [
+                {
+                    "id": "a6b668ed-6caf-4bad-a032-bc2de00bd74f",
+                    "name": "apps",
+                    "item": [
+                        {
+                            "id": "fd48e800-fba7-4a98-8784-d6de64611f69",
+                            "name": "/apps",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "GET"
+                            },
+                            "response": [],
+                            "event": []
+                        },
+                        {
+                            "id": "333f5ffc-2d0e-4524-bac5-4bf15c6035ff",
+                            "name": "/apps",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"{{app_name}}\",\n  \"service_name\": \"lenra-test-3\",\n  \"color\": \"FF0000\",\n  \"icon\": 60169,\n  \"repository\": \"{{app_repo}}\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        },
+                        {
+                            "id": "1c660dc0-a0f4-4b83-b11d-0cc573148b8e",
+                            "name": "/apps",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "DELETE"
+                            },
+                            "response": [],
+                            "event": []
+                        }
+                    ],
+                    "event": []
+                },
+                {
+                    "id": "928c4124-4c89-4755-ad64-7d2bc1fef43d",
+                    "name": "environments",
+                    "item": [
+                        {
+                            "id": "23cf4c19-f025-4ce1-b961-cbeb19d88b0b",
+                            "name": "/app/:app_id/environments",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "environments"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "GET"
+                            },
+                            "response": [],
+                            "event": []
+                        },
+                        {
+                            "id": "d595c320-2d78-4340-b34c-0beb73548642",
+                            "name": "/apps/:app_id/environments",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "environments"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"test\", \n    \"is_ephemeral\": false\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        },
+                        {
+                            "id": "74551d7b-ab12-4a7f-bcac-672214f98d50",
+                            "name": "/apps/:app_id/environments/:env_id",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "environments",
+                                        "1"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "PATCH",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"is_public\": true\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        },
+                        {
+                            "id": "c043729f-3872-4d2b-b4d0-23ef2189c60e",
+                            "name": "/apps/:app_id/environments/:env_id/invitations",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "environments",
+                                        "1",
+                                        "invitations"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "GET"
+                            },
+                            "response": [],
+                            "event": []
+                        },
+                        {
+                            "id": "f766c310-52c5-4817-8a9f-6e2e9d357b64",
+                            "name": "/apps/:app_id/environments/:env_id/invitations",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "environments",
+                                        "1",
+                                        "invitations"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"user_id\": 1\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        }
+                    ],
+                    "event": []
+                },
+                {
+                    "id": "25a1af10-5848-4b4c-9d86-6c3d8a224476",
+                    "name": "builds",
+                    "item": [
+                        {
+                            "id": "ef444dc6-4266-4eaf-be72-76b5e54c54bd",
+                            "name": "/apps/:app_id/builds",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "builds"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "GET"
+                            },
+                            "response": [],
+                            "event": []
+                        },
+                        {
+                            "id": "f39c688c-ecaf-4596-9d82-3b5d114e5d3d",
+                            "name": "/apps/:app_id/builds",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "builds"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        }
+                    ],
+                    "event": []
+                },
+                {
+                    "id": "c0124435-87e5-4b76-8539-3804e264f212",
+                    "name": "deployments",
+                    "item": [
+                        {
+                            "id": "69c108b8-a84d-40bd-b45d-c372b74a72a3",
+                            "name": "/apps/deployments",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "deployments"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"environment_id\": 1, \n    \"build_id\": 1\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        }
+                    ],
+                    "event": []
+                },
+                {
+                    "id": "3c53e896-c196-43d4-8c16-77892e99af61",
+                    "name": "me",
+                    "item": [
+                        {
+                            "id": "5cf9c16c-86b6-43d6-9d6a-9c43f6560445",
+                            "name": "/me/apps",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "me",
+                                        "apps"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "GET"
+                            },
+                            "response": [],
+                            "event": []
+                        }
+                    ],
+                    "event": []
+                },
+                {
+                    "id": "7dc238b8-9174-451f-ab5e-82001efb3d19",
+                    "name": "runner",
+                    "item": [
+                        {
+                            "id": "cb2ec111-ee22-4ee7-b5fa-253d9c18c3a9",
+                            "name": "/runner/builds/:build_id",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "runner",
+                                        "builds",
+                                        "{{build_id}}"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "secret",
+                                            "value": "{{runner_secret}}"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "method": "PUT",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"status\": \"success\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        }
+                    ],
+                    "event": []
+                },
+                {
+                    "id": "bab0b1f8-d4cc-4e22-99df-8b97033e8a6a",
+                    "name": "crons",
+                    "item": [
+                        {
+                            "id": "f5cb5d19-251c-4f39-8330-5f47e3a65322",
+                            "name": "/crons",
+                            "request": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "apps",
+                                        "{{app_id}}",
+                                        "environments",
+                                        "1",
+                                        "crons"
+                                    ],
+                                    "host": [
+                                        "{{endpoint}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"listener_name\": \"increment\",\n  \"schedule\": \"* * * * *\",\n  \"props\": {\n    \"id\": \"6357fa689c5ddd4782166117\"\n  }\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": [],
+                            "event": []
+                        }
+                    ],
+                    "event": []
+                },
+                {
+                    "id": "448b5189-71d2-411c-b77b-480ae79f948a",
+                    "name": "/verify/dev",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "api",
+                                "verify",
+                                "dev"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "PUT",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"caeee9e4-2bc7-4c4f-b3fa-a64a2a53d97d\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": []
+                }
+            ],
+            "event": []
+        },
+        {
+            "id": "38df24bf-325d-41c5-b939-809f7250f6f3",
+            "name": "/cgu",
+            "item": [
+                {
+                    "id": "8bf30e6e-6ffa-482a-bddc-ffd67bfb57a0",
+                    "name": "/me/accepted_latest",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "cgu",
+                                "me",
+                                "accepted_latest"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "GET"
+                    },
+                    "response": [],
+                    "event": []
+                },
+                {
+                    "id": "274ba9b2-05b4-4949-96ee-38617c5de005",
+                    "name": "/cgu_id/accept",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "api",
+                                "cgu",
+                                "1",
+                                "accept"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "POST"
+                    },
+                    "response": [],
+                    "event": []
+                },
+                {
+                    "id": "2bd57e85-0977-4693-91d6-8c3c74933d5d",
+                    "name": "/latest",
+                    "request": {
+                        "url": {
+                            "path": [
+                                "cgu",
+                                "latest"
+                            ],
+                            "host": [
+                                "{{endpoint}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "method": "GET"
+                    },
+                    "response": [],
+                    "event": []
+                }
+            ],
+            "event": []
+        },
+        {
+            "id": "08d4b7fd-a6f9-41ef-af1b-e263dc033ef1",
+            "name": "/health",
+            "request": {
+                "url": {
+                    "path": [
+                        "health"
+                    ],
+                    "host": [
+                        "{{endpoint}}"
+                    ],
+                    "query": [],
+                    "variable": []
+                },
+                "method": "GET"
+            },
+            "response": [],
+            "event": []
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "type": "string",
+                "value": "{{access_token}}",
+                "key": "token"
+            }
+        ]
+    },
+    "event": [],
+    "variable": [
+        {
+            "description": {
+                "content": "Lenra server API URL",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "http://localhost:4000",
+            "key": "endpoint"
+        },
+        {
+            "description": {
+                "content": "Lenra API secret to get access to `/runner/build` route",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305",
+            "key": "runner_secret"
+        },
+        {
+            "description": {
+                "content": "Lenra user's email account link used to create and login to Lenra user",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "test@lenra.io",
+            "key": "email"
+        },
+        {
+            "description": {
+                "content": "Lenra user's password to login to Lenra user",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "Testtest42!",
+            "key": "password"
+        },
+        {
+            "description": {
+                "content": "Lenra's verify code received by email to verify the user email",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "undefined",
+            "key": "verify_code"
+        },
+        {
+            "description": {
+                "content": "App's repository URL to clone and deploy apps",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "https://github.com/lenra-io/template-javascript.git",
+            "key": "app_repo"
+        },
+        {
+            "description": {
+                "content": "Current Lenra app's internal id",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "1",
+            "key": "app_id"
+        },
+        {
+            "description": {
+                "content": "Current Lenra app's service id",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "e11dd798-86d4-4fb1-9f17-f880e83dea5a",
+            "key": "service_name"
+        },
+        {
+            "description": {
+                "content": "Current Lenra app's build id",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "1",
+            "key": "build_id"
+        },
+        {
+            "description": {
+                "content": "Lenra's developper code to transform user to developper account",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "caeee9e4-2bc7-4c4f-b3fa-a64a2a53d97d",
+            "key": "dev_code"
+        },
+        {
+            "description": {
+                "content": "Current lenra user's token to connect to API",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZW5yYSIsImV4cCI6MTY3MTQ0NDcwOCwiaWF0IjoxNjY5MDI1NTA4LCJpc3MiOiJsZW5yYSIsImp0aSI6ImJjMWVmYjEyLWU3N2MtNDE2Yi1hN2RlLWI2M2Q5NDBmMTJiNSIsIm5iZiI6MTY2OTAyNTUwNywic3ViIjoiMSIsInR5cCI6ImFjY2VzcyJ9._BNwYX42V9SyEkOpObcpCBPq_RlRMZGkwUSLcp_h8tbaoAcsnt9WNTTBWnhmDxnKE9pVzpD9INTvqYDVBiOFog",
+            "key": "access_token"
+        },
+        {
+            "description": {
+                "content": "Lenra app's name to create",
+                "type": "text/plain"
+            },
+            "type": "string",
+            "value": "Lenra Test",
+            "key": "app_name"
+        }
+    ],
+    "info": {
+        "_postman_id": "cab1dd7c-6805-4605-9c93-4e579113a7d0",
+        "name": "Lenra",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": {
+            "content": "",
+            "type": "text/plain"
+        }
+    }
+}
