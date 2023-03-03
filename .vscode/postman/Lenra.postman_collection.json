@@ -1,14 +1,14 @@
 {
     "_": {
-        "postman_id": "cab1dd7c-6805-4605-9c93-4e579113a7d0"
+        "postman_id": "e3e03f7f-aef1-4a1f-b6a9-9494ea420eda"
     },
     "item": [
         {
-            "id": "29ff32f7-b16c-486b-9457-3961b8f1214d",
+            "id": "86b615fd-f173-42d0-805b-849e9becd5d6",
             "name": "/auth",
             "item": [
                 {
-                    "id": "143032b6-be20-4905-8166-4bdbf5da49f5",
+                    "id": "cf602b24-eec0-42d2-b5bb-f1bf8dec0af7",
                     "name": "/register",
                     "request": {
                         "url": {
@@ -37,7 +37,7 @@
                     "event": []
                 },
                 {
-                    "id": "b00eb53f-e55b-4949-9628-d60db3a6ffe7",
+                    "id": "7169002d-db6a-41b9-b9bf-317b466499fe",
                     "name": "/login",
                     "request": {
                         "url": {
@@ -54,7 +54,12 @@
                         "method": "POST",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"password\": \"{{password}}\",\n    \"email\": \"{{email}}\"\n}\n"
+                            "raw": "{\n    \"password\": \"{{password}}\", \n    \"email\": \"{{email}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
                         }
                     },
                     "response": [],
@@ -62,11 +67,11 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "7c9020f6-a640-413f-949e-e634f7798ccf",
+                                "id": "4f3730f2-91d8-458d-992d-f518f49c2912",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "\r",
-                                    "var myValue = pm.response.json('$.path.to.value');\r",
+                                    "const token = pm.response.to.have.header(\"Access_token\").value;",
+                                    "pm.environment.set(\"access_token\", token);",
                                     ""
                                 ]
                             }
@@ -74,7 +79,7 @@
                     ]
                 },
                 {
-                    "id": "4d90795b-0709-4944-a02b-38f93e47eeae",
+                    "id": "844829ac-3891-4c69-9f27-35e42e74e1c4",
                     "name": "/verify",
                     "request": {
                         "url": {
@@ -103,7 +108,7 @@
                     "event": []
                 },
                 {
-                    "id": "d7024ae8-b4df-4fb8-b1c9-8d1157e0621b",
+                    "id": "b38ab3f9-0b61-43a9-b627-74cd0475cc98",
                     "name": "/password/lost",
                     "request": {
                         "url": {
@@ -133,7 +138,7 @@
                     "event": []
                 },
                 {
-                    "id": "daf1e89d-49e8-487a-a4fe-f3e68c57d41e",
+                    "id": "381e2e37-1677-457a-9537-7949948e8efe",
                     "name": "/password/lost",
                     "request": {
                         "url": {
@@ -166,15 +171,15 @@
             "event": []
         },
         {
-            "id": "0da9b966-21ec-441b-8098-4eb511e3b9ee",
+            "id": "ceb7487d-92ba-40b9-b417-fae4bddd824e",
             "name": "/api",
             "item": [
                 {
-                    "id": "a6b668ed-6caf-4bad-a032-bc2de00bd74f",
+                    "id": "1c0ffc79-4979-4587-afc6-e5be45432496",
                     "name": "apps",
                     "item": [
                         {
-                            "id": "fd48e800-fba7-4a98-8784-d6de64611f69",
+                            "id": "8c77b333-66e4-4d9d-8e0d-6db2f748db48",
                             "name": "/apps",
                             "request": {
                                 "url": {
@@ -194,7 +199,7 @@
                             "event": []
                         },
                         {
-                            "id": "333f5ffc-2d0e-4524-bac5-4bf15c6035ff",
+                            "id": "f15d0da7-5d9a-43cd-bd40-458070d5efc0",
                             "name": "/apps",
                             "request": {
                                 "url": {
@@ -223,7 +228,7 @@
                             "event": []
                         },
                         {
-                            "id": "1c660dc0-a0f4-4b83-b11d-0cc573148b8e",
+                            "id": "3faf0e5e-8c2d-4eab-9f0f-0b69c3b5ca18",
                             "name": "/apps",
                             "request": {
                                 "url": {
@@ -247,11 +252,11 @@
                     "event": []
                 },
                 {
-                    "id": "928c4124-4c89-4755-ad64-7d2bc1fef43d",
+                    "id": "491e10e7-82da-4bf9-9eeb-384dff522a24",
                     "name": "environments",
                     "item": [
                         {
-                            "id": "23cf4c19-f025-4ce1-b961-cbeb19d88b0b",
+                            "id": "657ad9f0-b223-455e-9724-d534e2316b8d",
                             "name": "/app/:app_id/environments",
                             "request": {
                                 "url": {
@@ -273,7 +278,7 @@
                             "event": []
                         },
                         {
-                            "id": "d595c320-2d78-4340-b34c-0beb73548642",
+                            "id": "210c8a9c-d4d7-427b-be0a-4ca5a12bce15",
                             "name": "/apps/:app_id/environments",
                             "request": {
                                 "url": {
@@ -304,7 +309,7 @@
                             "event": []
                         },
                         {
-                            "id": "74551d7b-ab12-4a7f-bcac-672214f98d50",
+                            "id": "98edf4a9-e6e6-49df-94ff-84aff4c1d986",
                             "name": "/apps/:app_id/environments/:env_id",
                             "request": {
                                 "url": {
@@ -336,7 +341,7 @@
                             "event": []
                         },
                         {
-                            "id": "c043729f-3872-4d2b-b4d0-23ef2189c60e",
+                            "id": "754f1d11-8e1d-40a9-b229-ea99f4d24386",
                             "name": "/apps/:app_id/environments/:env_id/invitations",
                             "request": {
                                 "url": {
@@ -360,7 +365,7 @@
                             "event": []
                         },
                         {
-                            "id": "f766c310-52c5-4817-8a9f-6e2e9d357b64",
+                            "id": "0754806e-91d2-4e0d-b04a-38854431f9f5",
                             "name": "/apps/:app_id/environments/:env_id/invitations",
                             "request": {
                                 "url": {
@@ -396,11 +401,11 @@
                     "event": []
                 },
                 {
-                    "id": "25a1af10-5848-4b4c-9d86-6c3d8a224476",
+                    "id": "de03d47a-53a9-4d99-9f77-6a181f82b4da",
                     "name": "builds",
                     "item": [
                         {
-                            "id": "ef444dc6-4266-4eaf-be72-76b5e54c54bd",
+                            "id": "a1ed39e4-b131-4047-b81a-76db7dd6684a",
                             "name": "/apps/:app_id/builds",
                             "request": {
                                 "url": {
@@ -422,7 +427,7 @@
                             "event": []
                         },
                         {
-                            "id": "f39c688c-ecaf-4596-9d82-3b5d114e5d3d",
+                            "id": "b011ace6-2754-4725-ab54-13fbe44ec28e",
                             "name": "/apps/:app_id/builds",
                             "request": {
                                 "url": {
@@ -456,11 +461,11 @@
                     "event": []
                 },
                 {
-                    "id": "c0124435-87e5-4b76-8539-3804e264f212",
+                    "id": "9e7cd518-29e9-4f69-804b-e05840196ce9",
                     "name": "deployments",
                     "item": [
                         {
-                            "id": "69c108b8-a84d-40bd-b45d-c372b74a72a3",
+                            "id": "858ab4e6-bf0f-490a-9417-604d05e0b91a",
                             "name": "/apps/deployments",
                             "request": {
                                 "url": {
@@ -493,11 +498,11 @@
                     "event": []
                 },
                 {
-                    "id": "3c53e896-c196-43d4-8c16-77892e99af61",
+                    "id": "792af64f-e99c-458e-b5bd-365c8c9219d0",
                     "name": "me",
                     "item": [
                         {
-                            "id": "5cf9c16c-86b6-43d6-9d6a-9c43f6560445",
+                            "id": "d77eb5ac-308e-4dc0-8d93-40c0c4efd2cc",
                             "name": "/me/apps",
                             "request": {
                                 "url": {
@@ -521,11 +526,11 @@
                     "event": []
                 },
                 {
-                    "id": "7dc238b8-9174-451f-ab5e-82001efb3d19",
+                    "id": "c55e0a12-9841-4577-832f-d5377272ea5b",
                     "name": "runner",
                     "item": [
                         {
-                            "id": "cb2ec111-ee22-4ee7-b5fa-253d9c18c3a9",
+                            "id": "41c9fd51-a4b9-426a-9e63-119c75592dc1",
                             "name": "/runner/builds/:build_id",
                             "request": {
                                 "url": {
@@ -563,11 +568,11 @@
                     "event": []
                 },
                 {
-                    "id": "bab0b1f8-d4cc-4e22-99df-8b97033e8a6a",
+                    "id": "1b9ce5ba-c712-4b67-9b3f-e636d811202f",
                     "name": "crons",
                     "item": [
                         {
-                            "id": "f5cb5d19-251c-4f39-8330-5f47e3a65322",
+                            "id": "d51ed917-0331-4164-ba0c-5ab3c110380c",
                             "name": "/crons",
                             "request": {
                                 "url": {
@@ -603,7 +608,7 @@
                     "event": []
                 },
                 {
-                    "id": "448b5189-71d2-411c-b77b-480ae79f948a",
+                    "id": "61e80233-ca91-4e19-9df6-d1146902ed77",
                     "name": "/verify/dev",
                     "request": {
                         "url": {
@@ -636,11 +641,11 @@
             "event": []
         },
         {
-            "id": "38df24bf-325d-41c5-b939-809f7250f6f3",
+            "id": "d1fb32ee-9e93-4f98-95ff-aaebdd3d54d4",
             "name": "/cgu",
             "item": [
                 {
-                    "id": "8bf30e6e-6ffa-482a-bddc-ffd67bfb57a0",
+                    "id": "ee7ae27e-e3ff-45dc-a410-1a2aba7505b9",
                     "name": "/me/accepted_latest",
                     "request": {
                         "url": {
@@ -661,7 +666,7 @@
                     "event": []
                 },
                 {
-                    "id": "274ba9b2-05b4-4949-96ee-38617c5de005",
+                    "id": "4485dd39-3714-4e03-9251-ec0d6df3137c",
                     "name": "/cgu_id/accept",
                     "request": {
                         "url": {
@@ -683,7 +688,7 @@
                     "event": []
                 },
                 {
-                    "id": "2bd57e85-0977-4693-91d6-8c3c74933d5d",
+                    "id": "bcaf3088-5761-4b17-b75c-fbcd26373a45",
                     "name": "/latest",
                     "request": {
                         "url": {
@@ -706,7 +711,7 @@
             "event": []
         },
         {
-            "id": "08d4b7fd-a6f9-41ef-af1b-e263dc033ef1",
+            "id": "8da5a311-d146-4df7-b56e-9aacc1384a0c",
             "name": "/health",
             "request": {
                 "url": {
@@ -847,7 +852,7 @@
         }
     ],
     "info": {
-        "_postman_id": "cab1dd7c-6805-4605-9c93-4e579113a7d0",
+        "_postman_id": "e3e03f7f-aef1-4a1f-b6a9-9494ea420eda",
         "name": "Lenra",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": {
