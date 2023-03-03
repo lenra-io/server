@@ -45,8 +45,7 @@ defmodule Lenra.Umbrella.MixProject do
       {:dialyxir, "~> 1.2", only: [:dev], runtime: false},
       {:sobelow, "~> 0.11.1", only: :dev},
       {:excoveralls, "~> 0.15.2", only: :test},
-      {:benchee, "~> 1.1", only: :dev},
-      {:distillery, "~> 2.0"}
+      {:benchee, "~> 1.1", only: :dev}
     ]
   end
 
