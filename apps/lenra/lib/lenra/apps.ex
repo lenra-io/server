@@ -174,7 +174,7 @@ defmodule Lenra.Apps do
 
   def all_builds(app_id) do
     Logger.debug("#{__MODULE__} all builds for app id #{app_id}")
-    Repo.all(from(b in Build, where: b.application_id == ^app_id))
+    Repo.all(from(b in Build, where: b.application_id == ^app_id, order_by: b.build_number))
   end
 
   def fetch_build(build_id) do
@@ -271,7 +271,7 @@ defmodule Lenra.Apps do
   ###############
 
   def all_deployements(app_id) do
-    Repo.all(from(d in Deployment, where: d.application_id == ^app_id))
+    Repo.all(from(d in Deployment, where: d.application_id == ^app_id, order_by: d.id))
   end
 
   def get_deployement(build_id, env_id) do
