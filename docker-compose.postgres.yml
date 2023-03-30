@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: lenra_dev
+      POSTGRES_PASSWORD: postgres:15.2-bullseye
+    restart: always
