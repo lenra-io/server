@@ -1,0 +1,3 @@
+networks:
+  lenra_dev:
+    driver: bridge

@@ -1,6 +1,6 @@
 services:
-  server:
-    container_name: server
+  lenra_server:
+    container_name: lenra_server
     image: lenra/server:beta
     ports:
       - 4000:4000
@@ -45,8 +45,9 @@ services:
       SECRET_KEY_BASE: $SECRET_KEY_BASE
       GUARDIAN_SECRET_KEY: $GUARDIAN_SECRET_KEY
       SENTRY_DSN: $SENTRY_DSN
-
+    networks:
+      - lenra_dev
     restart: always
     depends_on:
-      - mongo
-      - postgres
+      - lenra_mongo
+      - lenra_postgres

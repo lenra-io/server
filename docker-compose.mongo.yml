@@ -1,6 +1,6 @@
 services:
-  mongo:
-    container_name: mongo
+  lenra_mongo:
+    container_name: lenra_mongo
     image: mongo:5.0.11-focal
     ports:
       - 27017:27017
@@ -12,4 +12,6 @@ services:
       interval: 10s
       start_period: 10s
     command: mongod --replSet rs0
+    networks:
+      - lenra_dev
     restart: always
