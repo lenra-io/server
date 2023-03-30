@@ -6,7 +6,7 @@ services:
       - 5432:5432
     environment:
       POSTGRES_DB: lenra_dev
-      POSTGRES_PASSWORD: postgres:15.2-bullseye
+      POSTGRES_PASSWORD: postgres:14.7-bullseye
     networks:
       - lenra_dev
     restart: always
