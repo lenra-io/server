@@ -11,7 +11,7 @@ defmodule IdentityWeb.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext] ++ Mix.compilers(),
+      compilers: [] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -48,7 +48,9 @@ defmodule IdentityWeb.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:lenra, in_umbrella: true}
+      # {:lenra_web, in_umbrella: true}
     ]
   end
 

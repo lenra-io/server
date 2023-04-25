@@ -12,8 +12,6 @@ defmodule IdentityWeb.Application do
       IdentityWeb.Telemetry,
       # Start the Endpoint (http/https)
       IdentityWeb.Endpoint
-      # Start a worker by calling: IdentityWeb.Worker.start_link(arg)
-      # {IdentityWeb.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

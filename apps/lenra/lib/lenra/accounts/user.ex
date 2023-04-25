@@ -54,13 +54,22 @@ defmodule Lenra.Accounts.User do
   def changeset(user, params \\ %{}) do
     user
     |> cast(params, [:first_name, :last_name, :email])
-    |> validate_required([:email, :role])
+    |> cast_assoc(:password, with: &Password.changeset/2)
+    |> validate_email()
+    |> validate_required([:role])
     |> validate_length(:first_name, min: 2, max: 256)
     |> validate_length(:last_name, min: 2, max: 256)
+    |> validate_inclusion(:role, @all_roles)
+  end
+
+  defp validate_email(changeset) do
+    changeset
+    |> validate_required([:email])
     |> update_change(:email, &String.downcase/1)
     |> validate_format(:email, @email_regex)
+    |> validate_length(:email, max: 160)
+    |> unsafe_validate_unique(:email, Lenra.Repo)
     |> unique_constraint(:email)
-    |> validate_inclusion(:role, @all_roles)
   end
 
   def change_role(user, role) do
@@ -78,5 +87,12 @@ defmodule Lenra.Accounts.User do
 
   def update(%User{} = user, params) do
     changeset(user, params)
+  end
+
+  def registration_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email])
+    |> cast_assoc(:password, required: true)
+    |> validate_email()
   end
 end

@@ -19,10 +19,10 @@ defmodule Lenra.Accounts.Password do
   def changeset(password, params \\ %{}) do
     password
     |> cast(params, [:password])
-    |> validate_required([:password, :user_id])
+    |> validate_required([:password])
     |> unique_constraint(:password)
     |> validate_length(:password, min: 8, max: 64)
-    |> validate_format(:password, @password_regex)
+    # |> validate_format(:password, @password_regex)
     |> validate_confirmation(:password)
     |> put_pass_hash()
   end
@@ -37,7 +37,7 @@ defmodule Lenra.Accounts.Password do
     change(changeset, Argon2.add_hash(password, hash_key: :password))
   end
 
-  defp put_pass_hash(%Ecto.Changeset{valid?: false, changes: %{password: _password}} = changeset) do
+  defp put_pass_hash(%Ecto.Changeset{valid?: false} = changeset) do
     changeset
   end
 end

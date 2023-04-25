@@ -14,6 +14,7 @@ import Config
 # before starting your production server.
 config :identity_web, IdentityWeb.Endpoint,
   url: [host: "example.com", port: 80],
+  server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # ## SSL Support

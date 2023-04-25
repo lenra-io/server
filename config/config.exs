@@ -14,14 +14,14 @@
 import Config
 
 config :identity_web,
-  ecto_repos: [IdentityWeb.Repo],
-  generators: [context_app: false]
+  ecto_repos: [Lenra.Repo],
+  generators: [context_app: :identity]
 
 # Configures the endpoint
 config :identity_web, IdentityWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [view: IdentityWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: IdentityWeb.PubSub,
+  pubsub_server: Lenra.PubSub,
   live_view: [signing_salt: "zBWIFnCo"]
 
 # Configure esbuild (the version is required)
