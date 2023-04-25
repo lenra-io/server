@@ -12,6 +12,28 @@
 
 # General application configuration
 import Config
+
+config :identity_web,
+  ecto_repos: [IdentityWeb.Repo],
+  generators: [context_app: false]
+
+# Configures the endpoint
+config :identity_web, IdentityWeb.Endpoint,
+  url: [host: "localhost"],
+  render_errors: [view: IdentityWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: IdentityWeb.PubSub,
+  live_view: [signing_salt: "zBWIFnCo"]
+
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.14.0",
+  default: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../apps/identity_web/assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
 # Configure the repo
 config :lenra,
   ecto_repos: [Lenra.Repo]
