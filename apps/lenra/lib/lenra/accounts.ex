@@ -16,14 +16,25 @@ defmodule Lenra.Accounts do
   @doc """
     Register a new user, save him to the database. The email must be unique. The password is hashed before inserted to the database.
   """
-  def register_user(params, role \\ nil) do
-    IO.inspect("register_user")
+  def register_user_new(params, role \\ nil) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:inserted_user, User.new_with_password(params, role))
+    |> Ecto.Multi.insert(:inserted_registration_code, fn %{inserted_user: %User{} = user} ->
+      registration_code_changeset(user)
+    end)
+    |> Ecto.Multi.run(:add_event, fn
+      _repo, %{inserted_registration_code: registration_code, inserted_user: user} ->
+        EmailWorker.add_email_verification_event(user, registration_code.code)
+    end)
+    |> Repo.transaction()
+  end
 
+  def register_user(params, role \\ nil) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:inserted_user, User.new(params, role))
-    # |> Ecto.Multi.insert(:password, fn %{inserted_user: %User{} = user} ->
-    #   Password.new(user, params)
-    # end)
+    |> Ecto.Multi.insert(:password, fn %{inserted_user: %User{} = user} ->
+      Password.new(user, params)
+    end)
     |> Ecto.Multi.insert(:inserted_registration_code, fn %{inserted_user: %User{} = user} ->
       registration_code_changeset(user)
     end)

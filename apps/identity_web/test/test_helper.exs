@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(IdentityWeb.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(Lenra.Repo, :manual)

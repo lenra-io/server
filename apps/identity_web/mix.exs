@@ -49,8 +49,8 @@ defmodule IdentityWeb.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:lenra, in_umbrella: true}
-      # {:lenra_web, in_umbrella: true}
+      {:lenra, in_umbrella: true},
+      {:lenra_web, in_umbrella: true}
     ]
   end
 
