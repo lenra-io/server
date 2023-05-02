@@ -23,6 +23,8 @@ defmodule IdentityWeb do
 
       import Plug.Conn
       import IdentityWeb.Gettext
+
+      # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias IdentityWeb.Router.Helpers, as: Routes
     end
   end
@@ -97,6 +99,8 @@ defmodule IdentityWeb do
 
       import IdentityWeb.ErrorHelpers
       import IdentityWeb.Gettext
+
+      # credo:disable-for-next-line Credo.Check.Readability.AliasAs
       alias IdentityWeb.Router.Helpers, as: Routes
     end
   end

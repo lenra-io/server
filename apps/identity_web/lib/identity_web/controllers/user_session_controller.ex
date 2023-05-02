@@ -17,7 +17,7 @@ defmodule IdentityWeb.UserSessionController do
         |> TokenHelper.assign_access_and_refresh_token(user)
         |> redirect(to: signed_in_path(conn))
 
-      _ ->
+      _error ->
         render(conn, "new.html", error_message: "Invalid email or password")
     end
   end

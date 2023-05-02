@@ -2,8 +2,8 @@ defmodule IdentityWeb.UserRegistrationController do
   use IdentityWeb, :controller
 
   alias Lenra.Accounts
-  alias Lenra.Accounts.User
   alias Lenra.Accounts.Password
+  alias Lenra.Accounts.User
   alias LenraWeb.TokenHelper
 
   def new(conn, _params) do
@@ -20,13 +20,10 @@ defmodule IdentityWeb.UserRegistrationController do
         |> TokenHelper.assign_access_and_refresh_token(user)
         |> redirect(to: signed_in_path(conn))
 
-      {:error, :inserted_user, %Ecto.Changeset{} = changeset, _} ->
-        IO.inspect(":inserted_user")
-        IO.inspect(changeset)
+      {:error, :inserted_user, %Ecto.Changeset{} = changeset, _done} ->
         render(conn, "new.html", changeset: changeset)
 
-      {:error, :password, changeset, _} ->
-        IO.inspect(:password)
+      {:error, :password, changeset, _done} ->
         render(conn, "new.html", changeset: changeset)
     end
   end

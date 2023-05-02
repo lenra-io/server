@@ -1,4 +1,9 @@
 defmodule IdentityWeb.Telemetry do
+  @moduledoc """
+    This module setup some telemetry events to moitor the endpoint.
+    It have been automatically generated with the IentityWeb app.
+  """
+
   use Supervisor
   import Telemetry.Metrics
 
