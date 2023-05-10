@@ -32,7 +32,7 @@ defmodule LenraWeb.RunnerControllerTest do
         application_id: app["id"]
       })
 
-      assert deployment = json_response(conn!, 200)
+      assert json_response(conn!, 200)
 
       {:ok, %{conn: conn!, app: app, build: build}}
     end

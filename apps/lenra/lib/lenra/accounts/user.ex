@@ -54,12 +54,32 @@ defmodule Lenra.Accounts.User do
   def changeset(user, params \\ %{}) do
     user
     |> cast(params, [:first_name, :last_name, :email])
-    |> validate_required([:email, :role])
-    |> validate_length(:first_name, min: 2, max: 256)
-    |> validate_length(:last_name, min: 2, max: 256)
+    |> validate_email()
+    |> validate_others()
+  end
+
+  def changeset_with_password(user, params \\ %{}) do
+    user
+    |> cast(params, [:first_name, :last_name, :email])
+    |> cast_assoc(:password, with: &Password.new_changeset/2)
+    |> validate_email()
+    |> validate_others()
+  end
+
+  defp validate_email(changeset) do
+    changeset
+    |> validate_required([:email])
     |> update_change(:email, &String.downcase/1)
     |> validate_format(:email, @email_regex)
+    |> validate_length(:email, max: 160)
     |> unique_constraint(:email)
+  end
+
+  defp validate_others(changeset) do
+    changeset
+    |> validate_required([:role])
+    |> validate_length(:first_name, min: 2, max: 256)
+    |> validate_length(:last_name, min: 2, max: 256)
     |> validate_inclusion(:role, @all_roles)
   end
 
@@ -76,7 +96,19 @@ defmodule Lenra.Accounts.User do
     |> changeset(params)
   end
 
+  def new_with_password(params, role) do
+    %User{role: role || @unverified_user_role}
+    |> changeset_with_password(params)
+  end
+
   def update(%User{} = user, params) do
     changeset(user, params)
+  end
+
+  def registration_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email])
+    |> cast_assoc(:password, required: true)
+    |> validate_email()
   end
 end
