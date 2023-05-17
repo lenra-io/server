@@ -119,14 +119,6 @@ defmodule LenraWeb.WebhooksControllerTest do
     }
 
     {:ok, _} = start_supervised({ApplicationRunner.Environment.MetadataAgent, env_metadata})
-    # {:ok, pid} = start_supervised({Mongo, ApplicationRunner.Environment.MongoInstance.config(env.id)})
-    # Mongo.drop_collection(pid, @coll)
-
-    # doc_id =
-    #   Mongo.insert_one!(pid, @coll, %{"foo" => "bar"})
-    #   |> Map.get(:inserted_id)
-    #   |> BSON.ObjectId.encode!()
-
 
     {:ok, webhook} =
       WebhookServices.create(env.id, %{
@@ -149,6 +141,45 @@ defmodule LenraWeb.WebhooksControllerTest do
     conn =
       conn
       |> post(Routes.webhooks_path(conn, :trigger, conn.assigns.root.service_name, webhook.uuid), %{
+        "payloadData" => "Value"
+      })
+
+    assert _res = json_response(conn, 200)
+  end
+
+  @tag auth_user_with_cgu: :dev
+  test "Trigger webhook with not related app_uuid/webhook_uuid should return 403", %{conn: conn, env: env} do
+    token = ApplicationRunner.AppSocket.do_create_env_token(env.id) |> elem(1)
+
+    env_metadata = %ApplicationRunner.Environment.Metadata{
+      env_id: env.id,
+      function_name: "test",
+      token: token
+    }
+
+    {:ok, _} = start_supervised({ApplicationRunner.Environment.MetadataAgent, env_metadata})
+
+    {:ok, webhook} =
+      WebhookServices.create(env.id, %{
+        "action" => "test"
+      })
+
+    bypass = Bypass.open(port: 1234)
+
+    Bypass.stub(
+      bypass,
+      "POST",
+      "/function/test",
+      &handle_request(&1, fn body ->
+        assert body["props"] == nil
+        assert body["action"] == "test"
+        assert body["event"] == %{"payloadData" => "Value"}
+      end)
+    )
+
+    conn =
+      conn
+      |> post(Routes.webhooks_path(conn, :trigger, Ecto.UUID.generate(), webhook.uuid), %{
         "payloadData" => "Value"
       })
 
