@@ -36,14 +36,11 @@ defmodule LenraWeb.WebhooksController do
       "#{__MODULE__} handle #{inspect(conn.method)} on #{inspect(conn.request_path)} with path_params #{inspect(conn.path_params)} and body_params #{inspect(conn.body_params)}"
     )
 
-    IO.inspect("TRIGGER OK")
-
     conn
-    |> reply(IO.inspect(WebhookServices.trigger(uuid, conn.body_params)))
+    |> reply(WebhookServices.trigger(uuid, conn.body_params))
   end
 
   def trigger(_conn, params) do
-    IO.inspect("TRIGGER NOT OK")
     Logger.error(BusinessError.null_parameters_tuple(params))
     BusinessError.null_parameters_tuple(params)
   end

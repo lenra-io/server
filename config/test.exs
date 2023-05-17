@@ -33,6 +33,9 @@ config :lenra,
   lenra_email: "contact@lenra.io",
   lenra_app_url: "https://localhost:10000"
 
+config :application_runner,
+  faas_url: "http://localhost:1234"
+
 config :lenra, Lenra.Repo,
   username: "postgres",
   password: "postgres",
