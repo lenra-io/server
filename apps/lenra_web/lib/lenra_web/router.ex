@@ -98,7 +98,7 @@ defmodule LenraWeb.Router do
   scope "/", LenraWeb do
     get("/health", HealthController, :index)
 
-    pipe_through([:verify_webhook_trigger, :api])
+    pipe_through([:api])
     post("/apps/:app_uuid/webhooks/:webhook_uuid", WebhooksController, :trigger)
   end
 

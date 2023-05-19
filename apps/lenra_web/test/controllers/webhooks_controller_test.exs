@@ -183,6 +183,6 @@ defmodule LenraWeb.WebhooksControllerTest do
         "payloadData" => "Value"
       })
 
-    assert _res = json_response(conn, 200)
+    assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(conn, 400)
   end
 end
