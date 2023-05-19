@@ -32,10 +32,6 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyCgu)
   end
 
-  pipeline :verify_webhook_trigger do
-    plug(Plug.VerifyWebhookTrigger)
-  end
-
   scope "/auth", LenraWeb do
     pipe_through(:api)
     post("/register", UserController, :register)
