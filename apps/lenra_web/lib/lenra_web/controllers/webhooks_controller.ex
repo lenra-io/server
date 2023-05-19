@@ -2,7 +2,9 @@ defmodule LenraWeb.WebhooksController do
   use LenraWeb, :controller
 
   alias ApplicationRunner.Webhooks.WebhookServices
+  alias Lenra.Apps.Webhook
   alias Lenra.Errors.BusinessError
+  alias Lenra.Repo
 
   require Logger
 
@@ -39,14 +41,14 @@ defmodule LenraWeb.WebhooksController do
     webhook =
       webhook_uuid
       |> WebhookServices.get_by_uuid()
-      |> Lenra.Apps.Webhook.embed()
-      |> Lenra.Repo.preload(environment: [:application])
+      |> Webhook.embed()
+      |> Repo.preload(environment: [:application])
 
     if webhook.environment.application.service_name == app_uuid do
       conn
       |> reply(WebhookServices.trigger(webhook_uuid, conn.body_params))
     else
-      LenraCommon.Errors.BusinessError.forbidden_tuple()
+      BusinessError.forbidden_tuple()
     end
   end
 

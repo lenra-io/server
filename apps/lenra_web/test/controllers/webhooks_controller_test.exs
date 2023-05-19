@@ -110,7 +110,7 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   @tag auth_user_with_cgu: :dev
   test "Trigger webhook in env should work properly", %{conn: conn, env: env} do
-    token = ApplicationRunner.AppSocket.do_create_env_token(env.id) |> elem(1)
+    token = env.id |> ApplicationRunner.AppSocket.do_create_env_token() |> elem(1)
 
     env_metadata = %ApplicationRunner.Environment.Metadata{
       env_id: env.id,
@@ -149,7 +149,7 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   @tag auth_user_with_cgu: :dev
   test "Trigger webhook with not related app_uuid/webhook_uuid should return 403", %{conn: conn, env: env} do
-    token = ApplicationRunner.AppSocket.do_create_env_token(env.id) |> elem(1)
+    token = env.id |> ApplicationRunner.AppSocket.do_create_env_token() |> elem(1)
 
     env_metadata = %ApplicationRunner.Environment.Metadata{
       env_id: env.id,

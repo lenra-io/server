@@ -6,9 +6,8 @@ defmodule Lenra.Apps.Webhook do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.Apps.Environment
   alias Lenra.Accounts.User
-  alias Lenra.Apps.Webhook
+  alias Lenra.Apps.{Environment, Webhook}
 
   @derive {Jason.Encoder, only: [:uuid, :action, :props, :environment_id, :user_id]}
   @primary_key {:uuid, Ecto.UUID, autogenerate: true}
