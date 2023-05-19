@@ -3,7 +3,7 @@ defmodule LenraWeb.WebhooksController do
 
   alias ApplicationRunner.Webhooks.WebhookServices
   alias Lenra.Apps.Webhook
-  alias Lenra.Errors.BusinessError
+  alias Lenra.Errors.{BusinessError, TechnicalError}
   alias Lenra.Repo
 
   require Logger
@@ -47,7 +47,7 @@ defmodule LenraWeb.WebhooksController do
       conn
       |> reply(WebhookServices.trigger(webhook_uuid, conn.body_params))
     else
-      _ -> Lenra.Errors.TechnicalError.error_404_tuple()
+      _err -> TechnicalError.error_404_tuple()
     end
   end
 
