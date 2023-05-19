@@ -38,17 +38,16 @@ defmodule LenraWeb.WebhooksController do
       "#{__MODULE__} handle #{inspect(conn.method)} on #{inspect(conn.request_path)} with path_params #{inspect(conn.path_params)} and body_params #{inspect(conn.body_params)}"
     )
 
-    webhook =
-      webhook_uuid
-      |> WebhookServices.get_by_uuid()
-      |> Webhook.embed()
-      |> Repo.preload(environment: [:application])
-
-    if webhook.environment.application.service_name == app_uuid do
+    with %ApplicationRunner.Webhooks.Webhook{} = webhook <-
+           webhook_uuid
+           |> WebhookServices.get_by_uuid(),
+         %Webhook{} = embedded <- Webhook.embed(webhook),
+         preloaded <- Repo.preload(embedded, environment: [:application]),
+         true <- preloaded.environment.application.service_name == app_uuid do
       conn
       |> reply(WebhookServices.trigger(webhook_uuid, conn.body_params))
     else
-      BusinessError.forbidden_tuple()
+      _ -> Lenra.Errors.TechnicalError.error_404_tuple()
     end
   end
 
