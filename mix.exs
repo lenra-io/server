@@ -25,6 +25,7 @@ defmodule Lenra.Umbrella.MixProject do
         lenra: [
           applications: [
             lenra_web: :permanent,
+            identity_web: :permanent,
             runtime_tools: :permanent
           ],
           include_executables_for: [:unix]

@@ -32,7 +32,7 @@ defmodule LenraWeb.RunnerControllerTest do
         application_id: app["id"]
       })
 
-      assert deployment = json_response(conn!, 200)
+      assert json_response(conn!, 200)
 
       {:ok, %{conn: conn!, app: app, build: build}}
     end
@@ -80,9 +80,9 @@ defmodule LenraWeb.RunnerControllerTest do
         )
 
       assert %{
-               "message" => "Server cannot understand or process the request due to a client-side error.",
-               "reason" => "bad_request"
-             } = json_response(conn, 400)
+               "message" => "Internal server error.",
+               "reason" => "error_500"
+             } = json_response(conn, 500)
     end
   end
 end

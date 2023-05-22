@@ -1,4 +1,12 @@
 import Config
+
+# We don't run a server during test. If one is required,
+# you can enable the server option below.
+config :identity_web, IdentityWeb.Endpoint,
+  http: [ip: {127, 0, 0, 1}, port: 4002],
+  secret_key_base: "olVlgvFO2cJT9Xrat5pgN4Dw5fu7E9qKyyK9hL3RLClMlfTVXIsWhSSmbAl/G7TT",
+  server: false
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :lenra_web, LenraWeb.Endpoint,
@@ -24,6 +32,9 @@ config :lenra,
   template_url: "https://github.com/lenra-io/templates.git",
   lenra_email: "contact@lenra.io",
   lenra_app_url: "https://localhost:10000"
+
+config :application_runner,
+  faas_url: "http://localhost:1234"
 
 config :lenra, Lenra.Repo,
   username: "postgres",

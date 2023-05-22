@@ -2,7 +2,6 @@ defmodule LenraWeb.DeploymentControllerTest do
   use LenraWeb.ConnCase, async: true
 
   alias Lenra.{
-    FaasStub,
     GitlabStubHelper,
     Repo
   }
