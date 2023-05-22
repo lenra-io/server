@@ -44,6 +44,14 @@ defmodule LenraWeb.AppsController do
     end
   end
 
+  def get_app_by_service_name(conn, %{"app_service_name" => app_service_name} = _params) do
+    with {:ok, app} <-
+           Apps.fetch_app_by(service_name: app_service_name) do
+      conn
+      |> reply(Map.take(app, [:service_name, :color, :name]))
+    end
+  end
+
   def get_user_apps(conn, _params) do
     with :ok <- allow(conn),
          user <- Plug.current_resource(conn),
