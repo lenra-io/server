@@ -54,6 +54,7 @@ defmodule LenraWeb.Router do
   scope "/api", LenraWeb do
     pipe_through([:api])
     get("/cgu/latest", CguController, :get_latest_cgu)
+    get("/apps/:app_service_name", AppsController, :get_app_by_service_name)
 
     pipe_through([:ensure_auth])
     post("/cgu/:cgu_id/accept", CguController, :accept)
