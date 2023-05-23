@@ -36,7 +36,7 @@ services:
     restart: on-failure
   postgres:
     container_name: lenra-postgres
-    image: postgres
+    image: postgres:13
     ports:
       - 5432:5432
     environment:

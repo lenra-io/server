@@ -52,11 +52,7 @@
 ### Prerequisites
 
 You will first need to start two databases, postgres and mongo. Postgres will be used by the server to store general data and Mongo will store the data of the applications that you run.
-You can do this by using the 
-
-`docker compose up -d` 
-
-command at the root of this project. 
+You can do this by using the `docker compose up -d` command at the root of this project. 
 
 <!--
 Commands to run the database by hand.
