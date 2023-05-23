@@ -54,7 +54,7 @@
 You will first need to start two databases, postgres and mongo. Postgres will be used by the server to store general data and Mongo will store the data of the applications that you run.
 You can do this by using the 
 
-`docker compose up` 
+`docker compose up -f docker-compose.database` 
 
 command at the root of this project or running by hand the docker commands like so :
 * Start PostgreSQL with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
