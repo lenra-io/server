@@ -69,6 +69,11 @@ You will then need to install and setup elixir prerequisites for the server to r
   * `mix ecto.migrate` to start all migration and have an up-to-date database
   * `mix run priv/repo/seeds.exs` to fill database with default values
 
+Finally, start Ory Hydra using the docker-compose.yml file : 
+```
+docker-compose up -d
+```
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Start UP
