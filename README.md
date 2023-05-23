@@ -54,11 +54,15 @@
 You will first need to start two databases, postgres and mongo. Postgres will be used by the server to store general data and Mongo will store the data of the applications that you run.
 You can do this by using the 
 
-`docker compose up -f docker-compose.database` 
+`docker compose up -d` 
 
-command at the root of this project or running by hand the docker commands like so :
-* Start PostgreSQL with Docker `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
-* Start MongoDB with Docker `docker run --restart always -p 27017:27017 --name lenra-mongo -e MONGO_INITDB_DATABASE=test -e CONFIG='{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "mongodb:27017"}]}' -d mongo:5 mongod --replSet rs0`
+command at the root of this project. 
+
+<!--
+Commands to run the database by hand.
+Keep it in coment just in case :
+* PostgreSQL: `docker run --restart always -p 5432:5432 --name lenra-postgres -e POSTGRES_DB=lenra_dev -e POSTGRES_PASSWORD=postgres -d postgres`
+* MongoDB: `docker run --restart always -p 27017:27017 --name lenra-mongo -e MONGO_INITDB_DATABASE=test -e CONFIG='{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "mongodb:27017"}]}' -d mongo:5 mongod --replSet rs0` -->
 
 You will then need to install and setup elixir prerequisites for the server to run properly :
 
@@ -69,10 +73,6 @@ You will then need to install and setup elixir prerequisites for the server to r
   * `mix ecto.migrate` to start all migration and have an up-to-date database
   * `mix run priv/repo/seeds.exs` to fill database with default values
 
-Finally, start Ory Hydra using the docker-compose.yml file : 
-```
-docker-compose up -d
-```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
