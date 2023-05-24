@@ -49,7 +49,7 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  test "register password format error test", %{conn: conn} do
+  test "register password ponctuation format error test", %{conn: conn} do
     conn =
       post(
         conn,
@@ -63,7 +63,45 @@ defmodule LenraWeb.UserControllerTest do
       )
 
     assert %{
-             "message" => "password has invalid format",
+             "message" => "password should have at least one digit or punctuation character",
+             "reason" => "invalid_password"
+           } = json_response(conn, 400)
+  end
+
+  test "register password uppercase format error test", %{conn: conn} do
+    conn =
+      post(
+        conn,
+        Routes.user_path(conn, :register, %{
+          "first_name" => "John",
+          "last_name" => "Doe",
+          "email" => "john.doe@lenra.fr",
+          "password" => "johndoethefirst42",
+          "password_confirmation" => "johndoethefirst42"
+        })
+      )
+
+    assert %{
+             "message" => "password should have at least one upper case character",
+             "reason" => "invalid_password"
+           } = json_response(conn, 400)
+  end
+
+  test "register password lowercase format error test", %{conn: conn} do
+    conn =
+      post(
+        conn,
+        Routes.user_path(conn, :register, %{
+          "first_name" => "John",
+          "last_name" => "Doe",
+          "email" => "john.doe@lenra.fr",
+          "password" => "JOHNDOETHEFIRST42",
+          "password_confirmation" => "JOHNDOETHEFIRST42"
+        })
+      )
+
+    assert %{
+             "message" => "password should have at least one lower case character",
              "reason" => "invalid_password"
            } = json_response(conn, 400)
   end

@@ -191,4 +191,35 @@ defmodule LenraWeb.AppsControllerTest do
       assert [] = json_response(conn!, 200)
     end
   end
+
+  describe "get_app_by_id" do
+    @tag auth_user_with_cgu: :dev
+    test "should return app if user is the creator", %{conn: conn} do
+      conn = create_app_test(conn)
+      assert app = json_response(conn, 200)
+
+      conn! = get(conn, Routes.apps_path(conn, :get_app_by_service_name, app["service_name"]))
+
+      assert %{"color" => "ffffff", "name" => "test", "service_name" => app["service_name"]} ==
+               json_response(conn!, 200)
+    end
+
+    @tag auth_users_with_cgu: [:dev, :dev]
+    test "should return app if user is not the creator", %{users: [conn1!, conn2!]} do
+      conn1! = create_app_test(conn1!)
+      assert app = json_response(conn1!, 200)
+
+      conn2! = get(conn2!, Routes.apps_path(conn2!, :get_app_by_service_name, app["service_name"]))
+
+      assert %{"color" => "ffffff", "name" => "test", "service_name" => app["service_name"]} ==
+               json_response(conn2!, 200)
+    end
+
+    @tag auth_user_with_cgu: :dev
+    test "should return 404 if app does not exist", %{conn: conn} do
+      conn = get(conn, Routes.apps_path(conn, :get_app_by_service_name, Ecto.UUID.generate()))
+
+      assert %{"reason" => "error_404"} = json_response(conn, 404)
+    end
+  end
 end

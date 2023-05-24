@@ -22,9 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - name: Setup node deps
-        run: npm i conventional-changelog-conventionalcommits@4 @semantic-release/exec @semantic-release/git -D
+          node-version: "18"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -43,4 +41,4 @@ jobs:
         run: |
           sudo chown $USER:$USER .github/release.sh
           sudo chmod +x .github/release.sh
-          npx semantic-release@18
+          npx npx --force -p conventional-changelog-conventionalcommits@5 -p @semantic-release/exec -p @semantic-release/git -p https://github.com/Tlepel/semantic-release.git#fix-versions-share-head semantic-release

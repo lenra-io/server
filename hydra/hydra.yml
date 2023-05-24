@@ -1,0 +1,52 @@
+serve:
+  cookies:
+    same_site_mode: Lax
+  admin:
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:10000
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+      exposed_headers:
+        - Content-Type
+  public:
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:10000
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+      exposed_headers:
+        - Content-Type
+
+urls:
+  self:
+    issuer: http://localhost:4444
+  consent: http://localhost:4001/users/consent
+  login: http://localhost:4001/users/log_in
+  logout: http://localhost:4001/users/log_out
+
+secrets:
+  system:
+    - youReallyNeedToChangeThis
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: youReallyNeedToChangeThis
