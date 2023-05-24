@@ -7,7 +7,6 @@ defmodule IdentityWeb.UserRegistrationController do
   alias LenraWeb.TokenHelper
 
   def new(conn, _params) do
-    # changeset = Accounts.Password.changeset(%Password{user: %User{}})
     changeset = Accounts.User.registration_changeset(%User{password: [%Password{}]}, %{})
     render(conn, "new.html", changeset: changeset)
   end

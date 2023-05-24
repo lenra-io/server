@@ -42,16 +42,14 @@ defmodule IdentityWeb.Router do
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    get "/users/register", UserRegistrationController, :new
-    post "/users/register", UserRegistrationController, :create
-
-    get "/users/log_in", UserSessionController, :new
-    post "/users/log_in", UserSessionController, :create
+    get "/users/log_in", UserAuthController, :new
+    post "/users/register", UserAuthController, :create
+    post "/users/log_in", UserAuthController, :login
   end
 
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserSessionController, :delete
+    delete "/users/log_out", UserAuthController, :delete
   end
 end
