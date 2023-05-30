@@ -4,30 +4,12 @@ defmodule IdentityWeb.UserAuthController do
   alias Lenra.Accounts
   alias Lenra.Accounts.Password
   alias Lenra.Accounts.User
-  alias LenraWeb.TokenHelper
+
+  alias IdentityWeb.HydraHelper
 
   ######################
   ## Helper functions ##
   ######################
-
-  defp get_login_request(login_challenge) do
-    ORY.Hydra.get_login_request(%{login_challenge: login_challenge})
-    |> ORY.Hydra.request(%{url: hydra_url()})
-  end
-
-  defp accept_login(login_challenge, subject, remember \\ false) do
-    ORY.Hydra.accept_login_request(%{
-      login_challenge: login_challenge,
-      subject: subject,
-      remember: remember,
-      remember_for: 3600
-    })
-    |> ORY.Hydra.request(%{url: hydra_url()})
-  end
-
-  defp hydra_url do
-    Application.fetch_env!(:identity_web, :hydra_url)
-  end
 
   defp register_changeset_or_new(nil), do: Accounts.User.registration_changeset(%User{password: [%Password{}]}, %{})
   defp register_changeset_or_new(changeset), do: changeset
@@ -38,12 +20,13 @@ defmodule IdentityWeb.UserAuthController do
 
   # The "New" show the login/register form to the user if not already logged in.
   def new(conn, %{"login_challenge" => login_challenge}) do
-    {:ok, response} = get_login_request(login_challenge)
+    {:ok, response} = HydraHelper.get_login_request(login_challenge)
+    IO.inspect({"login new", response.body})
 
     if response.body["skip"] do
       # Can do logic stuff here like update the session.
       # The user is already logged in, skip login and redirect.
-      {:ok, accept_response} = accept_login(login_challenge, response.body["subject"])
+      {:ok, accept_response} = HydraHelper.accept_login(login_challenge, response.body["subject"], true)
       redirect(conn, external: accept_response.body["redirect_to"])
     else
       render(conn, "new.html",
@@ -63,13 +46,11 @@ defmodule IdentityWeb.UserAuthController do
 
     case Accounts.login_user(email, password) do
       {:ok, user} ->
-        {:ok, accept_response} = accept_login(login_challenge, to_string(user.id), remember == "true")
+        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
         redirect(conn, external: accept_response.body["redirect_to"])
 
       _error ->
         # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
-        changeset = Accounts.User.registration_changeset(%User{password: [%Password{}]}, %{})
-
         render(conn, "new.html",
           error_message: "Invalid email or password",
           login_challenge: login_challenge,
@@ -85,7 +66,7 @@ defmodule IdentityWeb.UserAuthController do
   def create(conn, %{"user_register" => %{"login_challenge" => login_challenge} = user_register_params}) do
     case Accounts.register_user_new(user_register_params) do
       {:ok, %{inserted_user: user}} ->
-        {:ok, accept_response} = accept_login(login_challenge, to_string(user.id), false)
+        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), false)
         redirect(conn, external: accept_response.body["redirect_to"])
 
       {:error, :inserted_user, %Ecto.Changeset{} = changeset, _done} ->

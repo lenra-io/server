@@ -21,6 +21,7 @@ defmodule Lenra.Errors.BusinessError do
       {:invalid_uuid, "The code is not a valid UUID"},
       {:invalid_code, "The code is invalid"},
       {:invalid_build_status, "The build status should be success or failure."},
+      {:invalid_token, "The token is invalid."},
       {:no_app_authorization, "You are not authorized to join this app."},
       {:not_latest_cgu, "Not latest CGU."},
       {:did_not_accept_cgu, "You must accept the CGU to use Lenra"},
