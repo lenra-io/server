@@ -1,0 +1,62 @@
+version: "3.7"
+services:
+  hydra:
+    image: oryd/hydra:v2.0.3
+    ports:
+      - "4444:4444" # Public port
+      - "4445:4445" # Admin port
+      - "5555:5555" # Port for hydra token user
+    command: serve -c /etc/config/hydra/hydra.yml all --dev
+    volumes:
+      - type: volume
+        source: hydra-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./hydra
+        target: /etc/config/hydra
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+    restart: unless-stopped
+    depends_on:
+      - hydra-migrate
+  hydra-migrate:
+    image: oryd/hydra:v2.0.3
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+    command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
+    volumes:
+      - type: volume
+        source: hydra-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./hydra
+        target: /etc/config/hydra
+    restart: on-failure
+  postgres:
+    container_name: lenra-postgres
+    image: postgres:13
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: lenra_dev
+      POSTGRES_PASSWORD: postgres
+    restart: always
+  mongodb:
+    container_name: lenra-mongo
+    image: mongo:5.0.11-focal
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: test
+      CONFIG: '{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "localhost:27017"}]}'
+    healthcheck:
+      test: test $$(echo "rs.initiate($$CONFIG).ok || rs.status().ok" | mongo --quiet) -eq 1
+      interval: 10s
+      start_period: 10s
+    command: mongod --replSet rs0
+    restart: always
+
+volumes:
+  hydra-sqlite:
