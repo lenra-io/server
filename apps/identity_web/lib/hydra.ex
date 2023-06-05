@@ -59,7 +59,7 @@ defmodule ORY.Hydra do
   def check_alive do
     %Operation{
       method: :get,
-      path: "/health/alive"
+      path: "/health"
     }
   end
 
