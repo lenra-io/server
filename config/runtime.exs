@@ -63,13 +63,10 @@ config :libcluster,
   topologies: [
     lenra: [
       # The selected clustering strategy. Required.
-      strategy: Elixir.Cluster.Strategy.Kubernetes,
+      strategy: Elixir.Cluster.Strategy.Kubernetes.DNS,
       # Configuration for the provided strategy. Optional.
       config: [
-        mode: :ip,
-        kubernetes_ip_lookup_mode: :pods,
-        kubernetes_selector: System.fetch_env!("KUBERNETES_SELECTOR"),
-        kubernetes_namespace: System.fetch_env!("KUBERNETES_NAMESPACE"),
+        service: System.fetch_env!("SERVICE_NAME"),
         application_name: "lenra",
         polling_interval: 10_000
       ]
