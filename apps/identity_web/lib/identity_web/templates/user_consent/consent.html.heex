@@ -2,13 +2,12 @@
 <p>
   Hello <b><%= inspect(@user.email) %></b>
   <br />
-  The APP<%= inspect(@client["client_id"]) %> 
+  The APP<%= inspect(@client["client_id"]) %>
   Need your consent to access to Lenra. <br />
-  There is what he needs : 
-  
+  There is what he needs :
+
   <ul>
     <%= for scope <- @scopes do %>
-      <%!-- <li><%= scope.name <> " : " <> (scope.label || "N/A") %></li> --%>
       <li><%= scope %></li>
 
     <% end %>
