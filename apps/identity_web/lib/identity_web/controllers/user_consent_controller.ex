@@ -1,9 +1,9 @@
 defmodule IdentityWeb.UserConsentController do
   use IdentityWeb, :controller
 
-  require Logger
-
   alias IdentityWeb.HydraHelper
+  alias Lenra.Errors.BusinessError
+  require Logger
 
   #################
   ## Controllers ##
@@ -35,7 +35,7 @@ defmodule IdentityWeb.UserConsentController do
       # If we do not skip, get the user and show the consent page.
       case Lenra.Accounts.get_user(response.body["subject"]) do
         nil ->
-          Lenra.Errors.BusinessError.invalid_token_tuple()
+          BusinessError.invalid_token_tuple()
 
         user ->
           # The "consent_challenge" is sent back using a hiddend field.

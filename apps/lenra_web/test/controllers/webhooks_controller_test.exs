@@ -45,7 +45,8 @@ defmodule LenraWeb.WebhooksControllerTest do
       "user_id" => user.id
     })
 
-    conn = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id, "user_id" => user.id})
+    conn =
+      get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id, "user_id" => user.id})
 
     assert [webhook] = json_response(conn, 200)
     assert webhook["action"] == "test"
@@ -170,7 +171,7 @@ defmodule LenraWeb.WebhooksControllerTest do
   end
 
   @tag auth_user_with_cgu: :dev
-  test "Trigger webhook that does not exist should return 404", %{conn: conn, env: env} do
+  test "Trigger webhook that does not exist should return 404", %{conn: conn, env: _env} do
     conn =
       conn
       |> post(Routes.webhooks_path(conn, :trigger, Ecto.UUID.generate(), Ecto.UUID.generate()), %{
