@@ -170,7 +170,7 @@ defmodule LenraWeb.WebhooksControllerTest do
   end
 
   @tag auth_user_with_cgu: :dev
-  test "Trigger webhook that does not exist should return 404", %{conn: conn, env: env} do
+  test "Trigger webhook that does not exist should return 404", %{conn: conn, env: _env} do
     conn =
       conn
       |> post(Routes.webhooks_path(conn, :trigger, Ecto.UUID.generate(), Ecto.UUID.generate()), %{

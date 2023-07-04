@@ -1,0 +1,35 @@
+<h1>The application ask for these permissions</h1>
+<p>
+  Hello <b><%= inspect(@user.email) %></b>
+  <br />
+  The APP<%= inspect(@client["client_id"]) %>
+  Need your consent to access to Lenra. <br />
+  There is what he needs :
+
+  <ul>
+    <%= for scope <- @scopes do %>
+      <li><%= scope %></li>
+
+    <% end %>
+  </ul>
+
+</p>
+
+<div>
+  <.form let={f} for={@conn} action={Routes.user_consent_path(@conn, @action)} >
+      <%= hidden_input(f, :accept, value: true) %>
+      <%= if assigns[:consent_challenge] do %>
+        <%= hidden_input f, :consent_challenge, value: @consent_challenge %>
+      <% end %>
+        <%= label f, :remember_me, "Remember my choice" %>
+        <%= checkbox f, :remember_me %>
+      <%= submit "J'accepte" %>
+  </.form>
+  <.form let={f} for={@conn} action={Routes.user_consent_path(@conn, @action)} >
+        <%= hidden_input(f, :accept, value: false) %>
+        <%= if assigns[:consent_challenge] do %>
+          <%= hidden_input f, :consent_challenge, value: @consent_challenge %>
+        <% end %>
+      <%= submit "Je refuse" %>
+  </.form>
+</div>
