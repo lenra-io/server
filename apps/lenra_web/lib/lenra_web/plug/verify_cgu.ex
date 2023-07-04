@@ -2,6 +2,7 @@ defmodule LenraWeb.Plug.VerifyCgu do
   @moduledoc """
   Plug that checks whether the latest cgu has been accepted or not
   """
+  use LenraWeb, :controller
 
   alias Lenra.Errors.BusinessError
 
@@ -16,10 +17,9 @@ defmodule LenraWeb.Plug.VerifyCgu do
       translated_error = LenraCommonWeb.ErrorHelpers.translate_error(BusinessError.did_not_accept_cgu_tuple())
 
       conn
-      |> Phoenix.Controller.put_view(LenraWeb.ErrorView)
-      |> Plug.Conn.put_status(403)
-      |> Phoenix.Controller.render("403.json", error: translated_error)
-      |> Plug.Conn.halt()
+      |> put_view(LenraCommonWeb.BaseView)
+      |> assign_error(BusinessError.did_not_accept_cgu())
+      |> reply()
     end
   end
 end

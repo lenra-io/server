@@ -1,4 +1,4 @@
-defmodule IdentityWeb.HydraHelper do
+defmodule HydraApi do
   @moduledoc """
     Give some helper functions to help with OryHydra workflow.
     get/accept login request
@@ -63,8 +63,14 @@ defmodule IdentityWeb.HydraHelper do
     |> ORY.Hydra.request(hydra_config())
   end
 
+  def introspect(token, required_scopes) do
+    %{scope: required_scopes, token: token}
+    |> ORY.Hydra.introspect()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
   def hydra_url do
-    Application.fetch_env!(:identity_web, :hydra_url)
+    Application.fetch_env!(:hydra_api, :hydra_url)
   end
 
   def hydra_config do

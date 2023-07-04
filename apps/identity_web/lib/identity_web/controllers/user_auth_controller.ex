@@ -5,8 +5,6 @@ defmodule IdentityWeb.UserAuthController do
   alias Lenra.Accounts.Password
   alias Lenra.Accounts.User
 
-  alias IdentityWeb.HydraHelper
-
   ######################
   ## Helper functions ##
   ######################
@@ -22,12 +20,12 @@ defmodule IdentityWeb.UserAuthController do
 
   # The "New" show the login/register form to the user if not already logged in.
   def new(conn, %{"login_challenge" => login_challenge}) do
-    {:ok, response} = HydraHelper.get_login_request(login_challenge)
+    {:ok, response} = HydraApi.get_login_request(login_challenge)
 
     if response.body["skip"] do
       # Can do logic stuff here like update the session.
       # The user is already logged in, skip login and redirect.
-      {:ok, accept_response} = HydraHelper.accept_login(login_challenge, response.body["subject"], true)
+      {:ok, accept_response} = HydraApi.accept_login(login_challenge, response.body["subject"], true)
 
       redirect(conn, external: accept_response.body["redirect_to"])
     else
@@ -48,7 +46,7 @@ defmodule IdentityWeb.UserAuthController do
 
     case Accounts.login_user(email, password) do
       {:ok, user} ->
-        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
+        {:ok, accept_response} = HydraApi.accept_login(login_challenge, to_string(user.id), remember == "true")
 
         redirect(conn, external: accept_response.body["redirect_to"])
 
@@ -71,7 +69,7 @@ defmodule IdentityWeb.UserAuthController do
       }) do
     case Accounts.register_user_new(user_register_params) do
       {:ok, %{inserted_user: user}} ->
-        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), false)
+        {:ok, accept_response} = HydraApi.accept_login(login_challenge, to_string(user.id), false)
 
         redirect(conn, external: accept_response.body["redirect_to"])
 

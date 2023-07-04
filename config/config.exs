@@ -112,7 +112,7 @@ config :application_runner, :mongo,
   ssl: System.get_env("MONGO_SSL", "false"),
   auth_source: System.get_env("MONGO_AUTH_SOURCE")
 
-config :identity_web,
+config :hydra_api,
   hydra_url: System.get_env("HYDRA_URL", "http://localhost:4445")
 
 config :application_runner, ApplicationRunner.Scheduler, storage: ApplicationRunner.Storage
