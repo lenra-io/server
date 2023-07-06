@@ -1,4 +1,4 @@
-<.form let={f} for={@conn} action={Routes.user_auth_path(@conn, (if !@submit_action || @submit_action == "register", do: :create, else: :login))} as={:user}>
+<.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if !@submit_action || @submit_action == "register", do: :create, else: :login))} as={:user}>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/login.css")}/>
   <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/login.js")}></script>
   <%= radio_button f, :submit_action, "register", 
@@ -14,9 +14,7 @@
     <%= label f, :submit_action_login, gettext("Log in") %>
   </nav>
   <%= if @error_message do %>
-    <div class="alert alert-danger">
-      <p><%= @error_message %></p>
-    </div>
+    <p class="alert alert-danger"><%= @error_message %></p>
   <% end %>
 
   <fieldset>
@@ -33,7 +31,7 @@
 
   <fieldset class="login">
     <%= checkbox f, :remember_me %>
-    <%= label f, :remember_me, gettext("Keep me logged in for 60 days") %>
+    <%= label f, :remember_me, gettext("Keep me logged in for %{duration} days", duration: 60) %>
   </fieldset>
 
   <%= if assigns[:login_challenge] do %>

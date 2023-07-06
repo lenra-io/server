@@ -83,7 +83,7 @@ form>nav>label {
 
 form>input[type="radio"]#user_submit_action_register:checked~nav>label[for="user_submit_action_register"],
 form>input[type="radio"]#user_submit_action_login:checked~nav>label[for="user_submit_action_login"] {
-    color: rgb(var(--text-color-data));
+    color: rgb(var(--white-data));
 }
 
 form input[type="checkbox"] + label {

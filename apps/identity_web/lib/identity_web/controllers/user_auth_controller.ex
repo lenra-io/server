@@ -59,7 +59,7 @@ defmodule IdentityWeb.UserAuthController do
           submit_action: "login",
           error_message: "Invalid email or password",
           login_challenge: login_challenge,
-          changeset: register_changeset_or_new(params["user_register"])
+          changeset: register_changeset_or_new(params["user"])
         )
     end
   end

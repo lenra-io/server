@@ -59,9 +59,15 @@ defmodule Lenra.Accounts.User do
   end
 
   def changeset_with_password(user, params \\ %{}) do
-    user
+    IO.inspect("changeset_with_password")
+    IO.inspect(user)
+    IO.inspect(params)
+    el = user
     |> cast(params, [:first_name, :last_name, :email])
     |> cast_assoc(:password, with: &Password.new_changeset/2)
+
+    IO.inspect(el)
+    el
     |> validate_email()
     |> validate_others()
   end
