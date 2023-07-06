@@ -51,12 +51,12 @@ defmodule LenraWeb.AppAdapter do
 
   @impl ApplicationRunner.Adapter
   def resource_from_params(params) do
-    case LenraWeb.Guardian.resource_from_token(params["token"]) do
-      {:ok, user, _claims} ->
+    case LenraWeb.Auth.check_token_and_get_resource(params["token"]) do
+      {:ok, user} ->
         {:ok, user.id}
 
-      _error ->
-        BusinessError.forbidden_tuple()
+      error ->
+        error
     end
   end
 

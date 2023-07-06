@@ -4,6 +4,7 @@ defmodule LenraWeb.Plug.VerifyScope do
 
   alias Lenra.Accounts
   alias LenraWeb.Errors.BusinessError
+  alias LenraWeb.Auth
 
   def init(options) do
     options
@@ -13,43 +14,36 @@ defmodule LenraWeb.Plug.VerifyScope do
     The second parameter "required_scopes" is a comma-separated list of the required scope to accept the connexion.
   """
   def call(conn, required_scopes) do
-    with {:ok, token} <- fetch_token(conn),
-         {:ok, response} <- check_token(token, required_scopes) do
-      subject = response.body["sub"]
-
-      IO.inspect({"Verify Scope", response.body, token})
-
-      conn
-      |> put_private(:oauth_token, response.body)
-      |> put_private(:guardian_default_resource, Accounts.get_user!(subject))
+    with {:ok, token} <- extract_token(conn),
+         {:ok, user} <- HydraApi.check_token_and_get_resource(token, required_scopes) do
+      Auth.put_resource(conn, user)
     else
+      {:error, :invalid_token} ->
+        reply_error(conn, BusinessError.invalid_token())
+
+      {:error, :invalid_subject} ->
+        reply_error(conn, BusinessError.invalid_user())
+
+      {:error, err} ->
+        reply_error(conn, err)
+
       err ->
-        handle_error(conn)
+        # Should never raise
+        raise err
     end
   end
 
-  defp fetch_token(conn) do
-    with [authorization_header] <- get_req_header(conn, "authorization"),
-         [_authorization_header, token] <- Regex.run(~r/Bearer (.+)/, authorization_header) do
-      {:ok, token}
-    else
-      _ -> BusinessError.token_not_found_tuple()
+  defp extract_token(conn) do
+    case Auth.current_token(conn) do
+      nil -> BusinessError.token_not_found_tuple()
+      token -> {:ok, token}
     end
   end
 
-  defp check_token(token, required_scopes) do
-    with {:ok, response} <- HydraApi.introspect(token, required_scopes),
-         true <- Map.get(response.body, "active", false) do
-      {:ok, response}
-    else
-      _ -> BusinessError.invalid_token_tuple()
-    end
-  end
-
-  defp handle_error(conn) do
+  defp reply_error(conn, error) do
     conn
     |> put_view(LenraCommonWeb.BaseView)
-    |> assign_error(:forbidden)
+    |> assign_error(error)
     |> reply()
   end
 end

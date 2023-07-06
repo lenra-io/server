@@ -9,7 +9,7 @@ defmodule LenraWeb.Plug.VerifyCgu do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    user = Guardian.Plug.current_resource(conn)
+    user = LenraWeb.Auth.current_resource(conn)
 
     if Lenra.Legal.user_accepted_latest_cgu?(user.id) do
       conn

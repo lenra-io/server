@@ -5,13 +5,13 @@ defmodule LenraWeb.AppsController do
     module: LenraWeb.AppsController.Policy
 
   alias Lenra.Apps
-  alias LenraWeb.Guardian.Plug
+  alias LenraWeb.Auth
 
   require Logger
 
   def index(conn, _params) do
     with :ok <- allow(conn),
-         user <- Plug.current_resource(conn),
+         user <- Auth.current_resource(conn),
          apps <- Apps.all_apps(user.id) do
       conn
       |> reply(apps)
@@ -20,7 +20,7 @@ defmodule LenraWeb.AppsController do
 
   def create(conn, params) do
     with :ok <- allow(conn),
-         user <- Plug.current_resource(conn),
+         user <- Auth.current_resource(conn),
          {:ok, %{inserted_application: app}} <- Apps.create_app(user.id, params) do
       conn
       |> reply(app)
@@ -54,7 +54,7 @@ defmodule LenraWeb.AppsController do
 
   def get_user_apps(conn, _params) do
     with :ok <- allow(conn),
-         user <- Plug.current_resource(conn),
+         user <- Auth.current_resource(conn),
          apps <- Apps.all_apps_for_user(user.id) do
       conn
       |> reply(apps)
@@ -63,7 +63,7 @@ defmodule LenraWeb.AppsController do
 
   def all_apps_user_opened(conn, _params) do
     with :ok <- allow(conn),
-         user <- Plug.current_resource(conn),
+         user <- Auth.current_resource(conn),
          apps <- Apps.all_apps_user_opened(user.id) do
       reply(conn, apps)
     end

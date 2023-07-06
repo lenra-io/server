@@ -35,7 +35,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       creator! =
         post(creator!, Routes.user_environment_access_path(creator!, :create, app["id"], env["id"]), %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       assert %{} = json_response(creator!, 200)
@@ -76,22 +76,22 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       creator! =
         post(creator!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       admin! =
         post(admin!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       user! =
         post(user!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       other_dev! =
         post(other_dev!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       assert %{} = json_response(creator!, 200)
@@ -121,22 +121,22 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       creator! =
         post(creator!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       admin! =
         post(admin!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       user! =
         post(user!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       other_dev! =
         post(other_dev!, create_user_access, %{
-          "email" => Guardian.Plug.current_resource(creator!).email
+          "email" => LenraWeb.Auth.current_resource(creator!).email
         })
 
       assert %{} = json_response(creator!, 200)

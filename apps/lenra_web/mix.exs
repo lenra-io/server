@@ -46,6 +46,7 @@ defmodule LenraWeb.MixProject do
       {:cors_plug, "~> 3.0", only: :dev, runtime: false},
       {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},
       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.6.0"}
+      # {:lenra_common, path: "../lenra_common"}
     ]
   end
 end

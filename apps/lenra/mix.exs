@@ -53,6 +53,7 @@ defmodule Lenra.MixProject do
        ref: "v1.0.0-beta.124",
        submodules: true},
       {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.6.0"}
+      # {:lenra_common, path: "../lenra_common"}
     ]
   end
 end

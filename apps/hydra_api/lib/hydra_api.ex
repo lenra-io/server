@@ -6,6 +6,9 @@ defmodule HydraApi do
     get hydra url/config
   """
 
+  alias Lenra.Accounts
+  alias Lenra
+
   # 30 days In seconds
   @remember_for 60 * 60 * 24 * 30
 
@@ -67,6 +70,29 @@ defmodule HydraApi do
     %{scope: required_scopes, token: token}
     |> ORY.Hydra.introspect()
     |> ORY.Hydra.request(hydra_config())
+  end
+
+  def check_token(token, required_scopes) do
+    with {:ok, response} <- HydraApi.introspect(token, required_scopes),
+         true <- Map.get(response.body, "active", false) do
+      {:ok, response}
+    else
+      _ -> {:error, :invalid_token}
+    end
+  end
+
+  def check_token_and_get_resource(token, required_scopes) do
+    with {:ok, response} <- check_token(token, required_scopes) do
+      subject = response.body["sub"]
+
+      case Accounts.get_user(subject) do
+        nil ->
+          {:error, :invalid_subject}
+
+        user ->
+          {:ok, user}
+      end
+    end
   end
 
   def hydra_url do
