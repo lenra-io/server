@@ -3,11 +3,11 @@ defmodule LenraWeb.Auth do
   @resource_key :oauth_resource
 
   def put_token(conn, token) do
-    Plug.Conn.put_private(conn, @token_key, response.body)
+    Plug.Conn.put_private(conn, @token_key, token)
   end
 
   def put_resource(conn, resource) do
-    Plug.Conn.put_private(conn, @resource_key, user)
+    Plug.Conn.put_private(conn, @resource_key, resource)
   end
 
   def current_token(conn) do

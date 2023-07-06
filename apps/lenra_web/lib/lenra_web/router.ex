@@ -1,7 +1,7 @@
 defmodule LenraWeb.Router do
   use LenraWeb, :router
 
-  alias LenraWeb.{Pipeline, Plug}
+  alias LenraWeb.Plug
 
   require ApplicationRunner.Router
 
@@ -16,28 +16,33 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyRunnerSecret)
   end
 
-  pipeline :ensure_resource_auth do
-    plug(Pipeline.EnsureAuthedQueryParams)
-  end
-
   pipeline :ensure_cgu_accepted do
     plug(Plug.VerifyCgu)
   end
 
   pipeline :scope_app_websocket do
+    plug(Plug.ExtractBearer)
     plug(Plug.VerifyScope, "app:websocket")
   end
 
   pipeline :scope_manage_account do
-    plug(Plug.VerifyScope, "manage_account")
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "manage:account")
   end
 
   pipeline :scope_manage_apps do
-    plug(Plug.VerifyScope, "manage_apps")
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "manage:apps")
   end
 
   pipeline :scope_store do
+    plug(Plug.ExtractBearer)
     plug(Plug.VerifyScope, "store")
+  end
+
+  pipeline :scope_resources do
+    plug(Plug.ExtractQueryParams)
+    plug(Plug.VerifyScope, "resources")
   end
 
   # remains of Authentication API. Move it to /api ?
@@ -91,30 +96,30 @@ defmodule LenraWeb.Router do
   scope "/api/apps", LenraWeb do
     pipe_through([:api, :scope_manage_apps, :ensure_cgu_accepted])
 
-    resources("/apps", AppsController, only: [:index, :create, :update, :delete])
+    resources("/", AppsController, only: [:index, :create, :update, :delete])
 
     # Environments
-    get("/apps/:app_id/main_environment", ApplicationMainEnvController, :index)
-    resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
-    patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
+    get("/:app_id/main_environment", ApplicationMainEnvController, :index)
+    resources("/:app_id/environments", EnvsController, only: [:index, :create])
+    patch("/:app_id/environments/:env_id", EnvsController, :update)
 
     # Invitations to env
-    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+    resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
 
-    get("/apps/invitations/:id", UserEnvironmentAccessController, :fetch_one)
-    post("/apps/invitations/:id", UserEnvironmentAccessController, :accept)
+    get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
+    post("/invitations/:id", UserEnvironmentAccessController, :accept)
 
     # Builds
-    resources("/apps/:app_id/builds", BuildsController, only: [:index, :create])
+    resources("/:app_id/builds", BuildsController, only: [:index, :create])
 
     # Deployments
-    resources("/apps/deployments", DeploymentsController, only: [:create])
-    get("/apps/:app_id/deployments", DeploymentsController, :index)
+    resources("/deployments", DeploymentsController, only: [:create])
+    get("/:app_id/deployments", DeploymentsController, :index)
   end
 
-  # /api resources (not using scope system)
+  # /api resources, scope "resources"
   scope "/api", LenraWeb do
-    pipe_through([:api, :ensure_resource_auth, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_resources, :ensure_cgu_accepted])
     ApplicationRunner.Router.resource_route(ResourcesController)
   end
 

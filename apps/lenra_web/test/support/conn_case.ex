@@ -123,12 +123,12 @@ defmodule LenraWeb.ConnCase do
     conn_user(conn, user)
   end
 
-  defp conn_user(conn, user) do
-    {:ok, jwt, _claims} = LenraWeb.Guardian.encode_and_sign(user, %{typ: "access"})
+  # defp conn_user(conn, user) do
+  #   {:ok, jwt, _claims} = LenraWeb.Guardian.encode_and_sign(user, %{typ: "access"})
 
-    conn
-    |> Plug.Conn.put_req_header("accept", "application/json")
-    |> Plug.Conn.put_req_header("authorization", "Bearer " <> jwt)
-    |> Plug.Conn.assign(:user, user)
-  end
+  #   conn
+  #   |> Plug.Conn.put_req_header("accept", "application/json")
+  #   |> Plug.Conn.put_req_header("authorization", "Bearer " <> jwt)
+  #   |> Plug.Conn.assign(:user, user)
+  # end
 end

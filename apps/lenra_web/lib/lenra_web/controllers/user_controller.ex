@@ -12,8 +12,6 @@ defmodule LenraWeb.UserController do
     with user <- LenraWeb.Auth.current_resource(conn),
          {:ok, %{updated_user: updated_user}} <- Accounts.validate_user(user, params["code"]) do
       conn
-      |> TokenHelper.revoke_current_refresh()
-      |> TokenHelper.assign_access_and_refresh_token(updated_user)
       |> reply(updated_user)
     end
   end
@@ -29,8 +27,6 @@ defmodule LenraWeb.UserController do
     with user <- LenraWeb.Auth.current_resource(conn),
          {:ok, %{updated_user: updated_user}} <- Accounts.validate_dev(user) do
       conn
-      |> TokenHelper.revoke_current_refresh()
-      |> TokenHelper.assign_access_and_refresh_token(updated_user)
       |> reply(updated_user)
     end
   end

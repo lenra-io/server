@@ -149,16 +149,16 @@
             "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
             "containerId": "2cd2ddaa-4e51-4e24-98a3-0aa25fa60e9a",
             "name": "/apps",
-            "url": "{{endpoint}}/api/me/apps",
+            "url": "{{endpoint}}/api/apps",
             "method": "GET",
             "sortNum": 10000,
             "created": "2022-02-07T13:33:12.352Z",
-            "modified": "2023-07-04T18:42:13.444Z",
+            "modified": "2023-07-06T17:42:09.640Z",
             "headers": [],
             "params": [],
             "auth": {
                 "type": "bearer",
-                "bearer": "ory_at_YkNIGjfL3wcKj2mJZZQ3ZL6BzYOG3p1rtfiJ6nHWA1I.sdFXfjC3D57C6M_z7zwdk5NI3Kl_rxSRU3YUyniCB_Q"
+                "bearer": "ory_at_-04zS1oO8zywgR4bURoaOP-jR35-xDNoDAsp9BzLyd0.pzBBj3ecqP1VhCPznwNfQertaNpfco0qAlX8kl2G_-w "
             },
             "tests": []
         },
