@@ -1,8 +1,54 @@
+/* html, body {
+    height: 100%;
+}
+
+body::before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    width: 0;
+} */
+
+main {
+    /* display: inline-block;
+    width: 100%; */
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+}
+
+header {
+    padding-bottom: 2rem;
+}
+
+header>h1 {
+    position: relative;
+    width: var(--logo-vertical-height);
+    height: var(--logo-vertical-height);
+    text-indent: -100vw;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+header>h1::before {
+    content: " ";
+    position: absolute;
+    background-image: var(--logo-vertical-image);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
 form {
     --button-gap: 1rem;
-    --nav-width: calc(8rem * 2 + var(--button-gap));
+    --nav-width: 100%;
     --button-width: calc((var(--nav-width) - var(--button-gap)) / 2);
     --button-height: 2rem;
+    width: 90%;
     max-width: 28rem;
     display: flex;
     flex-direction: column;
@@ -18,10 +64,10 @@ form fieldset {
 
 form input:not([type="radio"], [type="checkbox"]) {
     width: 100%;
-    border: 1px solid var(--greyscale-60, #A9B2C4); 
+    border: 1px solid var(--greyscale-60, #A9B2C4);
     border-radius: 0.25rem;
     padding: 0.25rem 0.75rem;
-    background-color: rgba(var(--text-color-data),.1);
+    background-color: rgba(var(--text-color-data), .1);
 }
 
 form label {
@@ -39,7 +85,9 @@ form>input[type="radio"] {
 }
 
 form>input[type="radio"][value="register"]:checked~.login,
-form>input[type="radio"][value="login"]:checked~.register {
+form>input[type="radio"][value="register"]:checked~* .login,
+form>input[type="radio"][value="register"]:checked~.register,
+form>input[type="radio"][value="login"]:checked~* .register {
     display: none;
 }
 
@@ -51,7 +99,7 @@ form>nav {
     border-radius: calc(var(--button-height) / 2);
     width: var(--nav-width);
     gap: var(--button-gap);
-    background-color: rgba(var(--text-color-data),.1);
+    background-color: rgba(var(--text-color-data), .1);
 }
 
 form>nav::before {
@@ -79,6 +127,7 @@ form>nav>label {
     margin-bottom: 0;
     color: rgb(var(--primary-color-data));
     transition-property: color;
+    cursor: pointer;
 }
 
 form>input[type="radio"]#user_submit_action_register:checked~nav>label[for="user_submit_action_register"],
@@ -86,7 +135,7 @@ form>input[type="radio"]#user_submit_action_login:checked~nav>label[for="user_su
     color: rgb(var(--white-data));
 }
 
-form input[type="checkbox"] + label {
+form input[type="checkbox"]+label {
     display: inline-flex;
     margin-left: 0.5rem;
     margin-bottom: 0;
@@ -94,8 +143,16 @@ form input[type="checkbox"] + label {
 
 form button[type="submit"] {
     width: var(--nav-width);
+    margin-top: 0;
+    cursor: pointer;
 }
 
 form a.btn.link {
     margin-top: 0;
+}
+
+@media (min-width: 25rem) {
+    form {
+        --nav-width: calc(8rem * 2 + var(--button-gap));
+    }
 }

@@ -8,12 +8,20 @@ defmodule IdentityWeb.ErrorHelpers do
   @doc """
   Generates tag for inlined form input errors.
   """
-  def error_tag(form, field) do
-    Enum.map(Keyword.get_values(form.errors, field), fn error ->
-      content_tag(:span, translate_error(error),
-        class: "invalid-feedback",
+  def error_tag(form, field, opts \\ []) do
+    class = if Keyword.has_key?(opts, :class) do
+      "invalid-feedback " <> opts[:class]
+    else
+      "invalid-feedback"
+    end
+    opts =
+      Keyword.merge(opts,
+        class: class,
         phx_feedback_for: input_name(form, field)
       )
+
+    Enum.map(Keyword.get_values(form.errors, field), fn error ->
+      content_tag(:span, translate_error(error), opts)
     end)
   end
 

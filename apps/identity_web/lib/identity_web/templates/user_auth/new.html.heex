@@ -1,6 +1,8 @@
+<header>
+  <h1>Lenra</h1>
+  <!-- TODO: Manage client logo -->
+</header>
 <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if !@submit_action || @submit_action == "register", do: :create, else: :login))} as={:user}>
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/login.css")}/>
-  <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/login.js")}></script>
   <%= radio_button f, :submit_action, "register", 
     checked: !@submit_action || @submit_action == "register", 
     autocomplete: "off",
@@ -14,19 +16,21 @@
     <%= label f, :submit_action_login, gettext("Log in") %>
   </nav>
   <%= if @error_message do %>
-    <p class="alert alert-danger"><%= @error_message %></p>
+    <p class="{@submit_action} alert alert-danger"><%= @error_message %></p>
   <% end %>
 
   <fieldset>
     <%= label f, :email %>
     <%= email_input f, :email, required: true %>
-    <%= error_tag f, :email %>
+    <%= error_tag f, :email, class: @submit_action %>
   </fieldset>
 
   <fieldset>
-    <%= label f, :password %>
-    <%= password_input f, :password, required: true %>
-    <%= error_tag f, :password %>
+    <%= inputs_for f, :password, fn fp -> %>
+      <%= label fp, :password %>
+      <%= password_input fp, :password, required: true %>
+      <%= error_tag fp, :password, class: @submit_action %>
+    <% end %>
   </fieldset>
 
   <fieldset class="login">
@@ -39,5 +43,5 @@
   <% end %>
 
   <%= submit (if !@submit_action || @submit_action == "register", do: gettext("Create my account"), else: gettext("Log in")), class: "primary" %>
-  <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :login), class: "login btn link lenra-icon-arrow-right"%>
+  <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-arrow-right"%>
 </.form>

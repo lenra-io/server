@@ -27,10 +27,12 @@ defmodule IdentityWeb.UserAuthController do
     if response.body["skip"] do
       # Can do logic stuff here like update the session.
       # The user is already logged in, skip login and redirect.
-      {:ok, accept_response} = HydraHelper.accept_login(login_challenge, response.body["subject"], true)
+      {:ok, accept_response} =
+        HydraHelper.accept_login(login_challenge, response.body["subject"], true)
 
       redirect(conn, external: accept_response.body["redirect_to"])
     else
+      # client = response.body["client"]
       render(conn, "new.html",
         submit_action: "register",
         error_message: nil,
@@ -45,11 +47,16 @@ defmodule IdentityWeb.UserAuthController do
 
   # The "login" handle the login form and login the user if credentials are correct.
   def login(conn, %{"user" => %{"login_challenge" => login_challenge} = user_params} = params) do
-    %{"email" => email, "password" => password, "remember_me" => remember} = user_params
+    %{
+      "email" => email,
+      "password" => %{"0" => %{"password" => password}},
+      "remember_me" => remember
+    } = user_params
 
     case Accounts.login_user(email, password) do
       {:ok, user} ->
-        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
+        {:ok, accept_response} =
+          HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
 
         redirect(conn, external: accept_response.body["redirect_to"])
 
@@ -73,7 +80,8 @@ defmodule IdentityWeb.UserAuthController do
       }) do
     case Accounts.register_user_new(user_register_params) do
       {:ok, %{inserted_user: user}} ->
-        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), false)
+        {:ok, accept_response} =
+          HydraHelper.accept_login(login_challenge, to_string(user.id), false)
 
         redirect(conn, external: accept_response.body["redirect_to"])
 

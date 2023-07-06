@@ -23,8 +23,6 @@ defmodule Lenra.Accounts.Password do
   end
 
   def new_changeset(password, params \\ %{}) do
-    IO.inspect("password")
-    IO.inspect(password)
     password
     |> cast(params, [:password])
     |> validate_required([:password])
