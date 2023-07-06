@@ -90,7 +90,7 @@ defmodule HydraApi do
           {:error, :invalid_subject}
 
         user ->
-          {:ok, user}
+          {:ok, user, response.body}
       end
     end
   end

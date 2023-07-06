@@ -8,6 +8,12 @@ defmodule LenraWeb.UserController do
 
   alias Lenra.Errors.BusinessError
 
+  def current_user(conn, _params) do
+    with user <- LenraWeb.Auth.current_resource(conn) do
+      reply(conn, user)
+    end
+  end
+
   def validate_user(conn, params) do
     with user <- LenraWeb.Auth.current_resource(conn),
          {:ok, %{updated_user: updated_user}} <- Accounts.validate_user(user, params["code"]) do

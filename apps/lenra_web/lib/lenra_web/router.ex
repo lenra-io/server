@@ -20,6 +20,11 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyCgu)
   end
 
+  pipeline :scope_none do
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "")
+  end
+
   pipeline :scope_app_websocket do
     plug(Plug.ExtractBearer)
     plug(Plug.VerifyScope, "app:websocket")
@@ -50,6 +55,9 @@ defmodule LenraWeb.Router do
     pipe_through([:api])
     post("/password/lost", UserController, :send_lost_password_code)
     put("/password/lost", UserController, :change_lost_password)
+
+    pipe_through([:scope_none])
+    get("/me", UserController, :current_user)
   end
 
   # Runner callback, secured via runner-specific token

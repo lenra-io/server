@@ -96,27 +96,19 @@
             "_id": "6579e654-0d0b-49a9-9c91-64dc8c58b49c",
             "colId": "786cd85e-2a59-44b6-a835-45cd23e28b73",
             "containerId": "4bf14235-9c4a-4826-98f4-26eda1430256",
-            "name": "/register",
-            "url": "{{endpoint}}/auth/register",
-            "method": "POST",
+            "name": "/me",
+            "url": "{{endpoint}}/auth/me",
+            "method": "GET",
             "sortNum": 10000,
             "created": "2022-02-07T13:14:55.835Z",
-            "modified": "2022-11-08T10:07:54.823Z",
+            "modified": "2023-07-06T17:53:52.532Z",
             "headers": [],
             "params": [],
-            "body": {
-                "type": "json",
-                "raw": "{\n  \"first_name\": \"Test\",\n  \"last_name\": \"Truc\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"password_confirmation\": \"{{password}}\"\n}",
-                "form": []
+            "auth": {
+                "type": "bearer",
+                "bearer": "ory_at_-04zS1oO8zywgR4bURoaOP-jR35-xDNoDAsp9BzLyd0.pzBBj3ecqP1VhCPznwNfQertaNpfco0qAlX8kl2G_-w"
             },
-            "tests": [
-                {
-                    "type": "set-env-var",
-                    "custom": "header.access_token",
-                    "action": "setto",
-                    "value": "{{access_token}}"
-                }
-            ]
+            "tests": []
         },
         {
             "_id": "20af57b7-8fa4-463b-962e-3705587e7e72",
