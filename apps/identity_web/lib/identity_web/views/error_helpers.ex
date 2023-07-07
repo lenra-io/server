@@ -9,11 +9,13 @@ defmodule IdentityWeb.ErrorHelpers do
   Generates tag for inlined form input errors.
   """
   def error_tag(form, field, opts \\ []) do
-    class = if Keyword.has_key?(opts, :class) do
-      "invalid-feedback " <> opts[:class]
-    else
-      "invalid-feedback"
-    end
+    class =
+      if Keyword.has_key?(opts, :class) do
+        "invalid-feedback " <> opts[:class]
+      else
+        "invalid-feedback"
+      end
+
     opts =
       Keyword.merge(opts,
         class: class,
