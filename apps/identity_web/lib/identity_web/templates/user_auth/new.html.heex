@@ -1,15 +1,16 @@
+<% is_register = !@submit_action || @submit_action == "register" %>
 <main class="arrows">
   <header>
     <h1>Lenra</h1>
     <!-- TODO: Manage client logo -->
   </header>
-  <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if !@submit_action || @submit_action == "register", do: :create, else: :login))} as={:user}>
+  <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if is_register, do: :create, else: :login))} as={:user}>
     <%= radio_button f, :submit_action, "register", 
-      checked: !@submit_action || @submit_action == "register", 
+      checked: is_register, 
       autocomplete: "off",
       "data-form-action": Routes.user_auth_path(@conn, :create), "data-submit": gettext("Create my account") %>
     <%= radio_button f, :submit_action, "login", 
-      checked: @submit_action == "login", 
+      checked: !is_register, 
       autocomplete: "off",
       "data-form-action": Routes.user_auth_path(@conn, :login), "data-submit": gettext("Log in") %>
     <nav>
@@ -43,7 +44,7 @@
       <%= hidden_input f, :login_challenge, value: @login_challenge %>
     <% end %>
 
-    <%= submit (if !@submit_action || @submit_action == "register", do: gettext("Create my account"), else: gettext("Log in")), class: "primary" %>
+    <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary" %>
     <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-arrow-right"%>
   </.form>
 </main>
