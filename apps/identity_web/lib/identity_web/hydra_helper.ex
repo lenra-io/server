@@ -10,8 +10,9 @@ defmodule IdentityWeb.HydraHelper do
   @remember_days 30
   @remember_for 60 * 60 * 24 * @remember_days
 
-  def get_remember_days do @remember_days end
-
+  def get_remember_days do
+    @remember_days
+  end
 
   def get_login_request(login_challenge) do
     %{login_challenge: login_challenge}
