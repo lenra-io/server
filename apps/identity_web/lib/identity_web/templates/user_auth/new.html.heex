@@ -30,21 +30,21 @@
     <fieldset>
       <%= inputs_for f, :password, fn fp -> %>
         <%= label fp, :password %>
-        <%= password_input fp, :password, required: true %>
+        <%= password_input fp, :password, required: true, minlength: 8 %>
         <%= error_tag fp, :password, class: @submit_action %>
       <% end %>
     </fieldset>
 
     <fieldset class="login">
       <%= checkbox f, :remember_me %>
-      <%= label f, :remember_me, gettext("Keep me logged in for %{duration} days", duration: 60) %>
+      <%= label f, :remember_me, gettext("Keep me logged in for %{days} days", days: IdentityWeb.HydraHelper.get_remember_days) %>
     </fieldset>
 
     <%= if assigns[:login_challenge] do %>
       <%= hidden_input f, :login_challenge, value: @login_challenge %>
     <% end %>
 
-    <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary" %>
+    <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary", disabled: true %>
     <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-arrow-right"%>
   </.form>
 </main>

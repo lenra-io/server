@@ -148,9 +148,13 @@ form .invalid-feedback {
     display: block;
 }
 
+form .invalid-feedback:first-of-type {
+    padding-top: 0.125rem;
+}
+
 form .invalid-feedback::before {
     display: inline-block;
-    content: "⚠";
+    content: "\1F5D9";
     color:rgb(var(--red-data));
     margin-right: 0.25rem;
 }

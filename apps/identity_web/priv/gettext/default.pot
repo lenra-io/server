@@ -11,38 +11,57 @@
 msgid ""
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/new.html.heex:7
-#: lib/identity_web/templates/user_auth/new.html.heex:7
-#: lib/identity_web/templates/user_auth/new.html.heex:41
-#: lib/identity_web/templates/user_auth/new.html.heex:41
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:11
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:47
+#: lib/identity_web/templates/user_auth/new.html.heex:11
+#: lib/identity_web/templates/user_auth/new.html.heex:47
 #, elixir-autogen, elixir-format
 msgid "Create my account"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/new.html.heex:42
-#: lib/identity_web/templates/user_auth/new.html.heex:42
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:48
+#: lib/identity_web/templates/user_auth/new.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "I forgot my password"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/new.html.heex:11
-#: lib/identity_web/templates/user_auth/new.html.heex:11
-#: lib/identity_web/templates/user_auth/new.html.heex:14
-#: lib/identity_web/templates/user_auth/new.html.heex:14
-#: lib/identity_web/templates/user_auth/new.html.heex:41
-#: lib/identity_web/templates/user_auth/new.html.heex:41
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:15
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:18
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:47
+#: lib/identity_web/templates/user_auth/new.html.heex:15
+#: lib/identity_web/templates/user_auth/new.html.heex:18
+#: lib/identity_web/templates/user_auth/new.html.heex:47
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/new.html.heex:13
-#: lib/identity_web/templates/user_auth/new.html.heex:13
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:17
+#: lib/identity_web/templates/user_auth/new.html.heex:17
 #, elixir-autogen, elixir-format
 msgid "Register"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/new.html.heex:34
-#: lib/identity_web/templates/user_auth/new.html.heex:34
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:40
 #, elixir-autogen, elixir-format
 msgid "Keep me logged in for %{duration} days"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/email-token.html.heex:19
+#, elixir-autogen, elixir-format
+msgid "Confirm the token"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/email-token.html.heex:8
+#, elixir-autogen, elixir-format
+msgid "Great things are about to happen! We have sent you a registration code to access our platform."
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/new.html.heex:40
+#, elixir-autogen, elixir-format
+msgid "Keep me logged in for %{days} days"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/email-token.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Thank you for your registration"
 msgstr ""

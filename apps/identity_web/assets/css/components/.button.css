@@ -4,7 +4,8 @@ button {
     position: relative;
     --btn-text-color-data: var(--text-color-data);
     --btn-text-opacity: 1;
-    color: rgba(var(--btn-text-color-data), var(--btn-text-opacity));
+    --btn-disabled-opacity: 1;
+    color: rgba(var(--btn-text-color-data), calc(var(--btn-text-opacity) * var(--btn-disabled-opacity)));
     text-decoration: none;
 }
 
@@ -38,9 +39,11 @@ a:hover::after {
 
 a[disabled],
 a:disabled,
+button[disabled],
+button:disabled,
 summary[disabled],
 summary:disabled {
-    --btn-text-opacity: var(--disabled-opacity);
+    --btn-disabled-opacity: var(--disabled-opacity);
     pointer-events: none;
     transition-property: none;
 }
@@ -55,7 +58,7 @@ a.btn {
     --horizontal-padding-multiplier: var(--horizontal-padding-medium-multiplier);
     --border-size: 0rem;
     min-width: 6rem;
-    background-color: rgba(var(--btn-background-color-data), var(--btn-background-color-opacity));
+    background-color: rgba(var(--btn-background-color-data), calc(var(--btn-background-color-opacity) * var(--btn-disabled-opacity)));
     display: block;
     margin-top: 1rem;
     font-weight: 600;
@@ -74,13 +77,6 @@ a.btn::after {
 button:focus,
 a.btn:focus {
     --border-size: 0.125rem;
-}
-
-button[disabled],
-button:disabled,
-a.btn[disabled],
-a.btn:disabled {
-    --btn-background-color-opacity: var(--disabled-opacity);
 }
 
 button:hover,
