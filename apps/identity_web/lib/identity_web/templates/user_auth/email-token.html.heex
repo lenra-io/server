@@ -1,0 +1,21 @@
+<main class="arrows">
+  <header>
+    <h1>Lenra</h1>
+    <!-- TODO: Manage client logo -->
+  </header>
+  <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :check_email_token)}>
+    <h2><%= gettext("Thank you for your registration") %></h2>
+    <p><%= gettext("Great things are about to happen! We have sent you a registration code to access our platform.") %></p>
+
+    <fieldset>
+      <%= password_input f, :token, required: true %>
+      <%= error_tag f, :token %>
+    </fieldset>
+
+    <%= if assigns[:login_challenge] do %>
+      <%= hidden_input f, :login_challenge, value: @login_challenge %>
+    <% end %>
+Log in
+    <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
+  </.form>
+</main>

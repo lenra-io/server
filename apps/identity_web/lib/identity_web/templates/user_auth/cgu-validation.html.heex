@@ -1,0 +1,50 @@
+<% is_register = !@submit_action || @submit_action == "register" %>
+<main class="arrows">
+  <header>
+    <h1>Lenra</h1>
+    <!-- TODO: Manage client logo -->
+  </header>
+  <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if is_register, do: :create, else: :login))} as={:user}>
+    <%= radio_button f, :submit_action, "register", 
+      checked: is_register, 
+      autocomplete: "off",
+      "data-form-action": Routes.user_auth_path(@conn, :create), "data-submit": gettext("Create my account") %>
+    <%= radio_button f, :submit_action, "login", 
+      checked: !is_register, 
+      autocomplete: "off",
+      "data-form-action": Routes.user_auth_path(@conn, :login), "data-submit": gettext("Log in") %>
+    <nav>
+      <%= label f, :submit_action_register, gettext("Register") %>
+      <%= label f, :submit_action_login, gettext("Log in") %>
+    </nav>
+    <%= if @error_message do %>
+      <p class="{@submit_action} alert alert-danger"><%= @error_message %></p>
+    <% end %>
+
+    <fieldset>
+      <%= label f, :email %>
+      <%= email_input f, :email, required: true %>
+      <%= error_tag f, :email, class: @submit_action %>
+    </fieldset>
+
+    <fieldset>
+      <%= inputs_for f, :password, fn fp -> %>
+        <%= label fp, :password %>
+        <%= password_input fp, :password, required: true %>
+        <%= error_tag fp, :password, class: @submit_action %>
+      <% end %>
+    </fieldset>
+
+    <fieldset class="login">
+      <%= checkbox f, :remember_me %>
+      <%= label f, :remember_me, gettext("Keep me logged in for %{duration} days", duration: 60) %>
+    </fieldset>
+
+    <%= if assigns[:login_challenge] do %>
+      <%= hidden_input f, :login_challenge, value: @login_challenge %>
+    <% end %>
+
+    <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary" %>
+    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-arrow-right"%>
+  </.form>
+</main>

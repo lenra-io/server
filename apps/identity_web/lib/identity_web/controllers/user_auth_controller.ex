@@ -27,6 +27,8 @@ defmodule IdentityWeb.UserAuthController do
     if response.body["skip"] do
       # Can do logic stuff here like update the session.
       # The user is already logged in, skip login and redirect.
+
+      # TODO: check CGU update
       {:ok, accept_response} = HydraHelper.accept_login(login_challenge, response.body["subject"], true)
 
       redirect(conn, external: accept_response.body["redirect_to"])
@@ -54,9 +56,17 @@ defmodule IdentityWeb.UserAuthController do
 
     case Accounts.login_user(email, password) do
       {:ok, user} ->
-        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
+        # TODO: check e-mail verification
+        if user.role == "unverified_user" do
+          # TODO: send verification email
+          # redirect to verification page
+          redirect(conn, to: Routes.user_auth_path(conn, :check_email_token))
+        else
+          # TODO: check CGU update
+          {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
 
-        redirect(conn, external: accept_response.body["redirect_to"])
+          redirect(conn, external: accept_response.body["redirect_to"])
+        end
 
       _error ->
         # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
