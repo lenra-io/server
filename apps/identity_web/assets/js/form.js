@@ -1,3 +1,5 @@
+import "../css/form.css"
+
 (() => {
     const form = document.querySelector("form");
     const passwordFieldset = form.querySelector('fieldset.password');

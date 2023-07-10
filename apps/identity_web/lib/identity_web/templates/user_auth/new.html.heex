@@ -1,5 +1,7 @@
 <% is_register = !@submit_action || @submit_action == "register" %>
 <main class="arrows">
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
   <header>
     <h1>Lenra</h1>
     <!-- TODO: Manage client logo -->

@@ -21,6 +21,7 @@ defmodule IdentityWeb do
     quote do
       use Phoenix.Controller, namespace: IdentityWeb
 
+      import LenraCommonWeb.ControllerHelpers
       import Plug.Conn
       import IdentityWeb.Gettext
 

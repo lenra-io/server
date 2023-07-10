@@ -1,21 +1,34 @@
 <main class="arrows">
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/token-input.css")} media="print" onload='this.media="all"'/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/token-input.js")}></script>
   <header>
     <h1>Lenra</h1>
     <!-- TODO: Manage client logo -->
   </header>
   <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :check_email_token)}>
-    <h2><%= gettext("Thank you for your registration") %></h2>
-    <p><%= gettext("Great things are about to happen! We have sent you a registration code to access our platform.") %></p>
+    <header>
+      <h2><%= gettext("Thank you for your registration") %></h2>
+      <p><%= gettext("Great things are about to happen! We have sent you a registration code to access our platform.") %></p>
+    </header>
 
-    <fieldset>
-      <%= password_input f, :token, required: true %>
+    <fieldset class="token">
+      <%= for x <- 0..7 do %>
+        <%= if x == 4 do %>
+          <span class="separator">-</span>
+        <% end %>
+        <input name={"token_" <> to_string(x)} required=""/>
+      <% end %>
+
       <%= error_tag f, :token %>
+      <%= hidden_input f, :token %>
     </fieldset>
 
     <%= if assigns[:login_challenge] do %>
       <%= hidden_input f, :login_challenge, value: @login_challenge %>
     <% end %>
-Log in
+
     <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
   </.form>
 </main>
