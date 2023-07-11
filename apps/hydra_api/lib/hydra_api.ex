@@ -63,6 +63,22 @@ defmodule HydraApi do
     |> ORY.Hydra.request(hydra_config())
   end
 
+  def get_logout_request(logout_challenge) do
+    # The "Consent request" contain data about the current consent request.
+    # We request hydra to retreive these data.
+    %{logout_challenge: logout_challenge}
+    |> ORY.Hydra.get_logout_request()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def accept_logout(logout_challenge) do
+    %{
+      logout_challenge: logout_challenge
+    }
+    |> ORY.Hydra.accept_logout_request()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
   def introspect(token, required_scopes) do
     %{scope: required_scopes, token: token}
     |> ORY.Hydra.introspect()
@@ -74,7 +90,8 @@ defmodule HydraApi do
          true <- Map.get(response.body, "active", false) do
       {:ok, response}
     else
-      _ -> {:error, :invalid_token}
+      _ ->
+        {:error, :invalid_token}
     end
   end
 

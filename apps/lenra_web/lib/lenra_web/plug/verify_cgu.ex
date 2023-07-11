@@ -14,8 +14,6 @@ defmodule LenraWeb.Plug.VerifyCgu do
     if Lenra.Legal.user_accepted_latest_cgu?(user.id) do
       conn
     else
-      translated_error = LenraCommonWeb.ErrorHelpers.translate_error(BusinessError.did_not_accept_cgu_tuple())
-
       conn
       |> put_view(LenraCommonWeb.BaseView)
       |> assign_error(BusinessError.did_not_accept_cgu())

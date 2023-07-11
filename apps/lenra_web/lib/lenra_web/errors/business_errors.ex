@@ -8,7 +8,7 @@ defmodule LenraWeb.Errors.BusinessError do
     module: LenraCommon.Errors.BusinessError,
     inherit: true,
     errors: [
-      {:invalid_token, "The token is invalid."},
-      {:token_not_found, "No Bearer token found in Authorization header"}
+      {:invalid_token, "The token is invalid.", 403},
+      {:token_not_found, "No Bearer token found in Authorization header", 401}
     ]
 end

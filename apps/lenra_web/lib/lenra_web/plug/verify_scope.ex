@@ -23,10 +23,13 @@ defmodule LenraWeb.Plug.VerifyScope do
       |> Auth.put_resource(user)
     else
       {:error, :invalid_token} ->
-        reply_error(conn, BusinessError.invalid_token())
+        conn
+        |> reply_error(BusinessError.invalid_token())
+        |> halt()
 
       {:error, err} ->
         reply_error(conn, err)
+        |> halt()
 
       err ->
         # Should never raise

@@ -91,4 +91,13 @@ defmodule IdentityWeb.UserAuthController do
 
   def create(_conn, _params),
     do: throw("No login_challenge in login form POST. It should be passed in the render.")
+
+  def logout(conn, %{"logout_challenge" => logout_challenge}) do
+    # {:ok, response} = HydraApi.get_logout_request(logout_challenge)
+    {:ok, accept_response} = HydraApi.accept_logout(logout_challenge)
+    redirect(conn, external: accept_response.body["redirect_to"])
+  end
+
+  def logout(_conn, _params),
+    do: throw("Expected a logout challenge to be set but received none")
 end

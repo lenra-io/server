@@ -13,7 +13,6 @@ defmodule LenraWeb.Plug.ExtractBearer do
   """
   def call(conn, _opts) do
     with {:ok, token} <- extract_token(conn) do
-      IO.inspect({"token found in bearer", token})
       Auth.put_token(conn, token)
     end
   end
