@@ -6,9 +6,6 @@ defmodule HydraApi do
     get hydra url/config
   """
 
-  alias Lenra.Accounts
-  alias Lenra
-
   # 30 days In seconds
   @remember_for 60 * 60 * 24 * 30
 
@@ -81,17 +78,10 @@ defmodule HydraApi do
     end
   end
 
-  def check_token_and_get_resource(token, required_scopes) do
+  def check_token_and_get_subject(token, required_scopes) do
     with {:ok, response} <- check_token(token, required_scopes) do
       subject = response.body["sub"]
-
-      case Accounts.get_user(subject) do
-        nil ->
-          {:error, :invalid_subject}
-
-        user ->
-          {:ok, user, response.body}
-      end
+      {:ok, subject, response.body}
     end
   end
 

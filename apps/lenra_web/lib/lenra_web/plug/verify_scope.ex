@@ -15,7 +15,9 @@ defmodule LenraWeb.Plug.VerifyScope do
   """
   def call(conn, required_scopes) do
     with {:ok, token} <- extract_token(conn),
-         {:ok, user, response_body} <- HydraApi.check_token_and_get_resource(token, required_scopes) do
+         {:ok, subject, response_body} <- HydraApi.check_token_and_get_subject(token, required_scopes) do
+      user = Accounts.get_user(subject)
+
       conn
       |> Auth.put_token_introspect(response_body)
       |> Auth.put_resource(user)

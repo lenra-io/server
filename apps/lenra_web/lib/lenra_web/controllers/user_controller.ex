@@ -4,7 +4,6 @@ defmodule LenraWeb.UserController do
   alias Lenra.Accounts
   alias Lenra.Accounts.User
   alias Lenra.Repo
-  alias LenraWeb.TokenHelper
 
   alias Lenra.Errors.BusinessError
 

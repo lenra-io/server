@@ -25,11 +25,6 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyScope, "")
   end
 
-  pipeline :scope_app_websocket do
-    plug(Plug.ExtractBearer)
-    plug(Plug.VerifyScope, "app:websocket")
-  end
-
   pipeline :scope_manage_account do
     plug(Plug.ExtractBearer)
     plug(Plug.VerifyScope, "manage:account")
