@@ -25,9 +25,6 @@ defmodule LenraWeb.Plug.VerifyScope do
       {:error, :invalid_token} ->
         reply_error(conn, BusinessError.invalid_token())
 
-      {:error, :invalid_subject} ->
-        reply_error(conn, BusinessError.invalid_user())
-
       {:error, err} ->
         reply_error(conn, err)
 
