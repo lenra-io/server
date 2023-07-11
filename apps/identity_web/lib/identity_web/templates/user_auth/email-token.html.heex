@@ -25,10 +25,6 @@
       <%= hidden_input f, :token %>
     </fieldset>
 
-    <%= if assigns[:login_challenge] do %>
-      <%= hidden_input f, :login_challenge, value: @login_challenge %>
-    <% end %>
-
     <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
   </.form>
 </main>

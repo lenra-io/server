@@ -1,8 +1,28 @@
-<% is_register = !@submit_action || @submit_action == "register" %>
 <main class="arrows">
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/token-input.css")} media="print" onload='this.media="all"'/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/token-input.js")}></script>
   <header>
     <h1>Lenra</h1>
     <!-- TODO: Manage client logo -->
   </header>
-  CGU
+  <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :validate_cgu)}>
+    <header>
+      <%= if @lang == "en" do %>
+        <%= link gettext("See the french original version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=fr", class: "btn"%>
+      <% else %>
+        <%= link gettext("See the english translated version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=en", class: "btn"%>
+      <% end %>
+    </header>
+
+    <article>
+      <%= raw @cgu_text %>
+    </article>
+    
+      <%= hidden_input f, :lang, value: @lang %>
+      <%= hidden_input f, :cgu_id, value: @cgu_id %>
+
+    <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
+  </.form>
 </main>

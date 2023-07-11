@@ -1,4 +1,5 @@
 defmodule IdentityWeb.UserAuthController do
+  alias Lenra.Legal
   use IdentityWeb, :controller
 
   alias Lenra.Accounts
@@ -16,6 +17,50 @@ defmodule IdentityWeb.UserAuthController do
 
   defp register_changeset_or_new(changeset), do: changeset
 
+  # Check if the user has already have a verified email and has accepted the latest CGU.
+  defp redirect_next_step(conn, user) do
+    remember = get_session(conn, :remember)
+    login_challenge = get_session(conn, :login_challenge)
+
+    redirect_next_step(conn, user, login_challenge, remember)
+  end
+
+  defp redirect_next_step(conn, user, login_challenge, remember) do
+    cond do
+      # check e-mail verification
+      user.role == :unverified_user ->
+        IO.inspect("unverified user")
+        # send verification email
+        Accounts.resend_registration_code(user)
+        # redirect to verification page
+        redirect(conn,
+          to: Routes.user_auth_path(conn, :check_email_page)
+        )
+
+      # check CGU update
+      Lenra.Legal.user_accepted_latest_cgu?(user.id) ->
+        IO.inspect("CGU not validated")
+
+        # TODO: redirect to CGU page
+        redirect(conn,
+          to: Routes.user_auth_path(conn, :validate_cgu_page)
+        )
+
+      # accept login
+      true ->
+        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), remember)
+
+        conn
+        |> clear_session()
+        |> redirect(external: accept_response.body["redirect_to"])
+    end
+  end
+
+  defp render_cgu_page(conn, lang \\ "en", error_message \\ nil) do
+    cgu = Legal.get_latest_cgu()
+    render(conn, "cgu-validation.html", error_message: error_message, lang: lang, cgu_id: cgu.id,  cgu_text: "coucou")
+  end
+
   #################
   ## Controllers ##
   #################
@@ -28,11 +73,7 @@ defmodule IdentityWeb.UserAuthController do
       # Can do logic stuff here like update the session.
       # The user is already logged in, skip login and redirect.
 
-      # TODO: check CGU update
-      {:ok, accept_response} =
-        HydraHelper.accept_login(login_challenge, response.body["subject"], true)
-
-      redirect(conn, external: accept_response.body["redirect_to"])
+      redirect_next_step(conn, Accounts.get_user(response.body["subject"]), login_challenge, true)
     else
       # client = response.body["client"]
       render(conn, "new.html",
@@ -57,32 +98,11 @@ defmodule IdentityWeb.UserAuthController do
 
     case Accounts.login_user(email, password) do
       {:ok, user} ->
-        cond do
-          # check e-mail verification
-          user.role == :unverified_user ->
-            IO.inspect("unverified user")
-            # send verification email
-            Accounts.resend_registration_code(user)
-            # redirect to verification page
-            redirect(conn,
-              to:
-                Routes.user_auth_path(conn, :check_email_page) <>
-                  "?login_challenge=#{login_challenge}"
-            )
-
-          # check CGU update
-          Lenra.Legal.user_accepted_latest_cgu?(user.id) ->
-            IO.inspect("CGU not validated")
-
-          # TODO: redirect to CGU page
-
-          # accept login
-          true ->
-            {:ok, accept_response} =
-              HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
-
-            redirect(conn, external: accept_response.body["redirect_to"])
-        end
+        conn
+        |> put_session(:user_id, user.id)
+        |> put_session(:remember, remember == "true")
+        |> put_session(:login_challenge, login_challenge)
+        |> redirect_next_step(user)
 
       _error ->
         # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
@@ -104,10 +124,10 @@ defmodule IdentityWeb.UserAuthController do
       }) do
     case Accounts.register_user_new(user_register_params) do
       {:ok, %{inserted_user: user}} ->
-        {:ok, accept_response} =
-          HydraHelper.accept_login(login_challenge, to_string(user.id), false)
-
-        redirect(conn, external: accept_response.body["redirect_to"])
+        conn
+        |> put_session(:user_id, user.id)
+        |> put_session(:login_challenge, login_challenge)
+        |> redirect_next_step(user)
 
       {:error, :inserted_user, %Ecto.Changeset{} = changeset, _done} ->
         render(conn, "new.html",
@@ -133,60 +153,69 @@ defmodule IdentityWeb.UserAuthController do
   ### EMAIL CHECK ###
 
   # Show the email validation form.
-  def check_email_page(conn, %{"login_challenge" => login_challenge}) do
-    {:ok, response} = HydraHelper.get_login_request(login_challenge)
+  def check_email_page(conn, _params) do
+    # {:ok, _response} = HydraHelper.get_login_request(login_challenge)
 
     # client = response.body["client"]
-    render(conn, "email-token.html",
-      error_message: nil,
-      login_challenge: login_challenge
-    )
+    render(conn, "email-token.html", error_message: nil)
   end
 
-  def check_email_page(_conn, _params),
-    do: throw("Expected a login challenge to be set but received none")
-
   # Handle the email validation form and login the user if the CGU are accepted.
-  def check_email_token(conn, %{"login_challenge" => login_challenge, "token" => token} = params) do
-    user = get_session(conn, :user)
-    remember = get_session(conn, :remember)
+  def check_email_token(conn, %{"token" => token}) do
+    user_id = get_session(conn, :user_id)
 
     IO.inspect("cookie user")
-    IO.inspect(user)
+    IO.inspect(user_id)
 
-    case Accounts.validate_user(user, token) do
-      {:ok, user} ->
-        cond do
-          # check CGU update
-          Lenra.Legal.user_accepted_latest_cgu?(user.id) ->
-            IO.inspect("CGU not validated")
-
-          # TODO: redirect to CGU page
-
-          # accept login
-          true ->
-            {:ok, accept_response} =
-              HydraHelper.accept_login(login_challenge, to_string(user.id), remember == "true")
-
-            redirect(conn, external: accept_response.body["redirect_to"])
-        end
+    case Accounts.get_user(user_id)
+         |> Accounts.validate_user(token) do
+      {:ok, %{updated_user: user}} ->
+        redirect_next_step(conn, user)
 
       _error ->
-        # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
-        render(conn, "email-token.html",
-          error_message: "Invalid email or password",
-          login_challenge: login_challenge
-        )
+        render(conn, "email-token.html", error_message: "Invalid token")
     end
   end
 
   def check_email_token(_conn, _params),
-    do: throw("No login_challenge in email check form POST. It should be passed in the render.")
+    do: throw("No token passed.")
 
   # The "create" handle the register form
   def resend_check_email_token(conn, _params) do
-    user = get_session(conn, :user)
-    {:ok, _any} = Accounts.resend_registration_code(user)
+    user_id = get_session(conn, :user_id)
+
+    {:ok, _any} =
+      Accounts.get_user(user_id)
+      |> Accounts.resend_registration_code()
+
     reply(conn)
+  end
+
+  ### CGU VALIDATION ###
+
+  # Show the email validation form.
+  def validate_cgu_page(conn, %{"lang" => lang}) do
+    render_cgu_page(conn, lang)
+  end
+
+  # Show the email validation form.
+  def validate_cgu_page(conn, _params) do
+    render_cgu_page(conn)
+  end
+
+  # Handle the email validation form and login the user if the CGU are accepted.
+  def validate_cgu(conn, %{"cgu_id" => cgu_id, "lang" => lang}) do
+    user_id = get_session(conn, :user_id)
+
+    IO.inspect("cookie user")
+    IO.inspect(user_id)
+
+    case Legal.accept_cgu(cgu_id, user_id) do
+      {:ok, _} ->
+        redirect_next_step(conn, Accounts.get_user(user_id))
+
+      _error ->
+        render_cgu_page(conn, lang, "The validated terms and conditions are not the latest. Please try again.")
+    end
   end
 end
