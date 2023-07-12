@@ -73,9 +73,9 @@ form fieldset {
 
 form input:not([type="radio"], [type="checkbox"]) {
     width: 100%;
-    border: 1px solid var(--greyscale-60, #A9B2C4);
+    border: var(--border-width) solid var(--greyscale-60, #A9B2C4);
     border-radius: 0.25rem;
-    padding: 0.25rem 0.75rem;
+    padding: calc(0.25rem - var(--border-width)) calc(0.75rem - var(--border-width));
     background-color: rgba(var(--text-color-data), .1);
 }
 
@@ -142,6 +142,24 @@ form>nav>label {
 form>input[type="radio"]#user_submit_action_register:checked~nav>label[for="user_submit_action_register"],
 form>input[type="radio"]#user_submit_action_login:checked~nav>label[for="user_submit_action_login"] {
     color: rgb(var(--white-data));
+}
+
+form .password>label {
+    position: relative;
+}
+
+form .password>label::before {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    width: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    z-index: 2;
+}
+
+form .password>input {
+    padding-right: 2rem;
 }
 
 form .invalid-feedback {

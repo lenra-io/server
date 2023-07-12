@@ -27,9 +27,9 @@
       <%= error_tag f, :email, class: @submit_action %>
     </fieldset>
 
-    <fieldset>
+    <fieldset class="password">
       <%= inputs_for f, :password, fn fp -> %>
-        <%= label fp, :password %>
+        <%= label fp, :password, class: "lenra-icon-eye" %>
         <%= password_input fp, :password, required: true, minlength: 8 %>
         <%= error_tag fp, :password, class: @submit_action %>
       <% end %>
@@ -45,6 +45,6 @@
     <% end %>
 
     <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary", disabled: true %>
-    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-arrow-right"%>
+    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-chevron-right"%>
   </.form>
 </main>

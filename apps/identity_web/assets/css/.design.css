@@ -83,6 +83,7 @@
     --logo-height: var(--logo-horizontal-height);
     --lenra-bar-gradient: var(--green), var(--green) 25%, var(--yellow) 25%, var(--yellow) 50%, var(--red) 50%, var(--red) 75%, var(--blue) 75%, var(--blue);
     --lenra-bar-width: 0.25rem;
+    --border-width: calc(1rem / 16);
 }
 
 html {
