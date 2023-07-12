@@ -13,18 +13,25 @@
       <p><%= gettext("Great things are about to happen! We have sent you a registration code to access our platform.") %></p>
     </header>
 
+    <%= if @error_message do %>
+      <p class="alert alert-danger"><%= @error_message %></p>
+    <% end %>
+
     <fieldset class="token">
       <%= for x <- 0..7 do %>
         <%= if x == 4 do %>
           <span class="separator">-</span>
         <% end %>
-        <input name={"token_" <> to_string(x)} required=""/>
+        <input required=""/>
       <% end %>
 
       <%= error_tag f, :token %>
       <%= hidden_input f, :token %>
     </fieldset>
 
-    <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
+    <nav>
+      <%= link gettext("I didn't receive my token"), to: Routes.user_auth_path(@conn, :reset_password), class: "btn", disabled: true%>
+      <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
+    </nav>
   </.form>
 </main>

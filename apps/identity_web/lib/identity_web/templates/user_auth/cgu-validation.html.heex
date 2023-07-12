@@ -1,4 +1,4 @@
-<main class="arrows">
+<main class="arrows cgu">
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/token-input.css")} media="print" onload='this.media="all"'/>
@@ -8,13 +8,16 @@
     <!-- TODO: Manage client logo -->
   </header>
   <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :validate_cgu)}>
-    <header>
-      <%= if @lang == "en" do %>
-        <%= link gettext("See the french original version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=fr", class: "btn"%>
-      <% else %>
-        <%= link gettext("See the english translated version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=en", class: "btn"%>
-      <% end %>
-    </header>
+    <%= # TODO: handle language change with fetch %>
+    <%= if @lang == "en" do %>
+      <%= link gettext("See the french original version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=fr", class: "btn", lang: "fr", "data-url": {Routes.static_path(@conn, "/cgu/CGU_fr_" <> @cgu_id <> ".html")}%>
+    <% else %>
+      <%= link gettext("See the english translated version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=en", class: "btn", lang: "en"%>
+    <% end %>
+
+    <%= if @error_message do %>
+      <p class="alert alert-danger"><%= @error_message %></p>
+    <% end %>
 
     <article>
       <%= raw @cgu_text %>
@@ -22,7 +25,9 @@
     
       <%= hidden_input f, :lang, value: @lang %>
       <%= hidden_input f, :cgu_id, value: @cgu_id %>
-
-    <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
+    <nav>
+      <%= # link gettext("I refuse and logout"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-chevron-right"%>
+      <%= submit gettext("I accept"), class: "primary lenra-icon-check", disabled: true %>
+    </nav>
   </.form>
 </main>

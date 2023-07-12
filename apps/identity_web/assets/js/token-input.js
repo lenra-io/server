@@ -3,6 +3,7 @@ import "../css/token-input.css"
 (() => {
     const inputs = [...document.querySelectorAll('fieldset.token>input:not([type="hidden"])')];
     const tokenInput = document.querySelector('fieldset.token>input[type="hidden"]');
+    const resendButton = document.querySelector('a.btn');
 
     inputs.forEach((input, i) => {
         input.addEventListener('keydown', (e) => {
@@ -26,4 +27,21 @@ import "../css/token-input.css"
             tokenInput.value = inputs.map(({ value }) => value).join('');
         })
     });
+    resendButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (resendButton.disabled) return;
+        resendButton.disabled = true;
+        startResendDelay();
+        fetch(resendButton.href, {
+            method: 'POST',
+        })
+            .then((response) => response.json());
+    });
+    startResendDelay();
+
+    function startResendDelay() {
+        setTimeout(() => {
+            resendButton.disabled = false;
+        }, 10000);
+    }
 })()

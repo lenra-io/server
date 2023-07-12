@@ -29,7 +29,6 @@ defmodule IdentityWeb.UserAuthController do
     cond do
       # check e-mail verification
       user.role == :unverified_user ->
-        IO.inspect("unverified user")
         # send verification email
         Accounts.resend_registration_code(user)
         # redirect to verification page
@@ -38,9 +37,7 @@ defmodule IdentityWeb.UserAuthController do
         )
 
       # check CGU update
-      Lenra.Legal.user_accepted_latest_cgu?(user.id) ->
-        IO.inspect("CGU not validated")
-
+      !Lenra.Legal.user_accepted_latest_cgu?(user.id) ->
         # TODO: redirect to CGU page
         redirect(conn,
           to: Routes.user_auth_path(conn, :validate_cgu_page)
@@ -57,8 +54,18 @@ defmodule IdentityWeb.UserAuthController do
   end
 
   defp render_cgu_page(conn, lang \\ "en", error_message \\ nil) do
-    cgu = Legal.get_latest_cgu()
-    render(conn, "cgu-validation.html", error_message: error_message, lang: lang, cgu_id: cgu.id,  cgu_text: "coucou")
+    {:ok, cgu} = Legal.get_latest_cgu()
+
+    cgu_text =
+      Application.app_dir(:identity_web, "priv/static/cgu/CGU_#{lang}_#{cgu.version}.html")
+      |> File.read!()
+
+    render(conn, "cgu-validation.html",
+      error_message: error_message,
+      lang: lang,
+      cgu_id: cgu.id,
+      cgu_text: cgu_text
+    )
   end
 
   #################
@@ -215,7 +222,11 @@ defmodule IdentityWeb.UserAuthController do
         redirect_next_step(conn, Accounts.get_user(user_id))
 
       _error ->
-        render_cgu_page(conn, lang, "The validated terms and conditions are not the latest. Please try again.")
+        render_cgu_page(
+          conn,
+          lang,
+          "The validated terms and conditions are not the latest. Please try again."
+        )
     end
   end
 end

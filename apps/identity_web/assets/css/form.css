@@ -50,7 +50,7 @@ form>input[type="radio"][value="login"]:checked~* .register {
     display: none;
 }
 
-form>nav {
+form>nav.tab {
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -61,7 +61,7 @@ form>nav {
     background-color: rgba(var(--text-color-data), .1);
 }
 
-form>nav::before {
+form>nav.tab::before {
     content: "";
     position: absolute;
     top: 0;

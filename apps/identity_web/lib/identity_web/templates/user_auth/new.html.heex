@@ -15,7 +15,7 @@
       checked: !is_register, 
       autocomplete: "off",
       "data-form-action": Routes.user_auth_path(@conn, :login), "data-submit": gettext("Log in") %>
-    <nav>
+    <nav class="tab">
       <%= label f, :submit_action_register, gettext("Register") %>
       <%= label f, :submit_action_login, gettext("Log in") %>
     </nav>
