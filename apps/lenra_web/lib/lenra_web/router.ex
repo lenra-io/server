@@ -45,11 +45,12 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyScope, "resources")
   end
 
-  scope "/auth", LenraWeb do
-    pipe_through([:api])
-    post("/password/lost", UserController, :send_lost_password_code)
-    put("/password/lost", UserController, :change_lost_password)
-  end
+  # Keep comment for future PR to restore them in identity_web
+  # scope "/auth", LenraWeb do
+  #   pipe_through([:api])
+  #   post("/password/lost", UserController, :send_lost_password_code)
+  #   put("/password/lost", UserController, :change_lost_password)
+  # end
 
   # Runner callback, secured via runner-specific token
   scope "/runner", LenraWeb do
