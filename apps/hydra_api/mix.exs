@@ -25,8 +25,7 @@ defmodule HydraApi.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ory_hydra, "~> 1.2"},
-      {:plug_cowboy, "~> 2.0"}
+      {:ory_hydra, "~> 1.2"}
     ]
   end
 end
