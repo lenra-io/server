@@ -70,13 +70,6 @@ defmodule Lenra.Accounts do
     Repo.get(User, id)
   end
 
-  def get_user!(id) do
-    case get_user(id) do
-      nil -> raise "Cannot get user #{id}"
-      user -> user
-    end
-  end
-
   def fetch_user_by(fields) do
     Repo.fetch_by(User, fields)
   end
