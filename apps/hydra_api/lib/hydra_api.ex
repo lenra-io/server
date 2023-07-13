@@ -90,7 +90,7 @@ defmodule HydraApi do
          true <- Map.get(response.body, "active", false) do
       {:ok, response}
     else
-      _ ->
+      _error ->
         {:error, :invalid_token}
     end
   end

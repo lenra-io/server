@@ -56,7 +56,8 @@ defmodule LenraWeb.ConnCase do
   end
 
   defp setup_hydra_bypass do
-    Bypass.open(port: 4405)
+    [port: 4405]
+    |> Bypass.open()
     |> Bypass.stub("POST", "/admin/oauth2/introspect", fn conn ->
       conn = parse_body_params(conn)
       %{"scope" => scope, "token" => token} = conn.body_params

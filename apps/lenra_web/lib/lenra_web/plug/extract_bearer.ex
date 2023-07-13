@@ -1,4 +1,8 @@
 defmodule LenraWeb.Plug.ExtractBearer do
+  @moduledoc """
+    This plug extract the token from the Authorization Bearer Header (if exist) and put it in the conn.
+    If the token doest not exist in the Authorization Bearer Header, does nothing.
+  """
   use LenraWeb, :controller
   import Plug.Conn
 
@@ -22,7 +26,7 @@ defmodule LenraWeb.Plug.ExtractBearer do
          [_authorization_header, token] <- Regex.run(~r/Bearer (.+)/, authorization_header) do
       {:ok, token}
     else
-      _ -> conn
+      _error -> conn
     end
   end
 end

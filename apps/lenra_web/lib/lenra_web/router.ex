@@ -20,9 +20,9 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyCgu)
   end
 
-  pipeline :scope_none do
+  pipeline :scope_profile do
     plug(Plug.ExtractBearer)
-    plug(Plug.VerifyScope, "")
+    plug(Plug.VerifyScope, "profile")
   end
 
   pipeline :scope_manage_account do
@@ -45,14 +45,10 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyScope, "resources")
   end
 
-  # remains of Authentication API. Move it to /api ?
   scope "/auth", LenraWeb do
     pipe_through([:api])
     post("/password/lost", UserController, :send_lost_password_code)
     put("/password/lost", UserController, :change_lost_password)
-
-    pipe_through([:scope_none])
-    get("/me", UserController, :current_user)
   end
 
   # Runner callback, secured via runner-specific token
@@ -68,15 +64,22 @@ defmodule LenraWeb.Router do
     get("/apps/:app_service_name", AppsController, :get_app_by_service_name)
   end
 
-  # /api, scope "manage_account"
+  # /api, scope "profile"
   scope "/api", LenraWeb do
-    # Without CGU Accepted
+    pipe_through([:scope_profile])
+    get("/me", UserController, :current_user)
+  end
+
+  # /api, scope "manage_account" without CGU needed
+  scope "/api", LenraWeb do
     pipe_through([:api, :scope_manage_account])
     post("/cgu/:cgu_id/accept", CguController, :accept)
     get("/cgu/me/accepted_latest", CguController, :user_accepted_latest_cgu)
+  end
 
-    # Adding CGU for the rest
-    pipe_through([:ensure_cgu_accepted])
+  # /api, scope "manage_account" WITH CGU needed
+  scope "/api", LenraWeb do
+    pipe_through([:api, :scope_manage_account, :ensure_cgu_accepted])
     post("/verify", UserController, :validate_user)
     post("/verify/lost", UserController, :resend_registration_token)
 

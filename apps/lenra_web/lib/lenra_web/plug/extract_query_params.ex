@@ -1,4 +1,8 @@
 defmodule LenraWeb.Plug.ExtractQueryParams do
+  @moduledoc """
+    This plug extract the token from the QueryParams (if exist) and put it in the conn.
+    If the token doest not exist in the QueryParams, does nothing.
+  """
   use LenraWeb, :controller
   import Plug.Conn
 

@@ -52,7 +52,7 @@ defmodule LenraWeb.AppAdapter do
   @impl ApplicationRunner.Adapter
   def resource_from_params(params) do
     case HydraApi.check_token_and_get_subject(params["token"], "app:websocket") do
-      {:ok, subject, _} ->
+      {:ok, subject, _resp} ->
         {:ok, subject}
 
       error ->

@@ -94,8 +94,8 @@ defmodule LenraWeb.UserControllerTest do
     user = Repo.get_by(User, email: @john_doe_user_params["email"])
     password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
 
-    passwords = Repo.preload(user, :password) |> Map.get(:password)
-    assert length(passwords) == 1
+    initial_passwords = user |> Repo.preload(:password) |> Map.get(:password)
+    assert length(initial_passwords) == 1
 
     put(
       conn!,
@@ -107,9 +107,9 @@ defmodule LenraWeb.UserControllerTest do
       })
     )
 
-    passwords = Repo.preload(user, :password) |> Map.get(:password)
+    final_passwords = user |> Repo.preload(:password) |> Map.get(:password)
 
-    assert length(passwords) == 2
+    assert length(final_passwords) == 2
   end
 
   @tag :auth_user

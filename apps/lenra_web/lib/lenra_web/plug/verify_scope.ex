@@ -1,10 +1,16 @@
 defmodule LenraWeb.Plug.VerifyScope do
+  @moduledoc """
+    This plug check the scope contained in the token by using the introspect function from Hydra.
+    First it gets the token previously extracted by "extract_query_params" or "extract_bearer" plug.
+    Then, if the token exists and the scope(s) matches, it put the introspect & resource in the conn.
+    Otherwise, it halt the connexion and return an error.
+  """
   use LenraWeb, :controller
   import Plug.Conn
 
   alias Lenra.Accounts
-  alias LenraWeb.Errors.BusinessError
   alias LenraWeb.Auth
+  alias LenraWeb.Errors.BusinessError
 
   def init(options) do
     options
@@ -28,7 +34,8 @@ defmodule LenraWeb.Plug.VerifyScope do
         |> halt()
 
       {:error, err} ->
-        reply_error(conn, err)
+        conn
+        |> reply_error(err)
         |> halt()
 
       err ->

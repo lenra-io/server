@@ -1,4 +1,10 @@
 defmodule LenraWeb.Auth do
+  @moduledoc """
+    This module contains the Auth API for Lenra Web.
+    Put/Get the current resource (user) in the conn
+    Put/Get the current token in the conn
+    Put/Get the current token introspect (response from Hydra) in the conn
+  """
   @token_key :oauth_token
   @token_key_introspect :oauth_token_introspect
   @resource_key :oauth_resource

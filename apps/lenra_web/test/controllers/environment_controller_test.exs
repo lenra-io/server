@@ -18,10 +18,10 @@ defmodule LenraWeb.EnvironmentControllerTest do
       conn = get(conn, Routes.envs_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-        "message" => "No Bearer token found in Authorization header",
-        "reason" => "token_not_found",
-        "metadata" => %{}
-      }
+               "message" => "No Bearer token found in Authorization header",
+               "reason" => "token_not_found",
+               "metadata" => %{}
+             }
     end
 
     @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
