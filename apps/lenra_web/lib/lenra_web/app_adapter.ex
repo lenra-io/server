@@ -55,8 +55,8 @@ defmodule LenraWeb.AppAdapter do
       {:ok, subject, _resp} ->
         {:ok, subject}
 
-      error ->
-        error
+      _error ->
+        BusinessError.forbidden_tuple()
     end
   end
 
