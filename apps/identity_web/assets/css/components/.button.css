@@ -218,7 +218,6 @@ nav.social>a::before {
 }
 
 @media (min-width: 28.75rem) {
-
     button,
     a.btn:not(.link),
     a.btn.link:first-child {
