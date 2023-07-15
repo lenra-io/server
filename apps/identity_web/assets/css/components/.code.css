@@ -1,0 +1,30 @@
+:not(pre)>code {
+    padding: 0.125rem 0.5rem;
+    background-color: rgba(var(--blue-data), var(--disabled-opacity));
+    border-radius: 0.125rem;
+    font-size: calc(1rem * 7 / 8);
+}
+
+code *,
+code *::before,
+code *::after {
+    color: inherit;
+}
+
+code .command-line-prompt {
+    border-right: 0;
+    margin-right: 0;
+}
+
+pre {
+    --text-color-data: var(--blue-data);
+    overflow: auto;
+    background-color: rgb(var(--black-data));
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+
+pre+:not(h2, figcatpion) {
+    margin-top: 2rem;
+}

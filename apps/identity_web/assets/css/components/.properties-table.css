@@ -1,0 +1,51 @@
+main>table.properties tr:not(.required)>td:first-of-type::after {
+    content: " (optionnal)";
+    font-size: 0.75rem;
+    font-style: italic;
+    color:rgba(var(--text-color-data), calc(var(--text-opacity) * var(--greyscale-80-opacity)))
+}
+
+main>table.properties tr.deprecated {
+    --text-opacity: 0.4;
+}
+
+main>table.properties tr.deprecated>td:first-of-type::before {
+    --text-opacity: 1;
+    content: "depreciated";
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0.125rem 0.75rem;
+    font-size: 0.75rem;
+    background-color: rgb(var(--red-data));
+    color: rgb(var(--white-data));
+    border-radius: 0.125rem;
+    margin-right: 0.5rem;
+}
+
+main>table.properties ul.values {
+    display: inline-block;
+}
+
+main>table.properties ul.values::before {
+    content: "(";
+}
+
+main>table.properties ul.values::after {
+    content: ")";
+}
+
+main>table.properties ul.values>li {
+    display: inline-block;
+}
+
+main>table.properties ul.values>li.default {
+    text-decoration: underline;
+}
+
+main>table.properties ul.values>li:not(:first-of-type) {
+    margin-left: 0.25rem;
+}
+
+main>table.properties ul.values>li:not(:last-of-type)::after {
+    content: ",";
+}

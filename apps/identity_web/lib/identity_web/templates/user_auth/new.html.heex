@@ -1,55 +1,50 @@
-<h1>Log in</h1>
+<% is_register = !@submit_action || @submit_action == "register" %>
+<main class="arrows">
+  <header>
+    <h1>Lenra</h1>
+    <!-- TODO: Manage client logo -->
+  </header>
+  <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if is_register, do: :create, else: :login))} as={:user}>
+    <%= radio_button f, :submit_action, "register", 
+      checked: is_register, 
+      autocomplete: "off",
+      "data-form-action": Routes.user_auth_path(@conn, :create), "data-submit": gettext("Create my account") %>
+    <%= radio_button f, :submit_action, "login", 
+      checked: !is_register, 
+      autocomplete: "off",
+      "data-form-action": Routes.user_auth_path(@conn, :login), "data-submit": gettext("Log in") %>
+    <nav>
+      <%= label f, :submit_action_register, gettext("Register") %>
+      <%= label f, :submit_action_login, gettext("Log in") %>
+    </nav>
+    <%= if @error_message do %>
+      <p class="{@submit_action} alert alert-danger"><%= @error_message %></p>
+    <% end %>
 
-<.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :login)} as={:user}>
-  <%= if @error_message do %>
-    <div class="alert alert-danger">
-      <p><%= @error_message %></p>
-    </div>
-  <% end %>
+    <fieldset>
+      <%= label f, :email %>
+      <%= email_input f, :email, required: true %>
+      <%= error_tag f, :email, class: @submit_action %>
+    </fieldset>
 
-  <%= label f, :email %>
-  <%= email_input f, :email, required: true %>
+    <fieldset class="password">
+      <%= inputs_for f, :password, fn fp -> %>
+        <%= label fp, :password, class: "lenra-icon-eye" %>
+        <%= password_input fp, :password, required: true, minlength: 8 %>
+        <%= error_tag fp, :password, class: @submit_action %>
+      <% end %>
+    </fieldset>
 
-  <%= label f, :password %>
-  <%= password_input f, :password, required: true %>
+    <fieldset class="login">
+      <%= checkbox f, :remember_me %>
+      <%= label f, :remember_me, gettext("Keep me logged in for %{days} days", days: IdentityWeb.HydraHelper.get_remember_days) %>
+    </fieldset>
 
-  <%= label f, :remember_me, "Keep me logged in for 60 days" %>
-  <%= checkbox f, :remember_me %>
+    <%= if assigns[:login_challenge] do %>
+      <%= hidden_input f, :login_challenge, value: @login_challenge %>
+    <% end %>
 
-  <%= if assigns[:login_challenge] do %>
-    <%= hidden_input f, :login_challenge, value: @login_challenge %>
-  <% end %>
-
-  <div>
-    <%= submit "Log in" %>
-  </div>
-</.form>
-
-
-<h1>Register</h1>
-
-<.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, :create)} as={:user_register}>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
-
-    <%= label f, :email %>
-    <%= email_input f, :email, required: true %>
-    <%= error_tag f, :email %>
-
-  <%= inputs_for f, :password, fn fp -> %>
-    <%= label fp, :password %>
-    <%= password_input fp, :password, required: true %>
-    <%= error_tag fp, :password %>
-  <% end %>
-
-  <%= if assigns[:login_challenge] do %>
-    <%= hidden_input f, :login_challenge, value: @login_challenge %>
-  <% end %>
-
-  <div>
-    <%= submit "Register" %>
-  </div>
-</.form>
+    <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary", disabled: true %>
+    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-chevron-right"%>
+  </.form>
+</main>

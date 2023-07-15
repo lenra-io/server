@@ -1,0 +1,200 @@
+html, body {
+    height: 100%;
+}
+
+/*body::before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    width: 0;
+} */
+
+main {
+    /* display: inline-block;
+    width: 100%; */
+}
+
+main.arrows {
+    --vertical-pos-multiplier: 1.3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    width: 90%;
+    max-width: 82.5rem;
+    margin: 0 auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    gap: 2rem;
+}
+
+header>h1 {
+    position: relative;
+    width: var(--logo-vertical-height);
+    height: var(--logo-vertical-height);
+    text-indent: -100vw;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+header>h1::before {
+    content: " ";
+    position: absolute;
+    background-image: var(--logo-vertical-image);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+form {
+    --button-gap: 1rem;
+    --nav-width: 100%;
+    --button-width: calc((var(--nav-width) - var(--button-gap)) / 2);
+    --button-height: 2rem;
+    width: 100%;
+    max-width: 28rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0 auto;
+    align-items: center;
+}
+
+form fieldset {
+    width: 100%;
+    border: none;
+}
+
+form input:not([type="radio"], [type="checkbox"]) {
+    width: 100%;
+    border: var(--border-width) solid var(--greyscale-60, #A9B2C4);
+    border-radius: 0.25rem;
+    padding: calc(0.25rem - var(--border-width)) calc(0.75rem - var(--border-width));
+    background-color: rgba(var(--text-color-data), .1);
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+form>input[type="radio"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    position: absolute;
+    left: -100vw;
+}
+
+form>input[type="radio"][value="register"]:checked~.login,
+form>input[type="radio"][value="register"]:checked~* .login,
+form>input[type="radio"][value="register"]:checked~.register,
+form>input[type="radio"][value="login"]:checked~* .register {
+    display: none;
+}
+
+form>nav {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    border-radius: calc(var(--button-height) / 2);
+    width: var(--nav-width);
+    gap: var(--button-gap);
+    background-color: rgba(var(--text-color-data), .1);
+}
+
+form>nav::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--button-width);
+    height: var(--button-height);
+    border-radius: calc(var(--button-height) / 2);
+    background-color: rgb(var(--primary-color-data));
+    transition-property: left;
+    z-index: 0;
+}
+
+form>input[type="radio"]:nth-last-of-type(2):checked~nav::before {
+    left: calc(var(--button-width) + var(--button-gap));
+}
+
+form>nav>label {
+    position: relative;
+    width: var(--button-width);
+    text-align: center;
+    padding: 0.25rem;
+    margin-bottom: 0;
+    color: rgb(var(--primary-color-data));
+    transition-property: color;
+    cursor: pointer;
+}
+
+form>input[type="radio"]#user_submit_action_register:checked~nav>label[for="user_submit_action_register"],
+form>input[type="radio"]#user_submit_action_login:checked~nav>label[for="user_submit_action_login"] {
+    color: rgb(var(--white-data));
+}
+
+form .password>label {
+    position: relative;
+}
+
+form .password>label::before {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    width: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    z-index: 2;
+}
+
+form .password>input {
+    padding-right: 2rem;
+}
+
+form .invalid-feedback {
+    display: block;
+}
+
+form .invalid-feedback:first-of-type {
+    padding-top: 0.125rem;
+}
+
+form .invalid-feedback::before {
+    display: inline-block;
+    content: "\1F5D9";
+    color:rgb(var(--red-data));
+    margin-right: 0.25rem;
+}
+
+form input[type="checkbox"]+label {
+    display: inline-flex;
+    margin-left: 0.5rem;
+    margin-bottom: 0;
+}
+
+form button[type="submit"] {
+    width: var(--nav-width);
+    margin-top: 0;
+    cursor: pointer;
+}
+
+form a.btn.link {
+    margin-top: 0;
+}
+
+@media (min-width: 25rem) {
+    form {
+        --nav-width: calc(8rem * 2 + var(--button-gap));
+    }
+}

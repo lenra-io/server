@@ -1,0 +1,17 @@
+.list,
+.list * {
+    --text-opacity: 0.85;
+    list-style: initial;
+    margin-top: 0;
+}
+
+ul.list,
+ol.list,
+.list ul,
+.list ol {
+    padding-left: 1rem;
+}
+
+.list+p {
+    margin-top: 2rem;
+}
