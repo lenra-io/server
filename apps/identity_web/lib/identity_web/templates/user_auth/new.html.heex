@@ -47,6 +47,6 @@
     <% end %>
 
     <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary", disabled: true %>
-    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-chevron-right"%>
+    <%= link gettext("I forgot my password"), to: Routes.lost_password_path(@conn, :enter_email), class: "login btn link lenra-icon-chevron-right"%>
   </.form>
 </main>

@@ -21,13 +21,15 @@ defmodule IdentityWeb.Router do
     get "/users/log_in", UserAuthController, :new
     post "/users/register", UserAuthController, :create
     post "/users/log_in", UserAuthController, :login
-    get "/users/password/reset", UserAuthController, :reset_password
     get "/users/email/check", UserAuthController, :check_email_page
     post "/users/email/check", UserAuthController, :check_email_token
     post "/users/email/check/new", UserAuthController, :resend_check_email_token
     get "/users/cgu/validation", UserAuthController, :validate_cgu_page
     post "/users/cgu/validation", UserAuthController, :validate_cgu
     get "/users/log_out", UserAuthController, :logout
+    get "/users/password/lost", LostPasswordController, :enter_email
+    post("/users/password/lost", LostPasswordController, :send_lost_password_code)
+    put("/users/password/lost", LostPasswordController, :change_lost_password)
     get "/users/consent", UserConsentController, :index
     post "/users/consent", UserConsentController, :consent
   end
