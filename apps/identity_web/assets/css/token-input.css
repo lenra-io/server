@@ -1,14 +1,12 @@
 fieldset.token {
     --size: 2.5rem;
     --digits: 8;
-    --spacing: 0.75rem;
     --height: calc(var(--size) * var(--line-height-multiplier));
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--spacing);
 }
 
 fieldset.token>input {

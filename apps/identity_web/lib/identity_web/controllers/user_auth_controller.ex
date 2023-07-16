@@ -45,7 +45,8 @@ defmodule IdentityWeb.UserAuthController do
 
       # accept login
       true ->
-        {:ok, accept_response} = HydraHelper.accept_login(login_challenge, to_string(user.id), remember)
+        {:ok, accept_response} =
+          HydraHelper.accept_login(login_challenge, to_string(user.id), remember)
 
         conn
         |> clear_session()
@@ -157,6 +158,18 @@ defmodule IdentityWeb.UserAuthController do
   def create(_conn, _params),
     do: throw("No login_challenge in login form POST. It should be passed in the render.")
 
+  # Logout the user and reject the login request.
+  def logout(conn, _params) do
+    login_challenge = get_session(conn, :login_challenge)
+
+    {:ok, accept_response} =
+      HydraHelper.reject_login(login_challenge, "User logged out")
+
+    conn
+    |> clear_session()
+    |> redirect(external: accept_response.body["redirect_to"])
+  end
+
   ### EMAIL CHECK ###
 
   # Show the email validation form.
@@ -195,7 +208,7 @@ defmodule IdentityWeb.UserAuthController do
       Accounts.get_user(user_id)
       |> Accounts.resend_registration_code()
 
-    reply(conn)
+    json(conn, %{})
   end
 
   ### CGU VALIDATION ###

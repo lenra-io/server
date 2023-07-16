@@ -1,9 +1,23 @@
 import "../css/token-input.css"
 
 (() => {
-    const inputs = [...document.querySelectorAll('fieldset.token>input:not([type="hidden"])')];
-    const tokenInput = document.querySelector('fieldset.token>input[type="hidden"]');
-    const resendButton = document.querySelector('a.btn');
+    const form = document.querySelector('form');
+    const inputs = [...form.querySelectorAll('fieldset.token>input:not([type="hidden"])')];
+    const tokenInput = form.querySelector('fieldset.token>input[type="hidden"]');
+    const resendButton = form.querySelector('a.btn');
+    Object.defineProperty(resendButton, "disabled", {
+        get() {
+          return this.hasAttribute("disabled");
+        },
+        set(value) {
+            if (value) {
+                this.setAttribute("disabled", "");
+            } else {
+                this.removeAttribute("disabled");
+            }
+        }
+      });
+      
 
     inputs.forEach((input, i) => {
         input.addEventListener('keydown', (e) => {
@@ -31,11 +45,18 @@ import "../css/token-input.css"
         e.preventDefault();
         if (resendButton.disabled) return;
         resendButton.disabled = true;
-        startResendDelay();
         fetch(resendButton.href, {
             method: 'POST',
+            body: new URLSearchParams({
+                _csrf_token: form.querySelector('input[name="_csrf_token"]').value
+            })
         })
-            .then((response) => response.json());
+            .then((response) => {
+                if (response.ok) {
+                    form.reset();
+                    startResendDelay();
+                }
+            });
     });
     startResendDelay();
 

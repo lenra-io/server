@@ -30,7 +30,7 @@
     </fieldset>
 
     <nav>
-      <%= link gettext("I didn't receive my token"), to: Routes.user_auth_path(@conn, :reset_password), class: "btn", disabled: true%>
+      <%= link gettext("I didn't receive my token"), to: Routes.user_auth_path(@conn, :resend_check_email_token), class: "btn", disabled: true%>
       <%= submit gettext("Confirm the token"), class: "primary", disabled: true %>
     </nav>
   </.form>

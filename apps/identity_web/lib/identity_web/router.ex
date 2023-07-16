@@ -27,6 +27,7 @@ defmodule IdentityWeb.Router do
     post "/users/email/check/new", UserAuthController, :resend_check_email_token
     get "/users/cgu/validation", UserAuthController, :validate_cgu_page
     post "/users/cgu/validation", UserAuthController, :validate_cgu
+    get "/users/log_out", UserAuthController, :logout
     get "/users/consent", UserConsentController, :index
     post "/users/consent", UserConsentController, :consent
   end

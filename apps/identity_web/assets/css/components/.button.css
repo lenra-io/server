@@ -155,6 +155,7 @@ a.btn.link:hover::after {
     [class*=" lenra-icon-"]
 )::before {
     vertical-align: middle;
+    margin-right: 0.5rem;
 }
 
 a.btn.link:is(

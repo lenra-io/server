@@ -1,7 +1,7 @@
 form {
     --button-gap: 1rem;
-    --nav-width: 100%;
-    --button-width: calc((var(--nav-width) - var(--button-gap)) / 2);
+    --tab-nav-width: 100%;
+    --button-width: calc((var(--tab-nav-width) - var(--button-gap)) / 2);
     --button-height: 2rem;
     width: 100%;
     max-width: 28rem;
@@ -50,13 +50,22 @@ form>input[type="radio"][value="login"]:checked~* .register {
     display: none;
 }
 
-form>nav.tab {
+form>nav {
     position: relative;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+form>nav>a.btn {
+    --horizontal-padding-multiplier: var(--horizontal-padding-small-multiplier);
+}
+
+form>nav.tab {
     margin-bottom: 1rem;
     border-radius: calc(var(--button-height) / 2);
-    width: var(--nav-width);
+    width: var(--tab-nav-width);
     gap: var(--button-gap);
     background-color: rgba(var(--text-color-data), .1);
 }
@@ -78,7 +87,7 @@ form>input[type="radio"]:nth-last-of-type(2):checked~nav::before {
     left: calc(var(--button-width) + var(--button-gap));
 }
 
-form>nav>label {
+form>nav.tab>label {
     position: relative;
     width: var(--button-width);
     text-align: center;
@@ -123,7 +132,7 @@ form .invalid-feedback:first-of-type {
 form .invalid-feedback::before {
     display: inline-block;
     content: "\1F5D9";
-    color:rgb(var(--red-data));
+    color: rgb(var(--red-data));
     margin-right: 0.25rem;
 }
 
@@ -134,9 +143,12 @@ form input[type="checkbox"]+label {
 }
 
 form button[type="submit"] {
-    width: var(--nav-width);
     margin-top: 0;
     cursor: pointer;
+}
+
+form>button[type="submit"] {
+    width: var(--tab-nav-width);
 }
 
 form a.btn.link {
@@ -145,6 +157,6 @@ form a.btn.link {
 
 @media (min-width: 25rem) {
     form {
-        --nav-width: calc(8rem * 2 + var(--button-gap));
+        --tab-nav-width: calc(8rem * 2 + var(--button-gap));
     }
 }
