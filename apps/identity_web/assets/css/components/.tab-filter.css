@@ -1,0 +1,15 @@
+.tab.filter>ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.tab.filter>ul>li {
+    display: none;
+}
+
+.tab.filter>nav.all+ul>li {
+    display: flex;
+}

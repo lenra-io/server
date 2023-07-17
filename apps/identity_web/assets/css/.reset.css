@@ -1,0 +1,27 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: inherit;
+    list-style: none;
+    transition-duration: 300ms;
+    transition-property: none;
+}
+
+details>summary {
+    background-image: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+details>summary::-webkit-details-marker {
+    display: none;
+}
+
+input,
+textarea,
+button {
+    font: inherit;
+}

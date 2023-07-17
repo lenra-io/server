@@ -1,0 +1,32 @@
+main>table {
+    --text-opacity: var(--greyscale-90-opacity);
+    text-align: left;
+    border-spacing: 0;
+    width: 100%;
+}
+
+main>table tr>td {
+    border-bottom: 0.0625rem solid rgba(var(--text-color-data), var(--greyscale-40-opacity));
+}
+
+main>table tr:nth-of-type(2n) {
+    background-color: rgba(var(--text-color-data), var(--greyscale-0-opacity));
+}
+
+main>table th,
+main>table td {
+    padding: 0.5rem;
+}
+
+main>table th {
+    color: rgb(var(--background-color-data));
+    background-color: rgb(var(--text-color-data));
+}
+
+main>table th:first-of-type {
+    border-top-left-radius: 0.25rem;
+}
+
+main>table th:last-of-type {
+    border-top-right-radius: 0.25rem;
+}

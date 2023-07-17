@@ -29,7 +29,9 @@ defmodule IdentityWeb.UserAuthController do
 
       redirect(conn, external: accept_response.body["redirect_to"])
     else
+      # client = response.body["client"]
       render(conn, "new.html",
+        submit_action: "register",
         error_message: nil,
         login_challenge: login_challenge,
         changeset: register_changeset_or_new(nil)
@@ -42,7 +44,11 @@ defmodule IdentityWeb.UserAuthController do
 
   # The "login" handle the login form and login the user if credentials are correct.
   def login(conn, %{"user" => %{"login_challenge" => login_challenge} = user_params} = params) do
-    %{"email" => email, "password" => password, "remember_me" => remember} = user_params
+    %{
+      "email" => email,
+      "password" => %{"0" => %{"password" => password}},
+      "remember_me" => remember
+    } = user_params
 
     case Accounts.login_user(email, password) do
       {:ok, user} ->
@@ -53,9 +59,10 @@ defmodule IdentityWeb.UserAuthController do
       _error ->
         # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
         render(conn, "new.html",
+          submit_action: "login",
           error_message: "Invalid email or password",
           login_challenge: login_challenge,
-          changeset: register_changeset_or_new(params["user_register"])
+          changeset: register_changeset_or_new(params["user"])
         )
     end
   end
@@ -65,7 +72,7 @@ defmodule IdentityWeb.UserAuthController do
 
   # The "create" handle the register form
   def create(conn, %{
-        "user_register" => %{"login_challenge" => login_challenge} = user_register_params
+        "user" => %{"login_challenge" => login_challenge} = user_register_params
       }) do
     case Accounts.register_user_new(user_register_params) do
       {:ok, %{inserted_user: user}} ->
@@ -75,6 +82,7 @@ defmodule IdentityWeb.UserAuthController do
 
       {:error, :inserted_user, %Ecto.Changeset{} = changeset, _done} ->
         render(conn, "new.html",
+          submit_action: "register",
           error_message: nil,
           changeset: register_changeset_or_new(changeset),
           login_challenge: login_challenge
@@ -82,6 +90,7 @@ defmodule IdentityWeb.UserAuthController do
 
       {:error, :password, changeset, _done} ->
         render(conn, "new.html",
+          submit_action: "register",
           error_message: nil,
           changeset: register_changeset_or_new(changeset),
           login_challenge: login_challenge

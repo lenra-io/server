@@ -8,8 +8,6 @@ defmodule Lenra.Accounts.Password do
 
   alias Lenra.Accounts.User
 
-  @password_regex ~r/(?=.*[a-z])(?=.*[A-Z])(?=.*\W)/
-
   schema "passwords" do
     belongs_to(:user, User)
     field(:password, :string, redact: true)
@@ -35,7 +33,7 @@ defmodule Lenra.Accounts.Password do
   def validate_password(changeset) do
     changeset
     |> unique_constraint(:password)
-    |> validate_length(:password, min: 8, max: 64)
+    |> validate_length(:password, min: 8)
     # |> validate_format(:password, @password_regex)
     |> validate_format(:password, ~r/[a-z]/, message: "should have at least one lower case character")
     |> validate_format(:password, ~r/[A-Z]/, message: "should have at least one upper case character")

@@ -21,6 +21,7 @@ defmodule IdentityWeb.Router do
     get "/users/log_in", UserAuthController, :new
     post "/users/register", UserAuthController, :create
     post "/users/log_in", UserAuthController, :login
+    get "/users/password/reset", UserAuthController, :reset_password
     get "/users/consent", UserConsentController, :index
     post "/users/consent", UserConsentController, :consent
   end
