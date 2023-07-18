@@ -1,5 +1,4 @@
 defmodule IdentityWeb.UserAuthController do
-  alias Mix.Tasks.Hex.Build
   alias Lenra.Legal
   use IdentityWeb, :controller
 
@@ -47,8 +46,7 @@ defmodule IdentityWeb.UserAuthController do
 
       # accept login
       true ->
-        {:ok, accept_response} =
-          HydraApi.accept_login(login_challenge, to_string(user.id), remember)
+        {:ok, accept_response} = HydraApi.accept_login(login_challenge, to_string(user.id), remember)
 
         conn
         |> clear_session()
@@ -255,7 +253,7 @@ defmodule IdentityWeb.UserAuthController do
   def lost_password_send_code(_conn, _params),
     do: throw("The email is required")
 
-  def change_lost_password(conn, %{"user" => %{"password" => password, "code" => code} = params}) do
+  def change_lost_password(conn, %{"user" => %{"code" => code} = params}) do
     email = get_session(conn, :email)
 
     with {:ok, user} <- get_user_with_email(email),
