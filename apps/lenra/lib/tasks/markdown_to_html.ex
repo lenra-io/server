@@ -27,7 +27,7 @@ defmodule Mix.Tasks.Md2html do
             File.write!(path, html)
 
           false ->
-            IO.puts("The "<>file<>" file does not exist or the path is invalid")
+            IO.puts("The " <> file <> " file does not exist or the path is invalid")
         end
 
       _foo ->

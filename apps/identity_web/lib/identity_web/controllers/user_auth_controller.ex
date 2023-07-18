@@ -1,10 +1,10 @@
 defmodule IdentityWeb.UserAuthController do
-  alias Lenra.Legal
   use IdentityWeb, :controller
 
   alias Lenra.Accounts
   alias Lenra.Accounts.Password
   alias Lenra.Accounts.User
+  alias Lenra.Legal
   alias Lenra.Repo
 
   alias Lenra.Errors.BusinessError
@@ -39,7 +39,7 @@ defmodule IdentityWeb.UserAuthController do
 
       # check CGU update
       !Lenra.Legal.user_accepted_latest_cgu?(user.id) ->
-        # TODO: redirect to CGU page
+        # redirect to CGU page
         redirect(conn,
           to: Routes.user_auth_path(conn, :validate_cgu_page)
         )
@@ -291,7 +291,8 @@ defmodule IdentityWeb.UserAuthController do
   def check_email_token(conn, %{"token" => token}) do
     user_id = get_session(conn, :user_id)
 
-    case Accounts.get_user(user_id)
+    case user_id
+         |> Accounts.get_user()
          |> Accounts.validate_user(token) do
       {:ok, %{updated_user: user}} ->
         redirect_next_step(conn, user)
@@ -309,7 +310,8 @@ defmodule IdentityWeb.UserAuthController do
     user_id = get_session(conn, :user_id)
 
     {:ok, _any} =
-      Accounts.get_user(user_id)
+      user_id
+      |> Accounts.get_user()
       |> Accounts.resend_registration_code()
 
     json(conn, %{})
