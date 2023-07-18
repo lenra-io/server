@@ -5,12 +5,12 @@
     <!-- TODO: Manage client logo -->
   </header>
   <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if is_register, do: :create, else: :login))} as={:user}>
-    <%= radio_button f, :submit_action, "register", 
-      checked: is_register, 
+    <%= radio_button f, :submit_action, "register",
+      checked: is_register,
       autocomplete: "off",
       "data-form-action": Routes.user_auth_path(@conn, :create), "data-submit": gettext("Create my account") %>
-    <%= radio_button f, :submit_action, "login", 
-      checked: !is_register, 
+    <%= radio_button f, :submit_action, "login",
+      checked: !is_register,
       autocomplete: "off",
       "data-form-action": Routes.user_auth_path(@conn, :login), "data-submit": gettext("Log in") %>
     <nav>
@@ -37,7 +37,7 @@
 
     <fieldset class="login">
       <%= checkbox f, :remember_me %>
-      <%= label f, :remember_me, gettext("Keep me logged in for %{days} days", days: IdentityWeb.HydraHelper.get_remember_days) %>
+      <%= label f, :remember_me, gettext("Keep me logged in for %{days} days", days: HydraApi.get_remember_days) %>
     </fieldset>
 
     <%= if assigns[:login_challenge] do %>
