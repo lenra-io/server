@@ -27,9 +27,9 @@ defmodule IdentityWeb.Router do
     get "/users/cgu/validation", UserAuthController, :validate_cgu_page
     post "/users/cgu/validation", UserAuthController, :validate_cgu
     get "/users/log_out", UserAuthController, :logout
-    get "/users/password/lost", LostPasswordController, :enter_email
-    post("/users/password/lost", LostPasswordController, :send_lost_password_code)
-    put("/users/password/lost", LostPasswordController, :change_lost_password)
+    get "/users/password/lost", UserAuthController, :lost_password_enter_email
+    post("/users/password/lost", UserAuthController, :send_lost_password_code)
+    put("/users/password/lost", UserAuthController, :change_lost_password)
     get "/users/consent", UserConsentController, :index
     post "/users/consent", UserConsentController, :consent
   end

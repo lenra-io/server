@@ -83,7 +83,8 @@ form>nav.tab::before {
     z-index: 0;
 }
 
-form>input[type="radio"]:nth-last-of-type(2):checked~nav::before {
+/* Since there is hidden input for csrf_token the second input is the third one */
+form>input[type="radio"]:nth-of-type(3):checked~nav::before {
     left: calc(var(--button-width) + var(--button-gap));
 }
 
@@ -121,7 +122,7 @@ form .password>input {
     padding-right: 2rem;
 }
 
-form .invalid-feedback {
+form :is(.invalid-feedback, .alert.alert-danger) {
     display: block;
 }
 
@@ -129,7 +130,7 @@ form .invalid-feedback:first-of-type {
     padding-top: 0.125rem;
 }
 
-form .invalid-feedback::before {
+form :is(.invalid-feedback, .alert.alert-danger)::before {
     display: inline-block;
     content: "\1F5D9";
     color: rgb(var(--red-data));

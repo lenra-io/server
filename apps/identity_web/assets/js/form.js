@@ -22,7 +22,7 @@ import "../css/form.css"
     function checkValidity() {
         submitButton.disabled = !form.checkValidity();
     }
-    if (passwordFieldset) {
+    form.querySelectorAll('fieldset.password').forEach(passwordFieldset => {
         const passwordLabel = passwordFieldset.querySelector('label');
         const passwordInput = passwordFieldset.querySelector('input[type="password"]');
         passwordLabel.onclick = function (event) {
@@ -33,5 +33,5 @@ import "../css/form.css"
                 passwordLabel.classList.toggle('lenra-icon-eye-off');
             }
         }
-    }
+    });
 })();

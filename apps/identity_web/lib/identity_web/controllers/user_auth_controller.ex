@@ -1,10 +1,14 @@
 defmodule IdentityWeb.UserAuthController do
+  alias Mix.Tasks.Hex.Build
   alias Lenra.Legal
   use IdentityWeb, :controller
 
   alias Lenra.Accounts
   alias Lenra.Accounts.Password
   alias Lenra.Accounts.User
+  alias Lenra.Repo
+
+  alias Lenra.Errors.BusinessError
 
   alias IdentityWeb.HydraHelper
 
@@ -69,6 +73,56 @@ defmodule IdentityWeb.UserAuthController do
     )
   end
 
+  defp get_user_with_email(nil), do: BusinessError.incorrect_email_tuple()
+
+  defp get_user_with_email(email) do
+    case Repo.get_by(User, email: String.downcase(email)) do
+      nil -> BusinessError.incorrect_email_tuple()
+      user -> {:ok, user}
+    end
+  end
+
+  defp render_change_lost_password(conn, email, code \\ nil, error_message \\ nil)
+
+  defp render_change_lost_password(
+         conn,
+         email,
+         code,
+         %LenraCommon.Errors.BusinessError{
+           message: error_message
+         }
+       ) do
+    render_change_lost_password(conn, email, code, error_message)
+  end
+
+  defp render_change_lost_password(
+         conn,
+         email,
+         code,
+         error_message
+       )
+       when is_binary(email) do
+    render_change_lost_password(
+      conn,
+      Accounts.User.reset_password_changeset(%User{password: [%Password{}]}, %{email: email}),
+      code,
+      error_message
+    )
+  end
+
+  defp render_change_lost_password(
+         conn,
+         %Ecto.Changeset{} = changeset,
+         code,
+         error_message
+       ) do
+    render(conn, "lost-password-new-password.html",
+      changeset: changeset,
+      code: code,
+      error_message: error_message
+    )
+  end
+
   #################
   ## Controllers ##
   #################
@@ -84,10 +138,12 @@ defmodule IdentityWeb.UserAuthController do
       redirect_next_step(conn, Accounts.get_user(response.body["subject"]), login_challenge, true)
     else
       # client = response.body["client"]
-      render(conn, "new.html",
+      conn
+      |> clear_session()
+      |> put_session(:login_challenge, login_challenge)
+      |> render("new.html",
         submit_action: "register",
         error_message: nil,
-        login_challenge: login_challenge,
         changeset: register_changeset_or_new(nil)
       )
     end
@@ -97,19 +153,22 @@ defmodule IdentityWeb.UserAuthController do
     do: throw("Expected a login challenge to be set but received none")
 
   # The "login" handle the login form and login the user if credentials are correct.
-  def login(conn, %{"user" => %{"login_challenge" => login_challenge} = user_params} = params) do
-    %{
-      "email" => email,
-      "password" => %{"0" => %{"password" => password}},
-      "remember_me" => remember
-    } = user_params
-
+  def login(
+        conn,
+        %{
+          "user" =>
+            %{
+              "email" => email,
+              "password" => %{"0" => %{"password" => password}},
+              "remember_me" => remember
+            } = user_login_params
+        }
+      ) do
     case Accounts.login_user(email, password) do
       {:ok, user} ->
         conn
         |> put_session(:user_id, user.id)
         |> put_session(:remember, remember == "true")
-        |> put_session(:login_challenge, login_challenge)
         |> redirect_next_step(user)
 
       _error ->
@@ -117,60 +176,105 @@ defmodule IdentityWeb.UserAuthController do
         render(conn, "new.html",
           submit_action: "login",
           error_message: "Invalid email or password",
-          login_challenge: login_challenge,
-          changeset: register_changeset_or_new(params["user"])
+          changeset: register_changeset_or_new(user_login_params)
         )
     end
   end
 
   def login(_conn, _params),
-    do: throw("No login_challenge in login form POST. It should be passed in the render.")
+    do: throw("Not corresponding form data.")
 
   # The "create" handle the register form
   def create(conn, %{
-        "user" => %{"login_challenge" => login_challenge} = user_register_params
+        "user" => %{} = user_register_params
       }) do
     case Accounts.register_user_new(user_register_params) do
       {:ok, %{inserted_user: user}} ->
         conn
         |> put_session(:user_id, user.id)
-        |> put_session(:login_challenge, login_challenge)
         |> redirect_next_step(user)
 
       {:error, :inserted_user, %Ecto.Changeset{} = changeset, _done} ->
         render(conn, "new.html",
           submit_action: "register",
           error_message: nil,
-          changeset: register_changeset_or_new(changeset),
-          login_challenge: login_challenge
+          changeset: register_changeset_or_new(changeset)
         )
 
       {:error, :password, changeset, _done} ->
         render(conn, "new.html",
           submit_action: "register",
           error_message: nil,
-          changeset: register_changeset_or_new(changeset),
-          login_challenge: login_challenge
+          changeset: register_changeset_or_new(changeset)
         )
     end
   end
 
   def create(_conn, _params),
-    do: throw("No login_challenge in login form POST. It should be passed in the render.")
+    do: throw("Not corresponding form data.")
 
   # Logout the user and reject the login request.
   def logout(conn, _params) do
     login_challenge = get_session(conn, :login_challenge)
 
-    {:ok, accept_response} =
-      HydraHelper.reject_login(login_challenge, "User logged out")
+    {:ok, accept_response} = HydraHelper.reject_login(login_challenge, "User logged out")
 
     conn
     |> clear_session()
     |> redirect(external: accept_response.body["redirect_to"])
   end
 
-  ### EMAIL CHECK ###
+  ##### LOST PASSWORD #####
+
+  def lost_password_enter_email(conn, _params) do
+    render(conn, "lost-password-enter-email.html")
+  end
+
+  def send_lost_password_code(conn, %{"email" => email}) do
+    case get_user_with_email(email) do
+      {:ok, user} -> Accounts.send_lost_password_code(user)
+      # Here we do not return errors to avoid brute force of error messages
+      _error -> nil
+    end
+
+    # This is an intended behavior.
+    # If the email does not exists, we should not return an error to the client.
+    # Otherwise it gives an information to hackers and allow brutforce
+    conn
+    |> put_session(:email, email)
+    |> render_change_lost_password(email)
+  end
+
+  def lost_password_send_code(_conn, _params),
+    do: throw("The email is required")
+
+  def change_lost_password(conn, %{"user" => %{"password" => password, "code" => code} = params}) do
+    email = get_session(conn, :email)
+
+    with {:ok, user} <- get_user_with_email(email),
+         {:ok, _password} <- Accounts.update_user_password_with_code(user, params) do
+      redirect_next_step(conn, user)
+    else
+      # Here we return :no_such_password_code instead of :incorrect_email
+      # to avoid leaking whether an email address exists on Lenra
+      {:error,
+       %LenraCommon.Errors.BusinessError{
+         reason: :incorrect_email
+       }} ->
+        render_change_lost_password(conn, email, code, BusinessError.no_such_password_code())
+
+      {:error, %LenraCommon.Errors.BusinessError{} = error} ->
+        render_change_lost_password(conn, email, code, error)
+
+      {:error, :new_password, changeset, _done} ->
+        render_change_lost_password(conn, changeset, code, nil)
+    end
+  end
+
+  def change_lost_password(_conn, _params),
+    do: throw("Not corresponding form data.")
+
+  ##### EMAIL CHECK #####
 
   # Show the email validation form.
   def check_email_page(conn, _params) do
@@ -183,9 +287,6 @@ defmodule IdentityWeb.UserAuthController do
   # Handle the email validation form and login the user if the CGU are accepted.
   def check_email_token(conn, %{"token" => token}) do
     user_id = get_session(conn, :user_id)
-
-    IO.inspect("cookie user")
-    IO.inspect(user_id)
 
     case Accounts.get_user(user_id)
          |> Accounts.validate_user(token) do
@@ -211,7 +312,7 @@ defmodule IdentityWeb.UserAuthController do
     json(conn, %{})
   end
 
-  ### CGU VALIDATION ###
+  ##### CGU VALIDATION #####
 
   # Show the email validation form.
   def validate_cgu_page(conn, %{"lang" => lang}) do
@@ -226,9 +327,6 @@ defmodule IdentityWeb.UserAuthController do
   # Handle the email validation form and login the user if the CGU are accepted.
   def validate_cgu(conn, %{"cgu_id" => cgu_id, "lang" => lang}) do
     user_id = get_session(conn, :user_id)
-
-    IO.inspect("cookie user")
-    IO.inspect(user_id)
 
     case Legal.accept_cgu(cgu_id, user_id) do
       {:ok, _} ->

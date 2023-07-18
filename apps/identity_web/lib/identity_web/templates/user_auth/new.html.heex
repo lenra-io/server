@@ -25,14 +25,14 @@
 
     <fieldset>
       <%= label f, :email %>
-      <%= email_input f, :email, required: true %>
+      <%= email_input f, :email, required: true, autocomplete: "email" %>
       <%= error_tag f, :email, class: @submit_action %>
     </fieldset>
 
     <fieldset class="password">
       <%= inputs_for f, :password, fn fp -> %>
         <%= label fp, :password, class: "lenra-icon-eye" %>
-        <%= password_input fp, :password, required: true, minlength: 8 %>
+        <%= password_input fp, :password, required: true, minlength: 8, autocomplete: "current-password" %>
         <%= error_tag fp, :password, class: @submit_action %>
       <% end %>
     </fieldset>
@@ -47,6 +47,6 @@
     <% end %>
 
     <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary", disabled: true %>
-    <%= link gettext("I forgot my password"), to: Routes.lost_password_path(@conn, :enter_email), class: "login btn link lenra-icon-chevron-right"%>
+    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :lost_password_enter_email), class: "login btn link lenra-icon-chevron-right"%>
   </.form>
 </main>

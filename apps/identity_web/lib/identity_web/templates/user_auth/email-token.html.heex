@@ -22,7 +22,7 @@
         <%= if x == 4 do %>
           <span class="separator">-</span>
         <% end %>
-        <input required=""/>
+        <input required="" autocomplete="one-time-code"/>
       <% end %>
 
       <%= error_tag f, :token %>
