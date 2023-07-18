@@ -43,6 +43,8 @@ defmodule LenraWeb.ConnCase do
       Sandbox.mode(Lenra.Repo, {:shared, self()})
     end
 
+    setup_hydra_bypass()
+
     map =
       %{conn: Phoenix.ConnTest.build_conn()}
       |> auth_user(tags)
@@ -51,6 +53,28 @@ defmodule LenraWeb.ConnCase do
       |> auth_users_with_cgu(tags)
 
     {:ok, map}
+  end
+
+  defp setup_hydra_bypass do
+    [port: 4405]
+    |> Bypass.open()
+    |> Bypass.stub("POST", "/admin/oauth2/introspect", fn conn ->
+      conn = parse_body_params(conn)
+      %{"scope" => scope, "token" => token} = conn.body_params
+      resp = decode_fake_token(token)
+
+      Plug.Conn.resp(conn, 200, Jason.encode!(resp))
+    end)
+  end
+
+  defp parse_body_params(conn) do
+    options = [
+      parsers: [:urlencoded, :json],
+      json_decoder: Jason
+    ]
+
+    opts = Plug.Parsers.init(options)
+    Plug.Parsers.call(conn, opts)
   end
 
   defp auth_users(map, tags) do
@@ -124,11 +148,24 @@ defmodule LenraWeb.ConnCase do
   end
 
   defp conn_user(conn, user) do
-    {:ok, jwt, _claims} = LenraWeb.Guardian.encode_and_sign(user, %{typ: "access"})
+    # Create a fake token that contains the "introspect" return value directly
+    token = create_fake_token(user.id)
 
     conn
     |> Plug.Conn.put_req_header("accept", "application/json")
-    |> Plug.Conn.put_req_header("authorization", "Bearer " <> jwt)
+    |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
     |> Plug.Conn.assign(:user, user)
+  end
+
+  defp create_fake_token(user_id) do
+    %{"sub" => user_id, "active" => true}
+    |> Jason.encode!()
+    |> Base.encode64()
+  end
+
+  defp decode_fake_token(token) do
+    token
+    |> Base.decode64!()
+    |> Jason.decode!()
   end
 end

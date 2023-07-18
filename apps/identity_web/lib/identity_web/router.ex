@@ -26,7 +26,7 @@ defmodule IdentityWeb.Router do
     post "/users/email/check/new", UserAuthController, :resend_check_email_token
     get "/users/cgu/validation", UserAuthController, :validate_cgu_page
     post "/users/cgu/validation", UserAuthController, :validate_cgu
-    get "/users/log_out", UserAuthController, :logout
+    get "/users/log_out", UserAuthController, :cancel_login
     get "/users/password/lost", UserAuthController, :lost_password_enter_email
     post("/users/password/lost", UserAuthController, :send_lost_password_code)
     put("/users/password/lost", UserAuthController, :change_lost_password)
@@ -37,6 +37,6 @@ defmodule IdentityWeb.Router do
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserAuthController, :delete
+    delete "/users/log_out", UserAuthController, :logout
   end
 end

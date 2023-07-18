@@ -29,7 +29,7 @@ defmodule LenraWeb.UserEnvironmentAccessController do
   end
 
   def accept(conn, %{"id" => id}) do
-    with user <- Guardian.Plug.current_resource(conn),
+    with user <- LenraWeb.Auth.current_resource(conn),
          {:ok, res} <- Apps.accept_invitation(id, user) do
       conn
       |> reply(res)

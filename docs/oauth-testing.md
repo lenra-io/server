@@ -1,4 +1,5 @@
-How to test it : 
+# Test the Oauth protocol
+ 
 - Start dependancies (Hydra + Db) `docker-compose up -d`
 - Start server `mix phx.server`
 - Create the Hydra client using the CLI :

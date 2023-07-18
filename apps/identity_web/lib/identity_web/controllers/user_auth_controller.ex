@@ -10,8 +10,6 @@ defmodule IdentityWeb.UserAuthController do
 
   alias Lenra.Errors.BusinessError
 
-  alias IdentityWeb.HydraHelper
-
   ######################
   ## Helper functions ##
   ######################
@@ -50,7 +48,7 @@ defmodule IdentityWeb.UserAuthController do
       # accept login
       true ->
         {:ok, accept_response} =
-          HydraHelper.accept_login(login_challenge, to_string(user.id), remember)
+          HydraApi.accept_login(login_challenge, to_string(user.id), remember)
 
         conn
         |> clear_session()
@@ -129,7 +127,7 @@ defmodule IdentityWeb.UserAuthController do
 
   # The "New" show the login/register form to the user if not already logged in.
   def new(conn, %{"login_challenge" => login_challenge}) do
-    {:ok, response} = HydraHelper.get_login_request(login_challenge)
+    {:ok, response} = HydraApi.get_login_request(login_challenge)
 
     if response.body["skip"] do
       # Can do logic stuff here like update the session.
@@ -214,15 +212,24 @@ defmodule IdentityWeb.UserAuthController do
     do: throw("Not corresponding form data.")
 
   # Logout the user and reject the login request.
-  def logout(conn, _params) do
+  def cancel_login(conn, _params) do
     login_challenge = get_session(conn, :login_challenge)
 
-    {:ok, accept_response} = HydraHelper.reject_login(login_challenge, "User logged out")
+    {:ok, accept_response} = HydraApi.reject_login(login_challenge, "User logged out")
 
     conn
     |> clear_session()
     |> redirect(external: accept_response.body["redirect_to"])
   end
+
+  # The "logout" handle the logout request.
+  def logout(conn, %{"logout_challenge" => logout_challenge}) do
+    {:ok, accept_response} = HydraApi.accept_logout(logout_challenge)
+    redirect(conn, external: accept_response.body["redirect_to"])
+  end
+
+  def logout(_conn, _params),
+    do: throw("Expected a logout challenge to be set but received none")
 
   ##### LOST PASSWORD #####
 
@@ -278,8 +285,6 @@ defmodule IdentityWeb.UserAuthController do
 
   # Show the email validation form.
   def check_email_page(conn, _params) do
-    # {:ok, _response} = HydraHelper.get_login_request(login_challenge)
-
     # client = response.body["client"]
     render(conn, "email-token.html", error_message: nil)
   end

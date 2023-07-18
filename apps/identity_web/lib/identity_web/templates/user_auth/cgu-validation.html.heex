@@ -23,7 +23,7 @@
       <%= hidden_input f, :lang, value: @lang %>
       <%= hidden_input f, :cgu_id, value: @cgu_id %>
     <nav>
-      <%= link gettext("I refuse and logout"), to: Routes.user_auth_path(@conn, :logout), class: "btn"%>
+      <%= link gettext("I refuse and logout"), to: Routes.user_auth_path(@conn, :cancel_login), class: "btn"%>
       <%= submit gettext("I accept"), class: "primary lenra-icon-check" %>
     </nav>
   </.form>

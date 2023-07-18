@@ -73,16 +73,16 @@ defmodule LenraWeb.Policy do
     It call the `Bouncer.allow/4` function with :
     - The policy module from the option of `use LenraWeb.Policy, module: MyModule.Policy`
     - The current action from conn (:index, :create, :delete, :update...)
-    - The current user from conn using `Guardian.Plug.current_resource/2`
+    - The current user from conn using `LenraWeb.Auth.current_resource/2`
 
     That way, we can just call the function allow(conn, params)
-    instead of Bouncer.allow(MyModule.Policy, :index, Guardian.Plus.current_resource(conn), params)
+    instead of Bouncer.allow(MyModule.Policy, :index, LenraWeb.Auth.current_resource(conn), params)
   """
 
   defmacro __using__(opts \\ []) do
     policy_module = Keyword.get(opts, :module)
 
-    alias LenraWeb.Guardian.Plug
+    alias LenraWeb.Auth
 
     quote do
       @spec allow(any(), any()) :: :ok | {:error, atom()}
@@ -90,7 +90,7 @@ defmodule LenraWeb.Policy do
         Bouncer.allow(
           unquote(policy_module),
           action_name(conn),
-          Plug.current_resource(conn),
+          Auth.current_resource(conn),
           params
         )
       end

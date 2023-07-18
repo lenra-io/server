@@ -5,7 +5,7 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   setup %{conn: conn} do
     conn = create_app(conn)
-    user = Guardian.Plug.current_resource(conn)
+    user = LenraWeb.Auth.current_resource(conn)
 
     assert app = json_response(conn, 200)
 
