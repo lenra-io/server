@@ -1,0 +1,58 @@
+{
+    "_id": "0c89a782-7e41-4fad-ba7b-cac56b2296f1",
+    "name": "Lenra Dev",
+    "default": true,
+    "sortNum": 10000,
+    "created": "2022-02-07T13:10:08.908Z",
+    "modified": "2022-11-21T10:11:48.558Z",
+    "data": [
+        {
+            "name": "endpoint",
+            "value": "http://localhost:4000"
+        },
+        {
+            "name": "runner_secret",
+            "value": "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
+        },
+        {
+            "name": "email",
+            "value": "test@lenra.io"
+        },
+        {
+            "name": "password",
+            "value": "Testtest42!"
+        },
+        {
+            "name": "verify_code",
+            "value": ""
+        },
+        {
+            "name": "app_repo",
+            "value": "https://github.com/lenra-io/template-node.git"
+        },
+        {
+            "name": "app_id",
+            "value": "1"
+        },
+        {
+            "name": "service_name",
+            "value": "e11dd798-86d4-4fb1-9f17-f880e83dea5a"
+        },
+        {
+            "name": "build_id",
+            "value": "1"
+        },
+        {
+            "name": "dev_code",
+            "value": "caeee9e4-2bc7-4c4f-b3fa-a64a2a53d97d"
+        },
+        {
+            "name": "access_token",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZW5yYSIsImV4cCI6MTY3MTQ0NDcwOCwiaWF0IjoxNjY5MDI1NTA4LCJpc3MiOiJsZW5yYSIsImp0aSI6ImJjMWVmYjEyLWU3N2MtNDE2Yi1hN2RlLWI2M2Q5NDBmMTJiNSIsIm5iZiI6MTY2OTAyNTUwNywic3ViIjoiMSIsInR5cCI6ImFjY2VzcyJ9._BNwYX42V9SyEkOpObcpCBPq_RlRMZGkwUSLcp_h8tbaoAcsnt9WNTTBWnhmDxnKE9pVzpD9INTvqYDVBiOFog"
+        },
+        {
+            "name": "app_name",
+            "value": "Lenra Test 3"
+        }
+    ]
+}

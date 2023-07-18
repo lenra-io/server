@@ -1,4 +1,4 @@
-defmodule LenraWeb.Plug.VerifySecret do
+defmodule LenraWeb.Plug.VerifyRunnerSecret do
   @moduledoc """
   A plug used to verify if a secret header is set.
   The secret must be passed by the caller.

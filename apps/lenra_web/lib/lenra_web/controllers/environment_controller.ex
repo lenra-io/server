@@ -23,7 +23,7 @@ defmodule LenraWeb.EnvsController do
 
   def create(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
-         user <- Guardian.Plug.current_resource(conn),
+         user <- LenraWeb.Auth.current_resource(conn),
          {:ok, %{inserted_env: env}} <- Apps.create_env(app.id, user.id, params) do
       conn
       |> reply(env)

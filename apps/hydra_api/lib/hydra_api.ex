@@ -1,4 +1,4 @@
-defmodule IdentityWeb.HydraHelper do
+defmodule HydraApi do
   @moduledoc """
     Give some helper functions to help with OryHydra workflow.
     get/accept login request
@@ -68,8 +68,47 @@ defmodule IdentityWeb.HydraHelper do
     |> ORY.Hydra.request(hydra_config())
   end
 
+  def get_logout_request(logout_challenge) do
+    # The "Consent request" contain data about the current consent request.
+    # We request hydra to retreive these data.
+    %{logout_challenge: logout_challenge}
+    |> ORY.Hydra.get_logout_request()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def accept_logout(logout_challenge) do
+    %{
+      logout_challenge: logout_challenge
+    }
+    |> ORY.Hydra.accept_logout_request()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def introspect(token, required_scopes) do
+    %{scope: required_scopes, token: token}
+    |> ORY.Hydra.introspect()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def check_token(token, required_scopes) do
+    with {:ok, response} <- HydraApi.introspect(token, required_scopes),
+         true <- Map.get(response.body, "active", false) do
+      {:ok, response}
+    else
+      _error ->
+        {:error, :invalid_token}
+    end
+  end
+
+  def check_token_and_get_subject(token, required_scopes) do
+    with {:ok, response} <- check_token(token, required_scopes) do
+      subject = response.body["sub"]
+      {:ok, subject, response.body}
+    end
+  end
+
   def hydra_url do
-    Application.fetch_env!(:identity_web, :hydra_url)
+    Application.fetch_env!(:hydra_api, :hydra_url)
   end
 
   def hydra_config do

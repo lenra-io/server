@@ -16,7 +16,7 @@ defmodule LenraWeb.BuildsController do
 
   def create(conn, %{"app_id" => app_id_str} = params) do
     with {app_id, _} <- Integer.parse(app_id_str),
-         user <- Guardian.Plug.current_resource(conn),
+         user <- LenraWeb.Auth.current_resource(conn),
          {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app),
          {:ok, %{inserted_build: build}} <-

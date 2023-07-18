@@ -5,7 +5,6 @@ serve:
     cors:
       enabled: true
       allowed_origins:
-        - https://oauthdebugger.com
         - http://localhost:10000
       allowed_methods:
         - POST

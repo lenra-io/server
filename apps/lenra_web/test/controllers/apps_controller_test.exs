@@ -26,8 +26,9 @@ defmodule LenraWeb.AppsControllerTest do
       conn = get(conn, Routes.apps_path(conn, :index))
 
       assert json_response(conn, 401) == %{
-               "message" => "You are not authenticated",
-               "reason" => "unauthenticated"
+               "message" => "No Bearer token found in Authorization header",
+               "reason" => "token_not_found",
+               "metadata" => %{}
              }
     end
 
@@ -59,7 +60,7 @@ defmodule LenraWeb.AppsControllerTest do
       conn = create_app_test(conn)
       assert app = json_response(conn, 200)
 
-      user_id = Guardian.Plug.current_resource(conn).id
+      user_id = LenraWeb.Auth.current_resource(conn).id
 
       app_service_name = app["service_name"]
 
@@ -96,7 +97,7 @@ defmodule LenraWeb.AppsControllerTest do
 
       assert apps = json_response(conn!, 200)
 
-      user_id = Guardian.Plug.current_resource(conn!).id
+      user_id = LenraWeb.Auth.current_resource(conn!).id
 
       app_service_name = Enum.at(apps, 0)["service_name"]
 
@@ -185,7 +186,7 @@ defmodule LenraWeb.AppsControllerTest do
     test "but never opened apps", %{conn: conn} do
       conn = get(conn, Routes.apps_path(conn, :index))
 
-      Guardian.Plug.current_resource(conn).id
+      LenraWeb.Auth.current_resource(conn).id
 
       conn! = get(conn, Routes.apps_path(conn, :all_apps_user_opened))
       assert [] = json_response(conn!, 200)
