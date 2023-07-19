@@ -30,8 +30,6 @@ defmodule IdentityWeb.UserAuthController do
     cond do
       # check e-mail verification
       user.role == :unverified_user ->
-        # send verification email
-        Accounts.resend_registration_code(user)
         # redirect to verification page
         redirect(conn,
           to: Routes.user_auth_path(conn, :check_email_page)
@@ -46,7 +44,8 @@ defmodule IdentityWeb.UserAuthController do
 
       # accept login
       true ->
-        {:ok, accept_response} = HydraApi.accept_login(login_challenge, to_string(user.id), remember)
+        {:ok, accept_response} =
+          HydraApi.accept_login(login_challenge, to_string(user.id), remember)
 
         conn
         |> clear_session()
@@ -135,18 +134,24 @@ defmodule IdentityWeb.UserAuthController do
     else
       # client = response.body["client"]
       conn
-      |> clear_session()
+      |> delete_session(:user_id)
+      |> delete_session(:remember)
+      |> delete_session(:email)
       |> put_session(:login_challenge, login_challenge)
-      |> render("new.html",
-        submit_action: "register",
-        error_message: nil,
-        changeset: register_changeset_or_new(nil)
-      )
+      |> redirect(to: Routes.user_auth_path(conn, :new, action: "register"))
     end
   end
 
-  def new(_conn, _params),
-    do: throw("Expected a login challenge to be set but received none")
+  def new(conn, %{"action" => action}) when action in ["login", "register"] do
+    render(conn, "new.html",
+      submit_action: action,
+      error_message: nil,
+      changeset: register_changeset_or_new(nil)
+    )
+  end
+
+  def new(conn, _params),
+    do: redirect(conn, to: Routes.user_auth_path(conn, :new, action: "register"))
 
   # The "login" handle the login form and login the user if credentials are correct.
   def login(

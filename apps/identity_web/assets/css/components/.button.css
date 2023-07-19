@@ -173,6 +173,7 @@ a.btn.link:is(
 )::before {
     color: inherit;
     margin-left: 0.5rem;
+    margin-right: 0;
     font-size: 120%;
 }
 

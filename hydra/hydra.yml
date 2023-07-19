@@ -19,9 +19,9 @@ serve:
   public:
     cors:
       enabled: true
-      allowed_origins:
-        - https://oauthdebugger.com
-        - http://localhost:10000
+      # allowed_origins:
+      #   - https://oauthdebugger.com
+      #   - http://localhost:10000
       allowed_methods:
         - POST
         - GET
@@ -37,17 +37,17 @@ urls:
   self:
     issuer: http://localhost:4444
   consent: http://localhost:4001/users/consent
-  login: http://localhost:4001/users/log_in
-  logout: http://localhost:4001/users/log_out
+  login: http://localhost:4001/users/auth
+  logout: http://localhost:4001/users/logout
 
 secrets:
   system:
     - youReallyNeedToChangeThis
 
-oidc:
-  subject_identifiers:
-    supported_types:
-      - pairwise
-      - public
-    pairwise:
-      salt: youReallyNeedToChangeThis
+# oidc:
+#   subject_identifiers:
+#     supported_types:
+#       - pairwise
+#       - public
+#     pairwise:
+#       salt: youReallyNeedToChangeThis

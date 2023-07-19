@@ -22,14 +22,26 @@ import "../css/token-input.css"
             const didInsertContent = first !== undefined
             if (didInsertContent && !isLast) {
                 // continue to input the rest of the string
-                inputs[i + 1].focus()
-                inputs[i + 1].value = rest.join('')
-                inputs[i + 1].dispatchEvent(new Event('input'))
+                fillNextInputs(i + 1, rest.join(''));
             }
             tokenInput.value = inputs.map(({ value }) => value).join('');
         })
     });
-    
+
+    document.addEventListener('paste', (e) => {
+        // Let inputs handle pasting if they are focused
+        if (document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement) return;
+        const pastedData = e.clipboardData.getData('text/plain');
+        fillNextInputs(0, pastedData);
+    });
+
+    function fillNextInputs(pos, text) {
+        if (pos >= inputs.length) return;
+        inputs[pos].focus();
+        inputs[pos].value = text;
+        inputs[pos].dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+    }
+
     if (resendButton) {
         Object.defineProperty(resendButton, "disabled", {
             get() {
@@ -43,7 +55,7 @@ import "../css/token-input.css"
                 }
             }
         });
-        
+
         resendButton.addEventListener('click', (e) => {
             e.preventDefault();
             if (resendButton.disabled) return;

@@ -18,15 +18,15 @@ defmodule IdentityWeb.Router do
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    get "/users/log_in", UserAuthController, :new
+    get "/users/auth", UserAuthController, :new
     post "/users/register", UserAuthController, :create
-    post "/users/log_in", UserAuthController, :login
+    post "/users/login", UserAuthController, :login
+    get "/users/login/cancel", UserAuthController, :cancel_login
     get "/users/email/check", UserAuthController, :check_email_page
     post "/users/email/check", UserAuthController, :check_email_token
     post "/users/email/check/new", UserAuthController, :resend_check_email_token
     get "/users/cgu/validation", UserAuthController, :validate_cgu_page
     post "/users/cgu/validation", UserAuthController, :validate_cgu
-    get "/users/log_out", UserAuthController, :cancel_login
     get "/users/password/lost", UserAuthController, :lost_password_enter_email
     post("/users/password/lost", UserAuthController, :send_lost_password_code)
     put("/users/password/lost", UserAuthController, :change_lost_password)
