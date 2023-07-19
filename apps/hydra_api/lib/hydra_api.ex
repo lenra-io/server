@@ -6,6 +6,8 @@ defmodule HydraApi do
     get hydra url/config
   """
 
+  require Logger
+
   # 30 days In seconds
   @remember_days 30
   @remember_for 60 * 60 * 24 * @remember_days
@@ -114,6 +116,51 @@ defmodule HydraApi do
       subject = response.body["sub"]
       {:ok, subject, response.body}
     end
+  end
+
+  def create_lenra_backoffice_hydra_client do
+    app_url = Application.fetch_env!(:lenra, :lenra_app_url)
+
+    create_hydra_client(
+      "Lenra Backoffice",
+      "profile store manage:account manage:apps",
+      ["#{app_url}/redirect.html"]
+    )
+  end
+
+  def create_lenra_hydra_client do
+    app_url = Application.fetch_env!(:lenra, :lenra_app_url)
+
+    create_hydra_client(
+      "Lenra Client",
+      "profile store resources manage:account ",
+      ["#{app_url}/redirect.html"]
+    )
+  end
+
+  @spec create_oauth_client(number(), String.t(), String.t(), list(String.t())) ::
+          {:ok, ORY.Hydra.Response.t()} | {:error, ORY.Hydra.Response.t() | any}
+  def create_oauth_client(env_id, client_name, scopes, redirect_uris) do
+    create_hydra_client(client_name, scopes, redirect_uris, %{
+      metadata: %{
+        env_id: env_id
+      }
+    })
+  end
+
+  defp create_hydra_client(client_name, scopes, redirect_uris, additionnal_params \\ %{}) do
+    Logger.debug("Creating Hydra client #{client_name}")
+
+    %{
+      token_endpoint_auth_method: "none",
+      client_name: client_name,
+      scope: scopes,
+      redirect_uris: redirect_uris,
+      skip_consent: false
+    }
+    |> Map.merge(additionnal_params)
+    |> ORY.Hydra.create_client()
+    |> ORY.Hydra.request(hydra_config())
   end
 
   def hydra_url do
