@@ -44,8 +44,7 @@ defmodule IdentityWeb.UserAuthController do
 
       # accept login
       true ->
-        {:ok, accept_response} =
-          HydraApi.accept_login(login_challenge, to_string(user.id), remember)
+        {:ok, accept_response} = HydraApi.accept_login(login_challenge, to_string(user.id), remember)
 
         conn
         |> clear_session()
