@@ -181,8 +181,8 @@ defmodule IdentityWeb.UserAuthController do
     end
   end
 
-  def login(_conn, _params),
-    do: throw("Not corresponding form data.")
+  def login(conn, params),
+    do: cancel_login(conn, params)
 
   # The "create" handle the register form
   def create(conn, %{
@@ -210,8 +210,8 @@ defmodule IdentityWeb.UserAuthController do
     end
   end
 
-  def create(_conn, _params),
-    do: throw("Not corresponding form data.")
+  def create(conn, params),
+    do: cancel_login(conn, params)
 
   # Logout the user and reject the login request.
   def cancel_login(conn, _params) do
@@ -236,7 +236,7 @@ defmodule IdentityWeb.UserAuthController do
   ##### LOST PASSWORD #####
 
   def lost_password_enter_email(conn, _params) do
-    render(conn, "lost-password-enter-email.html")
+    render(conn, "lost-password-enter-email.html", error_message: nil)
   end
 
   def send_lost_password_code(conn, %{"email" => email}) do
@@ -254,8 +254,8 @@ defmodule IdentityWeb.UserAuthController do
     |> render_change_lost_password(email)
   end
 
-  def lost_password_send_code(_conn, _params),
-    do: throw("The email is required")
+  def lost_password_send_code(conn, _params),
+    do: render(conn, "lost-password-enter-email.html", error_message: "Email is required")
 
   def change_lost_password(conn, %{"user" => %{"code" => code} = params}) do
     email = get_session(conn, :email)
@@ -280,8 +280,8 @@ defmodule IdentityWeb.UserAuthController do
     end
   end
 
-  def change_lost_password(_conn, _params),
-    do: throw("Not corresponding form data.")
+  def change_lost_password(conn, params),
+    do: cancel_login(conn, params)
 
   ##### EMAIL CHECK #####
 
@@ -306,8 +306,8 @@ defmodule IdentityWeb.UserAuthController do
     end
   end
 
-  def check_email_token(_conn, _params),
-    do: throw("No token passed.")
+  def check_email_token(conn, _params),
+    do: render(conn, "email-token.html", error_message: "Token is required")
 
   # The "create" handle the register form
   def resend_check_email_token(conn, _params) do
