@@ -52,7 +52,8 @@ defmodule Lenra.MixProject do
        git: "https://github.com/lenra-io/application-runner.git",
        ref: "v1.0.0-beta.125",
        submodules: true},
-      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.7.1"}
+      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.7.1"},
+      {:hydra_api, in_umbrella: true}
     ]
   end
 end

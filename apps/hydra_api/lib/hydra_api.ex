@@ -118,48 +118,46 @@ defmodule HydraApi do
     end
   end
 
-  def create_lenra_backoffice_hydra_client do
-    app_url = Application.fetch_env!(:lenra, :lenra_app_url)
-
-    create_hydra_client(
-      "Lenra Backoffice",
-      "profile store manage:account manage:apps",
-      ["#{app_url}/redirect.html"]
-    )
-  end
-
-  def create_lenra_hydra_client do
-    app_url = Application.fetch_env!(:lenra, :lenra_app_url)
-
-    create_hydra_client(
-      "Lenra Client",
-      "profile store resources manage:account ",
-      ["#{app_url}/redirect.html"]
-    )
-  end
-
-  @spec create_oauth_client(number(), String.t(), String.t(), list(String.t())) ::
-          {:ok, ORY.Hydra.Response.t()} | {:error, ORY.Hydra.Response.t() | any}
-  def create_oauth_client(env_id, client_name, scopes, redirect_uris) do
-    create_hydra_client(client_name, scopes, redirect_uris, %{
+  def create_oauth_client(env_id, client_name, scopes, redirect_uris, allow_origins) do
+    create_hydra_client(%{
+      token_endpoint_auth_method: "none",
+      client_name: client_name,
+      scope: scopes,
+      redirect_uris: redirect_uris,
+      allowed_cors_origins: allow_origins,
+      skip_consent: false,
       metadata: %{
         env_id: env_id
       }
     })
   end
 
-  defp create_hydra_client(client_name, scopes, redirect_uris, additionnal_params \\ %{}) do
-    Logger.debug("Creating Hydra client #{client_name}")
+  def get_hydra_client(id) do
+    id
+    |> ORY.Hydra.get_client()
+    |> ORY.Hydra.request(hydra_config())
+  end
 
-    %{
-      token_endpoint_auth_method: "none",
-      client_name: client_name,
-      scope: scopes,
-      redirect_uris: redirect_uris,
-      skip_consent: false
-    }
-    |> Map.merge(additionnal_params)
+  def create_hydra_client(params) do
+    Logger.debug("Create hydra client #{inspect(params)}")
+
+    params
     |> ORY.Hydra.create_client()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def delete_hydra_client(id) do
+    Logger.debug("Delete hydra client #{id}")
+
+    id
+    |> ORY.Hydra.delete_client()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def update_hydra_client(id, params) do
+    Logger.debug("Update hydra client #{id} to #{inspect(params)}")
+
+    ORY.Hydra.update_client(id, params)
     |> ORY.Hydra.request(hydra_config())
   end
 

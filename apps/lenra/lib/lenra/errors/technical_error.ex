@@ -21,6 +21,8 @@ defmodule Lenra.Errors.TechnicalError do
       {:datastore_not_found, "Datastore cannot be found"},
       {:data_not_found, "Data cannot be found"},
       {:cgu_not_found, "Cgu cannot be found"},
-      {:file_not_found, "File not found"}
+      {:file_not_found, "File not found"},
+      {:cannot_save_oauth_client, "The Oauth client cannot be saved."},
+      {:hydra_request_failed, "The request to hydra failed."}
     ]
 end

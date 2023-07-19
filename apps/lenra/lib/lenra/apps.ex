@@ -29,7 +29,8 @@ defmodule Lenra.Apps do
     Deployment,
     Environment,
     MainEnv,
-    UserEnvironmentAccess
+    UserEnvironmentAccess,
+    OAuthClient
   }
 
   alias ApplicationRunner.MongoStorage.MongoUserLink
@@ -465,5 +466,52 @@ defmodule Lenra.Apps do
       fetch_user_env_access(environment_id: env_id, user_id: user_id)
     end)
     |> Ecto.Multi.delete(:deleted_user_access, fn %{user_access: user_access} -> user_access end)
+  end
+
+  def create_oauth_client(env_id, name, scopes, redirect_uris, allow_origins) do
+    with {:ok, %{body: %{"client_id" => client_id}} = response} <-
+           HydraApi.create_oauth_client(env_id, name, scopes, redirect_uris, allow_origins),
+         {:insert, {:ok, _changeset}, _client_id} <-
+           {:insert, Repo.insert(OAuthClient.new(env_id, client_id)), client_id} do
+      result = %{
+        env_id: env_id,
+        oauth_client_id: response.body["client_id"],
+        oauth_client_secret: response.body["client_secret"],
+        oauth_client_secret_expiration: response.body["client_secret_expires_at"]
+      }
+
+      {:ok, result}
+    else
+      {:insert, {:error, _changeset}, client_id} ->
+        # Failed during database insertion, delete the oauth client on hydra
+        HydraApi.delete_hydra_client(client_id)
+        TechnicalError.cannot_save_oauth_client_tuple()
+
+      {:error, reason} ->
+        TechnicalError.hydra_request_failed_tuple(reason)
+    end
+  end
+
+  def get_oauth_client(oauth_client_id) do
+    case HydraApi.get_hydra_client(oauth_client_id) do
+      {:ok, response} ->
+        {:ok, response.body}
+
+      {:error, reason} ->
+        TechnicalError.hydra_request_failed_tuple(reason)
+    end
+  end
+
+  def get_oauth_clients(env_id) do
+    from(c in OAuthClient, where: c.environment_id == ^env_id)
+    |> Repo.all()
+    |> Enum.map(fn oauth_client ->
+      Task.async(Lenra.Apps, :get_oauth_client, [oauth_client.oauth_client_id])
+    end)
+    |> Task.await_many()
+    |> Enum.reduce_while({:ok, []}, fn
+      {:ok, client_infos}, {:ok, clients} -> {:cont, {:ok, [client_infos | clients]}}
+      error_tuple, _acc -> {:halt, error_tuple}
+    end)
   end
 end
