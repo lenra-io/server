@@ -104,9 +104,7 @@ defmodule LenraWeb.Router do
     patch("/:app_id/environments/:env_id", EnvsController, :update)
 
     # Invitations to env
-    resources("/:app_id/environments/:environment_id/invitations", UserEnvironmentAccessController,
-      only: [:index, :create]
-    )
+    resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
 
     get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
     post("/invitations/:id", UserEnvironmentAccessController, :accept)
