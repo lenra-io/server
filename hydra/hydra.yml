@@ -19,9 +19,6 @@ serve:
   public:
     cors:
       enabled: true
-      # allowed_origins:
-      #   - https://oauthdebugger.com
-      #   - http://localhost:10000
       allowed_methods:
         - POST
         - GET
@@ -44,10 +41,3 @@ secrets:
   system:
     - youReallyNeedToChangeThis
 
-# oidc:
-#   subject_identifiers:
-#     supported_types:
-#       - pairwise
-#       - public
-#     pairwise:
-#       salt: youReallyNeedToChangeThis
