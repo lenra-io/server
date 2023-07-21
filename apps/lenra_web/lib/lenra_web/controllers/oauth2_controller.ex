@@ -1,35 +1,59 @@
-defmodule LenraWeb.AppsController do
+defmodule LenraWeb.OAuth2Controller do
   use LenraWeb, :controller
 
   use LenraWeb.Policy,
-    module: LenraWeb.AppsController.Policy
+    module: LenraWeb.OAuth2Controller.Policy
 
   alias Lenra.Apps
-  alias LenraWeb.Auth
 
   require Logger
 
-  def create(conn, params) do
-    with :ok <- allow(conn),
-         user <- Auth.current_resource(conn),
-         {:ok, %{inserted_application: app}} <- Apps.create_app(user.id, params) do
+  def index(conn, %{"env_id" => env_id} = params) do
+    with :ok <- allow_creator_only(conn, params),
+         {:ok, clients} <- Apps.get_oauth2_clients(env_id) do
       conn
-      |> reply(app)
+      |> reply(clients)
+    end
+  end
+
+  def create(conn, params) do
+    with :ok <- allow_creator_only(conn, params),
+         {:ok, clients} <- Apps.create_oauth2_client(params) do
+      conn
+      |> reply(clients)
+    end
+  end
+
+  def update(conn, params) do
+    with :ok <- allow_creator_only(conn, params),
+         {:ok, updated} <- Apps.create_oauth2_client(params) do
+      conn
+      |> reply(updated)
+    end
+  end
+
+  def delete(conn, params) do
+    with :ok <- allow_creator_only(conn, params),
+         {:ok, deleted} <- Apps.delete_oauth2_client(params) do
+      conn
+      |> reply(deleted)
+    end
+  end
+
+  defp allow_creator_only(conn, %{"environment_id" => env_id}) do
+    with {:ok, app} <- Apps.get_app_for_env(env_id) do
+      allow(conn, app)
     end
   end
 end
 
-defmodule LenraWeb.AppsController.Policy do
+defmodule LenraWeb.OAuth2Controller.Policy do
   alias Lenra.Accounts.User
   alias Lenra.Apps.App
 
   @impl Bouncer.Policy
-  def authorize(:index, _user, _data), do: true
-  def authorize(:create, %User{role: :dev}, _data), do: true
-  def authorize(:update, %User{id: user_id}, %App{creator_id: user_id}), do: true
-  def authorize(:delete, %User{id: user_id}, %App{creator_id: user_id}), do: true
-  def authorize(:get_user_apps, %User{role: :dev}, _data), do: true
-  def authorize(:all_apps_user_opened, _user, _data), do: true
+  # Whatever the action, you must be the app creator to manage the oauth client
+  def authorize(_, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default

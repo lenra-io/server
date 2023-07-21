@@ -30,7 +30,7 @@ defmodule Lenra.Apps do
     Environment,
     MainEnv,
     UserEnvironmentAccess,
-    OAuthClient
+    OAuth2Client
   }
 
   alias ApplicationRunner.MongoStorage.MongoUserLink
@@ -132,6 +132,12 @@ defmodule Lenra.Apps do
     Repo.all(from(e in Environment, where: e.application_id == ^app_id))
   end
 
+  def get_app_for_env(env_id) do
+    Repo.get(Environment, env_id)
+    |> Repo.preload(:application)
+    |> Map.get(:application)
+  end
+
   def get_env(env_id) do
     Repo.get(Environment, env_id)
   end
@@ -191,10 +197,17 @@ defmodule Lenra.Apps do
 
     with {:ok, %App{} = app} <- fetch_app(app_id),
          preloaded_app <- Repo.preload(app, :main_env),
-         {:ok, %{inserted_build: inserted_build}} <- create_build_and_trigger_pipeline(creator_id, app_id, params) do
-      case create_deployment(preloaded_app.main_env.environment_id, inserted_build.id, creator_id, params) do
+         {:ok, %{inserted_build: inserted_build}} <-
+           create_build_and_trigger_pipeline(creator_id, app_id, params) do
+      case create_deployment(
+             preloaded_app.main_env.environment_id,
+             inserted_build.id,
+             creator_id,
+             params
+           ) do
         {:error, reason} ->
           Logger.critical("Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}")
+
           TechnicalError.unknown_error_tuple(reason)
 
         _res ->
@@ -286,8 +299,10 @@ defmodule Lenra.Apps do
   def deploy_in_main_env(%Build{} = build) do
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
-         %Deployment{} = deployment <- get_deployement(build.id, loaded_app.main_env.environment.id),
-         {:ok, _status} <- OpenfaasServices.deploy_app(loaded_build.application.service_name, build.build_number) do
+         %Deployment{} = deployment <-
+           get_deployement(build.id, loaded_app.main_env.environment.id),
+         {:ok, _status} <-
+           OpenfaasServices.deploy_app(loaded_build.application.service_name, build.build_number) do
       update_deployement(deployment, status: :waitingForAppReady)
 
       spawn(fn ->
@@ -327,11 +342,15 @@ defmodule Lenra.Apps do
   def update_deployement_after_deploy(deployment, env, service_name, build_number),
     do: update_deployement_after_deploy(deployment, env, service_name, build_number, 0)
 
-  def update_deployement_after_deploy(deployment, env, service_name, build_number, retry) when retry <= 120 do
+  def update_deployement_after_deploy(deployment, env, service_name, build_number, retry)
+      when retry <= 120 do
     case OpenfaasServices.is_deploy(service_name, build_number) do
       true ->
         Ecto.Multi.new()
-        |> Ecto.Multi.update(:updated_deployment, Ecto.Changeset.change(deployment, status: :success))
+        |> Ecto.Multi.update(
+          :updated_deployment,
+          Ecto.Changeset.change(deployment, status: :success)
+        )
         |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
           env
           |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
@@ -344,6 +363,7 @@ defmodule Lenra.Apps do
       :error404 ->
         if retry == 3 do
           Logger.critical("Function #{service_name} not deploy on openfaas, this should not appens")
+
           update_deployement(deployment, status: :failure)
         else
           Process.sleep(5000)
@@ -468,16 +488,20 @@ defmodule Lenra.Apps do
     |> Ecto.Multi.delete(:deleted_user_access, fn %{user_access: user_access} -> user_access end)
   end
 
-  def create_oauth_client(env_id, name, scopes, redirect_uris, allow_origins) do
-    with {:ok, %{body: %{"client_id" => client_id}} = response} <-
-           HydraApi.create_oauth_client(env_id, name, scopes, redirect_uris, allow_origins),
-         {:insert, {:ok, _changeset}, _client_id} <-
-           {:insert, Repo.insert(OAuthClient.new(env_id, client_id)), client_id} do
+  def create_oauth2_client(params) do
+    with %Ecto.Changeset{valid?: true} = changeset <- OAuth2Client.new(params),
+         {:ok, oauth2_client} <- Ecto.Changeset.apply_action(changeset, :create),
+         {:ok, %{body: %{"client_id" => client_id}} = response} <-
+           HydraApi.create_oauth2_client(oauth2_client),
+         %Ecto.Changeset{valid?: true} = db_changeset <-
+           OAuth2Client.update_for_db(oauth2_client, client_id),
+         {:insert, {:ok, inserted}, _client_id} <- {:insert, Repo.insert(db_changeset), client_id} do
       result = %{
-        env_id: env_id,
-        oauth_client_id: response.body["client_id"],
-        oauth_client_secret: response.body["client_secret"],
-        oauth_client_secret_expiration: response.body["client_secret_expires_at"]
+        client: inserted,
+        secret: %{
+          value: response.body["client_secret"],
+          expiration: response.body["client_secret_expires_at"]
+        }
       }
 
       {:ok, result}
@@ -487,12 +511,56 @@ defmodule Lenra.Apps do
         HydraApi.delete_hydra_client(client_id)
         TechnicalError.cannot_save_oauth_client_tuple()
 
+      %Ecto.Changeset{valid?: false} = changeset ->
+        {:error, changeset}
+
       {:error, reason} ->
         TechnicalError.hydra_request_failed_tuple(reason)
     end
   end
 
-  def get_oauth_client(oauth_client_id) do
+  def update_oauth2_client(%{"client_id" => client_id} = params) do
+    with {:ok, hydra_client} <- detailed_oauth2_client_info(client_id),
+         oauth2_client_changeset <- hydra_client_to_oauth2_client(hydra_client),
+         updated_changeset <- OAuth2Client.update(oauth2_client_changeset, params),
+         {:ok, new_oauth2_client} <- Ecto.Changeset.apply_action(updated_changeset, :create),
+         {:ok, _result} <- HydraApi.update_oauth2_client(new_oauth2_client) do
+      {:ok, new_oauth2_client}
+    end
+  end
+
+  defp hydra_client_to_oauth2_client(hydra_client) do
+    env_id = hydra_client["metadata"]["environment_id"]
+    client_id = hydra_client["client_id"]
+
+    hydra_params = %{
+      "name" => hydra_client["client_name"],
+      "scopes" => hydra_client["scope"] |> String.split(),
+      "allowed_origins" => hydra_client["allowed_cors_origins"],
+      "redirect_uris" => hydra_client["redirect_uris"],
+      "environment_id" => env_id
+    }
+
+    %OAuth2Client{}
+    |> OAuth2Client.changeset_hydra(hydra_params)
+    |> OAuth2Client.update_for_db(client_id)
+    |> Ecto.Changeset.apply_action!(:transformed)
+  end
+
+  def delete_oauth2_client(%{"environment_id" => env_id, "client_id" => client_id}) do
+    to_delete = Repo.get_by(OAuth2Client, environment_id: env_id, oauth_client_id: client_id)
+
+    if not is_nil(to_delete) do
+      with {:ok, _response} <- HydraApi.delete_hydra_client(client_id),
+           {:ok, deleted} <- Repo.delete(to_delete) do
+        {:ok, deleted}
+      end
+    else
+      TechnicalError.error_404_tuple()
+    end
+  end
+
+  def detailed_oauth2_client_info(oauth_client_id) do
     case HydraApi.get_hydra_client(oauth_client_id) do
       {:ok, response} ->
         {:ok, response.body}
@@ -502,16 +570,20 @@ defmodule Lenra.Apps do
     end
   end
 
-  def get_oauth_clients(env_id) do
-    from(c in OAuthClient, where: c.environment_id == ^env_id)
+  def get_oauth2_clients(env_id) do
+    from(c in OAuth2Client, where: c.environment_id == ^env_id)
     |> Repo.all()
     |> Enum.map(fn oauth_client ->
-      Task.async(Lenra.Apps, :get_oauth_client, [oauth_client.oauth_client_id])
+      Task.async(Lenra.Apps, :detailed_oauth2_client_info, [oauth_client.oauth_client_id])
     end)
     |> Task.await_many()
     |> Enum.reduce_while({:ok, []}, fn
-      {:ok, client_infos}, {:ok, clients} -> {:cont, {:ok, [client_infos | clients]}}
-      error_tuple, _acc -> {:halt, error_tuple}
+      {:ok, client_infos}, {:ok, clients} ->
+        formatted_client_infos = hydra_client_to_oauth2_client(client_infos)
+        {:cont, {:ok, [formatted_client_infos | clients]}}
+
+      error_tuple, _acc ->
+        {:halt, error_tuple}
     end)
   end
 end

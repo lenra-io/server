@@ -104,7 +104,9 @@ defmodule LenraWeb.Router do
     patch("/:app_id/environments/:env_id", EnvsController, :update)
 
     # Invitations to env
-    resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+    resources("/:app_id/environments/:environment_id/invitations", UserEnvironmentAccessController,
+      only: [:index, :create]
+    )
 
     get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
     post("/invitations/:id", UserEnvironmentAccessController, :accept)
@@ -115,6 +117,14 @@ defmodule LenraWeb.Router do
     # Deployments
     resources("/deployments", DeploymentsController, only: [:create])
     get("/:app_id/deployments", DeploymentsController, :index)
+  end
+
+  scope "/api/environments", LenraWeb do
+    pipe_through [:api, :scope_manage_apps, :ensure_cgu_accepted]
+    post("/:environment_id/oauth", OAuth2Controller, :create)
+    get("/:environment_id/oauth/:client_id", OAuth2Controller, :index)
+    put("/:environment_id/oauth/:client_id", OAuth2Controller, :update)
+    delete("/:environment_id/oauth/:client_id", OAuth2Controller, :delete)
   end
 
   # /api resources, scope "resources"

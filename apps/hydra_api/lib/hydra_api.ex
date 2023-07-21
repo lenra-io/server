@@ -118,18 +118,30 @@ defmodule HydraApi do
     end
   end
 
-  def create_oauth_client(env_id, client_name, scopes, redirect_uris, allow_origins) do
-    create_hydra_client(%{
+  defp prepare_request(params) do
+    %{
       token_endpoint_auth_method: "none",
-      client_name: client_name,
-      scope: scopes,
-      redirect_uris: redirect_uris,
-      allowed_cors_origins: allow_origins,
+      client_name: params.name,
+      scope: Enum.join(params.scopes, " "),
+      redirect_uris: params.redirect_uris,
+      allowed_cors_origins: params.allowed_origins,
       skip_consent: false,
       metadata: %{
-        env_id: env_id
+        environment_id: params.environment_id
       }
-    })
+    }
+  end
+
+  def create_oauth2_client(params) do
+    params
+    |> prepare_request()
+    |> create_hydra_client()
+  end
+
+  def update_oauth2_client(params) do
+    params
+    |> prepare_request()
+    |> update_hydra_client(params.oauth_client_id)
   end
 
   def get_hydra_client(id) do
@@ -154,7 +166,7 @@ defmodule HydraApi do
     |> ORY.Hydra.request(hydra_config())
   end
 
-  def update_hydra_client(id, params) do
+  def update_hydra_client(params, id) do
     Logger.debug("Update hydra client #{id} to #{inspect(params)}")
 
     ORY.Hydra.update_client(id, params)
