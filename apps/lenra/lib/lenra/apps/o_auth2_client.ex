@@ -14,9 +14,9 @@ defmodule Lenra.Apps.OAuth2Client do
   @allowed_origins_regex ~r/^https?:\/\/\w+(\.\w+)*(:[0-9]+)?$/
   @allowed_scopes ["profile", "store", "resources", "manage:account", "manage:apps"]
 
-  @derive {Jason.Encoder, only: [:oauth_client_id, :environment_id, :name, :scopes, :redirect_uris, :allowed_origins]}
-  schema "oauth_clients" do
-    field(:oauth_client_id, :string)
+  @derive {Jason.Encoder, only: [:oauth2_client_id, :environment_id, :name, :scopes, :redirect_uris, :allowed_origins]}
+  schema "oauth2_clients" do
+    field(:oauth2_client_id, :string)
     belongs_to(:environment, Environment)
     timestamps()
 
@@ -27,27 +27,27 @@ defmodule Lenra.Apps.OAuth2Client do
     field(:allowed_origins, {:array, :string}, virtual: true)
   end
 
-  defp changeset_db(oauth_client, params) do
-    oauth_client
-    |> cast(params, [:oauth_client_id])
-    |> validate_required([:oauth_client_id, :environment_id])
-    |> unique_constraint(:oauth_client_id)
+  defp changeset_db(oauth2_client, params) do
+    oauth2_client
+    |> cast(params, [:oauth2_client_id])
+    |> validate_required([:oauth2_client_id, :environment_id])
+    |> unique_constraint(:oauth2_client_id)
   end
 
-  def update_for_db(oauth_client, oauth_client_id) do
-    oauth_client
-    |> changeset_db(%{"oauth_client_id" => oauth_client_id})
+  def update_for_db(oauth2_client, oauth2_client_id) do
+    oauth2_client
+    |> changeset_db(%{"oauth2_client_id" => oauth2_client_id})
   end
 
-  def changeset_hydra(oauth_client, params) do
-    oauth_client
+  def changeset_hydra(oauth2_client, params) do
+    oauth2_client
     |> cast(params, [:name, :scopes, :redirect_uris, :allowed_origins, :environment_id])
     |> validate_required([:environment_id])
     |> validate_hydra()
   end
 
-  defp changeset_update_hydra(oauth_client, params) do
-    oauth_client
+  defp changeset_update_hydra(oauth2_client, params) do
+    oauth2_client
     |> cast(params, [:name, :scopes, :redirect_uris, :allowed_origins])
     |> validate_hydra()
   end

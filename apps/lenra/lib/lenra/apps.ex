@@ -509,7 +509,7 @@ defmodule Lenra.Apps do
       {:insert, {:error, _changeset}, client_id} ->
         # Failed during database insertion, delete the oauth client on hydra
         HydraApi.delete_hydra_client(client_id)
-        TechnicalError.cannot_save_oauth_client_tuple()
+        TechnicalError.cannot_save_oauth2_client_tuple()
 
       %Ecto.Changeset{valid?: false} = changeset ->
         {:error, changeset}
@@ -548,7 +548,7 @@ defmodule Lenra.Apps do
   end
 
   def delete_oauth2_client(%{"environment_id" => env_id, "client_id" => client_id}) do
-    to_delete = Repo.get_by(OAuth2Client, environment_id: env_id, oauth_client_id: client_id)
+    to_delete = Repo.get_by(OAuth2Client, environment_id: env_id, oauth2_client_id: client_id)
 
     if not is_nil(to_delete) do
       with {:ok, _response} <- HydraApi.delete_hydra_client(client_id),
@@ -560,8 +560,8 @@ defmodule Lenra.Apps do
     end
   end
 
-  def detailed_oauth2_client_info(oauth_client_id) do
-    case HydraApi.get_hydra_client(oauth_client_id) do
+  def detailed_oauth2_client_info(oauth2_client_id) do
+    case HydraApi.get_hydra_client(oauth2_client_id) do
       {:ok, response} ->
         {:ok, response.body}
 
@@ -573,8 +573,8 @@ defmodule Lenra.Apps do
   def get_oauth2_clients(env_id) do
     from(c in OAuth2Client, where: c.environment_id == ^env_id)
     |> Repo.all()
-    |> Enum.map(fn oauth_client ->
-      Task.async(Lenra.Apps, :detailed_oauth2_client_info, [oauth_client.oauth_client_id])
+    |> Enum.map(fn oauth2_client ->
+      Task.async(Lenra.Apps, :detailed_oauth2_client_info, [oauth2_client.oauth2_client_id])
     end)
     |> Task.await_many()
     |> Enum.reduce_while({:ok, []}, fn

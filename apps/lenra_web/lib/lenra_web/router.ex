@@ -119,10 +119,10 @@ defmodule LenraWeb.Router do
 
   scope "/api/environments", LenraWeb do
     pipe_through [:api, :scope_manage_apps, :ensure_cgu_accepted]
-    post("/:environment_id/oauth", OAuth2Controller, :create)
-    get("/:environment_id/oauth/:client_id", OAuth2Controller, :index)
-    put("/:environment_id/oauth/:client_id", OAuth2Controller, :update)
-    delete("/:environment_id/oauth/:client_id", OAuth2Controller, :delete)
+    post("/:environment_id/oauth2", OAuth2Controller, :create)
+    get("/:environment_id/oauth2/:client_id", OAuth2Controller, :index)
+    put("/:environment_id/oauth2/:client_id", OAuth2Controller, :update)
+    delete("/:environment_id/oauth2/:client_id", OAuth2Controller, :delete)
   end
 
   # /api resources, scope "resources"

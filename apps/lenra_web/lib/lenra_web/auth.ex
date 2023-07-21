@@ -5,9 +5,9 @@ defmodule LenraWeb.Auth do
     Put/Get the current token in the conn
     Put/Get the current token introspect (response from Hydra) in the conn
   """
-  @token_key :oauth_token
-  @token_key_introspect :oauth_token_introspect
-  @resource_key :oauth_resource
+  @token_key :oauth2_token
+  @token_key_introspect :oauth2_token_introspect
+  @resource_key :oauth2_resource
 
   def put_token(conn, token) do
     Plug.Conn.put_private(conn, @token_key, token)

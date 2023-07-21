@@ -22,7 +22,7 @@ defmodule Lenra.Errors.TechnicalError do
       {:data_not_found, "Data cannot be found"},
       {:cgu_not_found, "Cgu cannot be found"},
       {:file_not_found, "File not found"},
-      {:cannot_save_oauth_client, "The Oauth client cannot be saved."},
+      {:cannot_save_oauth2_client, "The Oauth client cannot be saved."},
       {:hydra_request_failed, "The request to hydra failed."}
     ]
 end

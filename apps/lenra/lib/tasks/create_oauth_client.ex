@@ -1,15 +1,15 @@
-defmodule Mix.Tasks.CreateOauthClient do
+defmodule Mix.Tasks.CreateOauth2Client do
   @shortdoc "Create the Hydra OAuth clients (backoffice or apps client)"
 
   @moduledoc "Create the OAuth clients.
 
-  mix create_oauth_client backoffice # Create the backoffice OAuth client
-  mix create_oauth_client apps # Create the \"apps client\" OAuth client
+  mix create_oauth2_client backoffice # Create the backoffice OAuth client
+  mix create_oauth2_client apps # Create the \"apps client\" OAuth client
   "
   use Mix.Task
 
   @usage_msg """
-  Use : mix create_oauth_client <backoffice|apps|custom>
+  Use : mix create_oauth2_client <backoffice|apps|custom>
   Override values (or specify for custom) :
   --name <client_name>
   --scope <scope>
@@ -17,7 +17,7 @@ defmodule Mix.Tasks.CreateOauthClient do
   --allowed-origin <origin>
 
   Example :
-  mix create_oauth_client custom \
+  mix create_oauth2_client custom \
     --name "My Custom Client" \
     --scope foo --scope bar \
     --redirect-uri http://example.com/redirect.html \
@@ -27,7 +27,14 @@ defmodule Mix.Tasks.CreateOauthClient do
 
 
   """
-  @show_fields ["client_id", "redirect_uris", "client_name", "allowed_cors_origins", "scope", "metadata"]
+  @show_fields [
+    "client_id",
+    "redirect_uris",
+    "client_name",
+    "allowed_cors_origins",
+    "scope",
+    "metadata"
+  ]
 
   @backoffice_name "Lenra Backoffice"
   @backoffice_scopes ["profile", "store", "manage:account", "manage:apps"]
