@@ -141,7 +141,7 @@ defmodule HydraApi do
   def update_oauth2_client(params) do
     params
     |> prepare_request()
-    |> update_hydra_client(params.oauth_client_id)
+    |> update_hydra_client(params.oauth2_client_id)
   end
 
   def get_hydra_client(id) do
