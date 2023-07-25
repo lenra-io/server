@@ -29,8 +29,8 @@ defmodule Lenra.Apps do
     Deployment,
     Environment,
     MainEnv,
-    UserEnvironmentAccess,
-    OAuth2Client
+    OAuth2Client,
+    UserEnvironmentAccess
   }
 
   alias ApplicationRunner.MongoStorage.MongoUserLink
@@ -133,7 +133,8 @@ defmodule Lenra.Apps do
   end
 
   def fetch_app_for_env(env_id) do
-    Repo.get(Environment, env_id)
+    Environment
+    |> Repo.get(env_id)
     |> Repo.preload(:application)
     |> Map.get(:application)
     |> case do
@@ -547,13 +548,16 @@ defmodule Lenra.Apps do
   def delete_oauth2_client(%{"environment_id" => env_id, "client_id" => client_id}) do
     to_delete = Repo.get_by(OAuth2Client, environment_id: env_id, oauth2_client_id: client_id)
 
-    if not is_nil(to_delete) do
-      with {:ok, _response} <- HydraApi.delete_hydra_client(client_id),
-           {:ok, deleted} <- Repo.delete(to_delete) do
-        {:ok, deleted}
-      end
-    else
-      TechnicalError.error_404_tuple()
+    do_delete_oauth2_client(to_delete)
+  end
+
+  defp do_delete_oauth2_client(nil) do
+    TechnicalError.error_404_tuple()
+  end
+
+  defp do_delete_oauth2_client(to_delete) do
+    with {:ok, _response} <- HydraApi.delete_hydra_client(to_delete.oauth2_client_id) do
+      Repo.delete(to_delete)
     end
   end
 
@@ -568,7 +572,9 @@ defmodule Lenra.Apps do
   end
 
   def get_oauth2_clients(env_id) do
-    from(c in OAuth2Client, where: c.environment_id == ^env_id)
+    query = from(c in OAuth2Client, where: c.environment_id == ^env_id)
+
+    query
     |> Repo.all()
     |> Enum.map(fn oauth2_client ->
       Task.async(Lenra.Apps, :detailed_oauth2_client_info, [oauth2_client.oauth2_client_id])

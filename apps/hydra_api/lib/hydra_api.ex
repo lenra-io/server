@@ -169,7 +169,8 @@ defmodule HydraApi do
   def update_hydra_client(params, id) do
     Logger.debug("Update hydra client #{id} to #{inspect(params)}")
 
-    ORY.Hydra.update_client(id, params)
+    id
+    |> ORY.Hydra.update_client(params)
     |> ORY.Hydra.request(hydra_config())
   end
 

@@ -234,9 +234,9 @@ defmodule LenraWeb.OAuth2ControllerTest do
       {:ok, %{client: %{oauth2_client_id: client_id}}} = Lenra.Apps.create_oauth2_client(params)
 
       # Update the clients
-      params = Map.put(params, "name", "Bar")
+      updated_params = Map.put(params, "name", "Bar")
       route = Routes.o_auth2_path(conn, :update, env_id, client_id)
-      conn = put(conn, route, params)
+      conn = put(conn, route, updated_params)
 
       assert %{
                "allowed_origins" => ["http://localhost:10000"],

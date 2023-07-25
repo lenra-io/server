@@ -6,7 +6,7 @@ defmodule Lenra.Apps.OAuth2Client do
   use Lenra.Schema
   import Ecto.Changeset
 
-  alias Lenra.Apps.{Environment}
+  alias Lenra.Apps.Environment
 
   @type t :: %__MODULE__{}
 
@@ -62,14 +62,16 @@ defmodule Lenra.Apps.OAuth2Client do
   end
 
   defp validate_list_regex(changeset, field, regex) do
-    validate_change(changeset, field, fn _field, uris ->
-      Enum.reduce_while(uris, [], fn uri, _validated ->
-        if Regex.match?(regex, uri) do
-          {:cont, []}
-        else
-          {:halt, [{field, {"has an invalid format", value: uri, format: Regex.source(regex)}}]}
-        end
-      end)
+    validate_change(changeset, field, &do_validate_list_regex(field, regex, &1, &2))
+  end
+
+  defp do_validate_list_regex(field, regex, _fields, uris) do
+    Enum.reduce(uris, [], fn uri, acc ->
+      if Regex.match?(regex, uri) do
+        acc
+      else
+        [{field, {"has an invalid format", value: uri, format: Regex.source(regex)}} | acc]
+      end
     end)
   end
 
