@@ -5,7 +5,6 @@ defmodule LenraWeb.Application do
 
   use Application
   require Logger
-  require Protocol
 
   def start(_type, _args) do
     children = [
