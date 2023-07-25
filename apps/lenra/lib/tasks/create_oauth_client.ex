@@ -55,7 +55,8 @@ defmodule Mix.Tasks.CreateOauth2Client do
     name: :string,
     scope: :keep,
     allowed_origin: :keep,
-    redirect_uri: :keep
+    redirect_uri: :keep,
+    prod: :boolean
   ]
 
   @impl true
@@ -85,7 +86,7 @@ defmodule Mix.Tasks.CreateOauth2Client do
   end
 
   defp parse_opts(opts, "backoffice") do
-    prod? = Mix.env() == :prod
+    prod? = Keyword.get(opts, :prod, false)
 
     name = Keyword.get(opts, :name, @backoffice_name)
     scopes = get_all_values(opts, :scope, @backoffice_scopes)
@@ -101,7 +102,7 @@ defmodule Mix.Tasks.CreateOauth2Client do
   end
 
   defp parse_opts(opts, "apps") do
-    prod? = Mix.env() == :prod
+    prod? = Keyword.get(opts, :prod, false)
 
     name = Keyword.get(opts, :name, @app_name)
     scopes = get_all_values(opts, :scope, @app_scopes)

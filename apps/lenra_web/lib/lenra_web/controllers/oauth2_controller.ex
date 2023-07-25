@@ -53,7 +53,7 @@ defmodule LenraWeb.OAuth2Controller.Policy do
 
   @impl Bouncer.Policy
   # Whatever the action, you must be the app creator to manage the oauth client
-  def authorize(_, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(_action, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
