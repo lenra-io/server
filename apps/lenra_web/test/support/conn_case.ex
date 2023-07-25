@@ -43,10 +43,10 @@ defmodule LenraWeb.ConnCase do
       Sandbox.mode(Lenra.Repo, {:shared, self()})
     end
 
-    setup_hydra_bypass()
-
     map =
       %{conn: Phoenix.ConnTest.build_conn()}
+      |> create_hydra_bypass()
+      |> add_hydra_introspect_stub()
       |> auth_user(tags)
       |> auth_users(tags)
       |> auth_user_with_cgu(tags)
@@ -55,16 +55,24 @@ defmodule LenraWeb.ConnCase do
     {:ok, map}
   end
 
-  defp setup_hydra_bypass do
-    [port: 4405]
-    |> Bypass.open()
-    |> Bypass.stub("POST", "/admin/oauth2/introspect", fn conn ->
-      conn = parse_body_params(conn)
-      %{"scope" => scope, "token" => token} = conn.body_params
-      resp = decode_fake_token(token)
+  defp create_hydra_bypass(map) do
+    hydra_bypass = Bypass.open(port: 4405)
 
-      Plug.Conn.resp(conn, 200, Jason.encode!(resp))
-    end)
+    Map.put(map, :hydra_bypass, hydra_bypass)
+  end
+
+  defp add_hydra_introspect_stub(%{hydra_bypass: hydra_bypass} = map) do
+    Bypass.stub(hydra_bypass, "POST", "/admin/oauth2/introspect", &hydra_introspect_response/1)
+
+    map
+  end
+
+  def hydra_introspect_response(conn) do
+    conn = parse_body_params(conn)
+    %{"scope" => scope, "token" => token} = conn.body_params
+    resp = decode_fake_token(token)
+
+    Plug.Conn.resp(conn, 200, Jason.encode!(resp))
   end
 
   defp parse_body_params(conn) do

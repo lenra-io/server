@@ -132,10 +132,14 @@ defmodule Lenra.Apps do
     Repo.all(from(e in Environment, where: e.application_id == ^app_id))
   end
 
-  def get_app_for_env(env_id) do
+  def fetch_app_for_env(env_id) do
     Repo.get(Environment, env_id)
     |> Repo.preload(:application)
     |> Map.get(:application)
+    |> case do
+      nil -> BusinessError.no_env_found_tuple()
+      app -> {:ok, app}
+    end
   end
 
   def get_env(env_id) do
@@ -491,7 +495,7 @@ defmodule Lenra.Apps do
   def create_oauth2_client(params) do
     with %Ecto.Changeset{valid?: true} = changeset <- OAuth2Client.new(params),
          {:ok, oauth2_client} <- Ecto.Changeset.apply_action(changeset, :create),
-         {:ok, %{body: %{"client_id" => client_id}} = response} <-
+         {:ok, %ORY.Hydra.Response{body: %{"client_id" => client_id}} = response} <-
            HydraApi.create_oauth2_client(oauth2_client),
          %Ecto.Changeset{valid?: true} = db_changeset <-
            OAuth2Client.update_for_db(oauth2_client, client_id),
@@ -530,21 +534,14 @@ defmodule Lenra.Apps do
   end
 
   defp hydra_client_to_oauth2_client(hydra_client) do
-    env_id = hydra_client["metadata"]["environment_id"]
-    client_id = hydra_client["client_id"]
-
-    hydra_params = %{
-      "name" => hydra_client["client_name"],
-      "scopes" => hydra_client["scope"] |> String.split(),
-      "allowed_origins" => hydra_client["allowed_cors_origins"],
-      "redirect_uris" => hydra_client["redirect_uris"],
-      "environment_id" => env_id
+    %OAuth2Client{
+      name: hydra_client["client_name"],
+      scopes: hydra_client["scope"] |> String.split(),
+      allowed_origins: hydra_client["allowed_cors_origins"],
+      redirect_uris: hydra_client["redirect_uris"],
+      environment_id: hydra_client["metadata"]["environment_id"],
+      oauth2_client_id: hydra_client["client_id"]
     }
-
-    %OAuth2Client{}
-    |> OAuth2Client.changeset_hydra(hydra_params)
-    |> OAuth2Client.update_for_db(client_id)
-    |> Ecto.Changeset.apply_action!(:transformed)
   end
 
   def delete_oauth2_client(%{"environment_id" => env_id, "client_id" => client_id}) do

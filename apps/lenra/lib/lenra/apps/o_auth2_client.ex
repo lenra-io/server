@@ -67,7 +67,7 @@ defmodule Lenra.Apps.OAuth2Client do
         if Regex.match?(regex, uri) do
           {:cont, []}
         else
-          {:halt, [{field, {"is invalid format", value: uri, format: regex}}]}
+          {:halt, [{field, {"has an invalid format", value: uri, format: Regex.source(regex)}}]}
         end
       end)
     end)

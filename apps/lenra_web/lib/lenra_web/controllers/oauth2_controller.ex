@@ -8,7 +8,7 @@ defmodule LenraWeb.OAuth2Controller do
 
   require Logger
 
-  def index(conn, %{"env_id" => env_id} = params) do
+  def index(conn, %{"environment_id" => env_id} = params) do
     with :ok <- allow_creator_only(conn, params),
          {:ok, clients} <- Apps.get_oauth2_clients(env_id) do
       conn
@@ -26,7 +26,7 @@ defmodule LenraWeb.OAuth2Controller do
 
   def update(conn, params) do
     with :ok <- allow_creator_only(conn, params),
-         {:ok, updated} <- Apps.create_oauth2_client(params) do
+         {:ok, updated} <- Apps.update_oauth2_client(params) do
       conn
       |> reply(updated)
     end
@@ -36,12 +36,12 @@ defmodule LenraWeb.OAuth2Controller do
     with :ok <- allow_creator_only(conn, params),
          {:ok, deleted} <- Apps.delete_oauth2_client(params) do
       conn
-      |> reply(deleted)
+      |> reply(deleted |> Map.take([:oauth2_client_id, :environment_id]))
     end
   end
 
   defp allow_creator_only(conn, %{"environment_id" => env_id}) do
-    with {:ok, app} <- Apps.get_app_for_env(env_id) do
+    with {:ok, app} <- Apps.fetch_app_for_env(env_id) do
       allow(conn, app)
     end
   end
