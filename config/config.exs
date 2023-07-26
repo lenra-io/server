@@ -19,7 +19,7 @@ config :identity_web,
 
 # Configures the endpoint
 config :identity_web, IdentityWeb.Endpoint,
-  url: [host: "localhost", port: System.get_env("PORT", "4000")],
+  url: [host: "localhost", port: System.get_env("IDENTITY_WEB_PORT", "4010")],
   render_errors: [view: IdentityWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Lenra.PubSub,
   live_view: [signing_salt: "zBWIFnCo"]
