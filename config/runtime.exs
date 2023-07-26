@@ -9,6 +9,11 @@ if config_env() == :prod do
     secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
     url: [host: System.fetch_env!("API_ENDPOINT"), port: System.fetch_env!("PORT")]
 
+  config :identity_web, IdentityWeb.Endpoint,
+    http: [port: System.fetch_env!("IDENTITY_WEB_PORT")],
+    secret_key_base: System.fetch_env!("IDENTITY_WEB_SECRET_KEY_BASE"),
+    url: [host: System.fetch_env!("IDENTITY_WEB_ENDPOINT"), port: System.fetch_env!("IDENTITY_WEB_PORT")]
+
   config :lenra, Lenra.Repo,
     username: System.fetch_env!("POSTGRES_USER"),
     password: System.fetch_env!("POSTGRES_PASSWORD"),
