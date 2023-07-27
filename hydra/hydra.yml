@@ -33,9 +33,9 @@ serve:
 urls:
   self:
     issuer: http://localhost:4444
-  consent: http://localhost:4001/users/consent
-  login: http://localhost:4001/users/auth
-  logout: http://localhost:4001/users/logout
+  consent: http://localhost:4010/users/consent
+  login: http://localhost:4010/users/auth
+  logout: http://localhost:4010/users/logout
 
 secrets:
   system:
