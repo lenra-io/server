@@ -28,7 +28,13 @@ if config_env() == :prod do
     gitlab_ci_ref: "master",
     template_url: System.fetch_env!("TEMPLATE_URL"),
     lenra_email: System.fetch_env!("LENRA_EMAIL"),
-    lenra_app_url: System.fetch_env!("LENRA_APP_URL")
+    lenra_app_url: System.fetch_env!("LENRA_APP_URL"),
+    pipeline_runner: System.get_env("PIPELINE_RUNNER", "Kubernetes"),
+    kubernetes_api_url: System.get_env("KUBERNETES_API_URL", "https://kubernetes.default.svc.cluster.local"),
+    kubernetes_api_token: System.get_env("KUBERNETES_API_TOKEN", ""),
+    kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra_build"),
+    kubernetes_build_scripts: System.get_env("KUBERNETES_BUILD_SCRIPTS", "lenra_build"),
+    kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra_build")
 
   config :application_runner,
     url: System.fetch_env!("API_ENDPOINT"),

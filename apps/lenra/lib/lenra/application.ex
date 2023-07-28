@@ -29,7 +29,7 @@ defmodule Lenra.Application do
       ),
       Supervisor.child_spec(
         {Finch,
-         name: GitlabHttp,
+         name: PipelineHttp,
          pools: %{
            Application.fetch_env!(:lenra, :gitlab_api_url) => [size: 10, count: 3]
          }},
