@@ -6,6 +6,9 @@ defmodule Lenra.Application do
   use Application
   require Logger
 
+  alias Lenra.Errors.BusinessError
+
+
   def start(_type, _args) do
     Lenra.MigrationHelper.migrate()
 
