@@ -39,6 +39,8 @@ RUN mix release lenra
 # prepare release image
 FROM erlang:24-alpine
 
+RUN apk add --no-cache bash
+
 RUN adduser -D lenra
 
 USER lenra
