@@ -23,7 +23,7 @@ defmodule Lenra.KubernetesApiServices do
     kubernetes_build_secret = Application.fetch_env!(:lenra, :kubernetes_build_secret)
 
     secrets_url = "#{kubernetes_api_url}/api/v1/namespaces/#{kubernetes_build_namespace}/secrets"
-    jobs_url = "#{kubernetes_api_url}/api/v1/namespaces/#{kubernetes_build_namespace}/jobs"
+    jobs_url = "#{kubernetes_api_url}/apis/batch/v1/namespaces/#{kubernetes_build_namespace}/jobs"
 
     headers = [
       {"Authorization", "Bearer #{kubernetes_api_token}"},
@@ -52,7 +52,7 @@ defmodule Lenra.KubernetesApiServices do
       }
     })
 
-    {:ok, _} = Finch.build(:post, secrets_url, headers, secret_body) |> IO.inspect()
+    {:ok, _} = Finch.build(:post, secrets_url, headers, secret_body)
     |> Finch.request(PipelineHttp)
     |> response()
 
@@ -66,6 +66,7 @@ defmodule Lenra.KubernetesApiServices do
         },
         spec: %{
           completions: 1,
+          backoffLimit: 0,
           template: %{
             metadata: %{
               name: build_name
