@@ -31,11 +31,10 @@ defmodule Lenra.KubernetesApiServices do
     ]
     build_name = "build-#{service_name}-#{build_number}"
 
-
-    {:ok, base64_repository} = Base.encode64(app_repository)
-    {:ok, base64_repository_branch} = Base.encode64(app_repository_branch)
-    {:ok, base64_callback_url} = Base.encode64(runner_callback_url)
-    {:ok, base64_image_name} = Base.encode64(Apps.image_name(service_name, build_number))
+    base64_repository = Base.encode64(app_repository)
+    base64_repository_branch = Base.encode64(app_repository_branch || "")
+    base64_callback_url = Base.encode64(runner_callback_url)
+    base64_image_name = Base.encode64(Apps.image_name(service_name, build_number))
 
     secret_body = Jason.encode!(%{
       apiVersion: "v1",
@@ -55,7 +54,7 @@ defmodule Lenra.KubernetesApiServices do
 
     {:ok, _} = Finch.build(:post, secrets_url, headers, secret_body)
     |> Finch.request(PipelineHttp)
-    |> response()
+    |> response() |> IO.inspect()
 
     body =
       Jason.encode!(%{
@@ -164,8 +163,8 @@ defmodule Lenra.KubernetesApiServices do
       {:ok, body}
   end
 
-  defp response({:error, %Mint.TransportError{reason: _}}) do
-    raise "Kubernetes API could not be reached. It should not happen."
+  defp response({:error, %Mint.TransportError{reason: reason}}) do
+    raise "Kubernetes API could not be reached. It should not happen. #{reason}"
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}})
