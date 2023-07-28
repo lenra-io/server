@@ -8,7 +8,6 @@ defmodule Lenra.Application do
 
   alias Lenra.Errors.BusinessError
 
-
   def start(_type, _args) do
     Lenra.MigrationHelper.migrate()
 
