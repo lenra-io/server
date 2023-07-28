@@ -151,12 +151,12 @@ defmodule Lenra.KubernetesApiServices do
             },
             resources: %{
               "limits": %{
-                "cpu":"500m",
-                "memory":"1024Mi"
+                "cpu": "500m",
+                "memory": "1024Mi"
               },
               "requests": %{
-                "cpu":"50m",
-                "memory":"100Mi"
+                "cpu": "50m",
+                "memory": "100Mi"
               }
             }
           }
