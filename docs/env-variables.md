@@ -87,4 +87,3 @@ This document provides a list of the environment variables that need to be set f
 ## Sentry Configuration
 
 - `SENTRY_DSN`: The DSN for Sentry.
-- `ENVIRONMENT`: The environment name for Sentry.
