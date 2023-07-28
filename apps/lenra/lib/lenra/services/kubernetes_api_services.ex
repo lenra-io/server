@@ -14,7 +14,7 @@ defmodule Lenra.KubernetesApiServices do
   The build_id is the id of the freshly created build. It is used to set to create the runner callback url
   The build_number is the number of the freshly created build. It us used to set the docker image URL.
   """
-  def create_pipeline(service_name, app_repository, app_repository_branch, build_id, build_number) do
+  def create_pipeline(service_name, app_repository, app_repository_branch, _build_id, build_number) do
     runner_callback_url = Application.fetch_env!(:lenra, :runner_callback_url)
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
     kubernetes_api_token = Application.fetch_env!(:lenra, :kubernetes_api_token)
@@ -22,8 +22,8 @@ defmodule Lenra.KubernetesApiServices do
     kubernetes_build_scripts = Application.fetch_env!(:lenra, :kubernetes_build_scripts)
     kubernetes_build_secret = Application.fetch_env!(:lenra, :kubernetes_build_secret)
 
-    secrets_url = "#{kubernetes_api_url}/apis/v1/namespaces/#{kubernetes_build_namespace}/secrets"
-    jobs_url = "#{kubernetes_api_url}/apis/v1/namespaces/#{kubernetes_build_namespace}/jobs"
+    secrets_url = "#{kubernetes_api_url}/api/v1/namespaces/#{kubernetes_build_namespace}/secrets"
+    jobs_url = "#{kubernetes_api_url}/api/v1/namespaces/#{kubernetes_build_namespace}/jobs"
 
     headers = [
       {"Authorization", "Bearer #{kubernetes_api_token}"},
@@ -52,7 +52,7 @@ defmodule Lenra.KubernetesApiServices do
       }
     })
 
-    {:ok, _} = Finch.build(:post, secrets_url, headers, secret_body)
+    {:ok, _} = Finch.build(:post, secrets_url, headers, secret_body) |> IO.inspect()
     |> Finch.request(PipelineHttp)
     |> response()
 
