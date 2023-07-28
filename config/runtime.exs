@@ -30,7 +30,7 @@ if config_env() == :prod do
     lenra_email: System.fetch_env!("LENRA_EMAIL"),
     lenra_app_url: System.fetch_env!("LENRA_APP_URL"),
     pipeline_runner: System.get_env("PIPELINE_RUNNER", "Kubernetes"),
-    kubernetes_api_url: System.get_env("KUBERNETES_API_URL") || "http://#{System.get_env("KUBERNETES_SERVICE_HOST")}",
+    kubernetes_api_url: System.get_env("KUBERNETES_API_URL") || "https://#{System.get_env("KUBERNETES_SERVICE_HOST")}",
     kubernetes_api_cert: System.get_env("KUBERNETES_API_CERT") || System.get_env("KUBERNETES_API_CERT_PATH", "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt") |> File.read!() |> String.trim(),
     kubernetes_api_token: System.get_env("KUBERNETES_API_TOKEN") || System.get_env("KUBERNETES_API_TOKEN_PATH", "/var/run/secrets/kubernetes.io/serviceaccount/token") |> File.read!() |> String.trim(),
     kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build"),
