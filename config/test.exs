@@ -42,7 +42,14 @@ config :lenra, Lenra.Repo,
   database: "lenra_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: System.get_env("POSTGRES_HOST", "localhost"),
   pool: Ecto.Adapters.SQL.Sandbox,
-  queue_target: 500
+  queue_target: 500,
+  pipeline_runner: System.get_env("PIPELINE_RUNNER", "GitLab"),
+  kubernetes_api_url: System.get_env("KUBERNETES_API_URL"),
+  kubernetes_api_cert: System.get_env("KUBERNETES_API_CERT"),
+  kubernetes_api_token: System.get_env("KUBERNETES_API_TOKEN", ""),
+  kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra_build"),
+  kubernetes_build_scripts: System.get_env("KUBERNETES_BUILD_SCRIPTS", "lenra_build"),
+  kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra_build")
 
 config :application_runner, ApplicationRunner.Repo,
   username: "postgres",
