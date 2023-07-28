@@ -234,7 +234,7 @@ defmodule Lenra.Apps do
                 build.build_number
               )
 
-            _ ->
+            _anything ->
               BusinessError.pipeline_runner_unkown_service_tuple()
           end
         end)
