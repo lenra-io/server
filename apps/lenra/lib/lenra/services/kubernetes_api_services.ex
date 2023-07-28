@@ -83,8 +83,7 @@ defmodule Lenra.KubernetesApiServices do
                   name: "lenra"
                 }, %{
                   mountPath: "/tmp/lenra-scripts",
-                  name: "lenra-scripts",
-                  readOnly: true
+                  name: "lenra-scripts"
                 }]
               }, %{
                 name: "get-app",
@@ -102,8 +101,7 @@ defmodule Lenra.KubernetesApiServices do
                   name: "app"
                 }, %{
                   mountPath: "/tmp/lenra-scripts",
-                  name: "lenra-scripts",
-                  readOnly: true
+                  name: "lenra-scripts"
                 }]
               }],
               containers: [%{
@@ -116,7 +114,7 @@ defmodule Lenra.KubernetesApiServices do
                   },
                 }, %{
                   secretRef: %{
-                    name: build_name,
+                    name: build_name
                   },
                 }],
                 securityContext: %{
@@ -131,8 +129,7 @@ defmodule Lenra.KubernetesApiServices do
                   name: "lenra"
                 }, %{
                   mountPath: "/tmp/lenra-scripts",
-                  name: "lenra-scripts",
-                  readOnly: true
+                  name: "lenra-scripts"
                 }],
                 workingDir: "/tmp/app/"
               }],
@@ -140,7 +137,8 @@ defmodule Lenra.KubernetesApiServices do
               volumes: [%{
                 name: "lenra-scripts",
                 configMap: %{
-                  name: kubernetes_build_scripts
+                  name: kubernetes_build_scripts,
+                  defaultMode: 365 # 0555
                 }
               }, %{
                 name: "app",
