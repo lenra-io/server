@@ -14,8 +14,9 @@ defmodule Lenra.KubernetesApiServices do
   The build_id is the id of the freshly created build. It is used to set to create the runner callback url
   The build_number is the number of the freshly created build. It us used to set the docker image URL.
   """
-  def create_pipeline(service_name, app_repository, app_repository_branch, _build_id, build_number) do
+  def create_pipeline(service_name, app_repository, app_repository_branch, build_id, build_number) do
     runner_callback_url = Application.fetch_env!(:lenra, :runner_callback_url)
+    runner_secret = Application.fetch_env!(:lenra, :runner_secret)
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
     kubernetes_api_token = Application.fetch_env!(:lenra, :kubernetes_api_token)
     kubernetes_build_namespace = Application.fetch_env!(:lenra, :kubernetes_build_namespace)
@@ -33,7 +34,7 @@ defmodule Lenra.KubernetesApiServices do
 
     base64_repository = Base.encode64(app_repository)
     base64_repository_branch = Base.encode64(app_repository_branch || "")
-    base64_callback_url = Base.encode64(runner_callback_url)
+    base64_callback_url = Base.encode64("#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}")
     base64_image_name = Base.encode64(Apps.image_name(service_name, build_number))
 
     secret_body = Jason.encode!(%{
