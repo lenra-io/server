@@ -19,7 +19,9 @@ defmodule IdentityWeb.Router do
     pipe_through [:browser]
 
     get "/users/auth", UserAuthController, :new
-    post "/users/register", UserAuthController, :create
+    get "/users/register", UserAuthController, :register_page
+    post "/users/register", UserAuthController, :register
+    get "/users/login", UserAuthController, :login_page
     post "/users/login", UserAuthController, :login
     get "/users/login/cancel", UserAuthController, :cancel_login
     get "/users/email/check", UserAuthController, :check_email_page

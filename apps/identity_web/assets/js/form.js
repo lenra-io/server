@@ -14,7 +14,7 @@ import "../css/form.css"
         if (currentAction) {
             submitButton.innerText = currentAction.dataset.submit;
             form.action = currentAction.dataset.formAction;
-            history.replaceState({ action: currentAction.value }, "", "?action=" + currentAction.value);
+            history.replaceState({ action: currentAction.value }, "", "./" + currentAction.value);
         }
     }
     function checkValidity() {
@@ -23,12 +23,37 @@ import "../css/form.css"
     form.querySelectorAll('fieldset.password').forEach(passwordFieldset => {
         const passwordLabel = passwordFieldset.querySelector('label');
         const passwordInput = passwordFieldset.querySelector('input[type="password"]');
+        const rules = passwordFieldset.querySelectorAll('ul.rules>li');
         passwordLabel.addEventListener('click', event => {
             if (event.layerY > event.target.offsetHeight) {
                 const shown = passwordInput.type === 'text';
                 passwordInput.type = shown ? 'password' : 'text';
                 passwordLabel.classList.toggle('lenra-icon-eye');
                 passwordLabel.classList.toggle('lenra-icon-eye-off');
+            }
+        });
+        passwordInput.addEventListener('input', _event => {
+            const currentAction = form.querySelector('input[name="user[submit_action]"]:checked');
+            if (currentAction && currentAction.value === "register") {
+                rules.forEach(rule => {
+                    let valid = false;
+                    switch (rule.dataset.kind) {
+                        case 'min':
+                            valid = passwordInput.value.length >= rule.dataset.count;
+                            break;
+                        case 'format':
+                            valid = new RegExp(rule.dataset.pattern).test(passwordInput.value);
+                            break;
+                    }
+                    if (valid) {
+                        rule.classList.add('valid');
+                        rule.classList.remove('invalid');
+                    }
+                    else {
+                        rule.classList.add('invalid');
+                        rule.classList.remove('valid');
+                    }
+                });
             }
         });
     });

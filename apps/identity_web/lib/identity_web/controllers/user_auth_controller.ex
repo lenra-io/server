@@ -137,31 +137,31 @@ defmodule IdentityWeb.UserAuthController do
       |> delete_session(:remember)
       |> delete_session(:email)
       |> put_session(:login_challenge, login_challenge)
-      |> redirect(to: Routes.user_auth_path(conn, :new, action: "register"))
+      |> redirect(to: Routes.user_auth_path(conn, :register_page))
     end
   end
 
-  def new(conn, %{"action" => action}) when action in ["login", "register"] do
+  def new(conn, _params),
+    do: redirect(conn, to: Routes.user_auth_path(conn, :register_page))
+
+  # Display the login page
+  def login_page(conn, _params) do
     render(conn, "new.html",
-      submit_action: action,
+      submit_action: "login",
       error_message: nil,
       changeset: register_changeset_or_new(nil)
     )
   end
 
-  def new(conn, _params),
-    do: redirect(conn, to: Routes.user_auth_path(conn, :new, action: "register"))
-
   # The "login" handle the login form and login the user if credentials are correct.
   def login(
         conn,
         %{
-          "user" =>
-            %{
-              "email" => email,
-              "password" => %{"0" => %{"password" => password}},
-              "remember_me" => remember
-            } = user_login_params
+          "user" => %{
+            "email" => email,
+            "password" => %{"0" => %{"password" => password}},
+            "remember_me" => remember
+          }
         }
       ) do
     case Accounts.login_user(email, password) do
@@ -176,16 +176,26 @@ defmodule IdentityWeb.UserAuthController do
         render(conn, "new.html",
           submit_action: "login",
           error_message: "Invalid email or password",
-          changeset: register_changeset_or_new(user_login_params)
+          changeset: register_changeset_or_new(nil)
         )
     end
   end
 
-  def login(conn, params),
-    do: cancel_login(conn, params)
+  def login(conn, params) do
+    cancel_login(conn, params)
+  end
+
+  # Display the register page
+  def register_page(conn, _params) do
+    render(conn, "new.html",
+      submit_action: "register",
+      error_message: nil,
+      changeset: register_changeset_or_new(nil)
+    )
+  end
 
   # The "create" handle the register form
-  def create(conn, %{
+  def register(conn, %{
         "user" => %{} = user_register_params
       }) do
     case Accounts.register_user_new(user_register_params) do
@@ -210,7 +220,7 @@ defmodule IdentityWeb.UserAuthController do
     end
   end
 
-  def create(conn, params),
+  def register(conn, params),
     do: cancel_login(conn, params)
 
   # Logout the user and reject the login request.

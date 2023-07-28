@@ -8,6 +8,16 @@ defmodule Lenra.Accounts.Password do
 
   alias Lenra.Accounts.User
 
+  @lowercase_regex ~r/[a-z]/
+  @uppercase_regex ~r/[A-Z]/
+  @other_char_regex ~r/[!?@#$£%^&*_0-9 .:;,\/\\-]/
+  @min_length 8
+
+  def lowercase_regex, do: @lowercase_regex
+  def uppercase_regex, do: @uppercase_regex
+  def other_char_regex, do: @other_char_regex
+  def min_length, do: @min_length
+
   schema "passwords" do
     belongs_to(:user, User)
     field(:password, :string, redact: true)
@@ -33,12 +43,12 @@ defmodule Lenra.Accounts.Password do
   def validate_password(changeset) do
     changeset
     |> unique_constraint(:password)
-    |> validate_length(:password, min: 8)
-    # |> validate_format(:password, @password_regex)
-    |> validate_format(:password, ~r/[a-z]/, message: "should have at least one lower case character")
-    |> validate_format(:password, ~r/[A-Z]/, message: "should have at least one upper case character")
-    |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/,
-      message: "should have at least one digit or punctuation character"
+    |> validate_length(:password, min: @min_length, message: "At least %{count} characters")
+    |> validate_format(:password, @lowercase_regex, message: "At least 1 lowercase", kind: :lowercase)
+    |> validate_format(:password, @uppercase_regex, message: "At least 1 uppercase", kind: :uppercase)
+    |> validate_format(:password, @other_char_regex,
+      message: "At least 1 digit or punctuation character",
+      kind: :digit_or_punctuation
     )
     |> validate_confirmation(:password)
   end
