@@ -30,17 +30,27 @@ defmodule Lenra.Application do
       Supervisor.child_spec(
         {Finch,
          name: PipelineHttp,
-         pools: %{
-           Application.fetch_env!(:lenra, :gitlab_api_url) => [
-            size: 10,
-            count: 3,
-            conn_opts: [
-              transport_opts: [
-                cacertfile: Application.fetch_env!(:lenra, :kubernetes_api_cert)
-              ]
-            ]
-          ]
-         }},
+         pools: case String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) do
+            "gitlab" -> %{
+                Application.fetch_env!(:lenra, :gitlab_api_url) => [
+                  size: 10,
+                  count: 3
+                ]
+              }
+            "kubernetes" -> %{
+                Application.fetch_env!(:lenra, :kubernetes_api_url) => [
+                  size: 10,
+                  count: 3,
+                  conn_opts: [
+                    transport_opts: [
+                      cacertfile: Application.fetch_env!(:lenra, :kubernetes_api_cert)
+                    ]
+                  ]
+                ]
+              }
+            _ -> BusinessError.pipeline_runner_unkown_service()
+          end
+         },
 
         id: :finch_gitlab_http
       ),
