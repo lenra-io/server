@@ -2,7 +2,6 @@ defmodule Lenra.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-alias Lenra.Application
 
   use Application
   require Logger
