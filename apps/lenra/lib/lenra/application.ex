@@ -53,7 +53,7 @@ defmodule Lenra.Application do
                  ]
                }
 
-             _ ->
+             _anything ->
                BusinessError.pipeline_runner_unkown_service_tuple()
            end},
         id: :finch_gitlab_http
