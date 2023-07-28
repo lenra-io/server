@@ -9,7 +9,6 @@ defmodule Lenra.Application do
 
   require Logger
 
-
   def start(_type, _args) do
     Lenra.MigrationHelper.migrate()
 
