@@ -146,15 +146,34 @@ a.btn.link:hover::after {
     bottom: calc((100% - var(--font-size)) / 2 - 0.25rem);
 }
 
-a.btn.link.lenra-icon-arrow-right {
+:is(
+    a, 
+    button, 
+    summary
+):is(
+    [class^="lenra-icon-"], 
+    [class*=" lenra-icon-"]
+)::before {
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+a.btn.link:is(
+    .lenra-icon-arrow-right,
+    .lenra-icon-chevron-right
+) {
     display: inline-flex;
     flex-direction: row-reverse;
     align-items: center;
 }
 
-a.btn.link.lenra-icon-arrow-right::before {
+a.btn.link:is(
+    .lenra-icon-arrow-right,
+    .lenra-icon-chevron-right
+)::before {
     color: inherit;
     margin-left: 0.5rem;
+    margin-right: 0;
     font-size: 120%;
 }
 

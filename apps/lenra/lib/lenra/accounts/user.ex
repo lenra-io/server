@@ -111,4 +111,10 @@ defmodule Lenra.Accounts.User do
     |> cast_assoc(:password, required: true)
     |> validate_email()
   end
+
+  def reset_password_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email])
+    |> cast_assoc(:password, required: true)
+  end
 end

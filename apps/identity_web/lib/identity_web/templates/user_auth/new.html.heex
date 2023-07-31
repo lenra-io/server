@@ -1,19 +1,21 @@
-<% is_register = !@submit_action || @submit_action == "register" %>
+<% is_register = @submit_action == "register" %>
 <main class="arrows">
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
   <header>
     <h1>Lenra</h1>
     <!-- TODO: Manage client logo -->
   </header>
-  <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if is_register, do: :create, else: :login))} as={:user}>
+  <.form let={f} for={@changeset} action={Routes.user_auth_path(@conn, (if is_register, do: :register, else: :login))} as={:user}>
     <%= radio_button f, :submit_action, "register",
       checked: is_register,
       autocomplete: "off",
-      "data-form-action": Routes.user_auth_path(@conn, :create), "data-submit": gettext("Create my account") %>
+      "data-form-action": Routes.user_auth_path(@conn, :register), "data-submit": gettext("Create my account") %>
     <%= radio_button f, :submit_action, "login",
       checked: !is_register,
       autocomplete: "off",
       "data-form-action": Routes.user_auth_path(@conn, :login), "data-submit": gettext("Log in") %>
-    <nav>
+    <nav class="tab">
       <%= label f, :submit_action_register, gettext("Register") %>
       <%= label f, :submit_action_login, gettext("Log in") %>
     </nav>
@@ -23,15 +25,26 @@
 
     <fieldset>
       <%= label f, :email %>
-      <%= email_input f, :email, required: true %>
+      <%= email_input f, :email, required: true, autocomplete: "email" %>
       <%= error_tag f, :email, class: @submit_action %>
     </fieldset>
 
     <fieldset class="password">
       <%= inputs_for f, :password, fn fp -> %>
         <%= label fp, :password, class: "lenra-icon-eye" %>
-        <%= password_input fp, :password, required: true, minlength: 8 %>
-        <%= error_tag fp, :password, class: @submit_action %>
+        <%= password_input fp, :password, required: true, minlength: Lenra.Accounts.Password.min_length, autocomplete: "current-password" %>
+        <ul class="register rules">
+          <% IO.inspect(fp.errors) %>
+          <% errors = Enum.map(fp.errors, fn {:password, error} -> elem(error, 0) end) %>
+          <% message = "At least 8 characters" %>
+          <li class={ if message in errors do "error" else "" end } data-kind="min" data-count={Lenra.Accounts.Password.min_length}><%= gettext("At least %{count} characters", count: Lenra.Accounts.Password.min_length) %></li>
+          <% message = "At least 1 uppercase" %>
+          <li class={ if message in errors do "error" else "" end } data-kind="format" data-pattern={Lenra.Accounts.Password.uppercase_regex.source}><%= gettext("At least 1 uppercase") %></li>
+          <% message = "At least 1 lowercase" %>
+          <li class={ if message in errors do "error" else "" end } data-kind="format" data-pattern={Lenra.Accounts.Password.lowercase_regex.source}><%= gettext("At least 1 lowercase") %></li>
+          <% message = "At least 1 digit or punctuation character" %>
+          <li class={ if message in errors do "error" else "" end } data-kind="format" data-pattern={Lenra.Accounts.Password.other_char_regex.source}><%= gettext("At least 1 digit or punctuation character") %></li>
+        </ul>
       <% end %>
     </fieldset>
 
@@ -45,6 +58,6 @@
     <% end %>
 
     <%= submit (if is_register, do: gettext("Create my account"), else: gettext("Log in")), class: "primary", disabled: true %>
-    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :reset_password), class: "login btn link lenra-icon-chevron-right"%>
+    <%= link gettext("I forgot my password"), to: Routes.user_auth_path(@conn, :lost_password_enter_email), class: "login btn link lenra-icon-chevron-right"%>
   </.form>
 </main>

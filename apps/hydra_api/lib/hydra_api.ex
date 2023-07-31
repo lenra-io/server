@@ -31,6 +31,15 @@ defmodule HydraApi do
     |> ORY.Hydra.request(hydra_config())
   end
 
+  def reject_login(login_challenge, error_description) do
+    %{
+      login_challenge: login_challenge,
+      error_description: error_description
+    }
+    |> ORY.Hydra.reject_login_request()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
   def get_consent_request(consent_challenge) do
     # The "Consent request" contain data about the current consent request.
     # We request hydra to retreive these data.

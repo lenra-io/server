@@ -67,7 +67,7 @@ You will then need to install and setup elixir prerequisites for the server to r
   * `mix deps.get` to install the dependencies
   * `mix ecto.create` to create database
   * `mix ecto.migrate` to start all migration and have an up-to-date database
-  * `mix run priv/repo/seeds.exs` to fill database with default values
+  * `mix run apps/lenra/priv/repo/seeds.exs` to fill database with default values
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>

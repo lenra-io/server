@@ -1,0 +1,28 @@
+main.cgu {
+    height: 100%;
+    justify-content: start;
+    padding-bottom: 0;
+}
+
+main.cgu>form {
+    flex: 1;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+main.cgu>form>article {
+    flex: 1 1 0;
+    width: 100%;
+    min-height: 20rem;
+    overflow: auto;
+    border: var(--border-width) solid rgb(var(--primary-color-data));
+    padding: 1rem;
+}
+
+main.cgu>form>a[lang] {
+    align-self: end;
+}
+
+main.cgu>form>nav {
+    padding-top: 1.5rem;
+}

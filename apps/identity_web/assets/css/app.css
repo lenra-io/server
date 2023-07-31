@@ -3,4 +3,44 @@
 @import '.design.css';
 @import '.components.css';
 @import '.font.css';
-@import 'login.css';
+
+html, body {
+    height: 100%;
+}
+
+main.arrows {
+    --vertical-pos-multiplier: 1.3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    width: 90%;
+    max-width: 82.5rem;
+    margin: 0 auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    gap: 2rem;
+}
+
+header>h1 {
+    position: relative;
+    width: var(--logo-vertical-height);
+    height: var(--logo-vertical-height);
+    text-indent: -100vw;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+header>h1::before {
+    content: " ";
+    position: absolute;
+    background-image: var(--logo-vertical-image);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}

@@ -92,6 +92,7 @@ defmodule Lenra.Accounts do
     end
   end
 
+  @spec validate_dev(any) :: any
   def validate_dev(user) do
     with :ok <-
            check_simple_user(user) do
