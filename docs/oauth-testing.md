@@ -1,4 +1,4 @@
-# Test the Oauth protocol
+# Test the Oauth protocol using Oauth Debugger
  
 - Start dependancies (Hydra + Db) `docker-compose up -d`
 - Start server `mix phx.server`
@@ -21,3 +21,22 @@
     - [x] Use PKCE?
   - Token URI : http://localhost:4444/oauth2/token
   - Send Request ! 
+
+
+# Create the Oauth clients for backoffice client and apps client
+
+
+Before starting the backoffice/app client, you shoud create a the Oauth clients first.
+Make sure ORY Hydra is started : 
+```
+docker compose up -d
+```
+
+Then create both clients : 
+```
+mix create_oauth2_client backoffice
+mix create_oauth2_client apps
+```
+
+Get the client_ids and put them in the client OAUTH_CLIENT_ID argument.
+You're good to go !
