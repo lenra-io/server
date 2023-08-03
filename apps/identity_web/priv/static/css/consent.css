@@ -1,0 +1,29 @@
+main.arrows {
+    max-width: 28rem;
+}
+
+form {
+    align-items: stretch;
+    text-align: left;
+}
+
+form > p,
+form > ul {
+    margin: 0;
+}
+
+h2 {
+    text-align: center;
+}
+
+form > ul {
+    padding-left: 2.5rem;
+}
+
+form li{
+    list-style: initial;
+}
+
+form button[type="submit"] {
+    flex: 1;
+}
