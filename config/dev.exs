@@ -139,7 +139,14 @@ config :lenra,
   faas_secrets: ["gitlab-registry"],
   template_url: System.get_env("TEMPLATE_URL", "https://github.com/lenra-io/templates.git#beta"),
   lenra_email: System.get_env("LENRA_EMAIL", "contact@lenra.io"),
-  lenra_app_url: System.get_env("LENRA_APP_URL", "https://localhost:10000")
+  lenra_app_url: System.get_env("LENRA_APP_URL", "https://localhost:10000"),
+  pipeline_runner: System.get_env("PIPELINE_RUNNER", "GitLab"),
+  kubernetes_api_url: System.get_env("KUBERNETES_API_URL"),
+  kubernetes_api_cert: System.get_env("KUBERNETES_API_CERT"),
+  kubernetes_api_token: System.get_env("KUBERNETES_API_TOKEN", ""),
+  kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra_build"),
+  kubernetes_build_scripts: System.get_env("KUBERNETES_BUILD_SCRIPTS", "lenra_build"),
+  kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra_build")
 
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
 

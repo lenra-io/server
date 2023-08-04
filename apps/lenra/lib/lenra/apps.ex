@@ -21,7 +21,7 @@ defmodule Lenra.Apps do
 
   alias Lenra.Repo
 
-  alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices}
+  alias Lenra.{Accounts, EmailWorker, GitlabApiServices, KubernetesApiServices, OpenfaasServices}
 
   alias Lenra.Apps.{
     App,
@@ -214,13 +214,30 @@ defmodule Lenra.Apps do
         creator_id
         |> create_build(app.id, params)
         |> Ecto.Multi.run(:gitlab_pipeline, fn _repo, %{inserted_build: %Build{} = build} ->
-          GitlabApiServices.create_pipeline(
-            app.service_name,
-            app.repository,
-            app.repository_branch,
-            build.id,
-            build.build_number
-          )
+          # If pipeline_runner env var is "kubernetes" then use `KubernetesApiService.create_pipeline`,
+          # if not, use `GitlabApiService.create_pipeline`
+          case String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) do
+            "gitlab" ->
+              GitlabApiServices.create_pipeline(
+                app.service_name,
+                app.repository,
+                app.repository_branch,
+                build.id,
+                build.build_number
+              )
+
+            "kubernetes" ->
+              KubernetesApiServices.create_pipeline(
+                app.service_name,
+                app.repository,
+                app.repository_branch,
+                build.id,
+                build.build_number
+              )
+
+            _anything ->
+              BusinessError.pipeline_runner_unkown_service_tuple()
+          end
         end)
         |> update_build_after_pipeline()
         |> Repo.transaction()
