@@ -7,7 +7,7 @@ This document provides a list of the environment variables that need to be set f
 - `PORT`: The port on which the application will run.
 - `SECRET_KEY_BASE`: The secret key base for the application.
 - `API_ENDPOINT`: The endpoint for the application's API.
-- `APP_HOST`: The host of the application.
+- `APP_HOST`: The host of the API. This variable should change in the futur.
 - `ENVIRONMENT`: The environment in which the application is running (e.g., production, development, etc.).
 
 ## Database Configuration
