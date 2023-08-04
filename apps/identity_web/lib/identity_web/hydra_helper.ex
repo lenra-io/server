@@ -16,8 +16,8 @@ defmodule IdentityWeb.HydraHelper do
 
   def get_login_request(login_challenge) do
     %{login_challenge: login_challenge}
-    |> ORY.Hydra.get_login_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> IdentityWeb.Hydra.get_login_request()
+    |> IdentityWeb.Hydra.request(hydra_config())
   end
 
   def accept_login(login_challenge, subject, remember \\ false) do
@@ -27,16 +27,16 @@ defmodule IdentityWeb.HydraHelper do
       remember: remember,
       remember_for: @remember_for
     }
-    |> ORY.Hydra.accept_login_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> IdentityWeb.Hydra.accept_login_request()
+    |> IdentityWeb.Hydra.request(hydra_config())
   end
 
   def get_consent_request(consent_challenge) do
     # The "Consent request" contain data about the current consent request.
     # We request hydra to retreive these data.
     %{consent_challenge: consent_challenge}
-    |> ORY.Hydra.get_consent_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> IdentityWeb.Hydra.get_consent_request()
+    |> IdentityWeb.Hydra.request(hydra_config())
   end
 
   def accept_consent(
@@ -54,8 +54,8 @@ defmodule IdentityWeb.HydraHelper do
       remember: remember,
       remember_for: @remember_for
     }
-    |> ORY.Hydra.accept_consent_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> IdentityWeb.Hydra.accept_consent_request()
+    |> IdentityWeb.Hydra.request(hydra_config())
   end
 
   def reject_consent(consent_challenge) do
@@ -64,8 +64,8 @@ defmodule IdentityWeb.HydraHelper do
       error: :consent_denied,
       error_description: "The resource owner did not consent."
     }
-    |> ORY.Hydra.reject_consent_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> IdentityWeb.Hydra.reject_consent_request()
+    |> IdentityWeb.Hydra.request(hydra_config())
   end
 
   def hydra_url do
