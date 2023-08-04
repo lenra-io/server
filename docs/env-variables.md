@@ -44,10 +44,6 @@ This document provides a list of the environment variables that need to be set f
 - `KUBERNETES_BUILD_SCRIPTS`: The scripts for Kubernetes builds. Default is "lenra-build-scripts".
 - `KUBERNETES_BUILD_SECRET`: The secret for Kubernetes builds. Default is "lenra-build-secret".
 
-## Template Configuration
-
-- `TEMPLATE_URL`: The URL for the template.
-
 ## Email Configuration
 
 - `LENRA_EMAIL`: The email for Lenra.
