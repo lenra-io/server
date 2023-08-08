@@ -33,9 +33,11 @@ defmodule Lenra.KubernetesApiServices do
 
     build_name = "build-#{service_name}-#{build_number}"
 
+    callback_url = Base.encode64("#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}")
+
     base64_repository = Base.encode64(app_repository)
     base64_repository_branch = Base.encode64(app_repository_branch || "")
-    base64_callback_url = Base.encode64("#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}")
+    base64_callback_url = Base.encode64(callback_url)
     base64_image_name = Base.encode64(Apps.image_name(service_name, build_number))
 
     secret_body =
@@ -124,6 +126,13 @@ defmodule Lenra.KubernetesApiServices do
                   name: "build",
                   image: "docker:23.0.1-dind-rootless",
                   args: ["/tmp/lenra-scripts/build.sh"],
+                  lifecycle: %{
+                    preStop: %{
+                      exec: %{
+                        command: ["/bin/sh", "-c", "if [ $? -eq 0 ]; then export STATUS='success'; else export STATUS='failure'; fi; echo 'Send notification: $STATUS'; curl -fsSL --data '{\"status\": \"${STATUS}\"}' #{callback_url}"]
+                      }
+                    },
+                  },
                   envFrom: [
                     %{
                       secretRef: %{
