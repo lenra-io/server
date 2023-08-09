@@ -6,6 +6,8 @@ defmodule HydraApi do
     get hydra url/config
   """
 
+  require Logger
+
   # 30 days In seconds
   @remember_days 30
   @remember_for 60 * 60 * 24 * @remember_days
@@ -114,6 +116,62 @@ defmodule HydraApi do
       subject = response.body["sub"]
       {:ok, subject, response.body}
     end
+  end
+
+  defp prepare_request(params) do
+    %{
+      token_endpoint_auth_method: "none",
+      client_name: params.name,
+      scope: Enum.join(params.scopes, " "),
+      redirect_uris: params.redirect_uris,
+      allowed_cors_origins: params.allowed_origins,
+      skip_consent: false,
+      metadata: %{
+        environment_id: params.environment_id
+      }
+    }
+  end
+
+  def create_oauth2_client(params) do
+    params
+    |> prepare_request()
+    |> create_hydra_client()
+  end
+
+  def update_oauth2_client(params) do
+    params
+    |> prepare_request()
+    |> update_hydra_client(params.oauth2_client_id)
+  end
+
+  def get_hydra_client(id) do
+    id
+    |> ORY.Hydra.get_client()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def create_hydra_client(params) do
+    Logger.debug("Create hydra client #{inspect(params)}")
+
+    params
+    |> ORY.Hydra.create_client()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def delete_hydra_client(id) do
+    Logger.debug("Delete hydra client #{id}")
+
+    id
+    |> ORY.Hydra.delete_client()
+    |> ORY.Hydra.request(hydra_config())
+  end
+
+  def update_hydra_client(params, id) do
+    Logger.debug("Update hydra client #{id} to #{inspect(params)}")
+
+    id
+    |> ORY.Hydra.update_client(params)
+    |> ORY.Hydra.request(hydra_config())
   end
 
   def hydra_url do

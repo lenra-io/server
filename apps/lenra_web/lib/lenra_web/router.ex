@@ -45,13 +45,6 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyScope, "resources")
   end
 
-  # Keep comment for future PR to restore them in identity_web
-  # scope "/auth", LenraWeb do
-  #   pipe_through([:api])
-  #   post("/password/lost", UserController, :send_lost_password_code)
-  #   put("/password/lost", UserController, :change_lost_password)
-  # end
-
   # Runner callback, secured via runner-specific token
   scope "/runner", LenraWeb do
     pipe_through([:api, :runner])
@@ -122,6 +115,14 @@ defmodule LenraWeb.Router do
     # Deployments
     resources("/deployments", DeploymentsController, only: [:create])
     get("/:app_id/deployments", DeploymentsController, :index)
+  end
+
+  scope "/api/environments", LenraWeb do
+    pipe_through [:api, :scope_manage_apps, :ensure_cgu_accepted]
+    post("/:environment_id/oauth2", OAuth2Controller, :create)
+    get("/:environment_id/oauth2", OAuth2Controller, :index)
+    put("/:environment_id/oauth2/:client_id", OAuth2Controller, :update)
+    delete("/:environment_id/oauth2/:client_id", OAuth2Controller, :delete)
   end
 
   # /api resources, scope "resources"
