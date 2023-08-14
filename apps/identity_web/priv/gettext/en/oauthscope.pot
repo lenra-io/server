@@ -1,0 +1,3 @@
+msgid "store"
+msgstr "Access the app list"
+

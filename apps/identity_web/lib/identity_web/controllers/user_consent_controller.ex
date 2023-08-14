@@ -31,6 +31,8 @@ defmodule IdentityWeb.UserConsentController do
       # Redirect to hydra.
       redirect(conn, external: accept_response.body["redirect_to"])
     else
+      IO.inspect(response.body["client"])
+
       # If we do not skip, get the user and show the consent page.
       case Lenra.Accounts.get_user(response.body["subject"]) do
         nil ->

@@ -20,7 +20,7 @@
   - scope : foo
     - [x] Use PKCE?
   - Token URI : http://localhost:4444/oauth2/token
-  - Send Request ! 
+  - Send Request !
 
 
 # Create the Oauth clients for backoffice client and apps client
