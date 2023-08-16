@@ -58,7 +58,7 @@ defmodule Mix.Tasks.CreateOauth2Client do
     scope: :keep,
     allowed_origin: :keep,
     redirect_uri: :keep,
-    environment_id: :string,
+    environment_id: :integer,
     prod: :boolean
   ]
 

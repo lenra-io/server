@@ -2,9 +2,7 @@
   <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
   <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/consent.css")} media="print" onload='this.media="all"'/>
   <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
-  <header>
-    <h1>Lenra</h1>
-  </header>
+  <%= oauth_header "consent", @client %>
   <.form let={f} for={@conn} action={Routes.user_consent_path(@conn, @action)} >
     <h2><%= gettext("You've been invited to use an app") %></h2>
     <p><%= raw(gettext("Hi <strong>%{email}</strong> !", email: @user.email)) %></p>

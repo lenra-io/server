@@ -4,7 +4,8 @@
 @import '.components.css';
 @import '.font.css';
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
@@ -23,7 +24,7 @@ main.arrows {
     gap: 2rem;
 }
 
-header>h1 {
+header:not(.external-client)>h1 {
     position: relative;
     width: var(--logo-vertical-height);
     height: var(--logo-vertical-height);
@@ -32,7 +33,7 @@ header>h1 {
     margin: 0 auto;
 }
 
-header>h1::before {
+header:not(.external-client)>h1::before {
     content: " ";
     position: absolute;
     background-image: var(--logo-vertical-image);
@@ -43,4 +44,46 @@ header>h1::before {
     left: 0;
     height: 100%;
     width: 100%;
+}
+
+header.external-client>h1 {
+    text-align: center;
+    padding-bottom: 0.5rem;
+    font-weight: normal;
+}
+
+.logo[data-color="blue"] {
+    --logo-color: rgb(var(--blue-pulse-data));
+    --logo-bg-color: rgba(var(--blue-data), var(--disabled-opacity));
+}
+
+.logo[data-color="green"] {
+    --logo-color: rgb(var(--green-pulse-data));
+    --logo-bg-color: rgba(var(--green-data), var(--disabled-opacity));
+}
+
+.logo[data-color="yellow"] {
+    --logo-color: rgb(var(--yellow-pulse-data));
+    --logo-bg-color: rgba(var(--yellow-data), var(--disabled-opacity));
+}
+
+.logo[data-color="red"] {
+    --logo-color: rgb(var(--red-pulse-data));
+    --logo-bg-color: rgba(var(--red-data), var(--disabled-opacity));
+}
+
+.logo::before {
+    content: attr(data-letter);
+    display: block;
+    width: var(--logo-vertical-height);
+    height: var(--logo-vertical-height);
+    line-height: var(--logo-vertical-height);
+    font-size: calc(var(--logo-vertical-height) * 2 / 3);
+    border-radius: calc(var(--logo-vertical-height) / 10);
+    font-weight: bold;
+    margin: auto;
+    margin-bottom: 2rem;
+    background-color: var(--logo-bg-color);
+    color: var(--logo-color);
+    text-align: center;
 }

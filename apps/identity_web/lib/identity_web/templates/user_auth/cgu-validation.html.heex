@@ -1,10 +1,7 @@
 <main class="arrows cgu">
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
-  <header>
-    <h1>Lenra</h1>
-    <!-- TODO: Manage client logo -->
-  </header>
+  <%= oauth_header "auth", @client %>
   <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :validate_cgu)}>
     <%= if @lang == "en" do %>
       <%= link gettext("See the french original version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=fr", class: "btn", lang: "fr"%>
