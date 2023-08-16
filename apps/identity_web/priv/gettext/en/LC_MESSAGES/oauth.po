@@ -1,0 +1,17 @@
+msgid "scope.app:websocket"
+msgstr "Connect to the app through websocket"
+
+msgid "scope.store"
+msgstr "Access the app list"
+
+msgid "scope.profile"
+msgstr "Access your profile informations"
+
+msgid "scope.resources"
+msgstr "Load app resources"
+
+msgid "scope.manage:account"
+msgstr "Manage your account"
+
+msgid "scope.manage:apps"
+msgstr "Manage your apps"

@@ -8,12 +8,11 @@
   <.form let={f} for={@conn} action={Routes.user_consent_path(@conn, @action)} >
     <h2><%= gettext("You've been invited to use an app") %></h2>
     <p><%= raw(gettext("Hi <strong>%{email}</strong> !", email: @user.email)) %></p>
-    <p><%= raw(gettext("<strong>%{app_name}</strong> is requesting access to your Lenra’s account.", app_name: @client["client_name"])) %></p>
-    <p><%= raw(gettext("If you accept, <strong>%{app_name}</strong> will have access to :", app_name: @client["client_name"])) %></p>
+    <p><%= raw(gettext("<strong>%{app_name}</strong> is requesting access to your Lenra’s account.", app_name: get_client_name(@client))) %></p>
+    <p><%= raw(gettext("If you accept, <strong>%{app_name}</strong> will have access to :", app_name: get_client_name(@client))) %></p>
     <ul>
       <%= for scope <- @scopes do %>
-        <%#li><%= dgettext(IdentityWeb.Gettext, "oauthscope", scope) ></li%>
-        <li><%= scope %></li>
+        <li><%= get_translated_scope_description(scope) %></li>
       <% end %>
     </ul>
     <%= if assigns[:consent_challenge] do %>
