@@ -2,25 +2,80 @@ main.arrows {
     max-width: 28rem;
 }
 
+header.external-client>ul {
+    display: flex;
+    margin-bottom: 4rem;
+    position: relative;
+    justify-content: center;
+    gap: 4rem;
+}
+
+header.external-client>ul::before,
+header.external-client>ul::after {
+    content: "\e916";
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'Lenra-icons' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    position: absolute;
+    font-size: 1.5rem;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+header.external-client>ul::after {
+    top: 75%;
+    transform: translate(-50%, -50%) rotate(180deg);
+}
+
+header.external-client>ul>li {
+    width: var(--logo-vertical-height);
+    height: var(--logo-vertical-height);
+    overflow: hidden;
+}
+
+header.external-client>ul>li.lenra::before {
+    content: " ";
+    display: block;
+    background-image: var(--logo-vertical-image);
+    background-size: 160%;
+    background-repeat: no-repeat;
+    background-position: top center;
+    height: 100%;
+    width: 100%;
+}
+
+header.external-client>h1 {
+    text-align: center;
+    font-weight: bold;
+    max-width: 20rem;
+}
+
 form {
     align-items: stretch;
     text-align: left;
 }
 
-form > p,
-form > ul {
+form>p,
+form>ul {
     margin: 0;
 }
 
-h2 {
-    text-align: center;
-}
-
-form > ul {
+form>ul {
     padding-left: 1.5rem;
 }
 
-form li{
+form li {
     list-style: initial;
 }
 

@@ -5,6 +5,19 @@ defmodule IdentityWeb.OAuthHelpers do
 
   use Phoenix.HTML
 
+  @colors ["blue", "green", "red", "yellow"]
+  @colors_length length(@colors)
+
+  def get_color(name) when is_binary(name) do
+    pos =
+      :crypto.hash(:md5, name)
+      |> :binary.bin_to_list()
+      |> List.last()
+      |> rem(@colors_length)
+
+    Enum.at(@colors, pos)
+  end
+
   @doc """
   Render the header of the OAuth pages.
   """
@@ -17,16 +30,19 @@ defmodule IdentityWeb.OAuthHelpers do
         |> String.slice(0..0)
         |> String.upcase()
 
-      content_tag :ul do
-        [
-          content_tag(:li, name,
-            class: "logo",
-            "data-letter": letter,
-            "data-color": "blue"
-          ),
-          content_tag(:li, "Lenra")
-        ]
-      end
+      [
+        content_tag :ul do
+          [
+            content_tag(:li, name,
+              class: "logo",
+              "data-letter": letter,
+              "data-color": get_color(name)
+            ),
+            content_tag(:li, "Lenra", class: "lenra")
+          ]
+        end,
+        content_tag(:h1, Gettext.gettext(IdentityWeb.Gettext, "You've been invited to use an app"))
+      ]
     end
   end
 
@@ -43,12 +59,12 @@ defmodule IdentityWeb.OAuthHelpers do
         content_tag(:h1, name,
           class: "logo",
           "data-letter": letter,
-          "data-color": "blue"
+          "data-color": get_color(name)
         ),
         content_tag :p do
           [
             "Powered by ",
-            content_tag(:a, "Lenra", href: "https://lenra.io")
+            content_tag(:a, "Lenra", href: "https://www.lenra.io", target: "_blank")
           ]
         end
       ]
