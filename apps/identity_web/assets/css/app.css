@@ -48,7 +48,7 @@ header:not(.external-client)>h1::before {
 
 header.external-client>h1 {
     text-align: center;
-    padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
     font-weight: normal;
 }
 
@@ -62,7 +62,7 @@ header.external-client>p>a {
     margin-left: 0.5rem;
     padding-bottom: 0;
     overflow: hidden;
-    width: calc(var(--height) * var(--logo-horizontal-ratio) + 0.5rem + var(--height));
+    width: calc(var(--height) * var(--logo-horizontal-ratio) + var(--height));
 }
 
 header.external-client>p>a::before {
@@ -77,22 +77,25 @@ header.external-client>p>a::before {
 }
 
 header.external-client>p>a::after {
+    --height: 1rem;
+    --border-size: calc(1rem / 16);
     content: "i";
     position: absolute;
-    top: 0;
+    top: 50%;
     right: 0;
     left: auto;
     bottom: auto;
     height: var(--height);
     width: var(--height);
     color: inherit;
-    font-size: calc(var(--height) / 2);
-    line-height: calc(var(--height) - 1rem / 4);
+    font-size: calc(var(--height) * 2 / 3);
+    line-height: calc(var(--height) - var(--border-size) * 2);
     text-indent: 0;
     text-align: center;
-    border: calc(1rem / 8) solid;
+    border: var(--border-size) solid;
     border-radius: 50%;
     opacity: 1;
+    transform: translateY(-50%);
 }
 
 .logo[data-color="blue"] {

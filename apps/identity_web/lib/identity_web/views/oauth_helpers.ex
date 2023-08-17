@@ -21,22 +21,22 @@ defmodule IdentityWeb.OAuthHelpers do
   @doc """
   Render the header of the OAuth pages.
   """
-  def oauth_header("consent", %{"metadata" => %{"environment_id" => _env_id}} = client) do
+  def oauth_header("consent", %{"metadata" => %{"environment_id" => env_id}} = client) do
     content_tag :header, class: "external-client" do
-      name = get_client_name(client)
+      {:ok, app} = Lenra.Apps.fetch_app_for_env(env_id)
 
       letter =
-        name
+        app.name
         |> String.slice(0..0)
         |> String.upcase()
 
       [
         content_tag :ul do
           [
-            content_tag(:li, name,
+            content_tag(:li, app.name,
               class: "logo",
               "data-letter": letter,
-              "data-color": get_color(name)
+              "data-color": get_color(app.service_name)
             ),
             content_tag(:li, "Lenra", class: "lenra")
           ]
@@ -46,20 +46,20 @@ defmodule IdentityWeb.OAuthHelpers do
     end
   end
 
-  def oauth_header(_context, %{"metadata" => %{"environment_id" => _env_id}} = client) do
+  def oauth_header(_context, %{"metadata" => %{"environment_id" => env_id}} = client) do
     content_tag :header, class: "external-client" do
-      name = get_client_name(client)
+      {:ok, app} = Lenra.Apps.fetch_app_for_env(env_id)
 
       letter =
-        name
+        app.name
         |> String.slice(0..0)
         |> String.upcase()
 
       [
-        content_tag(:h1, name,
+        content_tag(:h1, app.name,
           class: "logo",
           "data-letter": letter,
-          "data-color": get_color(name)
+          "data-color": get_color(app.service_name)
         ),
         content_tag :p do
           [
