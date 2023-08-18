@@ -52,6 +52,10 @@ header.external-client>h1 {
     font-weight: normal;
 }
 
+header.external-client>p {
+    text-align: center;
+}
+
 header.external-client>p>a {
     --height: 1.5rem;
     --btn-text-color-data: var(--text-color-data);
