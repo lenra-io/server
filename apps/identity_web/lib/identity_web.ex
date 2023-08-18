@@ -99,6 +99,7 @@ defmodule IdentityWeb do
       import Phoenix.View
 
       import IdentityWeb.ErrorHelpers
+      import IdentityWeb.OAuthHelpers
       import IdentityWeb.Gettext
 
       # credo:disable-for-next-line Credo.Check.Readability.AliasAs

@@ -59,7 +59,7 @@ defmodule IdentityWeb.UserAuthController do
       Application.app_dir(:identity_web, "priv/static/cgu/CGU_#{lang}_#{cgu.version}.html")
       |> File.read!()
 
-    render(conn, "cgu-validation.html",
+    render_with_client(conn, "cgu-validation.html",
       error_message: error_message,
       lang: lang,
       cgu_id: cgu.id,
@@ -110,10 +110,26 @@ defmodule IdentityWeb.UserAuthController do
          code,
          error_message
        ) do
-    render(conn, "lost-password-new-password.html",
+    render_with_client(conn, "lost-password-new-password.html",
       changeset: changeset,
       code: code,
       error_message: error_message
+    )
+  end
+
+  @spec render_with_client(Plug.Conn.t(), binary | atom, Keyword.t() | map | binary | atom) ::
+          Plug.Conn.t()
+  defp render_with_client(conn, template, assigns)
+       when is_map(assigns) or is_list(assigns) do
+    {:ok, response} =
+      conn
+      |> get_session(:login_challenge)
+      |> HydraApi.get_login_request()
+
+    render(
+      conn,
+      template,
+      assigns ++ [client: response.body["client"]]
     )
   end
 
@@ -146,7 +162,7 @@ defmodule IdentityWeb.UserAuthController do
 
   # Display the login page
   def login_page(conn, _params) do
-    render(conn, "new.html",
+    render_with_client(conn, "new.html",
       submit_action: "login",
       error_message: nil,
       changeset: register_changeset_or_new(nil)
@@ -173,7 +189,7 @@ defmodule IdentityWeb.UserAuthController do
 
       _error ->
         # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
-        render(conn, "new.html",
+        render_with_client(conn, "new.html",
           submit_action: "login",
           error_message: "Invalid email or password",
           changeset: register_changeset_or_new(nil)
@@ -187,7 +203,7 @@ defmodule IdentityWeb.UserAuthController do
 
   # Display the register page
   def register_page(conn, _params) do
-    render(conn, "new.html",
+    render_with_client(conn, "new.html",
       submit_action: "register",
       error_message: nil,
       changeset: register_changeset_or_new(nil)
@@ -205,14 +221,14 @@ defmodule IdentityWeb.UserAuthController do
         |> redirect_next_step(user)
 
       {:error, :inserted_user, %Ecto.Changeset{} = changeset, _done} ->
-        render(conn, "new.html",
+        render_with_client(conn, "new.html",
           submit_action: "register",
           error_message: nil,
           changeset: register_changeset_or_new(changeset)
         )
 
       {:error, :password, changeset, _done} ->
-        render(conn, "new.html",
+        render_with_client(conn, "new.html",
           submit_action: "register",
           error_message: nil,
           changeset: register_changeset_or_new(changeset)
@@ -246,7 +262,7 @@ defmodule IdentityWeb.UserAuthController do
   ##### LOST PASSWORD #####
 
   def lost_password_enter_email(conn, _params) do
-    render(conn, "lost-password-enter-email.html", error_message: nil)
+    render_with_client(conn, "lost-password-enter-email.html", error_message: nil)
   end
 
   def send_lost_password_code(conn, %{"email" => email}) do
@@ -265,7 +281,7 @@ defmodule IdentityWeb.UserAuthController do
   end
 
   def lost_password_send_code(conn, _params),
-    do: render(conn, "lost-password-enter-email.html", error_message: "Email is required")
+    do: render_with_client(conn, "lost-password-enter-email.html", error_message: "Email is required")
 
   def change_lost_password(conn, %{"user" => %{"code" => code} = params}) do
     email = get_session(conn, :email)
@@ -298,7 +314,7 @@ defmodule IdentityWeb.UserAuthController do
   # Show the email validation form.
   def check_email_page(conn, _params) do
     # client = response.body["client"]
-    render(conn, "email-token.html", error_message: nil)
+    render_with_client(conn, "email-token.html", error_message: nil)
   end
 
   # Handle the email validation form and login the user if the CGU are accepted.
@@ -312,12 +328,12 @@ defmodule IdentityWeb.UserAuthController do
         redirect_next_step(conn, user)
 
       _error ->
-        render(conn, "email-token.html", error_message: "Invalid token")
+        render_with_client(conn, "email-token.html", error_message: "Invalid token")
     end
   end
 
   def check_email_token(conn, _params),
-    do: render(conn, "email-token.html", error_message: "Token is required")
+    do: render_with_client(conn, "email-token.html", error_message: "Token is required")
 
   # The "create" handle the register form
   def resend_check_email_token(conn, _params) do

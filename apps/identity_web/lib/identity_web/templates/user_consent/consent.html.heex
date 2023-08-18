@@ -1,35 +1,29 @@
-<h1>The application ask for these permissions</h1>
-<p>
-  Hello <b><%= inspect(@user.email) %></b>
-  <br />
-  The APP<%= inspect(@client["client_id"]) %>
-  Need your consent to access to Lenra. <br />
-  There is what he needs :
-
-  <ul>
-    <%= for scope <- @scopes do %>
-      <li><%= scope %></li>
-
-    <% end %>
-  </ul>
-
-</p>
-
-<div>
+<main class="arrows">
+  <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+  <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/consent.css")} media="print" onload='this.media="all"'/>
+  <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
+  <%= oauth_header "consent", @client %>
   <.form let={f} for={@conn} action={Routes.user_consent_path(@conn, @action)} >
-      <%= hidden_input(f, :accept, value: true) %>
-      <%= if assigns[:consent_challenge] do %>
-        <%= hidden_input f, :consent_challenge, value: @consent_challenge %>
+    <p><%= raw(gettext("Hi <strong>%{email}</strong> !", email: @user.email)) %></p>
+    <p><%= raw(gettext("<strong>%{app_name}</strong> is requesting access to your Lenra account.", app_name: get_client_name(@client))) %></p>
+    <p><%= raw(gettext("If you accept, <strong>%{app_name}</strong> will have access to :", app_name: get_client_name(@client))) %></p>
+    <ul>
+      <%= for scope <- @scopes do %>
+        <li><%= get_translated_scope_description(scope) %></li>
       <% end %>
-        <%= label f, :remember_me, "Remember my choice" %>
-        <%= checkbox f, :remember_me %>
-      <%= submit "J'accepte" %>
+    </ul>
+    <%= if assigns[:consent_challenge] do %>
+      <%= hidden_input f, :consent_challenge, value: @consent_challenge %>
+    <% end %>
+
+    <fieldset>
+      <%= checkbox f, :remember_me %>
+      <%= label f, :remember_me, gettext("Remember my choice") %>
+    </fieldset>
+    <nav>
+      <%= submit "Decline", name: :accept, value: "false" %>
+      <%= submit "Accept", name: :accept, value: "true", class: "primary" %>
+    </nav>
+    <%# = link gettext("Connect with another account"), to: Routes.user_auth_path(@conn, :lost_password_enter_email), class: "login btn link lenra-icon-chevron-right" %>
   </.form>
-  <.form let={f} for={@conn} action={Routes.user_consent_path(@conn, @action)} >
-        <%= hidden_input(f, :accept, value: false) %>
-        <%= if assigns[:consent_challenge] do %>
-          <%= hidden_input f, :consent_challenge, value: @consent_challenge %>
-        <% end %>
-      <%= submit "Je refuse" %>
-  </.form>
-</div>
+</main>

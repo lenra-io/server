@@ -15,6 +15,7 @@ defmodule Mix.Tasks.CreateOauth2Client do
   --scope <scope>
   --redirect-uri <redirect>
   --allowed-origin <origin>
+  --environment-id <env_id>
 
   Example :
   mix create_oauth2_client custom \
@@ -24,6 +25,7 @@ defmodule Mix.Tasks.CreateOauth2Client do
     --redirect-uri com.example.app:/oauth2redirect \
     --allowed-origin http://example.com \
     --allowed-origin http://auth.example.com
+    --environment-id 1
 
 
   """
@@ -56,6 +58,7 @@ defmodule Mix.Tasks.CreateOauth2Client do
     scope: :keep,
     allowed_origin: :keep,
     redirect_uri: :keep,
+    environment_id: :integer,
     prod: :boolean
   ]
 
@@ -122,12 +125,16 @@ defmodule Mix.Tasks.CreateOauth2Client do
     scopes = Keyword.get_values(opts, :scope)
     redirect_uris = Keyword.get_values(opts, :redirect_uri)
     allowed_origins = Keyword.get_values(opts, :allowed_origin)
+    environment_id = Keyword.get(opts, :environment_id, nil)
 
     %{
       client_name: name,
       scope: scopes |> Enum.join(" "),
       redirect_uris: redirect_uris,
-      allowed_cors_origins: allowed_origins
+      allowed_cors_origins: allowed_origins,
+      metadata: %{
+        environment_id: environment_id
+      }
     }
   end
 
