@@ -5,7 +5,7 @@
   <%= oauth_header "consent", @client %>
   <.form let={f} for={@conn} action={Routes.user_consent_path(@conn, @action)} >
     <p><%= raw(gettext("Hi <strong>%{email}</strong> !", email: @user.email)) %></p>
-    <p><%= raw(gettext("<strong>%{app_name}</strong> is requesting access to your Lenra’s account.", app_name: get_client_name(@client))) %></p>
+    <p><%= raw(gettext("<strong>%{app_name}</strong> is requesting access to your Lenra account.", app_name: get_client_name(@client))) %></p>
     <p><%= raw(gettext("If you accept, <strong>%{app_name}</strong> will have access to :", app_name: get_client_name(@client))) %></p>
     <ul>
       <%= for scope <- @scopes do %>
