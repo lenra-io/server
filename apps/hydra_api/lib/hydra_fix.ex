@@ -1,4 +1,4 @@
-defmodule ORY.Hydra do
+defmodule ORY.Hydrax do
   @moduledoc """
   Temporary fix to get the new Hydra 2 API working with this library.
   Can be deleted as soon as the official library is updated :

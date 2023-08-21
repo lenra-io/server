@@ -18,8 +18,8 @@ defmodule HydraApi do
 
   def get_login_request(login_challenge) do
     %{login_challenge: login_challenge}
-    |> ORY.Hydra.get_login_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.get_login_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def accept_login(login_challenge, subject, remember \\ false) do
@@ -29,8 +29,8 @@ defmodule HydraApi do
       remember: remember,
       remember_for: @remember_for
     }
-    |> ORY.Hydra.accept_login_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.accept_login_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def reject_login(login_challenge, error_description) do
@@ -38,16 +38,16 @@ defmodule HydraApi do
       login_challenge: login_challenge,
       error_description: error_description
     }
-    |> ORY.Hydra.reject_login_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.reject_login_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def get_consent_request(consent_challenge) do
     # The "Consent request" contain data about the current consent request.
     # We request hydra to retreive these data.
     %{consent_challenge: consent_challenge}
-    |> ORY.Hydra.get_consent_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.get_consent_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def accept_consent(
@@ -65,8 +65,8 @@ defmodule HydraApi do
       remember: remember,
       remember_for: @remember_for
     }
-    |> ORY.Hydra.accept_consent_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.accept_consent_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def reject_consent(consent_challenge) do
@@ -75,30 +75,30 @@ defmodule HydraApi do
       error: :consent_denied,
       error_description: "The resource owner did not consent."
     }
-    |> ORY.Hydra.reject_consent_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.reject_consent_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def get_logout_request(logout_challenge) do
     # The "Consent request" contain data about the current consent request.
     # We request hydra to retreive these data.
     %{logout_challenge: logout_challenge}
-    |> ORY.Hydra.get_logout_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.get_logout_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def accept_logout(logout_challenge) do
     %{
       logout_challenge: logout_challenge
     }
-    |> ORY.Hydra.accept_logout_request()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.accept_logout_request()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def introspect(token, required_scopes) do
     %{scope: required_scopes, token: token}
-    |> ORY.Hydra.introspect()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.introspect()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def check_token(token, required_scopes) do
@@ -146,32 +146,32 @@ defmodule HydraApi do
 
   def get_hydra_client(id) do
     id
-    |> ORY.Hydra.get_client()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.get_client()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def create_hydra_client(params) do
     Logger.debug("Create hydra client #{inspect(params)}")
 
     params
-    |> ORY.Hydra.create_client()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.create_client()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def delete_hydra_client(id) do
     Logger.debug("Delete hydra client #{id}")
 
     id
-    |> ORY.Hydra.delete_client()
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.delete_client()
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def update_hydra_client(params, id) do
     Logger.debug("Update hydra client #{id} to #{inspect(params)}")
 
     id
-    |> ORY.Hydra.update_client(params)
-    |> ORY.Hydra.request(hydra_config())
+    |> ORY.Hydrax.update_client(params)
+    |> ORY.Hydrax.request(hydra_config())
   end
 
   def hydra_url do

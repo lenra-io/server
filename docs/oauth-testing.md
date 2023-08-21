@@ -51,18 +51,12 @@ In order to test the OAuth for external apps, you must have an app in the Lenra 
 
 Create a Lenra app in the database :
 
-### From the Lenra backoffice
-
 - Create an OAuth client for the backoffice
     ```bash
     mix create_oauth2_client backoffice
     ```
 - Start the backoffice Flutter app
 - Create an app in the backoffice
-
-### From the CLI
-
-<!-- TODO -->
 
 ### Create the external app OAuth client
 
