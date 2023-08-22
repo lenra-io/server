@@ -12,7 +12,10 @@ if config_env() == :prod do
   config :identity_web, IdentityWeb.Endpoint,
     http: [port: System.get_env("IDENTITY_WEB_PORT", "4010")],
     secret_key_base: System.fetch_env!("IDENTITY_WEB_SECRET_KEY_BASE"),
-    url: [host: System.fetch_env!("IDENTITY_WEB_ENDPOINT"), port: System.get_env("IDENTITY_WEB_PORT", "4010")]
+    url: [
+      host: System.fetch_env!("IDENTITY_WEB_ENDPOINT"),
+      port: System.get_env("IDENTITY_WEB_PORT", "4010")
+    ]
 
   config :lenra, Lenra.Repo,
     username: System.fetch_env!("POSTGRES_USER"),
@@ -35,11 +38,19 @@ if config_env() == :prod do
     lenra_app_url: System.fetch_env!("LENRA_APP_URL"),
     pipeline_runner: System.get_env("PIPELINE_RUNNER", "gitlab"),
     kubernetes_api_url:
-      System.get_env("KUBERNETES_API_URL") || "https://#{System.fetch_env!("KUBERNETES_SERVICE_HOST")}",
-    kubernetes_api_cert: System.get_env("KUBERNETES_API_CERT", "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"),
+      System.get_env("KUBERNETES_API_URL") ||
+        "https://#{System.fetch_env!("KUBERNETES_SERVICE_HOST")}",
+    kubernetes_api_cert:
+      System.get_env(
+        "KUBERNETES_API_CERT",
+        "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+      ),
     kubernetes_api_token:
       System.get_env("KUBERNETES_API_TOKEN") ||
-        System.get_env("KUBERNETES_API_TOKEN_PATH", "/var/run/secrets/kubernetes.io/serviceaccount/token")
+        System.get_env(
+          "KUBERNETES_API_TOKEN_PATH",
+          "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        )
         |> File.read!()
         |> String.trim(),
     kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build"),
@@ -101,4 +112,7 @@ if config_env() == :prod do
   config :sentry,
     dsn: System.fetch_env!("SENTRY_DSN"),
     environment_name: System.fetch_env!("ENVIRONMENT")
+
+  config :hydra_api,
+    hydra_url: System.fetch_env!("HYDRA_URL")
 end
