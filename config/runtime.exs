@@ -31,7 +31,6 @@ if config_env() == :prod do
     gitlab_api_token: System.fetch_env!("GITLAB_API_TOKEN"),
     gitlab_project_id: System.fetch_env!("GITLAB_PROJECT_ID"),
     gitlab_ci_ref: "master",
-    template_url: System.fetch_env!("TEMPLATE_URL"),
     lenra_email: System.fetch_env!("LENRA_EMAIL"),
     lenra_app_url: System.fetch_env!("LENRA_APP_URL"),
     pipeline_runner: System.get_env("PIPELINE_RUNNER", "gitlab"),

@@ -89,7 +89,6 @@ config :lenra,
       "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
     ),
   faas_secrets: ["gitlab-registry"],
-  template_url: System.get_env("TEMPLATE_URL", "https://github.com/lenra-io/templates.git#beta"),
   lenra_email: System.get_env("LENRA_EMAIL", "contact@lenra.io"),
   lenra_app_url: System.get_env("LENRA_APP_URL", "https://localhost:10000"),
   pipeline_runner: System.get_env("PIPELINE_RUNNER", "GitLab"),
