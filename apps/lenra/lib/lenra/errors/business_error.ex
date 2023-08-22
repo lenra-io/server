@@ -28,6 +28,8 @@ defmodule Lenra.Errors.BusinessError do
       {:no_app_found, "No application found for the current link"},
       {:no_env_found, "Environment not found", 404},
       {:invitation_wrong_email, "Cannot accept the invitation with this email."},
-      {:application_not_built, "Your application has not been built yet."}
+      {:application_not_built, "Your application has not been built yet."},
+      {:pipeline_runner_unkown_service,
+       "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes])"}
     ]
 end

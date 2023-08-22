@@ -31,7 +31,8 @@ config :lenra,
   gitlab_ci_ref: "master",
   template_url: "https://github.com/lenra-io/templates.git",
   lenra_email: "contact@lenra.io",
-  lenra_app_url: "https://localhost:10000"
+  lenra_app_url: "https://localhost:10000",
+  pipeline_runner: "gitlab"
 
 config :application_runner,
   faas_url: "http://localhost:1234"

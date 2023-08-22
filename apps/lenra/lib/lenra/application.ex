@@ -4,6 +4,9 @@ defmodule Lenra.Application do
   @moduledoc false
 
   use Application
+
+  alias Lenra.Errors.BusinessError
+
   require Logger
 
   def start(_type, _args) do
@@ -27,10 +30,33 @@ defmodule Lenra.Application do
       ),
       Supervisor.child_spec(
         {Finch,
-         name: GitlabHttp,
-         pools: %{
-           Application.fetch_env!(:lenra, :gitlab_api_url) => [size: 10, count: 3]
-         }},
+         name: PipelineHttp,
+         pools:
+           case String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) do
+             "gitlab" ->
+               %{
+                 Application.fetch_env!(:lenra, :gitlab_api_url) => [
+                   size: 10,
+                   count: 3
+                 ]
+               }
+
+             "kubernetes" ->
+               %{
+                 Application.fetch_env!(:lenra, :kubernetes_api_url) => [
+                   size: 10,
+                   count: 3,
+                   conn_opts: [
+                     transport_opts: [
+                       cacertfile: Application.fetch_env!(:lenra, :kubernetes_api_cert)
+                     ]
+                   ]
+                 ]
+               }
+
+             _anything ->
+               BusinessError.pipeline_runner_unkown_service_tuple()
+           end},
         id: :finch_gitlab_http
       ),
       {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]}
