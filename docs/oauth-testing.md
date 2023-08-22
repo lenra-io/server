@@ -49,7 +49,7 @@ You're good to go !
 
 ```bash
 /app/bin/lenra eval 'Mix.Tasks.CreateOauth2Client.run(["apps", "--redirect-uri", "https://app.staging.lenra.io/redirect.html", "--allowed-origin", "https://app.staging.lenra.io"])'
-'Mix.Tasks.CreateOauth2Client.run(["backoffice", "--redirect-uri", "https://dev.staging.lenra.io/redirect.html", "--allowed-origin", "https://dev.staging.lenra.io"])'
+/app/bin/lenra eval 'Mix.Tasks.CreateOauth2Client.run(["backoffice", "--redirect-uri", "https://dev.staging.lenra.io/redirect.html", "--allowed-origin", "https://dev.staging.lenra.io"])'
 ```
 
 ## Test external app clients
