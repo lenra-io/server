@@ -10,9 +10,9 @@ if config_env() == :prod do
     url: [host: System.fetch_env!("API_ENDPOINT"), port: System.fetch_env!("PORT")]
 
   config :identity_web, IdentityWeb.Endpoint,
-    http: [port: System.fetch_env!("IDENTITY_WEB_PORT")],
+    http: [port: System.get_env("IDENTITY_WEB_PORT", "4010")],
     secret_key_base: System.fetch_env!("IDENTITY_WEB_SECRET_KEY_BASE"),
-    url: [host: System.fetch_env!("IDENTITY_WEB_ENDPOINT"), port: System.fetch_env!("IDENTITY_WEB_PORT")]
+    url: [host: System.fetch_env!("IDENTITY_WEB_ENDPOINT"), port: System.get_env("IDENTITY_WEB_PORT", "4010")]
 
   config :lenra, Lenra.Repo,
     username: System.fetch_env!("POSTGRES_USER"),
