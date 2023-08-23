@@ -18,6 +18,7 @@ defmodule LenraWeb.OAuth2Controller do
 
   def create(conn, params) do
     with :ok <- allow_creator_only(conn, params),
+         :ok <- allow_websocket_scope_only(params),
          {:ok, clients} <- Apps.create_oauth2_client(params) do
       conn
       |> reply(clients)
@@ -26,6 +27,7 @@ defmodule LenraWeb.OAuth2Controller do
 
   def update(conn, params) do
     with :ok <- allow_creator_only(conn, params),
+         :ok <- allow_websocket_scope_only(params),
          {:ok, updated} <- Apps.update_oauth2_client(params) do
       conn
       |> reply(updated)
@@ -43,6 +45,12 @@ defmodule LenraWeb.OAuth2Controller do
   defp allow_creator_only(conn, %{"environment_id" => env_id}) do
     with {:ok, app} <- Apps.fetch_app_for_env(env_id) do
       allow(conn, app)
+    end
+  end
+
+  defp allow_websocket_scope_only(%{"scopes" => scopes}) do
+    with ["app:websocket"] <- scopes do
+      :ok
     end
   end
 end
