@@ -12,7 +12,7 @@ defmodule Lenra.Apps.OAuth2Client do
 
   @redirect_uris_regex ~r/^https?:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/
   @allowed_origins_regex ~r/^https?:\/\/\w+(\.\w+)*(:[0-9]+)?$/
-  @allowed_scopes ["profile", "store", "resources", "manage:account", "manage:apps"]
+  @allowed_scopes ["profile", "store", "resources", "manage:account", "manage:apps", "app:websocket"]
 
   @derive {Jason.Encoder, only: [:oauth2_client_id, :environment_id, :name, :scopes, :redirect_uris, :allowed_origins]}
   schema "oauth2_clients" do
