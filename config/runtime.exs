@@ -38,8 +38,7 @@ if config_env() == :prod do
     lenra_app_url: System.fetch_env!("LENRA_APP_URL"),
     pipeline_runner: System.get_env("PIPELINE_RUNNER", "gitlab"),
     kubernetes_api_url:
-      System.get_env("KUBERNETES_API_URL") ||
-        "https://#{System.fetch_env!("KUBERNETES_SERVICE_HOST")}",
+      System.get_env("KUBERNETES_API_URL", "https://kubernetes.default.svc.cluster.local"),
     kubernetes_api_cert:
       System.get_env(
         "KUBERNETES_API_CERT",
