@@ -80,7 +80,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
 
       params = %{
         "name" => "Foo",
-        "scopes" => ["profile", "store"],
+        "scopes" => ["app:websocket"],
         "redirect_uris" => ["http://localhost:10000/redirect.html"],
         "allowed_origins" => ["http://localhost:10000"]
       }
@@ -94,7 +94,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
                  "name" => "Foo",
                  "oauth2_client_id" => "a-valid-uuid",
                  "redirect_uris" => ["http://localhost:10000/redirect.html"],
-                 "scopes" => ["profile", "store"]
+                 "scopes" => ["app:websocket"]
                },
                "secret" => %{"expiration" => 42, "value" => "maybe_a_valid_secret"}
              } = json_response(conn, 200)
@@ -107,17 +107,15 @@ defmodule LenraWeb.OAuth2ControllerTest do
 
       params = %{
         "name" => "Foo",
-        "scopes" => ["profiles", "store"],
+        "scopes" => ["app:websockets"],
         "redirect_uris" => ["http://localhost:10000/redirect.html"],
         "allowed_origins" => ["http://localhost:10000"]
       }
 
       conn = post(conn, route, params)
 
-      assert %{
-               "message" => "scopes has an invalid entry",
-               "reason" => "invalid_scopes"
-             } = json_response(conn, 400)
+      assert %{"message" => "The given scope is not allowed.", "reason" => "not_allowed_oauth_scope"} =
+               json_response(conn, 403)
     end
 
     @tag auth_user_with_cgu: :dev
@@ -128,7 +126,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
 
       params = %{
         "name" => "Foo",
-        "scopes" => ["profile", "store"],
+        "scopes" => ["app:websocket"],
         "redirect_uris" => ["wrong_url"],
         "allowed_origins" => ["http://localhost:10000"]
       }
@@ -149,7 +147,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
 
       params = %{
         "name" => "Foo",
-        "scopes" => ["profile", "store"],
+        "scopes" => ["app:websocket"],
         "redirect_uris" => ["http://localhost:4000/redirect.html"],
         "allowed_origins" => ["wrong_url"]
       }
@@ -169,7 +167,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
 
       params = %{
         "name" => "f",
-        "scopes" => ["profile", "store"],
+        "scopes" => ["app:websocket"],
         "redirect_uris" => ["http://localhost:4000/redirect.html"],
         "allowed_origins" => ["http://localhost:4000"]
       }
@@ -225,7 +223,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
       # create the client
       params = %{
         "name" => "Foo",
-        "scopes" => ["profile", "store"],
+        "scopes" => ["app:websocket"],
         "redirect_uris" => ["http://localhost:10000/redirect.html"],
         "allowed_origins" => ["http://localhost:10000"],
         "environment_id" => env_id
@@ -244,7 +242,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
                "name" => "Bar",
                "oauth2_client_id" => "a-valid-uuid",
                "redirect_uris" => ["http://localhost:10000/redirect.html"],
-               "scopes" => ["profile", "store"]
+               "scopes" => ["app:websocket"]
              } = json_response(conn, 200)
     end
   end
