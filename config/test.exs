@@ -55,4 +55,4 @@ config :application_runner, ApplicationRunner.Repo,
 config :lenra, Lenra.Mailer, adapter: Bamboo.TestAdapter
 
 config :hydra_api,
-  hydra_url: System.get_env("HYDRA_URL", "http://localhost:4445")
+  hydra_url: System.get_env("HYDRA_URL", "http://localhost:4405")

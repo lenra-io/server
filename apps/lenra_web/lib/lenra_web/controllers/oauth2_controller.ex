@@ -5,6 +5,7 @@ defmodule LenraWeb.OAuth2Controller do
     module: LenraWeb.OAuth2Controller.Policy
 
   alias Lenra.Apps
+  alias LenraWeb.Errors.BusinessError
 
   require Logger
 
@@ -48,10 +49,12 @@ defmodule LenraWeb.OAuth2Controller do
     end
   end
 
-  defp allow_websocket_scope_only(%{"scopes" => scopes}) do
-    with ["app:websocket"] <- scopes do
-      :ok
-    end
+  defp allow_websocket_scope_only(%{"scopes" => ["app:websocket"]}) do
+    :ok
+  end
+
+  defp allow_websocket_scope_only(_params) do
+    BusinessError.not_allowed_oauth_scope_tuple()
   end
 end
 
