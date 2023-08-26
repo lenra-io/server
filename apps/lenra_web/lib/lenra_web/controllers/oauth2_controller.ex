@@ -1,11 +1,11 @@
 defmodule LenraWeb.OAuth2Controller do
-  alias LenraWeb.Errors.BusinessError
   use LenraWeb, :controller
 
   use LenraWeb.Policy,
     module: LenraWeb.OAuth2Controller.Policy
 
   alias Lenra.Apps
+  alias LenraWeb.Errors.BusinessError
 
   require Logger
 
