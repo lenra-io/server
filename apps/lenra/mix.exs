@@ -50,9 +50,10 @@ defmodule Lenra.MixProject do
       {:libcluster, "~> 3.3.1"},
       {:application_runner,
        git: "https://github.com/lenra-io/application-runner.git",
-       ref: "v1.0.0-beta.129",
+      #  ref: "v1.0.0-beta.129",
+       ref: "error-stacktrace",
        submodules: true},
-      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.7.1"},
+       {:lenra_common, "~> 2.8"},
       {:hydra_api, in_umbrella: true}
     ]
   end

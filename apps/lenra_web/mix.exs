@@ -45,7 +45,7 @@ defmodule LenraWeb.MixProject do
       {:hydra_api, in_umbrella: true},
       {:cors_plug, "~> 3.0", only: :dev, runtime: false},
       {:bouncer, git: "https://github.com/lenra-io/bouncer.git", tag: "v1.0.0"},
-      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.7.1"}
+      {:lenra_common, "~> 2.8"}
     ]
   end
 end
