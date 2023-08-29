@@ -56,7 +56,7 @@ if config_env() == :prod do
     kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra-build-secret")
 
   config :application_runner,
-    url: System.fetch_env!("API_ENDPOINT"),
+    url: "http://" <> System.fetch_env!("API_ENDPOINT") <> ":" <> System.fetch_env!("PORT"),
     faas_url: System.fetch_env!("FAAS_URL"),
     faas_auth: System.fetch_env!("FAAS_AUTH"),
     faas_registry: System.fetch_env!("FAAS_REGISTRY"),

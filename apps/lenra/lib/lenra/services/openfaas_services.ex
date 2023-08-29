@@ -5,6 +5,7 @@ defmodule Lenra.OpenfaasServices do
 
   alias Lenra.Apps
   alias Lenra.Errors.TechnicalError
+  alias LenraCommon.Errors
 
   require Logger
 
@@ -133,7 +134,10 @@ defmodule Lenra.OpenfaasServices do
         :error404
 
       500 ->
-        Logger.error(body)
+        body
+        |> Errors.format_error_with_stacktrace()
+        |> Logger.error()
+
         {:error, body}
 
       504 ->
@@ -141,7 +145,10 @@ defmodule Lenra.OpenfaasServices do
         TechnicalError.timeout_tuple()
 
       _err ->
-        Logger.error(body)
+        body
+        |> Errors.format_error_with_stacktrace()
+        |> Logger.error()
+
         TechnicalError.unknown_error_tuple()
     end
   end
