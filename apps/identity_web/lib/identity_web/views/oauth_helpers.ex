@@ -21,7 +21,8 @@ defmodule IdentityWeb.OAuthHelpers do
   @doc """
   Render the header of the OAuth pages.
   """
-  def oauth_header("consent", %{"metadata" => %{"environment_id" => env_id}} = client) do
+  def oauth_header("consent", %{"metadata" => %{"environment_id" => env_id}})
+      when is_binary(env_id) do
     content_tag :header, class: "external-client" do
       {:ok, app} = Lenra.Apps.fetch_app_for_env(env_id)
 
@@ -41,12 +42,16 @@ defmodule IdentityWeb.OAuthHelpers do
             content_tag(:li, "Lenra", class: "lenra")
           ]
         end,
-        content_tag(:h1, Gettext.gettext(IdentityWeb.Gettext, "You've been invited to use an app"))
+        content_tag(
+          :h1,
+          Gettext.gettext(IdentityWeb.Gettext, "You've been invited to use an app")
+        )
       ]
     end
   end
 
-  def oauth_header(_context, %{"metadata" => %{"environment_id" => env_id}} = client) do
+  def oauth_header(_context, %{"metadata" => %{"environment_id" => env_id}})
+      when is_binary(env_id) do
     content_tag :header, class: "external-client" do
       {:ok, app} = Lenra.Apps.fetch_app_for_env(env_id)
 
