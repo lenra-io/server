@@ -44,7 +44,7 @@ defmodule Mix.Tasks.CreateOauth2Client do
   @backoffice_url_prod "https://dev.lenra.io"
 
   @app_name "Lenra Client"
-  @app_scopes ["profile", "store", "resources", "manage:account"]
+  @app_scopes ["profile", "store", "resources", "manage:account", "app:websocket"]
   @app_url_dev "http://localhost:10000"
   @app_url_prod "https://app.lenra.io"
 

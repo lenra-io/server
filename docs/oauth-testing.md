@@ -43,13 +43,20 @@ mix create_oauth2_client apps
 Get the client_ids and put them in the client OAUTH_CLIENT_ID argument.
 You're good to go !
 
-### Create the external app OAuth client for the staging environment
-
-
+### Create Lenra OAuth clients for the staging environment
 
 ```bash
 /app/bin/lenra eval 'Mix.Tasks.CreateOauth2Client.run(["apps", "--redirect-uri", "https://app.staging.lenra.io/redirect.html", "--allowed-origin", "https://app.staging.lenra.io"])'
 /app/bin/lenra eval 'Mix.Tasks.CreateOauth2Client.run(["backoffice", "--redirect-uri", "https://dev.staging.lenra.io/redirect.html", "--allowed-origin", "https://dev.staging.lenra.io"])'
+```
+
+#### Update the scopes of app OAuth client for the staging environment
+
+Use the `Lenra.Apps.update_oauth2_client/1` function patch the app OAuth client for the staging environment.
+
+```bash
+# Updates the app OAuth client scopes for the staging environment
+/app/bin/lenra eval 'Lenra.Apps.update_oauth2_client(%{"client_id" => "1bafc4d4-3759-4542-a751-82b6c96a29fc", "scopes" => ["profile", "store", "resources", "manage:account", "app:websocket"]})'
 ```
 
 ## Test external app clients

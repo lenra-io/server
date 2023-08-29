@@ -134,7 +134,10 @@ defmodule Lenra.OpenfaasServices do
         :error404
 
       500 ->
-        Errors.log(body)
+        body
+        |> Errors.format_error_with_stacktrace()
+        |> Logger.error()
+
         {:error, body}
 
       504 ->
@@ -142,7 +145,10 @@ defmodule Lenra.OpenfaasServices do
         TechnicalError.timeout_tuple()
 
       _err ->
-        Errors.log(body)
+        body
+        |> Errors.format_error_with_stacktrace()
+        |> Logger.error()
+
         TechnicalError.unknown_error_tuple()
     end
   end
