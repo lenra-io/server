@@ -85,7 +85,8 @@ defmodule IdentityWeb.OAuthHelpers do
   @doc """
   Get the OAuth client name.
   """
-  def get_client_name(%{"metadata" => %{"environment_id" => env_id}}) do
+  def get_client_name(%{"metadata" => %{"environment_id" => env_id}})
+      when is_binary(env_id) do
     # get the app name from the environment id
     {:ok, app} = Lenra.Apps.fetch_app_for_env(env_id)
     app.name
