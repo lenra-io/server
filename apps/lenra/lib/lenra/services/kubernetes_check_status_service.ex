@@ -15,7 +15,7 @@ defmodule Lenra.KubernetesCheckStatusService do
 
   def handle_cast({:add_job, job}, %{jobs: []} = state) do
     Process.send_after(self(), :process_jobs, 5000)
-    {:noreply, %{state | jobs: [job]}}
+    {:noreply, %{state | jobs: [job], current_index: 0}}
   end
 
   def handle_cast({:add_job, job}, state) do
@@ -36,12 +36,12 @@ defmodule Lenra.KubernetesCheckStatusService do
     status = check_job_status(job)
 
     case status do
-      :succeeded ->
+      :success ->
         # TODO: Set build status to succeed using build_id
         # Remove the job from the queue
         %{state | jobs: List.delete_at(jobs, index)}
 
-      :failed ->
+      :failure ->
         # TODO: Set build status to failure using build_id and reasons
         # Remove the job from the queue
         %{state | jobs: List.delete_at(jobs, index)}
@@ -72,9 +72,9 @@ defmodule Lenra.KubernetesCheckStatusService do
       |> Stream.run()
 
     case response do
-      %{"status" => %{"succeeded" => 1}} -> :succeeded
-      %{"status" => %{"failed" => 1}} -> :failed
-      _ -> :unknown
+      %{"status" => %{"succeeded" => 1}} -> :success
+      %{"status" => %{"failed" => 1}} -> :failure
+      _ -> :running
     end
   end
 
