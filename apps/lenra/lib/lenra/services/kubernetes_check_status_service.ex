@@ -21,10 +21,10 @@ defmodule Lenra.Services.KubernetesCheckStatusService do
     {:reply, :ok, %{state | pods_to_check: []}}
   end
 
-  def handle_call({:add_pods_to_check, pod_name, namespace, build_id}, _from, state) do
+  def handle_call({:add_pod_to_check, pod_name, namespace, build_id}, _from, state) do
     new_pods_to_check = state[:pods_to_check] ++ {:running, pod_name, namespace, build_id}
     if new_pods_to_check == [] do
-      {:reply, :ok, %{state | pods_to_check: new_pods_to_check, timer_ref: nil}}
+      {:reply, :ok, %{state | pods_to_check: new_pods_to_check, timer_ref: 5000}}
     else
       {:reply, :ok, %{state | pods_to_check: new_pods_to_check}}
     end
@@ -35,7 +35,12 @@ defmodule Lenra.Services.KubernetesCheckStatusService do
       [] ->
         {:noreply, %{state | timer_ref: nil}}
       pods ->
-        {pod, remaining_pods} = List.pop(pods)
+        case state[:cur_index] do
+          length(pods) ->
+            Process.send_after(self(), :check_pods_status, 5000)
+            {:noreply, %{state | pods_to_check: pods, cur_index: 0}}
+          _ ->
+        {pod, remaining_pods} = List.pop_at(pods, state[:cur_index])
         case get_pod_status(pod[:pod_name], pod[:namespace], pod[:build_id]) do
           {:ok, "success"} ->
             update_build_status(pod[:build_id], "succeeded")
@@ -44,12 +49,12 @@ defmodule Lenra.Services.KubernetesCheckStatusService do
             update_build_status(pod[:build_id], "failed")
             {:noreply, %{state | pods_to_check: remaining_pods}}
           {:ok, _} ->
-            Process.send_after(self(), :check_pods_status, 5000)
-            {:noreply, %{state | pods_to_check: remaining_pods}}
+            {:noreply, %{state | pods_to_check: pods, cur_index: state[:cur_index] + 1}}
           {:error, _reason} ->
             update_build_status(pod[:build_id], "failed")
             {:noreply, %{state | pods_to_check: remaining_pods}}
         end
+      end
     end
   end
 
