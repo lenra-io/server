@@ -1,0 +1,17 @@
+msgid "scope.app:websocket"
+msgstr ""
+
+msgid "scope.store"
+msgstr ""
+
+msgid "scope.profile"
+msgstr ""
+
+msgid "scope.resources"
+msgstr ""
+
+msgid "scope.manage:account"
+msgstr ""
+
+msgid "scope.manage:apps"
+msgstr ""

@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Md2html do
-  @shortdoc "Task used to md2html a markdown file to a html file"
+  @shortdoc "Task used to convert a markdown file to a html file"
   @moduledoc "The mix md2html task\n
   To use : mix md2html file_name"
 
@@ -14,20 +14,20 @@ defmodule Mix.Tasks.Md2html do
       [] ->
         IO.puts("no argument found. use mix help md2html for more information")
 
-      [args] ->
-        case File.exists?(args) do
+      [file] ->
+        case File.exists?(file) do
           true ->
             html =
-              args
+              file
               |> File.read!()
               |> Earmark.as_html!()
 
-            path = Path.rootname(args) <> ".html"
-            full_html = "#{@before_html} #{@head_html} <body> #{html} </body> #{@after_html}"
-            File.write!(path, full_html)
+            path = Path.rootname(file) <> ".html"
+            # full_html = "#{@before_html} #{@head_html} <body> #{html} </body> #{@after_html}"
+            File.write!(path, html)
 
           false ->
-            IO.puts("The file does not exist or the path is invalid")
+            IO.puts("The " <> file <> " file does not exist or the path is invalid")
         end
 
       _foo ->

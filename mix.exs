@@ -59,13 +59,14 @@ defmodule Lenra.Umbrella.MixProject do
   defp aliases do
     [
       start: ["phx.server"],
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "ecto.setup", "lenra.seeds"],
       "ecto.setup": [
         "ecto.create",
         "ecto.migrate --migrations-path apps/lenra/priv/repo/migrations --migrations-path deps/application_runner/priv/repo/migrations",
         "run apps/lenra/priv/repo/seeds.exs"
       ],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "lenra.seeds": ["run apps/lenra/priv/repo/seeds.exs"],
       test: [
         "ecto.create --quiet",
         "ecto.migrate --migrations-path apps/lenra/priv/repo/migrations --migrations-path deps/application_runner/priv/repo/migrations",

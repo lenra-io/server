@@ -50,8 +50,7 @@ defmodule IdentityWeb.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:lenra, in_umbrella: true},
-      {:lenra_web, in_umbrella: true},
-      {:ory_hydra, "~> 1.2"}
+      {:hydra_api, in_umbrella: true}
     ]
   end
 

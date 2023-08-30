@@ -9,6 +9,14 @@ if config_env() == :prod do
     secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
     url: [host: System.fetch_env!("API_ENDPOINT"), port: System.fetch_env!("PORT")]
 
+  config :identity_web, IdentityWeb.Endpoint,
+    http: [port: System.get_env("IDENTITY_WEB_PORT", "4010")],
+    secret_key_base: System.fetch_env!("IDENTITY_WEB_SECRET_KEY_BASE"),
+    url: [
+      host: System.fetch_env!("IDENTITY_WEB_ENDPOINT"),
+      port: System.get_env("IDENTITY_WEB_PORT", "4010")
+    ]
+
   config :lenra, Lenra.Repo,
     username: System.fetch_env!("POSTGRES_USER"),
     password: System.fetch_env!("POSTGRES_PASSWORD"),
@@ -29,12 +37,18 @@ if config_env() == :prod do
     lenra_email: System.fetch_env!("LENRA_EMAIL"),
     lenra_app_url: System.fetch_env!("LENRA_APP_URL"),
     pipeline_runner: System.get_env("PIPELINE_RUNNER", "gitlab"),
-    kubernetes_api_url:
-      System.get_env("KUBERNETES_API_URL") || "https://#{System.fetch_env!("KUBERNETES_SERVICE_HOST")}",
-    kubernetes_api_cert: System.get_env("KUBERNETES_API_CERT", "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"),
+    kubernetes_api_url: System.get_env("KUBERNETES_API_URL", "https://kubernetes.default.svc.cluster.local"),
+    kubernetes_api_cert:
+      System.get_env(
+        "KUBERNETES_API_CERT",
+        "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+      ),
     kubernetes_api_token:
       System.get_env("KUBERNETES_API_TOKEN") ||
-        System.get_env("KUBERNETES_API_TOKEN_PATH", "/var/run/secrets/kubernetes.io/serviceaccount/token")
+        System.get_env(
+          "KUBERNETES_API_TOKEN_PATH",
+          "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        )
         |> File.read!()
         |> String.trim(),
     kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build"),
@@ -42,7 +56,7 @@ if config_env() == :prod do
     kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra-build-secret")
 
   config :application_runner,
-    url: System.fetch_env!("API_ENDPOINT"),
+    url: "http://" <> System.fetch_env!("API_ENDPOINT") <> ":" <> System.fetch_env!("PORT"),
     faas_url: System.fetch_env!("FAAS_URL"),
     faas_auth: System.fetch_env!("FAAS_AUTH"),
     faas_registry: System.fetch_env!("FAAS_REGISTRY"),
@@ -96,4 +110,7 @@ if config_env() == :prod do
   config :sentry,
     dsn: System.fetch_env!("SENTRY_DSN"),
     environment_name: System.fetch_env!("ENVIRONMENT")
+
+  config :hydra_api,
+    hydra_url: System.fetch_env!("HYDRA_URL")
 end

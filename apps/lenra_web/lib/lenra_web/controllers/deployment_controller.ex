@@ -16,7 +16,7 @@ defmodule LenraWeb.DeploymentsController do
   end
 
   def create(conn, %{"environment_id" => env_id, "build_id" => build_id} = params) do
-    with user <- Guardian.Plug.current_resource(conn),
+    with user <- LenraWeb.Auth.current_resource(conn),
          {:ok, environment} <- Apps.fetch_env(env_id),
          :ok <- allow(conn, environment),
          {:ok, %{inserted_deployment: deployment}} <-

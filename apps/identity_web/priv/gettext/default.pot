@@ -11,57 +11,188 @@
 msgid ""
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:11
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:47
-#: lib/identity_web/templates/user_auth/new.html.heex:11
-#: lib/identity_web/templates/user_auth/new.html.heex:47
+#: lib/identity_web/templates/user_auth/new.html.heex:13
+#: lib/identity_web/templates/user_auth/new.html.heex:13
+#: lib/identity_web/templates/user_auth/new.html.heex:60
+#: lib/identity_web/templates/user_auth/new.html.heex:60
 #, elixir-autogen, elixir-format
 msgid "Create my account"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:48
-#: lib/identity_web/templates/user_auth/new.html.heex:48
+#: lib/identity_web/templates/user_auth/new.html.heex:61
+#: lib/identity_web/templates/user_auth/new.html.heex:61
 #, elixir-autogen, elixir-format
 msgid "I forgot my password"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:15
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:18
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:47
-#: lib/identity_web/templates/user_auth/new.html.heex:15
-#: lib/identity_web/templates/user_auth/new.html.heex:18
-#: lib/identity_web/templates/user_auth/new.html.heex:47
+#: lib/identity_web/templates/user_auth/new.html.heex:17
+#: lib/identity_web/templates/user_auth/new.html.heex:17
+#: lib/identity_web/templates/user_auth/new.html.heex:20
+#: lib/identity_web/templates/user_auth/new.html.heex:20
+#: lib/identity_web/templates/user_auth/new.html.heex:60
+#: lib/identity_web/templates/user_auth/new.html.heex:60
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:17
-#: lib/identity_web/templates/user_auth/new.html.heex:17
+#: lib/identity_web/templates/user_auth/new.html.heex:19
+#: lib/identity_web/templates/user_auth/new.html.heex:19
 #, elixir-autogen, elixir-format
 msgid "Register"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:40
-#, elixir-autogen, elixir-format
-msgid "Keep me logged in for %{duration} days"
-msgstr ""
-
-#: lib/identity_web/templates/user_auth/email-token.html.heex:19
+#: lib/identity_web/templates/user_auth/email-token.html.heex:34
+#: lib/identity_web/templates/user_auth/email-token.html.heex:34
 #, elixir-autogen, elixir-format
 msgid "Confirm the token"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/email-token.html.heex:8
+#: lib/identity_web/templates/user_auth/email-token.html.heex:13
+#: lib/identity_web/templates/user_auth/email-token.html.heex:13
 #, elixir-autogen, elixir-format
 msgid "Great things are about to happen! We have sent you a registration code to access our platform."
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/new.html.heex:40
+#: lib/identity_web/templates/user_auth/new.html.heex:53
+#: lib/identity_web/templates/user_auth/new.html.heex:53
 #, elixir-autogen, elixir-format
 msgid "Keep me logged in for %{days} days"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/email-token.html.heex:7
+#: lib/identity_web/templates/user_auth/email-token.html.heex:12
+#: lib/identity_web/templates/user_auth/email-token.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Thank you for your registration"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/new.html.heex:46
+#: lib/identity_web/templates/user_auth/new.html.heex:46
+#, elixir-autogen, elixir-format
+msgid "At least 1 digit or punctuation character"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/new.html.heex:44
+#: lib/identity_web/templates/user_auth/new.html.heex:44
+#, elixir-autogen, elixir-format
+msgid "At least 1 lowercase"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/new.html.heex:42
+#: lib/identity_web/templates/user_auth/new.html.heex:42
+#, elixir-autogen, elixir-format
+msgid "At least 1 uppercase"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:46
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:46
+#, elixir-autogen, elixir-format
+msgid "Change my password and login"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:13
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:13
+#, elixir-autogen, elixir-format
+msgid "Check your e-mail inbox."
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:10
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Don't worry, it happens to the best of us !"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:11
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:11
+#, elixir-autogen, elixir-format
+msgid "Enter your e-mail address and we'll take care of it."
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:27
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:27
+#, elixir-autogen, elixir-format
+msgid "I accept"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/email-token.html.heex:33
+#: lib/identity_web/templates/user_auth/email-token.html.heex:33
+#, elixir-autogen, elixir-format
+msgid "I didn't receive my token"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:26
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:26
+#, elixir-autogen, elixir-format
+msgid "I refuse and logout"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:10
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Lost your password ?"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:41
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:41
+#, elixir-autogen, elixir-format
+msgid "New password"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:24
+#: lib/identity_web/templates/user_auth/lost-password-enter-email.html.heex:24
+#, elixir-autogen, elixir-format
+msgid "Reset my password"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:12
+#: lib/identity_web/templates/user_auth/lost-password-new-password.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Reset your account password"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:12
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "See the english translated version"
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:10
+#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "See the french original version"
+msgstr ""
+
+#: lib/identity_web/templates/user_consent/consent.html.heex:11
+#: lib/identity_web/templates/user_consent/consent.html.heex:11
+#, elixir-autogen, elixir-format
+msgid "<strong>%{app_name}</strong> is requesting access to your Lenra’s account."
+msgstr ""
+
+#: lib/identity_web/templates/user_auth/new.html.heex:40
+#: lib/identity_web/templates/user_auth/new.html.heex:40
+#, elixir-autogen, elixir-format
+msgid "At least %{count} characters"
+msgstr ""
+
+#: lib/identity_web/templates/user_consent/consent.html.heex:10
+#: lib/identity_web/templates/user_consent/consent.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Hi <strong>%{email}</strong> !"
+msgstr ""
+
+#: lib/identity_web/templates/user_consent/consent.html.heex:12
+#: lib/identity_web/templates/user_consent/consent.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "If you accept, <strong>%{app_name}</strong> will have access to :"
+msgstr ""
+
+#: lib/identity_web/templates/user_consent/consent.html.heex:24
+#: lib/identity_web/templates/user_consent/consent.html.heex:24
+#, elixir-autogen, elixir-format
+msgid "Remember my choice"
+msgstr ""
+
+#: lib/identity_web/templates/user_consent/consent.html.heex:9
+#: lib/identity_web/templates/user_consent/consent.html.heex:9
+#, elixir-autogen, elixir-format
+msgid "You've been invited to use an app"
 msgstr ""

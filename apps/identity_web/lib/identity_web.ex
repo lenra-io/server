@@ -21,6 +21,7 @@ defmodule IdentityWeb do
     quote do
       use Phoenix.Controller, namespace: IdentityWeb
 
+      import LenraCommonWeb.ControllerHelpers
       import Plug.Conn
       import IdentityWeb.Gettext
 
@@ -98,6 +99,7 @@ defmodule IdentityWeb do
       import Phoenix.View
 
       import IdentityWeb.ErrorHelpers
+      import IdentityWeb.OAuthHelpers
       import IdentityWeb.Gettext
 
       # credo:disable-for-next-line Credo.Check.Readability.AliasAs

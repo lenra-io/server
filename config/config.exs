@@ -19,7 +19,7 @@ config :identity_web,
 
 # Configures the endpoint
 config :identity_web, IdentityWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: System.get_env("IDENTITY_WEB_PORT", "4010")],
   render_errors: [view: IdentityWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Lenra.PubSub,
   live_view: [signing_salt: "zBWIFnCo"]
@@ -29,7 +29,7 @@ config :esbuild,
   version: "0.14.0",
   default: [
     args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.js js/form.js js/token-input.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../apps/identity_web/assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -111,9 +111,6 @@ config :application_runner, :mongo,
   password: System.get_env("MONGO_PASSWORD"),
   ssl: System.get_env("MONGO_SSL", "false"),
   auth_source: System.get_env("MONGO_AUTH_SOURCE")
-
-config :identity_web,
-  hydra_url: System.get_env("HYDRA_URL", "http://localhost:4445")
 
 config :application_runner, ApplicationRunner.Scheduler, storage: ApplicationRunner.Storage
 

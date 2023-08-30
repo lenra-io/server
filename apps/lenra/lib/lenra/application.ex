@@ -17,8 +17,6 @@ defmodule Lenra.Application do
       Lenra.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Lenra.PubSub},
-      # Start guardian Sweeper to delete all expired tokens
-      {Guardian.DB.Token.SweeperServer, []},
       # Start the Event Queue
       {EventQueue, &Lenra.LoadWorker.load/0},
       # Start the HTTP Client

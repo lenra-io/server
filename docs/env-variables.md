@@ -35,7 +35,7 @@ This document provides a list of the environment variables that need to be set f
 
 ### Kubernetes Configuration
 
-- `KUBERNETES_API_URL`: The URL for the Kubernetes API. Default is "https://KUBERNETES_SERVICE_HOST".
+- `KUBERNETES_API_URL`: The URL for the Kubernetes API. Default is "https://kubernetes.default.svc.cluster.local".
 - `KUBERNETES_SERVICE_HOST`: The service host for Kubernetes.
 - `KUBERNETES_API_CERT`: The certificate for the Kubernetes API. Default is "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt".
 - `KUBERNETES_API_TOKEN`: The token for the Kubernetes API. If not set, the value is read from the path specified in `KUBERNETES_API_TOKEN_PATH`.
