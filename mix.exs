@@ -44,7 +44,7 @@ defmodule Lenra.Umbrella.MixProject do
       {:ex_doc, "~> 0.29", only: :dev, runtime: false},
       {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: [:dev], runtime: false},
-      {:sobelow, "~> 0.11.1", only: :dev},
+      {:sobelow, "~> 0.13.0", only: :dev},
       {:excoveralls, "~> 0.15.2", only: :test},
       {:benchee, "~> 1.1", only: :dev}
     ]
