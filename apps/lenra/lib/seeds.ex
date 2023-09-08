@@ -8,7 +8,7 @@ defmodule Lenra.Seeds do
   end
 
   def generate_cgu do
-    Application.app_dir(:lenra_web, "/priv/static/cgu/CGU_fr_*.md")
+    Application.app_dir(:identity_web, "/priv/static/cgu/CGU_fr_*.md")
     |> Path.wildcard()
     |> Enum.each(fn path ->
       "CGU_fr_" <> version = path |> Path.basename(".md")

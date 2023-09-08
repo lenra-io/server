@@ -5,7 +5,7 @@ defmodule LenraWeb.UserControllerTest do
   use LenraWeb.ConnCase
   use Bamboo.Test, shared: true
 
-  alias Lenra.Accounts.{LostPasswordCode, User}
+  alias Lenra.Accounts.User
   alias Lenra.Repo
 
   @john_doe_user_params %{
@@ -15,152 +15,6 @@ defmodule LenraWeb.UserControllerTest do
     "password" => "Johndoe@thefirst",
     "password_confirmation" => "Johndoe@thefirst"
   }
-
-  test "register test", %{conn: conn} do
-    conn = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
-
-    assert %{
-             "email" => "john.doe@lenra.fr",
-             "first_name" => "John",
-             "id" => _id,
-             "last_name" => "Doe",
-             "role" => "unverified_user"
-           } = json_response(conn, 200)
-
-    assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
-  end
-
-  test "register error test", %{conn: conn} do
-    conn =
-      post(
-        conn,
-        Routes.user_path(conn, :register, %{
-          "first_name" => "John",
-          "last_name" => "Doe",
-          "email" => "john.doelenra.fr",
-          "password" => "Johndoe@thefirst",
-          "password_confirmation" => "Johndoe@thefirst"
-        })
-      )
-
-    assert %{
-             "message" => "email has invalid format",
-             "reason" => "invalid_email"
-           } = json_response(conn, 400)
-  end
-
-  test "register password ponctuation format error test", %{conn: conn} do
-    conn =
-      post(
-        conn,
-        Routes.user_path(conn, :register, %{
-          "first_name" => "John",
-          "last_name" => "Doe",
-          "email" => "john.doe@lenra.fr",
-          "password" => "Johndoethefirst",
-          "password_confirmation" => "Johndoethefirst"
-        })
-      )
-
-    assert %{
-             "message" => "password should have at least one digit or punctuation character",
-             "reason" => "invalid_password"
-           } = json_response(conn, 400)
-  end
-
-  test "register password uppercase format error test", %{conn: conn} do
-    conn =
-      post(
-        conn,
-        Routes.user_path(conn, :register, %{
-          "first_name" => "John",
-          "last_name" => "Doe",
-          "email" => "john.doe@lenra.fr",
-          "password" => "johndoethefirst42",
-          "password_confirmation" => "johndoethefirst42"
-        })
-      )
-
-    assert %{
-             "message" => "password should have at least one upper case character",
-             "reason" => "invalid_password"
-           } = json_response(conn, 400)
-  end
-
-  test "register password lowercase format error test", %{conn: conn} do
-    conn =
-      post(
-        conn,
-        Routes.user_path(conn, :register, %{
-          "first_name" => "John",
-          "last_name" => "Doe",
-          "email" => "john.doe@lenra.fr",
-          "password" => "JOHNDOETHEFIRST42",
-          "password_confirmation" => "JOHNDOETHEFIRST42"
-        })
-      )
-
-    assert %{
-             "message" => "password should have at least one lower case character",
-             "reason" => "invalid_password"
-           } = json_response(conn, 400)
-  end
-
-  test "login test", %{conn: conn} do
-    post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
-
-    conn =
-      post(
-        conn,
-        Routes.user_path(conn, :login, %{
-          "email" => "john.doe@lenra.fr",
-          "password" => @john_doe_user_params["password"]
-        })
-      )
-
-    assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
-  end
-
-  test "login incorrect email or password test", %{conn: conn} do
-    post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
-
-    conn =
-      post(
-        conn,
-        Routes.user_path(conn, :login, %{
-          "email" => "john.doe@lenra.fr",
-          "password" => "incorrect"
-        })
-      )
-
-    assert %{"message" => "Incorrect email or password", "reason" => "incorrect_email_or_password"} =
-             json_response(conn, 400)
-  end
-
-  test "refresh not authenticated test", %{conn: conn} do
-    conn = post(conn, Routes.user_path(conn, :refresh_token))
-
-    assert %{
-             "message" => "You are not authenticated",
-             "reason" => "unauthenticated"
-           } = json_response(conn, 401)
-  end
-
-  test "refresh authenticated test", %{conn: conn} do
-    conn_register = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
-    Repo.delete_all(Lenra.Legal.CGU)
-    conn = post(conn_register, Routes.user_path(conn_register, :refresh_token))
-
-    assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
-  end
-
-  test "logout test", %{conn: conn!} do
-    conn! = post(conn!, Routes.user_path(conn!, :register, @john_doe_user_params))
-
-    conn! = post(conn!, Routes.user_path(conn!, :logout))
-
-    assert %{} = json_response(conn!, 200)
-  end
 
   @tag auth_user_with_cgu: :unverified_user
   test "code verification test", %{conn: conn} do
@@ -204,24 +58,7 @@ defmodule LenraWeb.UserControllerTest do
 
     assert %{} = json_response(conn2, 200)
 
-    conn =
-      post(
-        conn,
-        Routes.user_path(conn, :login, %{
-          "email" => "john.doe@lenra.fr",
-          "password" => new_password
-        })
-      )
-
-    assert %{
-             "email" => "john.doe@lenra.fr",
-             "first_name" => "John",
-             "id" => _id,
-             "last_name" => "Doe",
-             "role" => "unverified_user"
-           } = json_response(conn, 200)
-
-    assert Enum.any?(conn.resp_headers, fn element -> "access_token" in Tuple.to_list(element) end)
+    assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.fr", new_password)
   end
 
   @tag :auth_user_with_cgu
@@ -242,148 +79,140 @@ defmodule LenraWeb.UserControllerTest do
            } = json_response(conn, 400)
   end
 
-  @tag :auth_user
-  test "change lost password test", %{conn: conn!} do
-    new_password = "New@password"
+  # @tag :auth_user
+  # test "change lost password test", %{conn: conn!} do
+  #   new_password = "New@password"
 
-    conn! =
-      post(
-        conn!,
-        Routes.user_path(conn!, :send_lost_password_code, %{
-          "email" => @john_doe_user_params["email"]
-        })
-      )
+  #   conn! =
+  #     post(
+  #       conn!,
+  #       Routes.user_path(conn!, :send_lost_password_code, %{
+  #         "email" => @john_doe_user_params["email"]
+  #       })
+  #     )
 
-    user = Repo.get_by(User, email: @john_doe_user_params["email"])
-    password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
+  #   user = Repo.get_by(User, email: @john_doe_user_params["email"])
+  #   password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
 
-    conn! =
-      put(
-        conn!,
-        Routes.user_path(conn!, :change_lost_password, %{
-          "email" => @john_doe_user_params["email"],
-          "code" => password_code.code,
-          "password" => new_password,
-          "password_confirmation" => new_password
-        })
-      )
+  #   initial_passwords = user |> Repo.preload(:password) |> Map.get(:password)
+  #   assert length(initial_passwords) == 1
 
-    conn! =
-      post(
-        conn!,
-        Routes.user_path(conn!, :login, %{
-          "email" => @john_doe_user_params["email"],
-          "password" => new_password
-        })
-      )
+  #   put(
+  #     conn!,
+  #     Routes.user_path(conn!, :change_lost_password, %{
+  #       "email" => @john_doe_user_params["email"],
+  #       "code" => password_code.code,
+  #       "password" => new_password,
+  #       "password_confirmation" => new_password
+  #     })
+  #   )
 
-    assert Enum.any?(conn!.resp_headers, fn element ->
-             "access_token" in Tuple.to_list(element)
-           end)
-  end
+  #   final_passwords = user |> Repo.preload(:password) |> Map.get(:password)
 
-  @tag :auth_user
-  test "Using lost password code twice should fail the second time", %{conn: conn} do
-    new_password = "New@password42"
-    new_password2 = "New@password1337"
+  #   assert length(final_passwords) == 2
+  # end
 
-    # Ask for a lost password code
-    conn! =
-      post(
-        conn,
-        Routes.user_path(conn, :send_lost_password_code, %{
-          "email" => @john_doe_user_params["email"]
-        })
-      )
+  # @tag :auth_user
+  # test "Using lost password code twice should fail the second time", %{conn: conn} do
+  #   new_password = "New@password42"
+  #   new_password2 = "New@password1337"
 
-    # Retrive the code (not returned by the controller)
-    user = Repo.get_by(User, email: @john_doe_user_params["email"])
-    password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
+  #   # Ask for a lost password code
+  #   conn! =
+  #     post(
+  #       conn,
+  #       Routes.user_path(conn, :send_lost_password_code, %{
+  #         "email" => @john_doe_user_params["email"]
+  #       })
+  #     )
 
-    # Change password first time
-    conn! =
-      put(
-        conn!,
-        Routes.user_path(conn!, :change_lost_password, %{
-          "email" => @john_doe_user_params["email"],
-          "code" => password_code.code,
-          "password" => new_password,
-          "password_confirmation" => new_password
-        })
-      )
+  #   # Retrive the code (not returned by the controller)
+  #   user = Repo.get_by(User, email: @john_doe_user_params["email"])
+  #   password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
 
-    # First one should succeed
-    assert %{} = json_response(conn!, 200)
+  #   # Change password first time
+  #   conn! =
+  #     put(
+  #       conn!,
+  #       Routes.user_path(conn!, :change_lost_password, %{
+  #         "email" => @john_doe_user_params["email"],
+  #         "code" => password_code.code,
+  #         "password" => new_password,
+  #         "password_confirmation" => new_password
+  #       })
+  #     )
 
-    # Change password a second time with another password but the same code
-    conn! =
-      put(
-        conn!,
-        Routes.user_path(conn!, :change_lost_password, %{
-          "email" => @john_doe_user_params["email"],
-          "code" => password_code.code,
-          "password" => new_password2,
-          "password_confirmation" => new_password2
-        })
-      )
+  #   # First one should succeed
+  #   assert %{} = json_response(conn!, 200)
 
-    # Second one should fail
-    assert %{} = json_response(conn!, 400)
-  end
+  #   # Change password a second time with another password but the same code
+  #   conn! =
+  #     put(
+  #       conn!,
+  #       Routes.user_path(conn!, :change_lost_password, %{
+  #         "email" => @john_doe_user_params["email"],
+  #         "code" => password_code.code,
+  #         "password" => new_password2,
+  #         "password_confirmation" => new_password2
+  #       })
+  #     )
 
-  test "change lost password wrong email test", %{conn: conn} do
-    post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+  #   # Second one should fail
+  #   assert %{} = json_response(conn!, 400)
+  # end
 
-    conn = post(conn, Routes.user_path(conn, :send_lost_password_code, %{email: "wrong@email.me"}))
+  # @tag auth_user_with_cgu: :user
+  # test "change lost password wrong email test", %{conn: conn} do
+  #   conn = post(conn, Routes.user_path(conn, :send_lost_password_code, %{email: "wrong@email.me"}))
 
-    assert %{} = json_response(conn, 200)
-  end
+  #   assert %{} = json_response(conn, 200)
+  # end
 
-  test "change lost password error code test", %{conn: conn} do
-    post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+  # @tag auth_user_with_cgu: :user
+  # test "change lost password error code test", %{conn: conn} do
+  #   post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
 
-    post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
+  #   conn =
+  #     put(
+  #       conn,
+  #       Routes.user_path(conn, :change_lost_password, %{
+  #         "email" => @john_doe_user_params["email"],
+  #         "code" => "00000000",
+  #         "password" => "Johndoe@thefirst",
+  #         "password_confirmation" => "Johndoe@thefirst"
+  #       })
+  #     )
 
-    conn =
-      put(
-        conn,
-        Routes.user_path(conn, :change_lost_password, %{
-          "email" => @john_doe_user_params["email"],
-          "code" => "00000000",
-          "password" => "Johndoe@thefirst",
-          "password_confirmation" => "Johndoe@thefirst"
-        })
-      )
+  #   assert %{
+  #            "message" => "No such password lost code",
+  #            "reason" => "no_such_password_code"
+  #          } = json_response(conn, 400)
+  # end
 
-    assert %{
-             "message" => "No such password lost code",
-             "reason" => "no_such_password_code"
-           } = json_response(conn, 400)
-  end
+  # @tag auth_user_with_cgu: :user
+  # test "change lost password error password test", %{conn: conn} do
+  #   %{assigns: %{user: user}} = conn
 
-  test "change lost password error password test", %{conn: conn} do
-    %{assigns: %{root: user}} = post(conn, Routes.user_path(conn, :register, @john_doe_user_params))
+  #   post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
 
-    post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
+  #   password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
 
-    password_code = Repo.get_by(LostPasswordCode, user_id: user.id)
+  #   conn =
+  #     put(
+  #       conn,
+  #       Routes.user_path(conn, :change_lost_password, %{
+  #         "email" => @john_doe_user_params["email"],
+  #         "code" => password_code.code,
+  #         "password" => "Johndoe@thefirst",
+  #         "password_confirmation" => "Johndoe@thefirst"
+  #       })
+  #     )
 
-    conn =
-      put(
-        conn,
-        Routes.user_path(conn, :change_lost_password, %{
-          "email" => @john_doe_user_params["email"],
-          "code" => password_code.code,
-          "password" => "Johndoe@thefirst",
-          "password_confirmation" => "Johndoe@thefirst"
-        })
-      )
-
-    assert %{
-             "message" => "Your password cannot be equal to the last 3.",
-             "reason" => "password_already_used"
-           } = json_response(conn, 400)
-  end
+  #   assert %{
+  #            "message" => "Your password cannot be equal to the last 3.",
+  #            "reason" => "password_already_used"
+  #          } = json_response(conn, 400)
+  # end
 
   @tag :auth_user
   test "change password code 4 time with password 1 test", %{conn: conn!} do
@@ -422,28 +251,16 @@ defmodule LenraWeb.UserControllerTest do
         })
       )
 
-    conn! =
-      put(
-        conn!,
-        Routes.user_path(conn!, :change_password, %{
-          "old_password" => new_password_3,
-          "password" => "Johndoe@thefirst",
-          "password_confirmation" => "Johndoe@thefirst"
-        })
-      )
+    put(
+      conn!,
+      Routes.user_path(conn!, :change_password, %{
+        "old_password" => new_password_3,
+        "password" => "Johndoe@thefirst",
+        "password_confirmation" => "Johndoe@thefirst"
+      })
+    )
 
-    conn! =
-      post(
-        conn!,
-        Routes.user_path(conn!, :login, %{
-          "email" => "john.doe@lenra.fr",
-          "password" => "Johndoe@thefirst"
-        })
-      )
-
-    assert Enum.any?(conn!.resp_headers, fn element ->
-             "access_token" in Tuple.to_list(element)
-           end)
+    assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.fr", "Johndoe@thefirst")
   end
 
   @tag :auth_user_with_cgu

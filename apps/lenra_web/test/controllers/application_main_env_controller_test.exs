@@ -26,8 +26,9 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
       conn = get(conn, Routes.application_main_env_path(conn, :index, 0))
 
       assert json_response(conn, 401) == %{
-               "message" => "You are not authenticated",
-               "reason" => "unauthenticated"
+               "message" => "No Bearer token found in Authorization header",
+               "reason" => "token_not_found",
+               "metadata" => %{}
              }
     end
 

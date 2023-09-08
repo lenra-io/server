@@ -18,10 +18,20 @@ defmodule IdentityWeb.Router do
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    get "/users/log_in", UserAuthController, :new
-    post "/users/register", UserAuthController, :create
-    post "/users/log_in", UserAuthController, :login
-    get "/users/password/reset", UserAuthController, :reset_password
+    get "/users/auth", UserAuthController, :new
+    get "/users/register", UserAuthController, :register_page
+    post "/users/register", UserAuthController, :register
+    get "/users/login", UserAuthController, :login_page
+    post "/users/login", UserAuthController, :login
+    get "/users/login/cancel", UserAuthController, :cancel_login
+    get "/users/email/check", UserAuthController, :check_email_page
+    post "/users/email/check", UserAuthController, :check_email_token
+    post "/users/email/check/new", UserAuthController, :resend_check_email_token
+    get "/users/cgu/validation", UserAuthController, :validate_cgu_page
+    post "/users/cgu/validation", UserAuthController, :validate_cgu
+    get "/users/password/lost", UserAuthController, :lost_password_enter_email
+    post("/users/password/lost", UserAuthController, :send_lost_password_code)
+    put("/users/password/lost", UserAuthController, :change_lost_password)
     get "/users/consent", UserConsentController, :index
     post "/users/consent", UserConsentController, :consent
   end
@@ -29,6 +39,6 @@ defmodule IdentityWeb.Router do
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserAuthController, :delete
+    delete "/users/log_out", UserAuthController, :logout
   end
 end

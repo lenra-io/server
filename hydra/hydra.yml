@@ -5,7 +5,6 @@ serve:
     cors:
       enabled: true
       allowed_origins:
-        - https://oauthdebugger.com
         - http://localhost:10000
       allowed_methods:
         - POST
@@ -20,9 +19,6 @@ serve:
   public:
     cors:
       enabled: true
-      allowed_origins:
-        - https://oauthdebugger.com
-        - http://localhost:10000
       allowed_methods:
         - POST
         - GET
@@ -37,18 +33,11 @@ serve:
 urls:
   self:
     issuer: http://localhost:4444
-  consent: http://localhost:4001/users/consent
-  login: http://localhost:4001/users/log_in
-  logout: http://localhost:4001/users/log_out
+  consent: http://localhost:4010/users/consent
+  login: http://localhost:4010/users/auth
+  logout: http://localhost:4010/users/logout
 
 secrets:
   system:
     - youReallyNeedToChangeThis
 
-oidc:
-  subject_identifiers:
-    supported_types:
-      - pairwise
-      - public
-    pairwise:
-      salt: youReallyNeedToChangeThis

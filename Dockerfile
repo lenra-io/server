@@ -34,6 +34,7 @@ RUN mix phx.digest
 
 # compile and build release
 RUN mix compile
+RUN mix esbuild default --minify
 RUN mix release lenra
 
 # prepare release image

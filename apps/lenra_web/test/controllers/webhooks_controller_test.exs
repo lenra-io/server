@@ -5,7 +5,7 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   setup %{conn: conn} do
     conn = create_app(conn)
-    user = Guardian.Plug.current_resource(conn)
+    user = LenraWeb.Auth.current_resource(conn)
 
     assert app = json_response(conn, 200)
 
@@ -110,13 +110,14 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   @tag auth_user_with_cgu: :dev
   test "Trigger webhook in env should work properly", %{conn: conn, env: env} do
-    token = env.id |> ApplicationRunner.AppSocket.do_create_env_token() |> elem(1)
+    {:ok, _} = start_supervised({ApplicationRunner.EventHandler, [mode: :env, id: env.id]})
 
     env_metadata = %ApplicationRunner.Environment.Metadata{
       env_id: env.id,
-      function_name: "test",
-      token: token
+      function_name: "test"
     }
+
+    {:ok, _} = start_supervised({ApplicationRunner.Environment.TokenAgent, env_metadata})
 
     {:ok, _} = start_supervised({ApplicationRunner.Environment.MetadataAgent, env_metadata})
 

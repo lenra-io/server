@@ -1,0 +1,3 @@
+[submodule "libs/application_runner/priv/components-api"]
+	path = libs/application_runner/priv/components-api
+	url = https://github.com/lenra-io/components-api.git

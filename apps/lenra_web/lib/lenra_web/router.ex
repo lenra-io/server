@@ -1,7 +1,7 @@
 defmodule LenraWeb.Router do
   use LenraWeb, :router
 
-  alias LenraWeb.{Pipeline, Plug}
+  alias LenraWeb.Plug
 
   require ApplicationRunner.Router
 
@@ -13,82 +13,121 @@ defmodule LenraWeb.Router do
   end
 
   pipeline :runner do
-    plug(Plug.VerifySecret)
-  end
-
-  pipeline :ensure_auth do
-    plug(Pipeline.EnsureAuthed)
-  end
-
-  pipeline :ensure_resource_auth do
-    plug(Pipeline.EnsureAuthedQueryParams)
-  end
-
-  pipeline :ensure_auth_refresh do
-    plug(Pipeline.RefreshToken)
+    plug(Plug.VerifyRunnerSecret)
   end
 
   pipeline :ensure_cgu_accepted do
     plug(Plug.VerifyCgu)
   end
 
-  scope "/auth", LenraWeb do
-    pipe_through(:api)
-    post("/register", UserController, :register)
-    post("/login", UserController, :login)
-    post("/password/lost", UserController, :send_lost_password_code)
-    put("/password/lost", UserController, :change_lost_password)
-
-    pipe_through(:ensure_auth_refresh)
-    post("/logout", UserController, :logout)
-
-    pipe_through([:ensure_cgu_accepted])
-    post("/refresh", UserController, :refresh_token)
+  pipeline :scope_profile do
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "profile")
   end
 
+  pipeline :scope_manage_account do
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "manage:account")
+  end
+
+  pipeline :scope_manage_apps do
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "manage:apps")
+  end
+
+  pipeline :scope_store do
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "store")
+  end
+
+  pipeline :scope_resources do
+    plug(Plug.ExtractQueryParams)
+    plug(Plug.VerifyScope, "resources")
+  end
+
+  # Runner callback, secured via runner-specific token
   scope "/runner", LenraWeb do
     pipe_through([:api, :runner])
     put("/builds/:id", RunnerController, :update_build)
   end
 
+  # /api, No scope needed
   scope "/api", LenraWeb do
     pipe_through([:api])
     get("/cgu/latest", CguController, :get_latest_cgu)
     get("/apps/:app_service_name", AppsController, :get_app_by_service_name)
+  end
 
-    pipe_through([:ensure_auth])
+  # /api, scope "profile"
+  scope "/api", LenraWeb do
+    pipe_through([:scope_profile])
+    get("/me", UserController, :current_user)
+  end
+
+  # /api, scope "manage_account" without CGU needed
+  scope "/api", LenraWeb do
+    pipe_through([:api, :scope_manage_account])
     post("/cgu/:cgu_id/accept", CguController, :accept)
     get("/cgu/me/accepted_latest", CguController, :user_accepted_latest_cgu)
+  end
 
-    pipe_through([:ensure_cgu_accepted])
+  # /api, scope "manage_account" WITH CGU needed
+  scope "/api", LenraWeb do
+    pipe_through([:api, :scope_manage_account, :ensure_cgu_accepted])
     post("/verify", UserController, :validate_user)
     post("/verify/lost", UserController, :resend_registration_token)
-    resources("/apps", AppsController, only: [:index, :create, :update, :delete])
-    get("/apps/:app_id/main_environment", ApplicationMainEnvController, :index)
-    resources("/apps/:app_id/environments", EnvsController, only: [:index, :create])
-    patch("/apps/:app_id/environments/:env_id", EnvsController, :update)
 
-    resources("/apps/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
-
-    get("/apps/invitations/:id", UserEnvironmentAccessController, :fetch_one)
-    post("/apps/invitations/:id", UserEnvironmentAccessController, :accept)
-
-    resources("/apps/:app_id/builds", BuildsController, only: [:index, :create])
-
-    resources("/apps/deployments", DeploymentsController, only: [:create])
-    get("/apps/:app_id/deployments", DeploymentsController, :index)
     put("/password", UserController, :change_password)
     put("/verify/dev", UserController, :validate_dev)
-
-    get("/me/apps", AppsController, :get_user_apps)
-    get("/me/opened_apps", AppsController, :all_apps_user_opened)
 
     get("/webhooks", WebhooksController, :index)
     post("/webhooks", WebhooksController, :api_create)
   end
 
+  # /api, scope "store" & CGU Accepted
   scope "/api", LenraWeb do
-    pipe_through([:api, :ensure_resource_auth, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_store, :ensure_cgu_accepted])
+
+    get("/me/apps", AppsController, :get_user_apps)
+    get("/me/opened_apps", AppsController, :all_apps_user_opened)
+  end
+
+  # /api/apps, scope "manage_apps" & CGU Accepted
+  scope "/api/apps", LenraWeb do
+    pipe_through([:api, :scope_manage_apps, :ensure_cgu_accepted])
+
+    resources("/", AppsController, only: [:index, :create, :update, :delete])
+
+    # Environments
+    get("/:app_id/main_environment", ApplicationMainEnvController, :index)
+    resources("/:app_id/environments", EnvsController, only: [:index, :create])
+    patch("/:app_id/environments/:env_id", EnvsController, :update)
+
+    # Invitations to env
+    resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+
+    get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
+    post("/invitations/:id", UserEnvironmentAccessController, :accept)
+
+    # Builds
+    resources("/:app_id/builds", BuildsController, only: [:index, :create])
+
+    # Deployments
+    resources("/deployments", DeploymentsController, only: [:create])
+    get("/:app_id/deployments", DeploymentsController, :index)
+  end
+
+  scope "/api/environments", LenraWeb do
+    pipe_through [:api, :scope_manage_apps, :ensure_cgu_accepted]
+    post("/:environment_id/oauth2", OAuth2Controller, :create)
+    get("/:environment_id/oauth2", OAuth2Controller, :index)
+    put("/:environment_id/oauth2/:client_id", OAuth2Controller, :update)
+    delete("/:environment_id/oauth2/:client_id", OAuth2Controller, :delete)
+  end
+
+  # /api resources, scope "resources"
+  scope "/api", LenraWeb do
+    pipe_through([:api, :scope_resources, :ensure_cgu_accepted])
     ApplicationRunner.Router.resource_route(ResourcesController)
   end
 

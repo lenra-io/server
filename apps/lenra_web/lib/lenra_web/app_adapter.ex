@@ -51,9 +51,9 @@ defmodule LenraWeb.AppAdapter do
 
   @impl ApplicationRunner.Adapter
   def resource_from_params(params) do
-    case LenraWeb.Guardian.resource_from_token(params["token"]) do
-      {:ok, user, _claims} ->
-        {:ok, user.id}
+    case HydraApi.check_token_and_get_subject(params["token"], "app:websocket") do
+      {:ok, subject, _resp} ->
+        {:ok, subject}
 
       _error ->
         BusinessError.forbidden_tuple()

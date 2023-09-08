@@ -1,0 +1,185 @@
+form {
+    --button-gap: 1rem;
+    --tab-nav-width: 100%;
+    --button-width: calc((var(--tab-nav-width) - var(--button-gap)) / 2);
+    --button-height: 2rem;
+    width: 100%;
+    max-width: 28rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0 auto;
+    align-items: center;
+}
+
+form>header {
+    text-align: center;
+}
+
+form fieldset {
+    width: 100%;
+    border: none;
+}
+
+form input:not([type="radio"], [type="checkbox"], .token) {
+    width: 100%;
+    border: var(--border-width) solid var(--greyscale-60, #A9B2C4);
+    border-radius: 0.25rem;
+    padding: calc(0.25rem - var(--border-width)) calc(0.75rem - var(--border-width));
+    background-color: rgba(var(--text-color-data), .1);
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+form>input[type="radio"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    position: absolute;
+    left: -100vw;
+}
+
+form>input[type="radio"][value="register"]:checked~.login,
+form>input[type="radio"][value="register"]:checked~* .login,
+form>input[type="radio"][value="register"]:checked~.register,
+form>input[type="radio"][value="login"]:checked~* .register {
+    display: none;
+}
+
+form>nav {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+form>nav>a.btn {
+    --horizontal-padding-multiplier: var(--horizontal-padding-small-multiplier);
+}
+
+form>nav.tab {
+    margin-bottom: 1rem;
+    border-radius: calc(var(--button-height) / 2);
+    width: var(--tab-nav-width);
+    gap: var(--button-gap);
+    background-color: rgba(var(--text-color-data), .1);
+}
+
+form>nav.tab::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--button-width);
+    height: var(--button-height);
+    border-radius: calc(var(--button-height) / 2);
+    background-color: rgb(var(--primary-color-data));
+    transition-property: left;
+    z-index: 0;
+}
+
+/* Since there is hidden input for csrf_token the second input is the third one */
+form>input[type="radio"]:nth-of-type(3):checked~nav::before {
+    left: calc(var(--button-width) + var(--button-gap));
+}
+
+form>nav.tab>label {
+    position: relative;
+    width: var(--button-width);
+    text-align: center;
+    padding: 0.25rem;
+    margin-bottom: 0;
+    color: rgb(var(--primary-color-data));
+    transition-property: color;
+    cursor: pointer;
+}
+
+form>input[type="radio"]#user_submit_action_register:checked~nav>label[for="user_submit_action_register"],
+form>input[type="radio"]#user_submit_action_login:checked~nav>label[for="user_submit_action_login"] {
+    color: rgb(var(--white-data));
+}
+
+form .password>label {
+    position: relative;
+}
+
+form .password>label::before {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    width: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    z-index: 2;
+}
+
+form .password>input {
+    padding-right: 2rem;
+}
+
+form ul.rules {
+    padding: 0.5rem;
+}
+
+form ul.rules>li {
+    opacity: var(--disabled-opacity);
+}
+
+form ul.rules>li::before,
+form :is(.invalid-feedback, .alert.alert-danger)::before {
+    display: inline-block;
+    content: "\1F5D9";
+    margin-right: 0.25rem;
+}
+
+form ul.rules>li:is(.valid, .error) {
+    opacity: 1;
+}
+
+form :is(.invalid-feedback, .alert.alert-danger) {
+    display: block;
+}
+
+form .invalid-feedback:first-of-type {
+    padding-top: 0.125rem;
+}
+
+form ul.rules>li.error::before,
+form :is(.invalid-feedback, .alert.alert-danger)::before {
+    color: rgb(var(--red-data));
+}
+
+form ul.rules>li.valid::before {
+    content: "\2713";
+    color: rgb(var(--green-data));
+}
+
+form input[type="checkbox"]+label {
+    display: inline-flex;
+    margin-left: 0.5rem;
+    margin-bottom: 0;
+}
+
+form button[type="submit"] {
+    margin-top: 0;
+    cursor: pointer;
+}
+
+form>button[type="submit"] {
+    width: var(--tab-nav-width);
+}
+
+form a.btn.link {
+    margin-top: 0;
+}
+
+@media (min-width: 25rem) {
+    form {
+        --tab-nav-width: calc(8rem * 2 + var(--button-gap));
+    }
+}

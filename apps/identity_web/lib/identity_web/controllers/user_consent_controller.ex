@@ -1,7 +1,6 @@
 defmodule IdentityWeb.UserConsentController do
   use IdentityWeb, :controller
 
-  alias IdentityWeb.HydraHelper
   alias Lenra.Errors.BusinessError
   require Logger
 
@@ -11,14 +10,14 @@ defmodule IdentityWeb.UserConsentController do
 
   def index(conn, %{"consent_challenge" => consent_challenge}) do
     # Get the consent request informations
-    {:ok, response} = HydraHelper.get_consent_request(consent_challenge)
+    {:ok, response} = HydraApi.get_consent_request(consent_challenge)
 
     # if "skip" == true, the consent have already been granted.
     # We can directly accept the consent and redirect.
     if response.body["skip"] do
       # Consent
       {:ok, accept_response} =
-        HydraHelper.accept_consent(
+        HydraApi.accept_consent(
           consent_challenge,
           response.body["requested_scope"],
           response.body["requested_access_token_audience"],
@@ -56,7 +55,7 @@ defmodule IdentityWeb.UserConsentController do
   def consent(conn, %{"accept" => "false", "consent_challenge" => consent_challenge}) do
     # Here, the user denied the consent by clicking on "reject" button.
     # We tell hydra that the user rejected the consent.
-    {:ok, response} = HydraHelper.reject_consent(consent_challenge)
+    {:ok, response} = HydraApi.reject_consent(consent_challenge)
 
     # Then redirect to hydra.
     redirect(conn, external: response.body["redirect_to"])
@@ -69,10 +68,10 @@ defmodule IdentityWeb.UserConsentController do
       }) do
     # Here, the user accepted the consent by clicking on "accept" button.
 
-    {:ok, response} = HydraHelper.get_consent_request(consent_challenge)
+    {:ok, response} = HydraApi.get_consent_request(consent_challenge)
 
     {:ok, accept_response} =
-      HydraHelper.accept_consent(
+      HydraApi.accept_consent(
         consent_challenge,
         response.body["requested_scope"],
         response.body["requested_access_token_audience"],
