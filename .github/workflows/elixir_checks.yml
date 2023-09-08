@@ -49,6 +49,8 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.COMPONENTS_API_SSH }}
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         id: beam
