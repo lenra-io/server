@@ -8,8 +8,6 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
 
   require Logger
 
-  @scale_to_zero Application.fetch_env!(:application_runner, :scale_to_zero)
-
   def monitor(pid, metadata) do
     GenServer.call(__MODULE__, {:monitor, pid, metadata})
   rescue
@@ -45,7 +43,7 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
     function_name = Map.get(metadata, :function_name)
     Logger.debug("#{__MODULE__} handle down #{inspect(pid)} with metadata #{inspect(metadata)}")
 
-    if @scale_to_zero do
+    if Application.fetch_env!(:application_runner, :scale_to_zero) do
       ApplicationServices.stop_app(function_name)
     end
 
