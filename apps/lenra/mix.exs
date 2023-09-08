@@ -48,11 +48,8 @@ defmodule Lenra.MixProject do
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
       {:libcluster, "~> 3.3.1"},
-      {:application_runner,
-       git: "https://github.com/lenra-io/application-runner.git",
-       ref: "v1.0.0-beta.130",
-       submodules: true},
-      {:lenra_common, "~> 2.9"},
+      {:application_runner, :path, "../../libs/application_runner"},
+      {:lenra_common, :path, "../../libs/lenra_common"},
       {:hydra_api, in_umbrella: true}
     ]
   end
