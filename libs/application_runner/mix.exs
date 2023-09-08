@@ -50,7 +50,7 @@ defmodule ApplicationRunner.MixProject do
       {:crontab, "~> 1.1.13"},
       {:quantum, "~> 3.0"},
       {:query_parser, "~> 1.0.0-beta.27"},
-      {:lenra_common, :path, "../lenra_common"}
+      {:lenra_common, path: "../lenra_common"}
     ]
   end
 

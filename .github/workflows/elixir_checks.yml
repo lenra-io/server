@@ -21,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  checks:
+  check server: &checks
     services:
       postgres:
         image: postgres:12.2-alpine
@@ -38,7 +38,7 @@ jobs:
           --health-retries 5
     env:
       GH_PERSONNAL_TOKEN: ${{secrets.GH_PERSONNAL_TOKEN}}
-    name: Checks
+    name: server checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs:
@@ -91,3 +91,10 @@ jobs:
           POSTGRES_PORT: 5432
       - name: Run dialyzer
         run: mix dialyzer
+
+  check application_runner:
+    <<: *build-test
+    name: application_runner checks
+    defaults:
+      run:
+        working-directory: ./libs/application_runner

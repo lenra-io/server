@@ -55,7 +55,6 @@ defmodule Lenra.Apps.AppsTest do
            env_id: env_id,
            user_id: user.id,
            function_name: "",
-           token: env_id |> ApplicationRunner.AppSocket.create_session_token(1, user.id) |> elem(1),
            context: %{}
          }}
       )
@@ -100,7 +99,6 @@ defmodule Lenra.Apps.AppsTest do
            env_id: env_id,
            user_id: user.id,
            function_name: "",
-           token: env_id |> ApplicationRunner.AppSocket.create_session_token(1, user.id) |> elem(1),
            context: %{}
          }}
       )
@@ -123,7 +121,6 @@ defmodule Lenra.Apps.AppsTest do
            env_id: env_id2,
            user_id: user.id,
            function_name: "",
-           token: env_id2 |> ApplicationRunner.AppSocket.create_session_token(1, user.id) |> elem(1),
            context: %{}
          }}
       )
