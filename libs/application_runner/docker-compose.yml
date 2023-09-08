@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:13
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: lenra_dev
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      interval: 1s
+      retries: 5
+      start_period: 5s
+  mongodb:
+    image: mongo:5
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: test
+      CONFIG: '{"_id" : "rs0", "members" : [{"_id" : 0,"host" : "localhost:27017"}]}'
+    command: mongod --replSet rs0
+    healthcheck:
+      test: test $$(echo "rs.initiate($$CONFIG).ok || rs.status().ok" | mongo --quiet) -eq 1
+      interval: 1s
+      retries: 5
+      start_period: 5s

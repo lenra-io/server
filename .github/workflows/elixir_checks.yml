@@ -21,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  checks:
+  server:
     services:
       postgres:
         image: postgres:12.2-alpine
@@ -38,7 +38,7 @@ jobs:
           --health-retries 5
     env:
       GH_PERSONNAL_TOKEN: ${{secrets.GH_PERSONNAL_TOKEN}}
-    name: Checks
+    name: server checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs:
@@ -49,6 +49,8 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.COMPONENTS_API_SSH }}
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         id: beam
@@ -91,3 +93,76 @@ jobs:
           POSTGRES_PORT: 5432
       - name: Run dialyzer
         run: mix dialyzer
+
+  application_runner:
+    name: application_runner checks
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      GH_PERSONNAL_TOKEN: ${{secrets.GH_PERSONNAL_TOKEN}}
+    services:
+      postgres:
+        # Docker Hub image
+        image: postgres:15.1-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        ports:
+          # Maps tcp port 5432 on service container to the host (localhost)
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ./libs/application_runner
+    needs:
+      - prIsWip
+    if: needs.prIsWip.outputs.isWip == 'false'
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.COMPONENTS_API_SSH }}
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: "1.13" # Define the elixir version [required]
+          otp-version: "24" # Define the OTP version [required]
+      - name: Restore dependencies cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: "5.0"
+          mongodb-replica-set: test-rs
+      - name: Install dependencies
+        run: MIX_ENV=test mix deps.get
+      - name: Compile project
+        run: MIX_ENV=test mix compile
+      - name: Check formatting
+        run: mix format --check-formatted
+      - name: Check code style with credo
+        run: mix credo --strict
+      - name: Run tests
+        run: mix test
+      - name: Run dialyzer
+        run: MIX_ENV=test mix dialyzer --format short
