@@ -64,7 +64,8 @@ if config_env() == :prod do
     listeners_timeout: String.to_integer(System.fetch_env!("LISTENERS_TIMEOUT")),
     view_timeout: String.to_integer(System.fetch_env!("VIEW_TIMEOUT")),
     manifest_timeout: String.to_integer(System.fetch_env!("MANIFEST_TIMEOUT")),
-    env: System.fetch_env!("ENVIRONMENT")
+    env: System.fetch_env!("ENVIRONMENT"),
+    scale_to_zero: System.get_env("SCALE_TO_ZERO", "true") == "true",
 
   config :application_runner, ApplicationRunner.Repo,
     username: System.fetch_env!("POSTGRES_USER"),

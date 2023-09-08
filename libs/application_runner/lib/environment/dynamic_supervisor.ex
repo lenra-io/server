@@ -14,6 +14,8 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
 
   require Logger
 
+  @scale_to_zero Application.fetch_env!(:application_runner, :scale_to_zero)
+
   @doc false
   def start_link(opts) do
     Logger.debug("#{__MODULE__} start_link with #{inspect(opts)}")
@@ -35,7 +37,14 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
       "#{__MODULE__} Start Environment Supervisor with env_metadata: #{inspect(env_metadata)}"
     )
 
-    with {:ok, _status} <- ApplicationServices.start_app(env_metadata.function_name),
+    start_result =
+      if @scale_to_zero do
+        ApplicationServices.start_app(env_metadata.function_name)
+      else
+        {:ok, nil}
+      end
+
+    with {:ok, _status} <- start_result,
          {:ok, pid} <-
            DynamicSupervisor.start_child(
              __MODULE__,
