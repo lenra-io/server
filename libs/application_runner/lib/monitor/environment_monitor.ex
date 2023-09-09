@@ -43,7 +43,9 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
     function_name = Map.get(metadata, :function_name)
     Logger.debug("#{__MODULE__} handle down #{inspect(pid)} with metadata #{inspect(metadata)}")
 
-    ApplicationServices.stop_app(function_name)
+    if Application.fetch_env!(:application_runner, :scale_to_zero) do
+      ApplicationServices.stop_app(function_name)
+    end
 
     {:noreply, new_state}
   end
