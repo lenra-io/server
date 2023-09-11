@@ -145,7 +145,14 @@ defmodule IdentityWeb.UserAuthController do
       # Can do logic stuff here like update the session.
       # The user is already logged in, skip login and redirect.
 
-      redirect_next_step(conn, Accounts.get_user(response.body["subject"]), login_challenge, true)
+      conn
+      |> delete_session(:remember)
+      |> delete_session(:email)
+      |> put_session(:login_challenge, login_challenge)
+      |> put_session(:user_id, response.body["subject"])
+      |> redirect(to: Routes.user_auth_path(conn, :confirm_account))
+
+      # redirect_next_step(conn, Accounts.get_user(response.body["subject"]), login_challenge, true)
     else
       # client = response.body["client"]
       conn
@@ -159,6 +166,21 @@ defmodule IdentityWeb.UserAuthController do
 
   def new(conn, _params),
     do: redirect(conn, to: Routes.user_auth_path(conn, :register_page))
+
+  def confirm_account(conn, _params) do
+    user_id = get_session(conn, :user_id)
+    render_with_client(conn, "confirm-account.html", user: Accounts.get_user(user_id))
+  end
+
+  def choose_account(conn, %{"id" => chosen_user_id}) do
+    user_id = get_session(conn, :user_id)
+
+    if chosen_user_id == user_id do
+      redirect_next_step(conn, Accounts.get_user(user_id))
+    else
+      confirm_account(conn, %{})
+    end
+  end
 
   # Display the login page
   def login_page(conn, _params) do
@@ -367,7 +389,8 @@ defmodule IdentityWeb.UserAuthController do
       {:ok, _} ->
         redirect_next_step(conn, Accounts.get_user(user_id))
 
-      _error ->
+      error ->
+        IO.inspect(error)
         render_cgu_page(
           conn,
           lang,

@@ -24,6 +24,8 @@ defmodule IdentityWeb.Router do
     get "/users/login", UserAuthController, :login_page
     post "/users/login", UserAuthController, :login
     get "/users/login/cancel", UserAuthController, :cancel_login
+    get "/users/confirm", UserAuthController, :confirm_account
+    get "/users/choose", UserAuthController, :choose_account
     get "/users/email/check", UserAuthController, :check_email_page
     post "/users/email/check", UserAuthController, :check_email_token
     post "/users/email/check/new", UserAuthController, :resend_check_email_token
@@ -39,6 +41,6 @@ defmodule IdentityWeb.Router do
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserAuthController, :logout
+    get "/users/logout", UserAuthController, :logout
   end
 end

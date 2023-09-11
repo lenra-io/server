@@ -1,0 +1,12 @@
+<main class="arrows">
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
+  <%= oauth_header "auth", @client %>
+  <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :choose_account)}>
+    <p><%= raw(gettext("Choose an account", email: @user.email)) %></p>
+    <ul>
+      <li><a href={Routes.user_auth_path(@conn, :choose_account, id: @user.id)} class="btn"><%= @user.email %></a></li>
+      <li><a href={Routes.user_auth_path(@conn, :login_page)} class="btn"><%= gettext("Use another account")%></a></li>
+    </ul>
+  </.form>
+</main>
