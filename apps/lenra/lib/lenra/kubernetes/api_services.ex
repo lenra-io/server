@@ -1,9 +1,10 @@
-defmodule Lenra.KubernetesApiServices do
+defmodule Lenra.Kubernetes.ApiServices do
   @moduledoc """
   The service used to call Kubernetes API.
   Curently only support the request to create a new pipeline.
   """
 
+  alias Lenra.Kubernetes.StatusDynSup
   alias Lenra.Apps
   require Logger
 
@@ -191,9 +192,14 @@ defmodule Lenra.KubernetesApiServices do
         }
       })
 
-    Finch.build(:post, jobs_url, headers, body)
-    |> Finch.request(PipelineHttp)
-    |> response()
+    response =
+      Finch.build(:post, jobs_url, headers, body)
+      |> Finch.request(PipelineHttp)
+      |> response()
+
+    StatusDynSup.start_build_status(build_id, kubernetes_build_namespace, build_name)
+
+    response
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}})
