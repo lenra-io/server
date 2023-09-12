@@ -11,10 +11,8 @@ defmodule Lenra.Kubernetes.Status do
   @check_delay 10000
 
   def start_link(opts) do
-    with {:ok, build_id} <- Keyword.fetch(opts, :build_id),
-         {:ok, namespace} <- Keyword.fetch(opts, :namespace),
-         {:ok, job_name} <- Keyword.fetch(opts, :job_name) do
-      GenServer.start_link(__MODULE__, opts, name: get_full_name({build_id, namespace, job_name}))
+    with {:ok, build_id} <- Keyword.fetch(opts, :build_id) do
+      GenServer.start_link(__MODULE__, opts, name: get_full_name({build_id}))
     else
       :error ->
         raise DevError.exception(message: "Status need a build_id, a namespace and an job_name")
