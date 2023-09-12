@@ -191,9 +191,13 @@ defmodule Lenra.KubernetesApiServices do
         }
       })
 
-    Finch.build(:post, jobs_url, headers, body)
+    response = Finch.build(:post, jobs_url, headers, body)
     |> Finch.request(PipelineHttp)
     |> response()
+
+    Lenra.KubernetesBuildService.add_job(build_id, build_name, kubernetes_build_namespace)
+
+    response
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}})

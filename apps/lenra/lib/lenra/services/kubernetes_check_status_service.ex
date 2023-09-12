@@ -1,6 +1,9 @@
 defmodule Lenra.KubernetesCheckStatusService do
   use GenServer
 
+  alias Lenra.Apps
+  require Logger
+
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
@@ -37,12 +40,12 @@ defmodule Lenra.KubernetesCheckStatusService do
 
     case status do
       :success ->
-        # TODO: Set build status to succeed using build_id
+        update_build(job[:build_id], "success")
         # Remove the job from the queue
         %{state | jobs: List.delete_at(jobs, index)}
 
       :failure ->
-        # TODO: Set build status to failure using build_id and reasons
+        update_build(job[:build_id], "failure")
         # Remove the job from the queue
         %{state | jobs: List.delete_at(jobs, index)}
 
@@ -72,8 +75,8 @@ defmodule Lenra.KubernetesCheckStatusService do
       |> Stream.run()
 
     case response do
-      %{"status" => %{"succeeded" => 1}} -> :success
-      %{"status" => %{"failed" => 1}} -> :failure
+      %{"succeeded" => 1} -> :success
+      %{"failed" => 1} -> :failure
       _ -> :running
     end
   end
@@ -81,5 +84,28 @@ defmodule Lenra.KubernetesCheckStatusService do
   defp extract_job_status(response) do
     # Extract the job status from the response
     response["status"]
+  end
+
+  defp maybe_deploy_in_main_env(build, "success"),
+    do: Apps.deploy_in_main_env(build)
+
+  defp maybe_deploy_in_main_env(build, "failure") do
+    build.id
+    |> Apps.get_deployement_for_build()
+    |> Apps.update_deployement(%{status: :failure})
+
+    {:ok, :not_deployed}
+  end
+
+  def update_build(build_id, status)
+      when status in ["success", "failure"] do
+    with {:ok, build} <- Apps.fetch_build(build_id),
+         {:ok, _} <- Apps.update_build(build, %{status: status}) do
+      maybe_deploy_in_main_env(build, status)
+    end
+  end
+
+  def update_build(_build) do
+    {:error, :invalid_build_status}
   end
 end
