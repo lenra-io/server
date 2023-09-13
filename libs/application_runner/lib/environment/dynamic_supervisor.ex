@@ -35,7 +35,14 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
       "#{__MODULE__} Start Environment Supervisor with env_metadata: #{inspect(env_metadata)}"
     )
 
-    with {:ok, _status} <- ApplicationServices.start_app(env_metadata.function_name),
+    start_result =
+      if Application.fetch_env!(:application_runner, :scale_to_zero) do
+        ApplicationServices.start_app(env_metadata.function_name)
+      else
+        {:ok, nil}
+      end
+
+    with {:ok, _status} <- start_result,
          {:ok, pid} <-
            DynamicSupervisor.start_child(
              __MODULE__,

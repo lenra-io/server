@@ -54,6 +54,7 @@ This document provides a list of the environment variables that need to be set f
 - `LISTENERS_TIMEOUT`: The timeout for listeners in the application runner. Must be converted to an integer.
 - `VIEW_TIMEOUT`: The timeout for views in the application runner. Must be converted to an integer.
 - `MANIFEST_TIMEOUT`: The timeout for manifests in the application runner. Must be converted to an integer.
+- `SCALE_TO_ZERO`: If set to true, the application runner will scale applications to zero when they are not in use. Default is "true".
 
 ## MongoDB Configuration
 
