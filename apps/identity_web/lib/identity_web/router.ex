@@ -39,6 +39,6 @@ defmodule IdentityWeb.Router do
   scope "/", IdentityWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserAuthController, :logout
+    get "/users/logout", UserAuthController, :logout
   end
 end
