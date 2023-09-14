@@ -16,9 +16,6 @@ defmodule Lenra.Kubernetes.StatusDynSup do
   @impl true
   def init(_init_arg) do
     Logger.debug("#{__MODULE__} init")
-
-    init_status()
-
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
@@ -47,26 +44,31 @@ defmodule Lenra.Kubernetes.StatusDynSup do
       job_name: job_name
     ]
 
-    DynamicSupervisor.start_child(__MODULE__, {Status, init_value})
+    DynamicSupervisor.start_child({:via, :swarm, __MODULE__}, {Status, init_value})
   end
 
-  defp init_status() do
+  def init_status() do
     kubernetes_build_namespace = Application.fetch_env!(:lenra, :kubernetes_build_namespace)
+    Logger.debug("passed dsfkgj")
 
     builds =
       Repo.all(
         from(
           b in Build,
-          where: b.status == "running"
+          where: b.status == :pending
         )
       )
 
-    builds.each(fn build ->
+    Logger.debug("passed all")
+
+    Map.new(builds, fn build ->
       preloaded_build = Repo.preload(build, :application)
 
       build_name = "build-#{preloaded_build.application.service_name}-#{build.build_number}"
 
       start_build_status(build.id, kubernetes_build_namespace, build_name)
     end)
+
+    Logger.debug("passed init_status")
   end
 end
