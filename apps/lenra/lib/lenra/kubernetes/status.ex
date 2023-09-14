@@ -41,10 +41,12 @@ defmodule Lenra.Kubernetes.Status do
   end
 
   defp check_job_status(job) do
+    Logger.debug("#{__MODULE__} Check job status for #{inspect(job)}")
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
     kubernetes_api_token = Application.fetch_env!(:lenra, :kubernetes_api_token)
 
-    url = "#{kubernetes_api_url}/api/v1/namespaces/#{job[:namespace]}/pods/#{job[:job_name]}/status"
+    url =
+      "#{kubernetes_api_url}/api/v1/namespaces/#{job[:namespace]}/pods/#{job[:job_name]}/status"
 
     headers = [{"Authorization", "Bearer #{kubernetes_api_token}"}]
 
@@ -56,9 +58,17 @@ defmodule Lenra.Kubernetes.Status do
         body
         |> extract_job_status
         |> case do
-          %{"succeeded" => 1} -> :success
-          %{"failed" => 1} -> :failure
-          _ -> :running
+          %{"succeeded" => 1} ->
+            Logger.debug("#{__MODULE__} Check job #{inspect(job)} success")
+            :success
+
+          %{"failed" => 1} ->
+            Logger.debug("#{__MODULE__} Check job #{inspect(job)} failure")
+            :failure
+
+          _ ->
+            Logger.debug("#{__MODULE__} Check job #{inspect(job)} frunning")
+            :running
         end
 
       {:error, reason} ->

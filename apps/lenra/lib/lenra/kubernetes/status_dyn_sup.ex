@@ -20,12 +20,12 @@ defmodule Lenra.Kubernetes.StatusDynSup do
   end
 
   def start_build_status(build_id, namespace, job_name) do
-    Logger.debug("#{__MODULE__} ensure query server started for #{inspect([build_id, namespace, job_name])}")
+    Logger.debug("#{__MODULE__} ensure start status for #{inspect([build_id, namespace, job_name])}")
 
     case start_child(build_id, namespace, job_name) do
       {:ok, pid} ->
         Logger.info("Lenra.Kubernetes.Status started")
-        Process.send_after(self(), :check, 10000)
+        Process.send_after(pid, :check, 10000)
         {:ok, pid}
 
       {:error, {:already_started, pid}} ->
@@ -49,7 +49,6 @@ defmodule Lenra.Kubernetes.StatusDynSup do
 
   def init_status() do
     kubernetes_build_namespace = Application.fetch_env!(:lenra, :kubernetes_build_namespace)
-    Logger.debug("passed dsfkgj")
 
     builds =
       Repo.all(
@@ -59,8 +58,6 @@ defmodule Lenra.Kubernetes.StatusDynSup do
         )
       )
 
-    Logger.debug("passed all")
-
     Map.new(builds, fn build ->
       preloaded_build = Repo.preload(build, :application)
 
@@ -68,7 +65,5 @@ defmodule Lenra.Kubernetes.StatusDynSup do
 
       start_build_status(build.id, kubernetes_build_namespace, build_name)
     end)
-
-    Logger.debug("passed init_status")
   end
 end
