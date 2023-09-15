@@ -45,7 +45,7 @@ defmodule Lenra.Kubernetes.Status do
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
     kubernetes_api_token = Application.fetch_env!(:lenra, :kubernetes_api_token)
 
-    url = "#{kubernetes_api_url}/api/v1/namespaces/#{job[:namespace]}/pods/#{job[:job_name]}/status"
+    url = "#{kubernetes_api_url}/api/v1/namespaces/#{job[:namespace]}/jods/#{job[:job_name]}/status"
 
     headers = [{"Authorization", "Bearer #{kubernetes_api_token}"}]
 
