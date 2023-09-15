@@ -7,7 +7,6 @@ This document provides a list of the environment variables that need to be set f
 - `PORT`: The port on which the application will run.
 - `SECRET_KEY_BASE`: The secret key base for the application.
 - `API_ENDPOINT`: The endpoint for the application's API.
-- `APP_HOST`: The host of the API. This variable should change in the futur.
 - `ENVIRONMENT`: The environment in which the application is running (e.g., production, development, etc.).
 
 ## Database Configuration
@@ -26,6 +25,7 @@ This document provides a list of the environment variables that need to be set f
 ## Pipeline Configuration
 
 - `PIPELINE_RUNNER`: The pipeline runner to use. Default is "gitlab". Depending on the value of this variable, you should configure either the GitLab or Kubernetes section below.
+- `PIPELINE_CALLBACK_URL`: API endpoint usable by the pipeline runner to send status updates to Lenra.
 
 ### GitLab Configuration
 

@@ -82,8 +82,6 @@ defmodule ApplicationRunner.RouteChannel do
           _ ->
             {:reply, {:ok, %{}}, socket}
         end
-
-        {:noreply, socket}
       end
 
       ########
