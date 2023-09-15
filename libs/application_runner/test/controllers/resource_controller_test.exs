@@ -22,7 +22,7 @@ defmodule LenraWeb.ResourcesControllerTest do
         )
 
       {:error, _} ->
-        Plug.Conn.resp(conn, 200, Jason.encode!(%{manifest: @manifest}))
+        Plug.Conn.resp(conn, 200, Jason.encode!(@manifest))
     end
   end
 

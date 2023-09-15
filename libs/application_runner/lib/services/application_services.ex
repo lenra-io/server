@@ -135,7 +135,7 @@ defmodule ApplicationRunner.ApplicationServices do
     )
     |> response(:manifest)
     |> case do
-      {:ok, %{"manifest" => manifest}} ->
+      {:ok, manifest} ->
         Logger.debug("Got manifest : #{inspect(manifest)}")
         {:ok, manifest}
 

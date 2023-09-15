@@ -22,13 +22,17 @@ defmodule ApplicationRunner.ComponentCase do
 
       alias ApplicationRunner.Environments.{Manager, Managers}
 
-      @manifest %{"lenra" => %{
-        "routes" => [{
-          "path" => "/",
-          "view" => %{
-            "_type" => "view",
-            "name" => "root"
-          }]
+      @manifest %{"lenra" =>
+        %{
+          "routes" => [
+            %{
+              "path" => "/",
+              "view" => %{
+                "_type" => "view",
+                "name" => "root"
+              }
+            }
+          ]
         }
       }
 
