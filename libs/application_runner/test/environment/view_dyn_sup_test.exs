@@ -11,13 +11,17 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
   alias ApplicationRunner.Guardian.AppGuardian
   alias QueryParser.Parser
 
-  @manifest %{"lenra" => %{
-    "routes" => [{
-      "path" => "/",
-      "view" => %{
-        "_type" => "view",
-        "name" => "main"
-      }]
+  @manifest %{
+    "lenra" => %{
+      "routes" => [
+        %{
+          "path" => "/",
+          "view" => %{
+            "_type" => "view",
+            "name" => "main"
+          }
+        }
+      ]
     }
   }
   @view %{"_type" => "text", "value" => "test"}

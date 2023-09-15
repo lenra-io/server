@@ -11,8 +11,8 @@ defmodule ApplicationRunner.RoutesChannel do
       alias ApplicationRunner.Environment
       alias ApplicationRunner.Guardian.AppGuardian
       alias ApplicationRunner.Session
-      alias ApplicationRunner.Session.UiBuilders.LenraBuilder
       alias ApplicationRunner.Session.UiBuilders.JsonBuilder
+      alias ApplicationRunner.Session.UiBuilders.LenraBuilder
 
       alias LenraCommonWeb.ErrorHelpers
 

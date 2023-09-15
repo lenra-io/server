@@ -58,7 +58,10 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
     bypass: bypass
   } do
     assert {:ok, webhook} =
-             Webhook.new(env_id, %{"listener" => "listener", "props" => %{"propKey" => "propValue"}})
+             Webhook.new(env_id, %{
+               "listener" => "listener",
+               "props" => %{"propKey" => "propValue"}
+             })
              |> Repo.insert()
 
     Bypass.stub(
