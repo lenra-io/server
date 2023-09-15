@@ -5,6 +5,7 @@ defmodule Lenra.Kubernetes.Status do
   alias LenraCommon.Errors.TechnicalError
   alias LenraCommon.Errors.DevError
   alias Lenra.{Apps, Repo}
+  alias Lenra.Apps.Build
 
   require Logger
 
