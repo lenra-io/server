@@ -1,6 +1,6 @@
 defmodule ApplicationRunner.ApplicationServices do
   @moduledoc """
-    The service that manages calls to an Openfaas action with `run_action/3`
+    The service that manages calls to an Openfaas function with `run_action/3`
   """
   alias ApplicationRunner.Errors.TechnicalError
   alias ApplicationRunner.Guardian.AppGuardian
@@ -28,7 +28,7 @@ defmodule ApplicationRunner.ApplicationServices do
   end
 
   @doc """
-    Run a HTTP POST request with needed headers and body to call an Openfaas Action and decode the response body.
+    Run a HTTP POST request with needed headers and body to call an Openfaas function and decode the response body.
 
     Returns `:ok` if the HTTP Post succeed
     Returns `{:error, reason}` if the HTTP Post fail
@@ -37,7 +37,7 @@ defmodule ApplicationRunner.ApplicationServices do
           :ok | {:error, any()}
   def run_listener(
         function_name,
-        action,
+        listener,
         props,
         event,
         token
@@ -48,7 +48,7 @@ defmodule ApplicationRunner.ApplicationServices do
 
     body =
       Jason.encode!(%{
-        action: action,
+        listener: listener,
         props: props,
         event: event,
         api: %{url: Application.fetch_env!(:application_runner, :url), token: token}
@@ -61,7 +61,7 @@ defmodule ApplicationRunner.ApplicationServices do
 
     Logger.debug("Call to Openfaas : #{function_name}")
 
-    Logger.debug("Run app #{function_name} with action #{action}")
+    Logger.debug("Run app #{function_name} with listener #{listener}")
 
     peeked_token = AppGuardian.peek(token)
     start_time = Telemetry.start(:app_listener, peeked_token.claims)
@@ -333,7 +333,7 @@ defmodule ApplicationRunner.ApplicationServices do
     {:ok, Jason.decode!(body)}
   end
 
-  defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
+  defp response({:error, %Mint.TransportError{reason: reason}}, _listener) do
     Telemetry.event(
       :alert,
       %{},
@@ -345,7 +345,7 @@ defmodule ApplicationRunner.ApplicationServices do
 
   defp response(
          {:ok, %Finch.Response{status: status_code, body: body}},
-         _action
+         _listener
        )
        when status_code not in [200, 202] do
     case status_code do

@@ -16,8 +16,8 @@ defmodule LenraWeb.AppChannelTest do
   # alias LenraWeb.UserSocket
 
   # @build_number 1
-  # @listener_name "HiBob"
-  # @listener_code Crypto.hash({@listener_name, %{}})
+  # @_listener "HiBob"
+  # @listener_code Crypto.hash({@_listener, %{}})
 
   # @manifest %{"manifest" => %{"rootWidget" => "test"}}
 
@@ -25,15 +25,21 @@ defmodule LenraWeb.AppChannelTest do
   # @data2 %{"data" => %{"user" => %{"name" => "Bob"}}}
 
   # @textfield %{
-  #   "type" => "textfield",
+  #   "_type" => "textfield",
   #   "value" => "Hello World",
-  #   "onChanged" => %{"action" => @listener_name}
+  #   "onChanged" => %{
+  #     "_type" => "listener",
+  #     "name" => @_listener
+  #   }
   # }
 
   # @textfield2 %{
   #   "type" => "textfield",
   #   "value" => "Hello Bob",
-  #   "onChanged" => %{"action" => @listener_name}
+  #   "onChanged" => %{
+  #     "_type" => "listener",
+  #     "name" => @_listener
+  #   }
   # }
 
   # @transformed_textfield %{

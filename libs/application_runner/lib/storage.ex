@@ -27,7 +27,7 @@ defmodule ApplicationRunner.Storage do
            Repo.insert(changeset,
              on_conflict:
                {:replace,
-                [:schedule, :listener_name, :props, :should_run_missed_steps, :overlap, :state]},
+                [:schedule, :listener, :props, :should_run_missed_steps, :overlap, :state]},
              conflict_target: [:id]
            ) do
       :ok

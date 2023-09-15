@@ -36,7 +36,7 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
     Enum.map(list, &do_build_listeners(session_metadata, &1))
   end
 
-  defp do_build_listeners(session_metadata, %{"type" => "listener"} = listener) do
+  defp do_build_listeners(session_metadata, %{"_type" => "listener"} = listener) do
     case RouteServer.build_listener(session_metadata, listener) do
       {:ok, built_listener} ->
         built_listener

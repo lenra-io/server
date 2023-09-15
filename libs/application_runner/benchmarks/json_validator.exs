@@ -8,20 +8,21 @@ root = fn json -> %{
 end
 
 text = %{
-  "type" => "text",
+  "_type" => "text",
   "value" => "machin"
 }
 
 error_text = %{
-  "type" => "text"
+  "_type" => "text"
 }
 
 button = %{
-  "type" => "button",
+  "_type" => "button",
   "value" => "azaz",
   "listeners" => %{
     "onClick" => %{
-      "action" => "anyaction",
+      "_type" => "listener",
+      "name" => "anyaction",
       "props" => %{
         "number" => 10,
         "value" => "value"
@@ -31,7 +32,7 @@ button = %{
 }
 
 container = %{
-  "type" => "container",
+  "_type" => "container",
   "children" => [
     text,
     text,
@@ -43,7 +44,7 @@ container = %{
 }
 
 error_container = %{
-  "type" => "container",
+  "_type" => "container",
   "children" => [
     text,
     text,

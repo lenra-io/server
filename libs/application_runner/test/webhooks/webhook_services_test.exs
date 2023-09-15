@@ -46,8 +46,8 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
     callback.(body_decoded)
 
     case body_decoded do
-      # Listeners "action" in body
-      %{"action" => _action} ->
+      # Listeners "listener" in body
+      %{"listener" => _listener} ->
         Plug.Conn.resp(conn, 200, "")
     end
   end
@@ -58,7 +58,7 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
     bypass: bypass
   } do
     assert {:ok, webhook} =
-             Webhook.new(env_id, %{"action" => "listener", "props" => %{"propKey" => "propValue"}})
+             Webhook.new(env_id, %{"listener" => "listener", "props" => %{"propKey" => "propValue"}})
              |> Repo.insert()
 
     Bypass.stub(
@@ -67,7 +67,7 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
       "/function/test",
       &handle_request(&1, fn body ->
         assert body["props"] == %{"propKey" => "propValue"}
-        assert body["action"] == "listener"
+        assert body["listener"] == "listener"
         assert body["event"] == %{"eventPropKey" => "eventPropValue"}
       end)
     )
@@ -92,7 +92,7 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
     assert {:ok, webhook} =
              Webhook.new(env_id, %{
                "user_id" => user_id,
-               "action" => "listener",
+               "listener" => "listener",
                "props" => %{"propKey" => "propValue"}
              })
              |> Repo.insert()
@@ -103,7 +103,7 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
       "/function/test",
       &handle_request(&1, fn body ->
         assert body["props"] == %{"propKey" => "propValue"}
-        assert body["action"] == "listener"
+        assert body["listener"] == "listener"
         assert body["event"] == %{"eventPropKey" => "eventPropValue"}
       end)
     )
@@ -116,11 +116,11 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
     user_id: _user_id,
     bypass: _bypass
   } do
-    assert {:ok, _webhook} = WebhookServices.create(env_id, %{"action" => "listener"})
+    assert {:ok, _webhook} = WebhookServices.create(env_id, %{"listener" => "listener"})
 
     webhook = Enum.at(Repo.all(Webhook), 0)
 
-    assert webhook.action == "listener"
+    assert webhook.listener == "listener"
     assert webhook.environment_id == env_id
   end
 
@@ -130,14 +130,14 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
     bypass: _bypass
   } do
     assert {:ok, webhook} =
-             WebhookServices.create(env_id, %{"action" => "listener", "user_id" => user_id})
+             WebhookServices.create(env_id, %{"listener" => "listener", "user_id" => user_id})
 
     webhook_preload = Repo.preload(webhook, :user)
 
     assert webhook_preload.user.id == user_id
   end
 
-  test "Webhook create without action should not work", %{
+  test "Webhook create without listener should not work", %{
     env_id: env_id,
     user_id: _user_id,
     bypass: _bypass
@@ -150,17 +150,17 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
     user_id: _user_id,
     bypass: _bypass
   } do
-    assert {:error, _reason} = WebhookServices.create(-1, %{"action" => "listener"})
+    assert {:error, _reason} = WebhookServices.create(-1, %{"listener" => "listener"})
   end
 
   test "Webhook get should work properly", %{env_id: env_id} do
     assert {:ok, _webhook} =
-             Webhook.new(env_id, %{"action" => "listener"})
+             Webhook.new(env_id, %{"listener" => "listener"})
              |> Repo.insert()
 
     webhooks = WebhookServices.get(env_id)
 
-    assert Enum.at(webhooks, 0).action == "listener"
+    assert Enum.at(webhooks, 0).listener == "listener"
   end
 
   test "Webhook get with no webhook in db should return an empty array", %{env_id: env_id} do
@@ -169,17 +169,17 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
 
   test "Webhook get should work properly with multiple webhooks", %{env_id: env_id} do
     assert {:ok, _first} =
-             Webhook.new(env_id, %{"action" => "first"})
+             Webhook.new(env_id, %{"listener" => "first"})
              |> Repo.insert()
 
     assert {:ok, _second} =
-             Webhook.new(env_id, %{"action" => "second"})
+             Webhook.new(env_id, %{"listener" => "second"})
              |> Repo.insert()
 
     webhooks = WebhookServices.get(env_id)
 
-    assert Enum.at(webhooks, 0).action == "first"
-    assert Enum.at(webhooks, 1).action == "second"
+    assert Enum.at(webhooks, 0).listener == "first"
+    assert Enum.at(webhooks, 1).listener == "second"
   end
 
   test "Get webhooks linked to specific user should work properly", %{env_id: env_id} do
@@ -189,12 +189,12 @@ defmodule ApplicationRunner.Webhooks.ServicesTest do
       |> Repo.insert!()
 
     assert {:ok, _webhook} =
-             Webhook.new(env_id, %{"action" => "user_specific_webhook", "user_id" => user.id})
+             Webhook.new(env_id, %{"listener" => "user_specific_webhook", "user_id" => user.id})
              |> Repo.insert()
 
     webhooks = WebhookServices.get(env_id, user.id)
 
-    assert Enum.at(webhooks, 0).action == "user_specific_webhook"
+    assert Enum.at(webhooks, 0).listener == "user_specific_webhook"
   end
 
   test "Get webhooks linked to specific user but no webhook in db should return empty array", %{

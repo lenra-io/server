@@ -268,17 +268,17 @@ defmodule ApplicationRunner.Session.RouteServer do
           {:ok, map()} | {:error, Errors.BusinessError.t()}
   def build_listener(session_metadata, listener) do
     case listener do
-      %{"action" => action} ->
+      %{"name" => name} ->
         props = Map.get(listener, "props", %{})
-        code = Session.ListenersCache.create_code(action, props)
+        code = Session.ListenersCache.create_code(name, props)
         Session.ListenersCache.save_listener(session_metadata.session_id, code, listener)
-        {:ok, listener |> Map.drop(["action", "props", "type"]) |> Map.put("code", code)}
+        {:ok, listener |> Map.drop(["name", "props", "type"]) |> Map.put("code", code)}
 
       %{"navTo" => nav_to} ->
         {:ok, %{"navTo" => nav_to}}
 
       _ ->
-        BusinessError.no_action_in_listener_tuple(listener)
+        BusinessError.no_name_in_listener_tuple(listener)
     end
   end
 

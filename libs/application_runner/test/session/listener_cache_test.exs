@@ -63,9 +63,9 @@
 #     # Wait for OnSessionStart
 #     assert :ok = EventHandler.subscribe(handler_pid)
 
-#     assert_receive({:event_finished, _action, _res})
+#     assert_receive({:event_finished, _listener, _res})
 
-#     assert_receive({:event_finished, _action, _res})
+#     assert_receive({:event_finished, _listener, _res})
 
 #     assert_receive({:send, :ui, @ui})
 
@@ -87,8 +87,8 @@
 #       "" ->
 #         Plug.Conn.resp(conn, 200, Jason.encode!(%{"manifest" => @manifest}))
 
-#       # Listeners "action" in body
-#       %{"action" => _action} ->
+#       # Listeners "listener" in body
+#       %{"listener" => _listener} ->
 #         Plug.Conn.resp(conn, 200, "")
 
 #       # Widget data key
@@ -102,15 +102,15 @@
 #   end
 
 #   test "test save_listener and fetch_listener", %{session_state: session_state} do
-#     action = "go"
+#     listener = "go"
 #     props = %{"value" => "ok"}
 
 #     listener = %{
-#       "action" => action,
+#       "listener" => listener,
 #       "props" => props
 #     }
 
-#     code = Crypto.hash({action, props})
+#     code = Crypto.hash({listener, props})
 
 #     assert {:error, BusinessError.unknow_listener_code(code)} ==
 #              ListenersCache.fetch_listener(session_state, code)

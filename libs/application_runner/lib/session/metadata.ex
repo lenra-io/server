@@ -1,6 +1,6 @@
 defmodule ApplicationRunner.Session.Metadata do
   @moduledoc """
-    The Action struct.
+    The Metadata struct.
   """
   @enforce_keys [:session_id, :env_id, :user_id, :function_name, :context]
   defstruct [

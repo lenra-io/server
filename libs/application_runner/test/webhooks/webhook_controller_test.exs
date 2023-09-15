@@ -100,16 +100,16 @@ defmodule ApplicationRunner.Webhooks.ControllerTest do
       conn
       |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
       |> post(Routes.webhooks_path(conn, :create), %{
-        "action" => "test"
+        "listener" => "test"
       })
 
     response = json_response(conn, 200)
 
-    assert %{"action" => "test", "props" => nil} = response
+    assert %{"listener" => "test", "props" => nil} = response
 
     assert [webhook] = WebhookServices.get(response["environment_id"])
 
-    assert webhook.action == "test"
+    assert webhook.listener == "test"
   end
 
   test "Create webhook in session should work properly",
@@ -122,16 +122,16 @@ defmodule ApplicationRunner.Webhooks.ControllerTest do
       conn
       |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
       |> post(Routes.webhooks_path(conn, :create), %{
-        "action" => "test"
+        "listener" => "test"
       })
 
     response = json_response(conn, 200)
 
-    assert %{"action" => "test", "props" => nil} = response
+    assert %{"listener" => "test", "props" => nil} = response
 
     assert [webhook] = WebhookServices.get(response["environment_id"])
 
-    assert webhook.action == "test"
+    assert webhook.listener == "test"
   end
 
   defp handle_request(conn, callback) do
@@ -147,8 +147,8 @@ defmodule ApplicationRunner.Webhooks.ControllerTest do
     callback.(body_decoded)
 
     case body_decoded do
-      # Listeners "action" in body
-      %{"action" => _action} ->
+      # Listeners "listener" in body
+      %{"listener" => _listener} ->
         Plug.Conn.resp(conn, 200, "")
     end
   end

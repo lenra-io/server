@@ -1,8 +1,8 @@
 defmodule ApplicationRunner.Session.ListenersCache do
   @moduledoc """
     This module creates a Cache for all the listeners.
-    It save the listener props/action using a hash the value (sha256) as key.
-    Then we can retrieve the listener (action/props) by giving the key.
+    It save the listener props/name using a hash the value (sha256) as key.
+    Then we can retrieve the listener (name/props) by giving the key.
   """
   use Agent
   use SwarmNamed
@@ -15,8 +15,8 @@ defmodule ApplicationRunner.Session.ListenersCache do
   end
 
   @spec create_code(String.t(), map()) :: String.t()
-  def create_code(action, props) do
-    Crypto.hash({action, props})
+  def create_code(name, props) do
+    Crypto.hash({name, props})
   end
 
   @spec save_listener(any(), String.t(), map()) :: :ok

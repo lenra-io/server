@@ -11,7 +11,7 @@ defmodule ApplicationRunner.MongoStorageTest do
 
     test "should validate container under 20 ms" do
       container = %{
-        "type" => "container",
+        "_type" => "container",
         "padding" => %{
           "top" => 8,
           "left" => 8,
@@ -26,7 +26,7 @@ defmodule ApplicationRunner.MongoStorageTest do
           "maxHeight" => 100
         },
         "child" => %{
-          "type" => "text",
+          "_type" => "text",
           "value" => "Text inside a container with padding"
         }
       }
@@ -40,7 +40,7 @@ defmodule ApplicationRunner.MongoStorageTest do
 
     test "should return error if mongo not started" do
       container = %{
-        "type" => "container",
+        "_type" => "container",
         "padding" => %{
           "top" => 8,
           "left" => 8,
@@ -55,29 +55,29 @@ defmodule ApplicationRunner.MongoStorageTest do
           "maxHeight" => 100
         },
         "child" => %{
-          "type" => "container",
+          "_type" => "container",
           "child" => %{
-            "type" => "flex",
+            "_type" => "flex",
             "children" => [
               %{
-                "type" => "flex",
+                "_type" => "flex",
                 "children" => [
-                  %{"type" => "text", "value" => "First child"},
-                  %{"type" => "text", "value" => "Second child"}
+                  %{"_type" => "text", "value" => "First child"},
+                  %{"_type" => "text", "value" => "Second child"}
                 ]
               },
               %{
-                "type" => "flex",
+                "_type" => "flex",
                 "children" => [
-                  %{"type" => "text", "value" => "First child"},
-                  %{"type" => "text", "value" => "Second child"}
+                  %{"_type" => "text", "value" => "First child"},
+                  %{"_type" => "text", "value" => "Second child"}
                 ]
               },
               %{
-                "type" => "flex",
+                "_type" => "flex",
                 "children" => [
-                  %{"type" => "text", "value" => "First child"},
-                  %{"type" => "text", "value" => "Second child"}
+                  %{"_type" => "text", "value" => "First child"},
+                  %{"_type" => "text", "value" => "Second child"}
                 ]
               }
             ]

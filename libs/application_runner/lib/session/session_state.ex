@@ -1,6 +1,6 @@
 defmodule ApplicationRunner.Session.State do
   @moduledoc """
-    The Action struct.
+    The State struct.
   """
   @enforce_keys [:session_id, :env_id, :user_id, :function_name]
   defstruct [

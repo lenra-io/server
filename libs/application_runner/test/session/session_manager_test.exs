@@ -52,8 +52,8 @@
 #       "" ->
 #         Plug.Conn.resp(conn, 200, Jason.encode!(%{"manifest" => @manifest}))
 
-#       # Listeners "action" in body
-#       %{"action" => _action} ->
+#       # Listeners "listener" in body
+#       %{"listener" => _listener} ->
 #         Plug.Conn.resp(conn, 200, "")
 
 #       # Widget data key
@@ -100,9 +100,9 @@
 #     # Wait for OnSessionStart
 #     assert :ok = EventHandler.subscribe(handler_pid)
 
-#     assert_receive({:event_finished, _action, _res})
+#     assert_receive({:event_finished, _listener, _res})
 
-#     assert_receive({:event_finished, _action, _res})
+#     assert_receive({:event_finished, _listener, _res})
 
 #     assert_receive({:send, :ui, @ui})
 #   end
@@ -146,7 +146,7 @@
 #     # Wait for OnSessionStart
 #     assert :ok = EventHandler.subscribe(handler_pid)
 
-#     assert_receive({:event_finished, _action, _res})
+#     assert_receive({:event_finished, _listener, _res})
 
 #     # Wait for Widget
 #     assert :ok = EventHandler.subscribe(handler_pid)

@@ -10,7 +10,8 @@
 #       "type" => "textfield",
 #       "value" => "",
 #       "onChanged" => %{
-#         "action" => "anyaction",
+#         "_type" => "listener",
+#         "name" => "anyaction",
 #         "props" => %{
 #           "number" => 10,
 #           "value" => "value"
@@ -59,14 +60,15 @@
 #     assert_error({:error, :invalid_ui, [{"Required property value was not present.", ""}]})
 #   end
 
-#   test "invalid textfield with invalid action and props in listener", %{
+#   test "invalid textfield with invalid name and props in listener", %{
 #     env_id: env_id
 #   } do
 #     json = %{
 #       "type" => "textfield",
 #       "value" => "test",
 #       "onChanged" => %{
-#         "action" => 10,
+#         "_type" => "listener",
+#         "name" => 10,
 #         "props" => ""
 #       }
 #     }
@@ -76,7 +78,7 @@
 #     assert_error(
 #       {:error, :invalid_ui,
 #        [
-#          {"Type mismatch. Expected String but got Integer.", "/onChanged/action"},
+#          {"Type mismatch. Expected String but got Integer.", "/onChanged/name"},
 #          {"Type mismatch. Expected Object but got String.", "/onChanged/props"}
 #        ]}
 #     )
@@ -87,7 +89,8 @@
 #       "type" => "textfield",
 #       "value" => "test",
 #       "onClick" => %{
-#         "action" => 42,
+#         "_type" => "listener",
+#         "name" => 42,
 #         "props" => "machin"
 #       }
 #     }

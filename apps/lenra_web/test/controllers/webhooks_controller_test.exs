@@ -29,26 +29,26 @@ defmodule LenraWeb.WebhooksControllerTest do
 
   @tag auth_user_with_cgu: :dev
   test "Get env webhooks should work properly", %{conn: conn, env: env} do
-    WebhookServices.create(env.id, %{"action" => "test"})
+    WebhookServices.create(env.id, %{"listener" => "test"})
 
     conn = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id})
 
     assert [webhook] = json_response(conn, 200)
-    assert webhook["action"] == "test"
+    assert webhook["listener"] == "test"
     assert webhook["environment_id"] == env.id
   end
 
   @tag auth_user_with_cgu: :dev
   test "Get session webhooks should work properly", %{conn: conn, user: user, env: env} do
     WebhookServices.create(env.id, %{
-      "action" => "test",
+      "listener" => "test",
       "user_id" => user.id
     })
 
     conn = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id, "user_id" => user.id})
 
     assert [webhook] = json_response(conn, 200)
-    assert webhook["action"] == "test"
+    assert webhook["listener"] == "test"
     assert webhook["environment_id"] == env.id
     assert webhook["user_id"] == user.id
   end
@@ -65,16 +65,16 @@ defmodule LenraWeb.WebhooksControllerTest do
     conn =
       post(conn, Routes.webhooks_path(conn, :api_create), %{
         "env_id" => env.id,
-        "action" => "test",
+        "listener" => "test",
         "user_id" => user.id
       })
 
-    assert %{"action" => "test"} = json_response(conn, 200)
+    assert %{"listener" => "test"} = json_response(conn, 200)
 
     conn! = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id})
 
     assert [webhook] = json_response(conn!, 200)
-    assert webhook["action"] == "test"
+    assert webhook["listener"] == "test"
     assert webhook["environment_id"] == env.id
   end
 
@@ -82,7 +82,7 @@ defmodule LenraWeb.WebhooksControllerTest do
   test "Create webhook without env_id as parameter should fail", %{conn: conn, user: user} do
     conn =
       post(conn, Routes.webhooks_path(conn, :api_create), %{
-        "action" => "test",
+        "listener" => "test",
         "user_id" => user.id
       })
 
@@ -102,8 +102,8 @@ defmodule LenraWeb.WebhooksControllerTest do
     callback.(body_decoded)
 
     case body_decoded do
-      # Listeners "action" in body
-      %{"action" => _action} ->
+      # Listeners "listener" in body
+      %{"listener" => _listener} ->
         Plug.Conn.resp(conn, 200, "")
     end
   end
@@ -123,7 +123,7 @@ defmodule LenraWeb.WebhooksControllerTest do
 
     {:ok, webhook} =
       WebhookServices.create(env.id, %{
-        "action" => "test"
+        "listener" => "test"
       })
 
     bypass = Bypass.open(port: 1234)
@@ -134,7 +134,7 @@ defmodule LenraWeb.WebhooksControllerTest do
       "/function/test",
       &handle_request(&1, fn body ->
         assert body["props"] == nil
-        assert body["action"] == "test"
+        assert body["listener"] == "test"
         assert body["event"] == %{"payloadData" => "Value"}
       end)
     )
@@ -158,7 +158,7 @@ defmodule LenraWeb.WebhooksControllerTest do
   } do
     {:ok, webhook} =
       WebhookServices.create(env.id, %{
-        "action" => "test"
+        "listener" => "test"
       })
 
     conn =

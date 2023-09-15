@@ -1,6 +1,6 @@
 defmodule Lenra.OpenfaasServices do
   @moduledoc """
-    The service that manage calls to an Openfaas action with `run_action/3`
+    The service that manage calls to an Openfaas function with `run_action/3`
   """
 
   alias Lenra.Apps
@@ -114,14 +114,14 @@ defmodule Lenra.OpenfaasServices do
     TechnicalError.openfaas_delete_error_tuple()
   end
 
-  defp response({:error, %Mint.TransportError{reason: reason}}, _action) do
+  defp response({:error, %Mint.TransportError{reason: reason}}, _function) do
     Logger.error("Openfaas could not be reached. It should not happen. \n\t\t reason: #{reason}")
     TechnicalError.openfaas_not_reachable_tuple()
   end
 
   defp response(
          {:ok, %Finch.Response{status: status_code, body: body}},
-         _action
+         _ction
        )
        when status_code not in [200, 202] do
     case status_code do

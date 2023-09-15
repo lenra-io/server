@@ -21,10 +21,3 @@ erl_crash.dump
 
 # Ignore package tarball (built via "mix hex.build").
 application_runner-*.tar
-
-
-# Temporary files for e.g. tests
-/tmp
-
-.DS_Store
-.iex.exs

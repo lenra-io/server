@@ -38,11 +38,11 @@ defmodule ApplicationRunner.ApplicationRunnerAdapter do
   end
 
   def handle_call(
-        {:run_listener, action, props, event, apiOptions},
+        {:run_listener, name, props, event, apiOptions},
         _from,
         %{listeners: listeners} = mock
       ) do
-    case Map.get(listeners, action) do
+    case Map.get(listeners, name) do
       nil ->
         {:reply, {:error, :listener_not_found}, mock}
 
@@ -53,7 +53,7 @@ defmodule ApplicationRunner.ApplicationRunnerAdapter do
   end
 
   def handle_call(
-        {:run_listener, _action, _props, _event},
+        {:run_listener, _listener, _props, _event},
         _from,
         mock
       ) do
