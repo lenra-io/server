@@ -34,7 +34,6 @@ config :application_runner, :mongo,
   port: "27017",
   ssl: false
 
-# Does not un comment except for "mix ecto.gen.migration"
 config :application_runner,
   ecto_repos: [ApplicationRunner.Repo]
 
