@@ -45,9 +45,9 @@ defmodule ApplicationRunner.EventHandler do
     IO.inspect("send_client_event")
     IO.inspect({session_id, code, event})
     with {:ok, listener} <- IO.inspect(Session.ListenersCache.fetch_listener(session_id, code)),
-         {:ok, listener} <- IO.inspect(Map.fetch(listener, "listener")),
-         props <- Map.get(listener, "props", %{}) do
-      send_session_event(session_id, listener, props, event)
+         {:ok, name} <- IO.inspect(Map.fetch(listener, "name")),
+         props <- Map.get(name, "props", %{}) do
+      send_session_event(session_id, name, props, event)
     end
   end
 
