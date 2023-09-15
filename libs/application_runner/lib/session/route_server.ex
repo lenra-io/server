@@ -267,10 +267,13 @@ defmodule ApplicationRunner.Session.RouteServer do
   @spec build_listener(Session.Metadata.t(), map()) ::
           {:ok, map()} | {:error, Errors.BusinessError.t()}
   def build_listener(session_metadata, listener) do
+    IO.inspect("build_listener")
+    IO.inspect(listener)
     case listener do
       %{"name" => name} ->
         props = Map.get(listener, "props", %{})
         code = Session.ListenersCache.create_code(name, props)
+        IO.inspect(code)
         Session.ListenersCache.save_listener(session_metadata.session_id, code, listener)
         {:ok, listener |> Map.drop(["name", "props", "type"]) |> Map.put("code", code)}
 
