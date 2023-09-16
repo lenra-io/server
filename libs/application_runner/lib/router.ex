@@ -7,27 +7,30 @@ defmodule ApplicationRunner.Router do
         plug(EnsureAuthenticatedAppPipeline)
       end
 
-      scope "/app", ApplicationRunner do
+      scope "/app-api/v1", ApplicationRunner do
         pipe_through([:api, :ensure_auth_app])
 
-        delete("/colls/:coll", CollsController, :delete)
-        get("/colls/:coll/docs", DocsController, :get_all)
-        post("/colls/:coll/docs", DocsController, :create)
-        get("/colls/:coll/docs/:docId", DocsController, :get)
-        put("/colls/:coll/docs/:docId", DocsController, :update)
-        delete("/colls/:coll/docs/:docId", DocsController, :delete)
-        post("/colls/:coll/docs/find", DocsController, :find)
-        post("/colls/:coll/updateMany", DocsController, :update_many)
+        ### Data
+        # CRUD
+        delete("/data/colls/:coll", CollsController, :delete)
+        get("/data/colls/:coll/docs", DocsController, :get_all)
+        post("/data/colls/:coll/docs", DocsController, :create)
+        get("/data/colls/:coll/docs/:docId", DocsController, :get)
+        put("/data/colls/:coll/docs/:docId", DocsController, :update)
+        delete("/data/colls/:coll/docs/:docId", DocsController, :delete)
+        # Mongo functions
+        post("/data/colls/:coll/docs/find", DocsController, :find)
+        post("/data/colls/:coll/updateMany", DocsController, :update_many)
+        # Transactions
+        post("/data/transaction", DocsController, :transaction)
+        post("/data/transaction/commit", DocsController, :commit_transaction)
+        post("/data/transaction/abort", DocsController, :abort_transaction)
+
 
         resources("/crons", CronController,
           only: [:create, :index, :update, :delete],
           param: "name"
         )
-
-        post("/transaction", DocsController, :transaction)
-        post("/transaction/commit", DocsController, :commit_transaction)
-
-        post("/transaction/abort", DocsController, :abort_transaction)
 
         post("/webhooks", Webhooks.WebhooksController, :create)
       end
