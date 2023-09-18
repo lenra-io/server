@@ -121,7 +121,7 @@ defmodule Lenra.OpenfaasServices do
 
   defp response(
          {:ok, %Finch.Response{status: status_code, body: body}},
-         _ction
+         _function
        )
        when status_code not in [200, 202] do
     case status_code do
