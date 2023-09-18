@@ -19,7 +19,7 @@ defmodule ApplicationRunner.Router do
         put("/data/colls/:coll/docs/:docId", DocsController, :update)
         delete("/data/colls/:coll/docs/:docId", DocsController, :delete)
         # Mongo functions
-        post("/data/colls/:coll/docs/find", DocsController, :find)
+        post("/data/colls/:coll/find", DocsController, :find)
         post("/data/colls/:coll/updateMany", DocsController, :update_many)
         # Transactions
         post("/data/transaction", DocsController, :transaction)
