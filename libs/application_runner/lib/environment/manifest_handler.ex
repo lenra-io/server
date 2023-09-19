@@ -56,8 +56,6 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
     {:reply, Map.get(state, :manifest), state}
   end
 
-  @default_routes [%{"path" => "/", "view" => %{"_type" => "view", "name" => "main"}}]
-
   def handle_call(:get_lenra_routes, _from, state) do
     Logger.debug("#{__MODULE__} handle call for :get_lenra_routes with #{inspect(state)}")
 
@@ -76,7 +74,7 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
 
   defp get_exposer_routes(manifest, exposer) do
     manifest
-    |> Map.get(exposer, %{"routes" => @default_routes})
-    |> Map.get("routes", @default_routes)
+    |> Map.get(exposer, %{"routes" => []})
+    |> Map.get("routes", [])
   end
 end
