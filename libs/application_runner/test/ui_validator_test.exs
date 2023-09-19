@@ -9,10 +9,11 @@
 #     "$defs" => %{
 #       "listener" => %{
 #         "properties" => %{
-#           "action" => %{"type" => "string"},
+#           "_type" => %{"enum" => ["listener"]},
+#           "name" => %{"type" => "string"},
 #           "props" => %{"type" => "object"}
 #         },
-#         "required" => ["action"],
+#         "required" => ["_type", "name"],
 #         "type" => "listener"
 #       }
 #     },
@@ -66,6 +67,7 @@
 #               "type" => "textfield",
 #               "value" => "",
 #               "onChanged" => %{
+#                 "_type" => "listener",
 #                 "name" => "Category.setName"
 #               }
 #             },
@@ -73,6 +75,7 @@
 #               "type" => "button",
 #               "text" => "Save",
 #               "onPressed" => %{
+#                 "_type" => "listener",
 #                 "name" => "Category.save"
 #               }
 #             }
@@ -85,6 +88,7 @@
 #               "type" => "button",
 #               "text" => "+",
 #               "onPressed" => %{
+#                 "_type" => "listener",
 #                 "name" => "Category.addField"
 #               }
 #             }
@@ -100,11 +104,11 @@
 #       :invalid_ui,
 #       [
 #         {"Schema does not allow additional properties.", "/children/0/children/0/onChanged/name"},
-#         {"Required property action was not present.", "/children/0/children/0/onChanged"},
+#         {"Required property name was not present.", "/children/0/children/0/onChanged"},
 #         {"Schema does not allow additional properties.", "/children/0/children/1/onPressed/name"},
-#         {"Required property action was not present.", "/children/0/children/1/onPressed"},
+#         {"Required property name was not present.", "/children/0/children/1/onPressed"},
 #         {"Schema does not allow additional properties.", "/children/1/children/0/onPressed/name"},
-#         {"Required property action was not present.", "/children/1/children/0/onPressed"}
+#         {"Required property name was not present.", "/children/1/children/0/onPressed"}
 #       ]
 #     })
 #   end

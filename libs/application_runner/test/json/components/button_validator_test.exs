@@ -16,7 +16,8 @@
 #       "type" => "button",
 #       "text" => "",
 #       "onPressed" => %{
-#         "action" => "anyaction",
+#         "_type" => "listener",
+#         "name" => "anyaction",
 #         "props" => %{
 #           "number" => 10,
 #           "text" => "value"
@@ -65,12 +66,13 @@
 #     assert_error({:error, :invalid_ui, [{"Required property text was not present.", ""}]})
 #   end
 
-#   test "invalid button with invalid action and props in listener", %{env_id: env_id} do
+#   test "invalid button with invalid name and props in listener", %{env_id: env_id} do
 #     json = %{
 #       "type" => "button",
 #       "text" => "test",
 #       "onPressed" => %{
-#         "action" => 10,
+#         "_type" => "listener",
+#         "name" => 10,
 #         "props" => ""
 #       }
 #     }
@@ -81,7 +83,7 @@
 #     assert_error(
 #       {:error, :invalid_ui,
 #        [
-#          {"Type mismatch. Expected String but got Integer.", "/onPressed/action"},
+#          {"Type mismatch. Expected String but got Integer.", "/onPressed/name"},
 #          {"Type mismatch. Expected Object but got String.", "/onPressed/props"}
 #        ]}
 #     )
@@ -92,7 +94,8 @@
 #       "type" => "button",
 #       "text" => "test",
 #       "onChange" => %{
-#         "action" => 42,
+#         "_type" => "listener",
+#         "name" => 42,
 #         "props" => "machin"
 #       }
 #     }

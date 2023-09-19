@@ -6,12 +6,12 @@ defmodule ApplicationRunner.Monitor do
     #### Measurements
       * start_time.
     #### Metadata
-      * `:user_id` - The id of the user who executed the action.
-      * `:env_id` - The name of the application from which the action was executed.
+      * `:user_id` - The id of the user who executed the function.
+      * `:env_id` - The name of the application from which the function was executed.
   * `[:ApplicationRunner, :app_session, :stop]` - Executed after socket closed.
     #### Measurements
       * end_time.
-      * `:duration` - The time took by the openfaas action in `:native` unit of time.
+      * `:duration` - The time took by the openfaas function in `:native` unit of time.
   """
   import Ecto.Query, only: [from: 2]
 

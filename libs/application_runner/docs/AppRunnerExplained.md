@@ -158,7 +158,7 @@ sequenceDiagram
     User->>Client: Trigger Listener (press button)
     Client->>RouteChannel: send listener with code
     RouteChannel->>Session.EventHandler: send_client_event(code)
-    Session.EventHandler-->>Session.EventHandler: Translate code to action/props
+    Session.EventHandler-->>Session.EventHandler: Translate code to listener/props
     Session.EventHandler->>App: Http call listener (actio, props)
     opt if listener call data api
         loop Any number of call

@@ -22,7 +22,19 @@ defmodule ApplicationRunner.ComponentCase do
 
       alias ApplicationRunner.Environments.{Manager, Managers}
 
-      @manifest %{"rootView" => "root"}
+      @manifest %{
+        "lenra" => %{
+          "routes" => [
+            %{
+              "path" => "/",
+              "view" => %{
+                "_type" => "view",
+                "name" => "root"
+              }
+            }
+          ]
+        }
+      }
 
       setup context do
         start_supervised(EnvManagers)
@@ -88,10 +100,10 @@ defmodule ApplicationRunner.ComponentCase do
         case body_decoded do
           # Manifest no body
           "" ->
-            Plug.Conn.resp(conn, 200, Jason.encode!(%{"manifest" => @manifest}))
+            Plug.Conn.resp(conn, 200, Jason.encode!(@manifest))
 
-          # Listeners "action" in body
-          %{"action" => _action} ->
+          # Listeners "listener" in body
+          %{"listener" => _listener} ->
             Plug.Conn.resp(conn, 200, "")
 
           # view data key

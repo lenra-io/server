@@ -11,7 +11,7 @@ defmodule ApplicationRunner.Crons do
   alias Crontab.CronExpression.{Composer, Parser}
 
   def run_env_cron(
-        action,
+        listener,
         props,
         event,
         env_id,
@@ -22,11 +22,11 @@ defmodule ApplicationRunner.Crons do
              env_id: env_id,
              function_name: function_name
            }) do
-      EventHandler.send_env_event(env_id, action, props, event)
+      EventHandler.send_env_event(env_id, listener, props, event)
     end
   end
 
-  def create(env_id, function_name, %{"listener_name" => _action} = params) do
+  def create(env_id, function_name, %{"listener" => _listener} = params) do
     with {:ok, cron} <-
            env_id
            |> Cron.new(function_name, params)
@@ -98,7 +98,7 @@ defmodule ApplicationRunner.Crons do
         task:
           {ApplicationRunner.Crons, :run_env_cron,
            [
-             cron.listener_name,
+             cron.listener,
              cron.props,
              %{},
              cron.environment_id,
@@ -113,10 +113,10 @@ defmodule ApplicationRunner.Crons do
         overlap: overlap,
         schedule: schedule,
         state: state,
-        task: {_, _, [listener_name, props, _, env_id, function_name]}
+        task: {_, _, [listener, props, _, env_id, function_name]}
       }) do
     Cron.new(env_id, function_name, %{
-      "listener_name" => listener_name,
+      "listener" => listener,
       "schedule" => Composer.compose(schedule),
       "props" => props,
       "name" => name,

@@ -76,7 +76,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
           {:ok, component(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
   defp build_component(
          session_metadata,
-         %{"type" => comp_type} = component,
+         %{"_type" => comp_type} = component,
          ui_context,
          view_uid
        ) do
@@ -262,7 +262,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
             {:cont, {child_map, ui_context_acc}}
 
           child_comp ->
-            com_type = Map.get(component, "type")
+            com_type = Map.get(component, "_type")
             child_path = "#{prefix_path}/#{com_type}##{child_key}"
 
             build_comp_and_format(
@@ -335,7 +335,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
       {%{}, ui_context},
       fn children_key, {children_map, app_context_acc} = acc ->
         if Map.has_key?(component, children_key) do
-          comp_type = Map.get(component, "type")
+          comp_type = Map.get(component, "_type")
           children_path = "#{prefix_path}/#{comp_type}##{children_key}"
 
           case build_children(

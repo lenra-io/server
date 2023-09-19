@@ -34,6 +34,9 @@ config :application_runner, :mongo,
   port: "27017",
   ssl: false
 
+config :application_runner,
+  ecto_repos: [ApplicationRunner.Repo]
+
 config :application_runner, ApplicationRunner.Repo,
   database: "file::memory:?cache=shared",
   log: false

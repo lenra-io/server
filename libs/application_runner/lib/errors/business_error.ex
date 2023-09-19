@@ -17,7 +17,7 @@ defmodule ApplicationRunner.Errors.BusinessError do
       {:no_app_found, "No application found for the current link"},
       {:not_an_object_id, "The given id is not a valid object id"},
       {:incorrect_view_mode, "The view mode should be one of 'lenra', 'json'."},
-      {:no_action_in_listener, "Your listener does not have the required property 'action'"},
+      {:no_name_in_listener, "Your listener does not have the required property 'name'"},
       {:route_does_not_exist, "The given route does not exist. Please check your manifest."},
       {:invalid_channel_name, "The given channel name does not exist."},
       {:invalid_params, "Invalid params"},

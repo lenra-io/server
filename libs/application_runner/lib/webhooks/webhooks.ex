@@ -9,13 +9,13 @@ defmodule ApplicationRunner.Webhooks.Webhook do
   alias ApplicationRunner.Contract.{Environment, User}
   alias ApplicationRunner.Webhooks.Webhook
 
-  @derive {Jason.Encoder, only: [:uuid, :action, :props, :environment_id, :user_id]}
+  @derive {Jason.Encoder, only: [:uuid, :listener, :props, :environment_id, :user_id]}
   @primary_key {:uuid, Ecto.UUID, autogenerate: true}
   schema "webhooks" do
     belongs_to(:environment, Environment)
     belongs_to(:user, User)
 
-    field(:action, :string)
+    field(:listener, :string)
     field(:props, :map)
 
     timestamps()
@@ -23,8 +23,8 @@ defmodule ApplicationRunner.Webhooks.Webhook do
 
   def changeset(webhook, params \\ %{}) do
     webhook
-    |> cast(params, [:action, :props, :user_id])
-    |> validate_required([:environment_id, :action])
+    |> cast(params, [:listener, :props, :user_id])
+    |> validate_required([:environment_id, :listener])
     |> foreign_key_constraint(:environment_id)
     |> foreign_key_constraint(:user_id)
   end
@@ -41,14 +41,14 @@ defmodule ApplicationRunner.Webhooks.Webhook do
       %__MODULE__{}
       |> cast(webhook_map, [
         :uuid,
-        :action,
+        :listener,
         :props,
         :user_id,
         :environment_id,
         :inserted_at,
         :updated_at
       ])
-      |> validate_required([:environment_id, :action])
+      |> validate_required([:environment_id, :listener])
       |> foreign_key_constraint(:environment_id)
       |> foreign_key_constraint(:user_id)
 
