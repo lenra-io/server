@@ -26,7 +26,6 @@ defmodule ApplicationRunner.Router do
         post("/data/transaction/commit", DocsController, :commit_transaction)
         post("/data/transaction/abort", DocsController, :abort_transaction)
 
-
         resources("/crons", CronController,
           only: [:create, :index, :update, :delete],
           param: "name"
