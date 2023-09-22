@@ -197,7 +197,7 @@ defmodule Lenra.KubernetesApiServices do
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}})
-      when status_code in [200, 201, 202] do
+       when status_code in [200, 201, 202] do
     %{"metadata" => %{"name" => name}} = Jason.decode!()
     {:ok, %{"id" => name}}
   end
@@ -207,7 +207,7 @@ defmodule Lenra.KubernetesApiServices do
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}})
-      when status_code not in [200, 201, 202] do
+       when status_code not in [200, 201, 202] do
     raise "Kubernetes API error (#{status_code}) #{body}"
   end
 end
