@@ -44,8 +44,9 @@ defmodule Lenra.Subscriptions do
              {:ok, _updated_user} <- User.update(user, %{stripe_id: customer.id}) |> Repo.update() do
           customer.id
         else
-          {:error, _} ->
+          {:error, _} = error ->
             Logger.error("#{__MODULE__} Error when creating customer")
+            Logger.error(error)
             nil
         end
 
