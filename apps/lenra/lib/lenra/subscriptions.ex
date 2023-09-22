@@ -93,7 +93,7 @@ defmodule Lenra.Subscriptions do
              id: app_id
            }) do
       Stripe.Price.create(%{
-        unit_amount: 8,
+        unit_amount: 800,
         currency: "eur",
         recurring: %{
           interval: "month"
@@ -102,7 +102,7 @@ defmodule Lenra.Subscriptions do
       })
 
       Stripe.Price.create(%{
-        unit_amount: 80,
+        unit_amount: 8000,
         currency: "eur",
         recurring: %{
           interval: "year"
@@ -129,7 +129,8 @@ defmodule Lenra.Subscriptions do
 
     with {:ok, %Stripe.SearchResult{data: [%{id: price_id}]}} =
            Stripe.Price.search(%{
-             query: "product:#{product_id} recurring:interval:#{plan}",
+             query: "product:\"#{product_id}\" type:\"recurring\"",
+            #  query: "product:\"#{product_id}\" recurring:interval:#{plan}",
              limit: 1
            }) do
       Stripe.Session.create(%{
