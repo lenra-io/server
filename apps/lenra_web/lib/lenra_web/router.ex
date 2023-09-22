@@ -118,11 +118,18 @@ defmodule LenraWeb.Router do
   end
 
   scope "/api/environments", LenraWeb do
-    pipe_through [:api, :scope_manage_apps, :ensure_cgu_accepted]
+    pipe_through([:api, :scope_manage_apps, :ensure_cgu_accepted])
     post("/:environment_id/oauth2", OAuth2Controller, :create)
     get("/:environment_id/oauth2", OAuth2Controller, :index)
     put("/:environment_id/oauth2/:client_id", OAuth2Controller, :update)
     delete("/:environment_id/oauth2/:client_id", OAuth2Controller, :delete)
+  end
+
+  scope "/api/stripe", LenraWeb do
+    pipe_through([:api, :ensure_cgu_accepted])
+    post("/customers", StripeController, :customer_create)
+    get("/subscriptions", StripeController, :index)
+    post("/checkout", StripeController, :checkout_create)
   end
 
   # /api resources, scope "resources"
