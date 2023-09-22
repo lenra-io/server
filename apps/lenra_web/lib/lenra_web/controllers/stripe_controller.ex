@@ -2,7 +2,7 @@ defmodule LenraWeb.StripeController do
   use LenraWeb, :controller
 
   use LenraWeb.Policy,
-    module: LenraWeb.AppsController.Policy
+    module: LenraWeb.StripeController.Policy
 
   alias Lenra.Apps
   alias LenraWeb.Auth
