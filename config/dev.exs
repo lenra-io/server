@@ -97,7 +97,9 @@ config :lenra,
   kubernetes_api_token: System.get_env("KUBERNETES_API_TOKEN", ""),
   kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra_build"),
   kubernetes_build_scripts: System.get_env("KUBERNETES_BUILD_SCRIPTS", "lenra_build"),
-  kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra_build")
+  kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra_build"),
+  stripe_coupon: System.get_env("STRIPE_COUPON"),
+  stripe_secret: System.get_env("STRIPE_SECRET")
 
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
 

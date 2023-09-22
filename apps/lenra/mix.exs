@@ -50,7 +50,8 @@ defmodule Lenra.MixProject do
       {:libcluster, "~> 3.3.1"},
       {:application_runner, path: "../../libs/application_runner"},
       {:lenra_common, path: "../../libs/lenra_common"},
-      {:hydra_api, in_umbrella: true}
+      {:hydra_api, in_umbrella: true},
+      {:stripity_stripe, "~> 2.17.3"}
     ]
   end
 end

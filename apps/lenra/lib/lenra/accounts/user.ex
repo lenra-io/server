@@ -38,6 +38,7 @@ defmodule Lenra.Accounts.User do
     field(:first_name, :string)
     field(:last_name, :string)
     field(:email, :string)
+    field(:stripe_id, :string)
     has_many(:password, Password)
     field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)

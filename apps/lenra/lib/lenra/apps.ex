@@ -212,7 +212,9 @@ defmodule Lenra.Apps do
              params
            ) do
         {:error, reason} ->
-          Logger.critical("Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}")
+          Logger.critical(
+            "Error when inserting deployment in DB. \n\t\t reason : #{inspect(reason)}"
+          )
 
           TechnicalError.unknown_error_tuple(reason)
 
@@ -312,7 +314,9 @@ defmodule Lenra.Apps do
   end
 
   def get_deployement(build_id, env_id) do
-    Repo.one(from(d in Deployment, where: d.build_id == ^build_id and d.environment_id == ^env_id))
+    Repo.one(
+      from(d in Deployment, where: d.build_id == ^build_id and d.environment_id == ^env_id)
+    )
   end
 
   def get_deployement_for_build(build_id) do
@@ -389,7 +393,9 @@ defmodule Lenra.Apps do
       # To let openfaas deploy in case of overload, after 2 retry -> failure
       :error404 ->
         if retry == 3 do
-          Logger.critical("Function #{service_name} not deploy on openfaas, this should not appens")
+          Logger.critical(
+            "Function #{service_name} not deploy on openfaas, this should not appens"
+          )
 
           update_deployement(deployment, status: :failure)
         else
@@ -464,10 +470,11 @@ defmodule Lenra.Apps do
 
   def create_user_env_access(env_id, %{"email" => email}, subscription) do
     if(subscription == nil) do
-      nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
+      nb_user_env_access =
+        Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
 
       if(length(nb_user_env_access) >= 3) do
-        TechnicalError.subscription_required()
+        BusinessError.subscription_required()
       else
         create_user_env_access_transaction(env_id, email)
       end
@@ -480,7 +487,8 @@ defmodule Lenra.Apps do
     Accounts.User
     |> Lenra.Repo.get_by(email: email)
     |> handle_create_user_env_access(env_id, email)
-    |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
+    |> Ecto.Multi.run(:add_invitation_events, fn repo,
+                                                 %{inserted_user_access: inserted_user_access} ->
       %{application: app} =
         env_id
         |> get_env()
