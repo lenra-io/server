@@ -131,7 +131,7 @@ defmodule LenraWeb.Router do
   end
 
   scope "/api/stripe", LenraWeb do
-    pipe_through([:api, :scope_payments, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_manage_account, :ensure_cgu_accepted])
     post("/customers", StripeController, :customer_create)
     get("/subscriptions", StripeController, :index)
     post("/checkout", StripeController, :checkout_create)
