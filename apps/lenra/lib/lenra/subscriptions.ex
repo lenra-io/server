@@ -10,13 +10,16 @@ defmodule Lenra.Subscriptions do
   require Logger
 
   def get_subscription_by_app_id(application_id) do
-    Repo.one(
+    case Repo.one(
       from(s in Subscription,
         where:
           s.application_id == ^application_id and s.end_date >= ^Date.utc_today() and
             s.start_date <= ^Date.utc_today()
       )
-    )
+    ) do
+      nil -> []
+      any -> any
+    end
   end
 
   def get_max_replicas(application_id) do
