@@ -69,7 +69,7 @@ defmodule Lenra.Subscriptions do
         app
       )
       when mode in ["payment", "subscription"] do
-    case Stripe.Product.retrieve(app.id) do
+    case Stripe.Product.retrieve("#{app.id}") do
       {:ok, %Stripe.Product{}} ->
         handle_create_session(plan, success_url, cancel_url, mode, plan, customer, app.id)
 

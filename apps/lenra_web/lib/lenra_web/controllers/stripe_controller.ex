@@ -31,7 +31,7 @@ defmodule LenraWeb.StripeController do
   def checkout_create(conn, %{"id" => app_id} = params) do
     with {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app),
-         session_id <- Subscriptions.create_checkout(params, app.id) do
+         session_id <- Subscriptions.create_checkout(params, app) do
       conn
       |> reply(session_id)
     end
@@ -43,7 +43,7 @@ defmodule LenraWeb.StripeController.Policy do
   alias Lenra.Apps.App
 
   @impl Bouncer.Policy
-  def authorize(:update, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:checkout_create, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
