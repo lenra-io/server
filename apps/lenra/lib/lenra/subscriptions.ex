@@ -70,12 +70,12 @@ defmodule Lenra.Subscriptions do
       )
       when mode in ["payment", "subscription"] do
     case Stripe.Product.retrieve("#{app.id}") do
-      {:ok, %Stripe.Product{}} ->
-        handle_create_session(plan, success_url, cancel_url, mode, plan, customer, app.id)
+      {:ok, %Stripe.Product{} = product} ->
+        handle_create_session(plan, success_url, cancel_url, mode, product.id, customer, app.id)
 
       {:error, _} ->
-        create_product(app.id, app.name)
-        handle_create_session(plan, success_url, cancel_url, mode, plan, customer, app.id)
+        product_id = create_product(app.id, app.name)
+        handle_create_session(plan, success_url, cancel_url, mode, product_id, customer, app.id)
     end
     |> case do
       {:ok, session} ->
@@ -127,12 +127,9 @@ defmodule Lenra.Subscriptions do
   def handle_create_session(plan, success_url, cancel_url, mode, product_id, customer, app_id) do
     stripe_coupon = Application.get_env(:lenra, :stripe_coupon, nil)
 
-    with {:ok, %Stripe.SearchResult{data: [%{id: price_id}]}} =
-           Stripe.Price.search(%{
-             query: "product:\"#{product_id}\" type:\"recurring\"",
-            #  query: "product:\"#{product_id}\" recurring:interval:#{plan}",
-             limit: 1
-           }) do
+    with {:ok, %Stripe.List{} = prices} <- Stripe.Price.list(%{product: product_id}),
+    %Stripe.Price{id: price_id} <- Enum.find(prices.data, nil, fn price -> price.recurring.interval == plan end)
+     do
       Stripe.Session.create(%{
         success_url: success_url,
         cancel_url: cancel_url,
