@@ -11,8 +11,20 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
   alias ApplicationRunner.Guardian.AppGuardian
   alias QueryParser.Parser
 
-  @manifest %{"rootview" => "main"}
-  @view %{"type" => "text", "value" => "test"}
+  @manifest %{
+    "lenra" => %{
+      "routes" => [
+        %{
+          "path" => "/",
+          "view" => %{
+            "_type" => "view",
+            "name" => "main"
+          }
+        }
+      ]
+    }
+  }
+  @view %{"_type" => "text", "value" => "test"}
 
   @function_name Ecto.UUID.generate()
   @session_id 1337
@@ -49,7 +61,7 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
         )
 
       {:error, _} ->
-        Plug.Conn.resp(conn, 200, Jason.encode!(%{manifest: @manifest}))
+        Plug.Conn.resp(conn, 200, Jason.encode!(@manifest))
     end
   end
 

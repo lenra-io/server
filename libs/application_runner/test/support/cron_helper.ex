@@ -9,7 +9,7 @@ defmodule ApplicationRunner.CronHelper do
   def basic_job(env_id, function_name) do
     env_id
     |> Cron.new(function_name, %{
-      "listener_name" => "listener",
+      "listener" => "listener",
       "schedule" => "* * * * * *"
     })
     |> Ecto.Changeset.apply_changes()

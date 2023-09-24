@@ -13,7 +13,7 @@ defmodule ApplicationRunner.Crons.Cron do
            only: [
              :id,
              :name,
-             :listener_name,
+             :listener,
              :schedule,
              :props,
              :should_run_missed_steps,
@@ -27,7 +27,7 @@ defmodule ApplicationRunner.Crons.Cron do
     belongs_to(:environment, Environment)
     belongs_to(:user, User)
 
-    field(:listener_name, :string)
+    field(:listener, :string)
     field(:schedule, :string)
     field(:props, :map, default: %{})
 
@@ -44,7 +44,7 @@ defmodule ApplicationRunner.Crons.Cron do
   def changeset(cron, params \\ %{}) do
     cron
     |> cast(params, [
-      :listener_name,
+      :listener,
       :schedule,
       :props,
       :should_run_missed_steps,
@@ -53,7 +53,7 @@ defmodule ApplicationRunner.Crons.Cron do
       :overlap,
       :state
     ])
-    |> validate_required([:environment_id, :listener_name, :schedule])
+    |> validate_required([:environment_id, :listener, :schedule])
     |> validate_change(:schedule, fn :schedule, cron ->
       case Parser.parse(cron) do
         {:ok, _cron_expr} -> []

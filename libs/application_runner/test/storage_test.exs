@@ -42,12 +42,12 @@ defmodule ApplicationRunner.StorageTest do
 
       cron = Enum.at(Repo.all(Cron), 0)
 
-      assert cron.listener_name == "listener"
+      assert cron.listener == "listener"
       assert cron.schedule == "* * * * * *"
       assert cron.environment_id == env_id
     end
 
-    test "without listener_name and schedule should not work" do
+    test "without listener and schedule should not work" do
       assert {:error, %{reason: :invalid_params}} = Storage.add_job(1, Scheduler.new_job())
     end
 
@@ -68,17 +68,17 @@ defmodule ApplicationRunner.StorageTest do
       assert :ok = Storage.add_job(1, job)
 
       assert [cron] = Crons.all()
-      assert cron.listener_name == "listener"
+      assert cron.listener == "listener"
 
       updated_cron =
-        Cron.update(cron, %{"listener_name" => "changed"})
+        Cron.update(cron, %{"listener" => "changed"})
         |> Ecto.Changeset.apply_changes()
         |> Crons.to_job()
 
       assert :ok = Storage.update_job(1, updated_cron)
 
       assert [updated_cron] = Crons.all()
-      assert updated_cron.listener_name == "changed"
+      assert updated_cron.listener == "changed"
     end
 
     test "not existing job", %{
@@ -91,7 +91,7 @@ defmodule ApplicationRunner.StorageTest do
         job
         |> Crons.to_changeset()
         |> Ecto.Changeset.apply_changes()
-        |> Cron.update(%{"listener_name" => "changed"})
+        |> Cron.update(%{"listener" => "changed"})
         |> Ecto.Changeset.apply_changes()
         |> Crons.to_job()
 

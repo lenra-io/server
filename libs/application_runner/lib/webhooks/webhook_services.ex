@@ -50,7 +50,7 @@ defmodule ApplicationRunner.Webhooks.WebhookServices do
       webhook ->
         EventHandler.send_env_event(
           webhook.environment_id,
-          webhook.action,
+          webhook.listener,
           webhook.props,
           payload
         )

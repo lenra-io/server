@@ -11,6 +11,7 @@ defmodule ApplicationRunner.RoutesChannel do
       alias ApplicationRunner.Environment
       alias ApplicationRunner.Guardian.AppGuardian
       alias ApplicationRunner.Session
+      alias ApplicationRunner.Session.UiBuilders.JsonBuilder
       alias ApplicationRunner.Session.UiBuilders.LenraBuilder
 
       alias LenraCommonWeb.ErrorHelpers
@@ -21,7 +22,6 @@ defmodule ApplicationRunner.RoutesChannel do
 
       def join("routes", %{"mode" => "lenra"}, socket) do
         env_id = socket.assigns.env_id
-        manifest = Environment.ManifestHandler.get_manifest(env_id)
         session_id = socket.assigns.session_id
 
         res = %{
@@ -50,9 +50,8 @@ defmodule ApplicationRunner.RoutesChannel do
 
       def join("routes", %{"mode" => "json"}, socket) do
         env_id = socket.assigns.env_id
-        manifest = Environment.ManifestHandler.get_manifest(env_id)
 
-        res = %{"jsonRoutes" => Map.get(manifest, "jsonRoutes")}
+        res = %{"jsonRoutes" => JsonBuilder.get_routes(env_id)}
 
         {:ok, res, socket}
       end

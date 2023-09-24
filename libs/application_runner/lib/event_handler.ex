@@ -19,33 +19,33 @@ defmodule ApplicationRunner.EventHandler do
 
   @doc """
     Send async call to application,
-    the call will run listeners with the given `action` `props` `event`
+    the call will run listeners with the given `listener` `props` `event`
   """
-  def send_env_event(env_id, action, props, event) do
+  def send_env_event(env_id, listener, props, event) do
     uuid = Ecto.UUID.generate()
 
     GenServer.call(
       get_full_name({:env, env_id}),
-      {:send_event, action, props, event, env_id, uuid},
+      {:send_event, listener, props, event, env_id, uuid},
       Application.fetch_env!(:application_runner, :listeners_timeout)
     )
   end
 
-  def send_session_event(session_id, action, props, event) do
+  def send_session_event(session_id, listener, props, event) do
     uuid = Ecto.UUID.generate()
 
     GenServer.call(
       get_full_name({:session, session_id}),
-      {:send_event, action, props, event, session_id, uuid},
+      {:send_event, listener, props, event, session_id, uuid},
       Application.fetch_env!(:application_runner, :listeners_timeout)
     )
   end
 
   def send_client_event(session_id, code, event) do
     with {:ok, listener} <- Session.ListenersCache.fetch_listener(session_id, code),
-         {:ok, action} <- Map.fetch(listener, "action"),
+         {:ok, name} <- Map.fetch(listener, "name"),
          props <- Map.get(listener, "props", %{}) do
-      send_session_event(session_id, action, props, event)
+      send_session_event(session_id, name, props, event)
     end
   end
 
@@ -70,15 +70,15 @@ defmodule ApplicationRunner.EventHandler do
 
   @impl true
   def handle_call(
-        {:send_event, "@lenra:" <> action, props, event, uuid, session_id},
+        {:send_event, "@lenra:" <> listener, props, event, uuid, session_id},
         _from,
         state
       ) do
     Logger.debug(
-      "#{__MODULE__} handle_call for @lenra action: #{inspect(action)} with props #{inspect(props)} and event #{inspect(event)}"
+      "#{__MODULE__} handle_call for @lenra listener: #{inspect(listener)} with props #{inspect(props)} and event #{inspect(event)}"
     )
 
-    case action do
+    case listener do
       "navTo" ->
         ApplicationRunner.RoutesChannel.get_name(session_id)
         |> Swarm.send({:send, :navTo, props})
@@ -89,17 +89,17 @@ defmodule ApplicationRunner.EventHandler do
 
   @impl true
   def handle_call(
-        {:send_event, action, props, event, _id, uuid},
+        {:send_event, listener, props, event, _id, uuid},
         _from,
         %{mode: mode, id: id} = state
       ) do
     Logger.debug(
-      "#{__MODULE__} handle_call for action: #{inspect(action)} with props #{inspect(props)} and event #{inspect(event)}"
+      "#{__MODULE__} handle_call for listener: #{inspect(listener)} with props #{inspect(props)} and event #{inspect(event)}"
     )
 
     %{function_name: function_name, token: token} = get_metadata(mode, id) |> create_token(uuid)
 
-    res = ApplicationServices.run_listener(function_name, action, props, event, token)
+    res = ApplicationServices.run_listener(function_name, listener, props, event, token)
 
     {:reply, res, state}
   after

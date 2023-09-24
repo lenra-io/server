@@ -13,7 +13,7 @@ defmodule ApplicationRunner.Webhooks.WebhookTest do
       |> Repo.insert!()
 
     Webhook.new(env.id, %{
-      "action" => "test",
+      "listener" => "test",
       "props" => %{
         "prop1" => "1",
         "prop2" => "2"
@@ -23,7 +23,7 @@ defmodule ApplicationRunner.Webhooks.WebhookTest do
 
     webhook = Enum.at(Repo.all(Webhook), 0)
 
-    assert webhook.action == "test"
+    assert webhook.listener == "test"
 
     assert webhook.props == %{
              "prop1" => "1",
@@ -34,7 +34,7 @@ defmodule ApplicationRunner.Webhooks.WebhookTest do
   test "Webhook with invalid env_id should not work" do
     webhook =
       Webhook.new(1, %{
-        "action" => "test",
+        "listener" => "test",
         "props" => %{
           "prop1" => "1",
           "prop2" => "2"
@@ -44,7 +44,7 @@ defmodule ApplicationRunner.Webhooks.WebhookTest do
     assert_raise Ecto.InvalidChangesetError, fn -> Repo.insert!(webhook) end
   end
 
-  test "Webhook without action should not work" do
+  test "Webhook without listener should not work" do
     webhook =
       Webhook.new(1, %{
         "props" => %{
@@ -54,7 +54,7 @@ defmodule ApplicationRunner.Webhooks.WebhookTest do
       })
 
     assert webhook.valid? == false
-    assert [action: _reason] = webhook.errors
+    assert [listener: _reason] = webhook.errors
   end
 
   test "Insert Webhook with no props into database successfully" do
@@ -63,13 +63,13 @@ defmodule ApplicationRunner.Webhooks.WebhookTest do
       |> Repo.insert!()
 
     Webhook.new(env.id, %{
-      "action" => "test"
+      "listener" => "test"
     })
     |> Repo.insert!()
 
     webhook = Enum.at(Repo.all(Webhook), 0)
 
-    assert webhook.action == "test"
+    assert webhook.listener == "test"
   end
 
   test "Insert Webhook with user into database successfully" do
@@ -83,13 +83,13 @@ defmodule ApplicationRunner.Webhooks.WebhookTest do
 
     Webhook.new(env.id, %{
       "user_id" => user.id,
-      "action" => "test"
+      "listener" => "test"
     })
     |> Repo.insert!()
 
     webhook = Enum.at(Repo.all(Webhook), 0)
 
-    assert webhook.action == "test"
+    assert webhook.listener == "test"
     assert webhook.user_id == user.id
 
     preload_user = Repo.preload(webhook, :user)

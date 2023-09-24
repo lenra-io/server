@@ -58,8 +58,8 @@
 #       "" ->
 #         Plug.Conn.resp(conn, 200, Jason.encode!(%{"manifest" => @manifest}))
 
-#       # Listeners "action" in body
-#       %{"action" => _action} ->
+#       # Listeners "listener" in body
+#       %{"listener" => _action} ->
 #         Plug.Conn.resp(conn, 200, "")
 
 #       # Widget data key

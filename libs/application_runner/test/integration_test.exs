@@ -22,17 +22,19 @@ defmodule ApplicationRunner.IntegrationTest do
   @query %{"foo" => "bar"}
 
   @manifest %{
-    "lenraRoutes" => [
-      %{"path" => "/", "view" => %{"type" => "view", "name" => "main"}}
-    ]
+    "lenra" => %{
+      "routes" => [
+        %{"path" => "/", "view" => %{"_type" => "view", "name" => "main"}}
+      ]
+    }
   }
 
   def view("main", _) do
-    %{"type" => "view", "name" => "echo", "query" => @query, "coll" => @coll}
+    %{"_type" => "view", "name" => "echo", "find" => %{"query" => @query, "coll" => @coll}}
   end
 
   def view("echo", data) do
-    %{"type" => "text", "value" => Jason.encode!(data)}
+    %{"_type" => "text", "value" => Jason.encode!(data)}
   end
 
   def get_name(module, identifier) do
@@ -130,8 +132,8 @@ defmodule ApplicationRunner.IntegrationTest do
       Environment.TokenAgent.add_token(sm.env_id, uuid, token)
 
       case Jason.decode(body) do
-        {:ok, %{"action" => action, "props" => props}} ->
-          resp_listener(logger_agent, conn, action, props, token)
+        {:ok, %{"listener" => name, "props" => props}} ->
+          resp_listener(logger_agent, conn, name, props, token)
 
         {:ok, %{"view" => name, "data" => data}} ->
           resp_view(logger_agent, conn, name, data)
@@ -157,7 +159,7 @@ defmodule ApplicationRunner.IntegrationTest do
 
   def resp_manifest(logger_agent, conn) do
     add_log_to_agent(logger_agent, {:manifest, @manifest})
-    Plug.Conn.resp(conn, 200, Jason.encode!(%{manifest: @manifest}))
+    Plug.Conn.resp(conn, 200, Jason.encode!(@manifest))
   end
 
   def resp_view(logger_agent, conn, name, data) do
@@ -170,10 +172,10 @@ defmodule ApplicationRunner.IntegrationTest do
     )
   end
 
-  def resp_listener(logger_agent, conn, action, props, token) do
-    add_log_to_agent(logger_agent, {:listener, action, props})
+  def resp_listener(logger_agent, conn, name, props, token) do
+    add_log_to_agent(logger_agent, {:listener, name, props})
 
-    case action do
+    case name do
       "insert" ->
         conn = Phoenix.ConnTest.build_conn()
 
@@ -250,7 +252,7 @@ defmodule ApplicationRunner.IntegrationTest do
     assert MongoStorage.has_user_link?(em.env_id, sm.user_id)
 
     # The first message should be a send ui message..
-    assert_receive {:send, :ui, %{"root" => %{"type" => "text", "value" => "[]"}}}
+    assert_receive {:send, :ui, %{"root" => %{"_type" => "text", "value" => "[]"}}}
 
     # Add one data by simulating an "insert" event.
     ApplicationRunner.EventHandler.send_session_event(
@@ -339,9 +341,11 @@ defmodule ApplicationRunner.IntegrationTest do
              # The manifest is fetched
              {:manifest,
               %{
-                "lenraRoutes" => [
-                  %{"path" => "/", "view" => %{"type" => "view", "name" => "main"}}
-                ]
+                "lenra" => %{
+                  "routes" => [
+                    %{"path" => "/", "view" => %{"_type" => "view", "name" => "main"}}
+                  ]
+                }
               }},
              # The onEnvStart event is run.
              {:listener, "onEnvStart", %{}},

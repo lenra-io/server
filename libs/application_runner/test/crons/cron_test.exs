@@ -14,7 +14,7 @@ defmodule ApplicationRunner.Crons.CronTest do
 
     Cron.new(env.id, "test", %{
       "schedule" => "* * * * *",
-      "listener_name" => "listener",
+      "listener" => "listener",
       "props" => %{
         "prop1" => "1",
         "prop2" => "2"
@@ -25,7 +25,7 @@ defmodule ApplicationRunner.Crons.CronTest do
     cron = Enum.at(Repo.all(Cron), 0)
 
     assert cron.schedule == "* * * * *"
-    assert cron.listener_name == "listener"
+    assert cron.listener == "listener"
 
     assert cron.props == %{
              "prop1" => "1",
@@ -42,7 +42,7 @@ defmodule ApplicationRunner.Crons.CronTest do
 
     Cron.new(env.id, "test", %{
       "schedule" => "* * * * *",
-      "listener_name" => "listener",
+      "listener" => "listener",
       "should_run_missed_steps" => true
     })
     |> Repo.insert!()
@@ -50,7 +50,7 @@ defmodule ApplicationRunner.Crons.CronTest do
     cron = Enum.at(Repo.all(Cron), 0)
 
     assert cron.schedule == "* * * * *"
-    assert cron.listener_name == "listener"
+    assert cron.listener == "listener"
 
     assert cron.should_run_missed_steps == true
   end
@@ -63,7 +63,7 @@ defmodule ApplicationRunner.Crons.CronTest do
     cron =
       Cron.new(env.id, "test", %{
         "schedule" => "This is not a valid schedule",
-        "listener_name" => "listener",
+        "listener" => "listener",
         "props" => %{
           "prop1" => "1",
           "prop2" => "2"
@@ -77,7 +77,7 @@ defmodule ApplicationRunner.Crons.CronTest do
     cron =
       Cron.new(1, "test", %{
         "schedule" => "* * * * *",
-        "listener_name" => "listener",
+        "listener" => "listener",
         "props" => %{
           "prop1" => "1",
           "prop2" => "2"
@@ -97,7 +97,7 @@ defmodule ApplicationRunner.Crons.CronTest do
       })
 
     assert cron.valid? == false
-    assert [{:listener_name, _err}, {:schedule, _error}] = cron.errors
+    assert [{:listener, _err}, {:schedule, _error}] = cron.errors
   end
 
   test "Insert Cron with no props into database successfully" do
@@ -107,14 +107,14 @@ defmodule ApplicationRunner.Crons.CronTest do
 
     Cron.new(env.id, "test", %{
       "schedule" => "* * * * *",
-      "listener_name" => "listener"
+      "listener" => "listener"
     })
     |> Repo.insert!()
 
     cron = Enum.at(Repo.all(Cron), 0)
 
     assert cron.schedule == "* * * * *"
-    assert cron.listener_name == "listener"
+    assert cron.listener == "listener"
   end
 
   test "Insert Cron with user into database successfully" do
@@ -128,7 +128,7 @@ defmodule ApplicationRunner.Crons.CronTest do
 
     Cron.new(env.id, "test", %{
       "schedule" => "* * * * *",
-      "listener_name" => "listener",
+      "listener" => "listener",
       "user_id" => user.id
     })
     |> Repo.insert!()

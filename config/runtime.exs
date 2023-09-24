@@ -28,7 +28,11 @@ if config_env() == :prod do
     faas_auth: System.fetch_env!("FAAS_AUTH"),
     faas_registry: System.fetch_env!("FAAS_REGISTRY"),
     runner_secret: System.fetch_env!("RUNNER_SECRET"),
-    runner_callback_url: "https://#{System.fetch_env!("APP_HOST")}",
+    runner_callback_url:
+      System.get_env(
+        "PIPELINE_CALLBACK_URL",
+        "http://#{System.fetch_env!("API_ENDPOINT")}:#{System.fetch_env!("PORT")}"
+      ),
     lenra_env: System.fetch_env!("ENVIRONMENT"),
     gitlab_api_url: System.fetch_env!("GITLAB_API_URL"),
     gitlab_api_token: System.fetch_env!("GITLAB_API_TOKEN"),
