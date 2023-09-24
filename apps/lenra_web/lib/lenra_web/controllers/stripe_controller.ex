@@ -43,6 +43,8 @@ defmodule LenraWeb.StripeController.Policy do
   alias Lenra.Apps.App
 
   @impl Bouncer.Policy
+  def authorize(:customer_create, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:index, %User{id: user_id}, %App{creator_id: user_id}), do: true
   def authorize(:checkout_create, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
