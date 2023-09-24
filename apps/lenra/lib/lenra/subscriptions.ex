@@ -157,7 +157,7 @@ defmodule Lenra.Subscriptions do
         "subscription" -> "recurring"
       end
 
-    with {:ok, %Stripe.List{} = prices} <- IO.inspect(Stripe.Price.list(%{product: product_id, type: price_type})),
+    with {:ok, %Stripe.List{} = prices} <- Stripe.Price.list(%{product: product_id, type: price_type}),
          %Stripe.Price{id: price_id} <- Enum.find(prices.data, nil, fn price -> price.metadata["plan"] == plan end) do
       session_map = %{
         success_url: success_url,
