@@ -99,7 +99,8 @@ config :lenra,
   kubernetes_build_scripts: System.get_env("KUBERNETES_BUILD_SCRIPTS", "lenra_build"),
   kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra_build"),
   stripe_coupon: System.get_env("STRIPE_COUPON"),
-  stripe_secret: System.get_env("STRIPE_SECRET")
+  stripe_secret: System.get_env("STRIPE_SECRET"),
+  webhook_secret: System.get_env("WEBHOOK_SECRET")
 
 config :stripity_stripe, api_key: System.get_env("STRIPE_API_KEY")
 

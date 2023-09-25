@@ -17,3 +17,4 @@ config :lenra_web, LenraWeb.Endpoint,
 config :lenra,
   faas_secrets: ["gitlab-registry"],
   stripe_secret: System.get_env("STRIPE_SECRET")
+  webhook_secret: System.get_env("WEBHOOK_SECRET")

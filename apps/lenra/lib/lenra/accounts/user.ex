@@ -54,7 +54,7 @@ defmodule Lenra.Accounts.User do
 
   def changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:first_name, :last_name, :email])
+    |> cast(params, [:first_name, :last_name, :email, :stripe_id])
     |> validate_email()
     |> validate_others()
   end

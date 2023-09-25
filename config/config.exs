@@ -37,7 +37,8 @@ config :esbuild,
 # Configure the repo
 config :lenra,
   ecto_repos: [Lenra.Repo],
-  stripe_secret: System.get_env("STRIPE_SECRET")
+  stripe_secret: System.get_env("STRIPE_SECRET"),
+  webhook_secret: System.get_env("WEBHOOK_SECRET")
 
 
 config :lenra, Lenra.Repo,
