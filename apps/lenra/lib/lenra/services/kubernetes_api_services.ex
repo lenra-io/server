@@ -198,7 +198,7 @@ defmodule Lenra.KubernetesApiServices do
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}})
        when status_code in [200, 201, 202] do
-    %{"metadata" => %{"name" => name}} = Jason.decode!()
+    %{"metadata" => %{"name" => name}} = Jason.decode!(body)
     {:ok, %{"id" => name}}
   end
 
