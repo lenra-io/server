@@ -24,7 +24,8 @@ defmodule Lenra.StripeHandler do
     Subscription.new(%{
       application_id: event.data.object.metadata["app_id"],
       start_date: Date.utc_today(),
-      end_date: end_date
+      end_date: end_date,
+      plan: event.data.object.metadata["plan"]
     })
     |> Repo.insert()
   end

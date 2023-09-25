@@ -5,6 +5,7 @@ defmodule Lenra.Repo.Migrations.Subscription do
     create table(:subscriptions) do
       add(:start_date, :date)
       add(:end_date, :date)
+      add(:plan, :string)
       add(:application_id, :integer)
 
       timestamps()

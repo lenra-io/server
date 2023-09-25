@@ -13,11 +13,13 @@ defmodule Lenra.Subscriptions.Subscription do
            only: [
              :start_date,
              :end_date,
+             :plan,
              :application_id
            ]}
   schema "subscriptions" do
     field(:start_date, :date)
     field(:end_date, :date)
+    field(:plan, :string)
     belongs_to(:application, App)
 
     timestamps()
@@ -25,8 +27,8 @@ defmodule Lenra.Subscriptions.Subscription do
 
   def changeset(build, params \\ %{}) do
     build
-    |> cast(params, [:start_date, :end_date, :application_id])
-    |> validate_required([:start_date, :end_date, :application_id])
+    |> cast(params, [:start_date, :end_date, :plan, :application_id])
+    |> validate_required([:start_date, :end_date, :plan, :application_id])
     |> foreign_key_constraint(:application_id)
   end
 
