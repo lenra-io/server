@@ -10,16 +10,13 @@ defmodule Lenra.Subscriptions do
   require Logger
 
   def get_subscription_by_app_id(application_id) do
-    case Repo.one(
-           from(s in Subscription,
-             where:
-               s.application_id == ^application_id and s.end_date >= ^Date.utc_today() and
-                 s.start_date <= ^Date.utc_today()
-           )
-         ) do
-      nil -> []
-      any -> any
-    end
+    Repo.one(
+      from(s in Subscription,
+        where:
+          s.application_id == ^application_id and s.end_date >= ^Date.utc_today() and
+            s.start_date <= ^Date.utc_today()
+      )
+    )
   end
 
   def get_max_replicas(application_id) do
@@ -101,7 +98,8 @@ defmodule Lenra.Subscriptions do
         product: product.id,
         metadata: %{
           "plan" => "month"
-        }
+        },
+        tax_behavior: "exclusive"
       })
 
       Stripe.Price.create(%{
@@ -110,7 +108,8 @@ defmodule Lenra.Subscriptions do
         product: product.id,
         metadata: %{
           "plan" => "month"
-        }
+        },
+        tax_behavior: "exclusive"
       })
 
       Stripe.Price.create(%{
@@ -122,7 +121,8 @@ defmodule Lenra.Subscriptions do
         product: product.id,
         metadata: %{
           "plan" => "year"
-        }
+        },
+        tax_behavior: "exclusive"
       })
 
       Stripe.Price.create(%{
@@ -131,7 +131,8 @@ defmodule Lenra.Subscriptions do
         product: product.id,
         metadata: %{
           "plan" => "year"
-        }
+        },
+        tax_behavior: "exclusive"
       })
 
       product.id

@@ -3,7 +3,6 @@ defmodule Lenra.Repo.Migrations.Subscription do
 
   def change do
     create table(:subscriptions) do
-      add(:uuid, :uuid, primary_key: true)
       add(:start_date, :date)
       add(:end_date, :date)
       add(:application_id, :integer)

@@ -1,4 +1,5 @@
 defmodule Lenra.StripeHandler do
+  alias Lenra.Repo
   alias Lenra.Subscriptions.Subscription
   require Logger
   @behaviour Stripe.WebhookHandler
@@ -22,10 +23,11 @@ defmodule Lenra.StripeHandler do
       end
 
     Subscription.new(%{
-      aap_id: event.data.object.metadata["app_id"],
+      application_id: event.data.object.metadata["app_id"],
       start_date: Date.utc_today(),
       end_date: end_date
     })
+    |> Repo.insert()
   end
 
   @impl true

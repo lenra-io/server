@@ -11,13 +11,11 @@ defmodule Lenra.Subscriptions.Subscription do
 
   @derive {Jason.Encoder,
            only: [
-             :uuid,
              :start_date,
              :end_date,
              :application_id
            ]}
   schema "subscriptions" do
-    field(:uuid, :string, primary_key: true)
     field(:start_date, :date)
     field(:end_date, :date)
     belongs_to(:application, App)
@@ -29,7 +27,6 @@ defmodule Lenra.Subscriptions.Subscription do
     build
     |> cast(params, [:start_date, :end_date, :application_id])
     |> validate_required([:start_date, :end_date, :application_id])
-    |> unique_constraint(:uuid, name: :subscriptions_uuid_index)
     |> foreign_key_constraint(:application_id)
   end
 
@@ -38,9 +35,7 @@ defmodule Lenra.Subscriptions.Subscription do
   end
 
   def new(params) do
-    %__MODULE__{
-      uuid: UUID.generate()
-    }
+    %__MODULE__{}
     |> __MODULE__.changeset(params)
   end
 end
