@@ -19,7 +19,6 @@ defmodule Lenra.StripeHandler do
         "year" ->
           {:ok, today} = DateTime.now("Etc/UTC")
           Date.add(today, 365)
-          DateTime.add(today, {1, :years})
       end
 
     Subscription.new(%{
