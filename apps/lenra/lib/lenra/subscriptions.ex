@@ -58,21 +58,19 @@ defmodule Lenra.Subscriptions do
   def create_checkout(
         %{
           "plan" => plan,
-          "mode" => mode,
           "customer" => customer,
           "success_url" => success_url,
           "cancel_url" => cancel_url
         },
         app
-      )
-      when mode in ["payment", "subscription"] do
+      ) do
     case Stripe.Product.retrieve("#{app.id}") do
       {:ok, %Stripe.Product{} = product} ->
-        handle_create_session(plan, success_url, cancel_url, mode, product.id, customer, app.id)
+        handle_create_session(plan, success_url, cancel_url, product.id, customer, app.id)
 
       {:error, _} ->
         product_id = create_product(app.id, app.name)
-        handle_create_session(plan, success_url, cancel_url, mode, product_id, customer, app.id)
+        handle_create_session(plan, success_url, cancel_url, product_id, customer, app.id)
     end
     |> case do
       {:ok, session} ->
@@ -103,31 +101,11 @@ defmodule Lenra.Subscriptions do
       })
 
       Stripe.Price.create(%{
-        unit_amount: 800,
-        currency: "eur",
-        product: product.id,
-        metadata: %{
-          "plan" => "month"
-        },
-        tax_behavior: "exclusive"
-      })
-
-      Stripe.Price.create(%{
         unit_amount: 8000,
         currency: "eur",
         recurring: %{
           interval: "year"
         },
-        product: product.id,
-        metadata: %{
-          "plan" => "year"
-        },
-        tax_behavior: "exclusive"
-      })
-
-      Stripe.Price.create(%{
-        unit_amount: 8000,
-        currency: "eur",
         product: product.id,
         metadata: %{
           "plan" => "year"
@@ -143,27 +121,20 @@ defmodule Lenra.Subscriptions do
           binary(),
           binary(),
           binary(),
-          binary(),
           integer(),
           binary(),
           integer()
         ) ::
           {:ok, Stripe.Session.t()} | {:error, Stripe.Error.t()}
-  def handle_create_session(plan, success_url, cancel_url, mode, product_id, customer, app_id) do
+  def handle_create_session(plan, success_url, cancel_url, product_id, customer, app_id) do
     stripe_coupon = Application.get_env(:lenra, :stripe_coupon, nil)
 
-    price_type =
-      case mode do
-        "payment" -> "one_time"
-        "subscription" -> "recurring"
-      end
-
-    with {:ok, %Stripe.List{} = prices} <- Stripe.Price.list(%{product: product_id, type: price_type}),
+    with {:ok, %Stripe.List{} = prices} <- Stripe.Price.list(%{product: product_id}),
          %Stripe.Price{id: price_id} <- Enum.find(prices.data, nil, fn price -> price.metadata["plan"] == plan end) do
       session_map = %{
         success_url: success_url,
         cancel_url: cancel_url,
-        mode: mode,
+        mode: "subscription",
         line_items: [
           %{
             price: price_id,
