@@ -170,7 +170,7 @@ defmodule Lenra.Subscriptions do
           }
         ],
         customer: customer,
-        metadata: %{"app_id" => app_id}
+        metadata: %{"app_id" => app_id, "plan" => plan}
       }
 
       session_map =
