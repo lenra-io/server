@@ -135,6 +135,7 @@ defmodule LenraWeb.Router do
     post("/customers", StripeController, :customer_create)
     get("/subscriptions", StripeController, :index)
     post("/checkout", StripeController, :checkout_create)
+    get("/customer_portal", StripeController, :customer_portal)
   end
 
   # /api resources, scope "resources"

@@ -36,6 +36,14 @@ defmodule LenraWeb.StripeController do
       |> reply(session_id)
     end
   end
+
+  def customer_portal(conn, _params) do
+    with user <- Auth.current_resource(conn),
+    url <- Subscriptions.get_customer_portal_url(user) do
+      conn
+      |> reply(url)
+    end
+    end
 end
 
 defmodule LenraWeb.StripeController.Policy do

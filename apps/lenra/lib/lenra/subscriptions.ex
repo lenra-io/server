@@ -19,6 +19,12 @@ defmodule Lenra.Subscriptions do
     )
   end
 
+  def get_customer_portal_url(user) do
+    with {:ok, portal} = Stripe.BillingPortal.Session.create(%{customer: user.stripe_id}) do
+      portal.url
+    end
+  end
+
   def get_max_replicas(application_id) do
     if get_subscription_by_app_id(application_id) != nil do
       5
