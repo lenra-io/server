@@ -24,7 +24,7 @@ defmodule Lenra.Apps.Build do
     field(:commit_hash, :string)
     field(:build_number, :integer)
     field(:status, Ecto.Enum, values: [:pending, :failure, :success])
-    field(:pipeline_id, :integer)
+    field(:pipeline_id, :string)
     belongs_to(:creator, User)
     belongs_to(:application, App)
 
