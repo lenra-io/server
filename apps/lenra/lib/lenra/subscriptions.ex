@@ -148,7 +148,9 @@ defmodule Lenra.Subscriptions do
           }
         ],
         customer: customer,
-        metadata: %{"app_id" => app_id, "plan" => plan}
+        metadata: %{"app_id" => app_id, "plan" => plan},
+        automatic_tax: %{enabled: true},
+        customer_update: %{address: "auto"}
       }
 
       session_map =
