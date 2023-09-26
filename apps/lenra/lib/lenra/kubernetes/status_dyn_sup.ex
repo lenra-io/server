@@ -1,11 +1,14 @@
 defmodule Lenra.Kubernetes.StatusDynSup do
+  @moduledoc """
+    Lenra.Kubernetes.StatusDynSup Manage status Genserver
+  """
   use DynamicSupervisor
 
+  import Ecto.Query
+
+  alias Lenra.Apps.Build
   alias Lenra.Kubernetes.Status
   alias Lenra.Repo
-  alias Lenra.Apps.Build
-
-  import Ecto.Query
 
   require Logger
 
@@ -25,7 +28,7 @@ defmodule Lenra.Kubernetes.StatusDynSup do
     case start_child(build_id, namespace, job_name) do
       {:ok, pid} ->
         Logger.info("Lenra.Kubernetes.Status started")
-        Process.send_after(pid, :check, 10000)
+        Process.send_after(pid, :check, 10_000)
         {:ok, pid}
 
       {:error, {:already_started, pid}} ->
@@ -47,7 +50,7 @@ defmodule Lenra.Kubernetes.StatusDynSup do
     DynamicSupervisor.start_child({:via, :swarm, __MODULE__}, {Status, init_value})
   end
 
-  def init_status() do
+  def init_status do
     kubernetes_build_namespace = Application.fetch_env!(:lenra, :kubernetes_build_namespace)
 
     builds =
