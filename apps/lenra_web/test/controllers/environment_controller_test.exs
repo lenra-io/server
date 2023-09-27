@@ -2,6 +2,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
   use LenraWeb.ConnCase, async: true
 
   alias Lenra.Subscriptions.Subscription
+  alias Lenra.Repo
 
   setup %{conn: conn} do
     {:ok, conn: conn}
