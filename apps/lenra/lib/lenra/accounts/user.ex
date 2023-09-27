@@ -38,6 +38,7 @@ defmodule Lenra.Accounts.User do
     field(:first_name, :string)
     field(:last_name, :string)
     field(:email, :string)
+    field(:stripe_id, :string)
     has_many(:password, Password)
     field(:role, Ecto.Enum, values: [:admin, :dev, :user, :unverified_user])
     has_one(:registration_code, RegistrationCode)
@@ -53,7 +54,7 @@ defmodule Lenra.Accounts.User do
 
   def changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:first_name, :last_name, :email])
+    |> cast(params, [:first_name, :last_name, :email, :stripe_id])
     |> validate_email()
     |> validate_others()
   end

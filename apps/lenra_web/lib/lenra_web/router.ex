@@ -35,6 +35,11 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyScope, "manage:apps")
   end
 
+  pipeline :scope_payments do
+    plug(Plug.ExtractBearer)
+    plug(Plug.VerifyScope, "manage:payments")
+  end
+
   pipeline :scope_store do
     plug(Plug.ExtractBearer)
     plug(Plug.VerifyScope, "store")
@@ -123,6 +128,14 @@ defmodule LenraWeb.Router do
     get("/:environment_id/oauth2", OAuth2Controller, :index)
     put("/:environment_id/oauth2/:client_id", OAuth2Controller, :update)
     delete("/:environment_id/oauth2/:client_id", OAuth2Controller, :delete)
+  end
+
+  scope "/api/stripe", LenraWeb do
+    pipe_through([:api, :scope_manage_account, :ensure_cgu_accepted])
+    post("/customers", StripeController, :customer_create)
+    get("/subscriptions", StripeController, :index)
+    post("/checkout", StripeController, :checkout_create)
+    get("/customer_portal", StripeController, :customer_portal)
   end
 
   # /api resources, scope "resources"
