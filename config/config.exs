@@ -122,6 +122,7 @@ config :application_runner, ApplicationRunner.Scheduler, storage: ApplicationRun
 
 config :lenra,
   faas_secrets: []
+  kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build"),
 
 config :argon2_elixir,
   t_cost: 8,
