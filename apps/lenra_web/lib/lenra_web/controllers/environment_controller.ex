@@ -33,9 +33,9 @@ defmodule LenraWeb.EnvsController do
   end
 
   def update(conn, %{"env_id" => env_id, "is_public" => true} = params) do
-    with {:ok, _app} <- get_app_and_allow(conn, params),
+    with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, env} <- Apps.fetch_env(env_id),
-         %Subscription{} = _subscription <- Subscriptions.get_subscription_by_app_id(env_id),
+         %Subscription{} = _subscription <- Subscriptions.get_subscription_by_app_id(app.id),
          {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
       conn
       |> reply(env)
