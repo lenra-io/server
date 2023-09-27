@@ -30,6 +30,8 @@ defmodule Lenra.Errors.BusinessError do
       {:invitation_wrong_email, "Cannot accept the invitation with this email."},
       {:application_not_built, "Your application has not been built yet."},
       {:pipeline_runner_unkown_service,
-       "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes])"}
+       "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes])"},
+      {:subscription_required, "You need a subscirption", 402},
+      {:stripe_error, "Stripe error"}
     ]
 end

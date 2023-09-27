@@ -5,6 +5,7 @@ defmodule LenraWeb.UserEnvironmentAccessController do
     module: LenraWeb.UserEnvironmentAccessController.Policy
 
   alias Lenra.Apps
+  alias Lenra.Subscriptions
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
     with {app_id, _} <- Integer.parse(app_id_str),
@@ -38,8 +39,9 @@ defmodule LenraWeb.UserEnvironmentAccessController do
 
   def create(conn, %{"env_id" => env_id, "email" => email} = params) do
     with {:ok, _app} <- get_app_and_allow(conn, params),
+         subscription <- Subscriptions.get_subscription_by_app_id(env_id),
          {:ok, %{inserted_user_access: user_env_access}} <-
-           Apps.create_user_env_access(env_id, %{"email" => email}) do
+           Apps.create_user_env_access(env_id, %{"email" => email}, subscription) do
       conn
       |> reply(user_env_access)
     end

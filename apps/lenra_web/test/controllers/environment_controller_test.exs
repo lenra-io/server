@@ -1,6 +1,9 @@
 defmodule LenraWeb.EnvironmentControllerTest do
   use LenraWeb.ConnCase, async: true
 
+  alias Lenra.Repo
+  alias Lenra.Subscriptions.Subscription
+
   setup %{conn: conn} do
     {:ok, conn: conn}
   end
@@ -102,6 +105,16 @@ defmodule LenraWeb.EnvironmentControllerTest do
     test "environment controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
       assert app = json_response(creator!, 200)
+
+      subscription =
+        Subscription.new(%{
+          application_id: app["id"],
+          start_date: DateTime.utc_now(),
+          end_date: DateTime.utc_now() |> DateTime.add(1000, :second),
+          plan: "month"
+        })
+
+      Repo.insert(subscription)
 
       [env] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
