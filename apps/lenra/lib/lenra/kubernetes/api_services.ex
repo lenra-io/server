@@ -47,8 +47,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     base64_repository = Base.encode64(app_repository)
     base64_repository_branch = Base.encode64(app_repository_branch || "")
 
-    base64_callback_url =
-      Base.encode64("#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}")
+    base64_callback_url = Base.encode64("#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}")
 
     base64_image_name = Base.encode64(Apps.image_name(service_name, build_number))
 
@@ -276,9 +275,7 @@ defmodule Lenra.Kubernetes.ApiServices do
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}) do
-    Logger.critical(
-      "#{__MODULE__} kubernetes return status code #{status_code} with message #{inspect(body)}"
-    )
+    Logger.critical("#{__MODULE__} kubernetes return status code #{status_code} with message #{inspect(body)}")
 
     {:error, :kubernetes_error}
   end
