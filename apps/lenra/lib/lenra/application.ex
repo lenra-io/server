@@ -6,6 +6,7 @@ defmodule Lenra.Application do
   use Application
 
   alias Lenra.Errors.BusinessError
+  alias Lenra.Kubernetes
 
   require Logger
 
@@ -71,7 +72,7 @@ defmodule Lenra.Application do
     res = Supervisor.start_link(children, opts)
     Lenra.Seeds.run()
     Logger.info("Lenra Supervisor Started")
-    Lenra.Kubernetes.StatusDynSup.init_status()
+    Kubernetes.StatusDynSup.init_status()
     res
   end
 end
