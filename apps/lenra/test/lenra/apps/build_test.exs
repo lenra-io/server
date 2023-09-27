@@ -52,7 +52,7 @@ defmodule Lenra.Apps.BuildTest do
 
       build = Enum.at(Repo.all(Build), 0)
 
-      assert %Build{commit_hash: "abcdef", status: :pending, pipeline_id: 1} = Repo.get(Build, build.id)
+      assert %Build{commit_hash: "abcdef", status: :pending, pipeline_id: "1"} = Repo.get(Build, build.id)
     end
   end
 

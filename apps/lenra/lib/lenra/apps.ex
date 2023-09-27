@@ -292,7 +292,6 @@ defmodule Lenra.Apps do
     multi
     |> Ecto.Multi.update(:update_build_after_pipeline, fn
       %{inserted_build: %Build{} = build, gitlab_pipeline: pipeline} ->
-        pipeline = Jason.decode!(pipeline)
         Build.changeset(build, %{"pipeline_id" => pipeline["id"]})
     end)
   end
