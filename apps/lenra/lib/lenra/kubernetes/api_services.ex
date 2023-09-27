@@ -266,8 +266,7 @@ defmodule Lenra.Kubernetes.ApiServices do
   defp response(
          {:ok,
           %Finch.Response{
-            status: status_code,
-            body: %{reason: "AlreadyExists"}
+            status: status_code
           }}
        )
        when status_code in [409] do
