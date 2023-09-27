@@ -133,7 +133,7 @@ form ul.rules>li {
 form ul.rules>li::before,
 form :is(.invalid-feedback, .alert.alert-danger)::before {
     display: inline-block;
-    content: "\1F5D9";
+    content: "\274C";
     margin-right: 0.25rem;
 }
 
