@@ -61,7 +61,7 @@ if config_env() == :prod do
     stripe_coupon: System.get_env("STRIPE_COUPON")
 
   config :application_runner,
-    url: "http://" <> System.fetch_env!("API_ENDPOINT") <> ":" <> System.fetch_env!("PORT"),
+    internal_api_url: "http://" <> System.fetch_env!("API_ENDPOINT") <> ":" <> System.fetch_env!("PORT"),
     faas_url: System.fetch_env!("FAAS_URL"),
     faas_auth: System.fetch_env!("FAAS_AUTH"),
     faas_registry: System.fetch_env!("FAAS_REGISTRY"),
