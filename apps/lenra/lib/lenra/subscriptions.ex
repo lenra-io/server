@@ -1,11 +1,15 @@
 defmodule Lenra.Subscriptions do
+  @moduledoc """
+    Lenra.Subscriptions represent subscriptions schema
+  """
+
   import Ecto.Query
 
-  alias Lenra.Errors.BusinessError
   alias ApplicationRunner.ApplicationServices
+  alias Lenra.Accounts.User
+  alias Lenra.Errors.BusinessError
   alias Lenra.Repo
   alias Lenra.Subscriptions.Subscription
-  alias Lenra.Accounts.User
 
   require Logger
 
@@ -20,8 +24,9 @@ defmodule Lenra.Subscriptions do
   end
 
   def get_customer_portal_url(user) do
-    with {:ok, portal} = Stripe.BillingPortal.Session.create(%{customer: user.stripe_id}) do
-      portal.url
+    case Stripe.BillingPortal.Session.create(%{customer: user.stripe_id}) do
+      {:ok, portal} -> portal.url
+      {:error, error} -> BusinessError.stripe_error(error)
     end
   end
 
@@ -39,15 +44,17 @@ defmodule Lenra.Subscriptions do
   end
 
   # Function call by cron when subscription are ending, set application to private and set max_replicas to 1
-  def subscriptioon_expires() do
-  end
+  # def subscriptioon_expires() do
+  # TODO: handle subscription expiration
+  # end
 
   def create_customer_or_get_customer(user) do
     case user.stripe_id do
       nil ->
         # Transaction ?
         with {:ok, %Stripe.Customer{} = customer} <- Stripe.Customer.create(%{email: user.email}),
-             {:ok, _updated_user} <- User.update(user, %{stripe_id: customer.id}) |> Repo.update() do
+             {:ok, _updated_user} <-
+               user |> User.update(%{stripe_id: customer.id}) |> Repo.update() do
           customer.id
         else
           {:error, _} = error ->
@@ -56,7 +63,7 @@ defmodule Lenra.Subscriptions do
             nil
         end
 
-      _ ->
+      _error ->
         user.stripe_id
     end
   end
@@ -70,7 +77,9 @@ defmodule Lenra.Subscriptions do
         },
         app
       ) do
-    case Stripe.Product.retrieve("#{app.id}") do
+    "#{app.id}"
+    |> Stripe.Product.retrieve()
+    |> case do
       {:ok, %Stripe.Product{} = product} ->
         handle_create_session(plan, success_url, cancel_url, product.id, customer, app.id)
 
@@ -123,20 +132,12 @@ defmodule Lenra.Subscriptions do
     end
   end
 
-  @spec handle_create_session(
-          binary(),
-          binary(),
-          binary(),
-          integer(),
-          binary(),
-          integer()
-        ) ::
-          {:ok, Stripe.Session.t()} | {:error, Stripe.Error.t()}
   def handle_create_session(plan, success_url, cancel_url, product_id, customer, app_id) do
     stripe_coupon = Application.get_env(:lenra, :stripe_coupon, nil)
 
     with {:ok, %Stripe.List{} = prices} <- Stripe.Price.list(%{product: product_id}),
-         %Stripe.Price{id: price_id} <- Enum.find(prices.data, nil, fn price -> price.metadata["plan"] == plan end) do
+         %Stripe.Price{id: price_id} <-
+           Enum.find(prices.data, nil, fn price -> price.metadata["plan"] == plan end) do
       session_map = %{
         success_url: success_url,
         cancel_url: cancel_url,
@@ -153,7 +154,7 @@ defmodule Lenra.Subscriptions do
         customer_update: %{address: "auto"}
       }
 
-      session_map =
+      session =
         if stripe_coupon != nil do
           session_map
           |> Map.put(:discounts, [
@@ -165,7 +166,7 @@ defmodule Lenra.Subscriptions do
           session_map
         end
 
-      Stripe.Session.create(session_map)
+      Stripe.Session.create(session)
     end
   end
 end

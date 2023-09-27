@@ -5,8 +5,8 @@ defmodule LenraWeb.StripeController do
     module: LenraWeb.StripeController.Policy
 
   alias Lenra.Apps
-  alias LenraWeb.Auth
   alias Lenra.Subscriptions
+  alias LenraWeb.Auth
 
   require Logger
 
@@ -39,11 +39,11 @@ defmodule LenraWeb.StripeController do
 
   def customer_portal(conn, _params) do
     with user <- Auth.current_resource(conn),
-    url <- Subscriptions.get_customer_portal_url(user) do
+         url <- Subscriptions.get_customer_portal_url(user) do
       conn
       |> reply(url)
     end
-    end
+  end
 end
 
 defmodule LenraWeb.StripeController.Policy do

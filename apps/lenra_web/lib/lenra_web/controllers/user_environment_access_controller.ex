@@ -1,12 +1,11 @@
 defmodule LenraWeb.UserEnvironmentAccessController do
-  alias Lenra.Subscriptions.Subscription
-  alias Lenra.Subscriptions
   use LenraWeb, :controller
 
   use LenraWeb.Policy,
     module: LenraWeb.UserEnvironmentAccessController.Policy
 
   alias Lenra.Apps
+  alias Lenra.Subscriptions
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
     with {app_id, _} <- Integer.parse(app_id_str),

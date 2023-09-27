@@ -1,11 +1,15 @@
 defmodule Lenra.StripeHandler do
-  alias LenraWeb.AppAdapter
+  @moduledoc """
+    Lenra.StripeHandler handle stripe events
+  """
+  @behaviour Stripe.WebhookHandler
+
   alias ApplicationRunner.ApplicationServices
-  alias Lenra.OpenfaasServices
   alias Lenra.Repo
   alias Lenra.Subscriptions.Subscription
+  alias LenraWeb.AppAdapter
+
   require Logger
-  @behaviour Stripe.WebhookHandler
 
   @impl true
   def handle_event(
@@ -14,7 +18,6 @@ defmodule Lenra.StripeHandler do
           data: %{object: %{payment_status: "paid"}}
         } = event
       ) do
-    # Create subscription for app_id in metadata of event, plan a are in metadat set start_date to today and end_date today + one month or one year
     end_date =
       case event.data.object.metadata["plan"] do
         "month" ->
@@ -29,16 +32,18 @@ defmodule Lenra.StripeHandler do
           Date.add(today, 365)
       end
 
-    Subscription.new(%{
+    %{
       application_id: event.data.object.metadata["app_id"],
       start_date: Date.utc_today(),
       end_date: end_date,
       plan: event.data.object.metadata["plan"]
-    })
+    }
+    |> Subscription.new()
     |> Repo.insert()
 
     app =
-      Lenra.Repo.get(Lenra.Apps.App, event.data.object.metadata["app_id"])
+      Lenra.Apps.App
+      |> Lenra.Repo.get(event.data.object.metadata["app_id"])
       |> Lenra.Repo.preload(main_env: [environment: [deployment: [:build]]])
 
     if app.main_env.environment.deployment != nil do

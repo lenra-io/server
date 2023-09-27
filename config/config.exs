@@ -40,7 +40,6 @@ config :lenra,
   stripe_secret: System.get_env("STRIPE_SECRET"),
   webhook_secret: System.get_env("WEBHOOK_SECRET")
 
-
 config :lenra, Lenra.Repo,
   migration_timestamps: [type: :utc_datetime],
   pool_size: 10
