@@ -26,8 +26,6 @@ defmodule LenraWeb.RunnerControllerTest do
       conn! = post(conn!, Routes.builds_path(conn!, :create, app["id"]))
       assert build = json_response(conn!, 200)
 
-      start_supervised(Lenra.Kubernetes.StatusDynSup)
-
       post(conn!, Routes.deployments_path(conn!, :create), %{
         environment_id: preloaded_app.main_env.environment_id,
         build_id: build["id"],
