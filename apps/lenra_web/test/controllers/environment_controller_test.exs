@@ -109,7 +109,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
         Subscription.new(%{
           application_id: app["id"],
           start_date: DateTime.utc_now(),
-          end_date: DateTime.utc_now() |> DateTime.add(1, :day)
+          end_date: DateTime.utc_now() |> DateTime.add(1000, :second)
         })
 
       Repo.insert(subscription)
