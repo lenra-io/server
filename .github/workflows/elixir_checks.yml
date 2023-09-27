@@ -7,20 +7,6 @@ on:
       - synchronize
 
 jobs:
-  prIsWip:
-    name: PR is WIP?
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    outputs:
-      isWip: ${{ steps.prIsWip.outputs.isWip }}
-    steps:
-      - id: prIsWip
-        uses: shiipou/pr-is-wip-action@v1.1.0
-        with:
-          continueIfNonPR: 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   server:
     services:
       postgres:
@@ -41,9 +27,6 @@ jobs:
     name: server checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs:
-      - prIsWip
-    if: needs.prIsWip.outputs.isWip == 'false'
     steps:
       - uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -125,9 +108,6 @@ jobs:
     defaults:
       run:
         working-directory: ./libs/application_runner
-    needs:
-      - prIsWip
-    if: needs.prIsWip.outputs.isWip == 'false'
     steps:
       - uses: webfactory/ssh-agent@v0.5.3
         with:

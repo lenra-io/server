@@ -53,7 +53,7 @@ defmodule Lenra.AppsTest do
     test "random user can see both apps if invited on the private one", %{user: _user, random_user: random_user} do
       {:ok, app} = Apps.fetch_app_by(name: "private-app")
       app_preload = Repo.preload(app, main_env: :environment)
-      Apps.create_user_env_access(app_preload.main_env.environment.id, %{"email" => random_user.email})
+      Apps.create_user_env_access(app_preload.main_env.environment.id, %{"email" => random_user.email}, nil)
 
       apps = Apps.all_apps(random_user.id)
       assert length(apps) == 2

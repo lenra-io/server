@@ -15,4 +15,6 @@ config :lenra_web, LenraWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :lenra,
-  faas_secrets: ["gitlab-registry"]
+  faas_secrets: ["gitlab-registry"],
+  stripe_secret: System.get_env("STRIPE_SECRET"),
+  webhook_secret: System.get_env("WEBHOOK_SECRET")

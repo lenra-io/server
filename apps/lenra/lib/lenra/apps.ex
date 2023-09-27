@@ -20,6 +20,7 @@ defmodule Lenra.Apps do
   import Ecto.Query
 
   alias Lenra.Repo
+  alias Lenra.Subscriptions
 
   alias Lenra.{Accounts, EmailWorker, GitlabApiServices, KubernetesApiServices, OpenfaasServices}
 
@@ -323,7 +324,11 @@ defmodule Lenra.Apps do
          %Deployment{} = deployment <-
            get_deployement(build.id, loaded_app.main_env.environment.id),
          {:ok, _status} <-
-           OpenfaasServices.deploy_app(loaded_build.application.service_name, build.build_number) do
+           OpenfaasServices.deploy_app(
+             loaded_build.application.service_name,
+             build.build_number,
+             Subscriptions.get_max_replicas(loaded_build.application.id)
+           ) do
       update_deployement(deployment, status: :waitingForAppReady)
 
       spawn(fn ->
@@ -456,7 +461,21 @@ defmodule Lenra.Apps do
     end
   end
 
-  def create_user_env_access(env_id, %{"email" => email}) do
+  def create_user_env_access(env_id, %{"email" => email}, subscription) do
+    if subscription == nil do
+      nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
+
+      if length(nb_user_env_access) >= 3 do
+        BusinessError.subscription_required()
+      else
+        create_user_env_access_transaction(env_id, email)
+      end
+    else
+      create_user_env_access_transaction(env_id, email)
+    end
+  end
+
+  defp create_user_env_access_transaction(env_id, email) do
     Accounts.User
     |> Lenra.Repo.get_by(email: email)
     |> handle_create_user_env_access(env_id, email)

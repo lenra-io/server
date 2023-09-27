@@ -36,7 +36,9 @@ config :esbuild,
 
 # Configure the repo
 config :lenra,
-  ecto_repos: [Lenra.Repo]
+  ecto_repos: [Lenra.Repo],
+  stripe_secret: System.get_env("STRIPE_SECRET"),
+  webhook_secret: System.get_env("WEBHOOK_SECRET")
 
 config :lenra, Lenra.Repo,
   migration_timestamps: [type: :utc_datetime],
@@ -95,7 +97,7 @@ config :application_runner,
   lenra_environment_table: "environments",
   lenra_user_table: "users",
   repo: Lenra.Repo,
-  url: System.get_env("HOST", "4000"),
+  internal_api_url: System.get_env("HOST", "http://localhost:4000"),
   faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
   faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
