@@ -51,7 +51,7 @@ defmodule ApplicationRunner.ApplicationServices do
         listener: listener,
         props: props,
         event: event,
-        api: %{url: Application.fetch_env!(:application_runner, :url), token: token}
+        api: %{url: Application.fetch_env!(:application_runner, :internal_api_url), token: token}
       })
 
     headers = [
