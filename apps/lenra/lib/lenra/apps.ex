@@ -234,11 +234,12 @@ defmodule Lenra.Apps do
 
     res =
       with {:ok, %App{} = app} <- fetch_app(app_id) do
-        creator_id
-        |> create_build(app.id, params)
-        |> Ecto.Multi.run(:gitlab_pipeline, fn _repo, %{inserted_build: %Build{} = build} ->
-          # If pipeline_runner env var is "kubernetes" then use `KubernetesApiService.create_pipeline`,
-          # if not, use `GitlabApiService.create_pipeline`
+        %{inserted_build: %Build{} = build} =
+          creator_id
+          |> create_build(app.id, params)
+          |> Repo.transaction()
+
+        {:ok, %{id: pipeline_id}} =
           case String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) do
             "gitlab" ->
               GitlabApiServices.create_pipeline(
@@ -261,9 +262,8 @@ defmodule Lenra.Apps do
             _anything ->
               BusinessError.pipeline_runner_unkown_service_tuple()
           end
-        end)
-        |> update_build_after_pipeline()
-        |> Repo.transaction()
+
+        Build.changeset(build, %{"pipeline_id" => pipeline_id}) |> Repo.update()
       end
 
     Logger.debug("#{__MODULE__} create_build_and_trigger_pipeline exit with res #{inspect(res)}")

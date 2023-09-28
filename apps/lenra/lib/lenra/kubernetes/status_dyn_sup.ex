@@ -62,7 +62,7 @@ defmodule Lenra.Kubernetes.StatusDynSup do
       job_name: job_name
     ]
 
-    DynamicSupervisor.start_child({:via, :swarm, __MODULE__}, {Status, init_value})
+    DynamicSupervisor.start_child({:global, __MODULE__}, {Status, init_value})
   end
 
   def init_status do
