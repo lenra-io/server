@@ -71,7 +71,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     secret_response =
       Finch.build(:post, secrets_url, headers, secret_body)
       |> Finch.request(PipelineHttp)
-      |> response()
+      |> response(:secret)
 
     case secret_response do
       {:ok, _} ->
@@ -80,7 +80,7 @@ defmodule Lenra.Kubernetes.ApiServices do
       :secret_exist ->
         Finch.build(:delete, secrets_url <> "/#{build_name}", headers)
         |> Finch.request(PipelineHttp)
-        |> response()
+        |> response(:secret)
 
         if retry < 1 do
           create_pipeline(
@@ -230,7 +230,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     response =
       Finch.build(:post, jobs_url, headers, body)
       |> Finch.request(PipelineHttp)
-      |> response()
+      |> response(:build)
 
     case response do
       {:ok, _data} = response ->
@@ -258,13 +258,18 @@ defmodule Lenra.Kubernetes.ApiServices do
     |> Repo.transaction()
   end
 
-  defp response({:ok, %Finch.Response{status: status_code, body: body}})
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, :secret)
+       when status_code in [200, 201, 202] do
+    {:ok, Jason.decode!(body)}
+  end
+
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, :build)
        when status_code in [200, 201, 202] do
     %{"metadata" => %{"name" => name}} = Jason.decode!(body)
     {:ok, %{"id" => name}}
   end
 
-  defp response({:error, %Mint.TransportError{reason: reason}}) do
+  defp response({:error, %Mint.TransportError{reason: reason}}, _atom) do
     raise "Kubernetes API could not be reached. It should not happen. #{reason}"
   end
 
@@ -272,13 +277,14 @@ defmodule Lenra.Kubernetes.ApiServices do
          {:ok,
           %Finch.Response{
             status: status_code
-          }}
+          }},
+         _atom
        )
        when status_code in [409] do
     :secret_exist
   end
 
-  defp response({:ok, %Finch.Response{status: status_code, body: body}}) do
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, _atom) do
     Logger.critical("#{__MODULE__} kubernetes return status code #{status_code} with message #{inspect(body)}")
 
     {:error, :kubernetes_error}
