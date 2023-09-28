@@ -17,7 +17,11 @@ defmodule Lenra.Kubernetes.Status do
     case Keyword.fetch(opts, :build_id) do
       {:ok, build_id} ->
         res = GenServer.start_link(__MODULE__, opts, name: {:global, {__MODULE__, build_id}})
-        Logger.debug("#{__MODULE__} start_link exit with #{inspect(res)} ans name #{inspect({__MODULE__, build_id})}")
+
+        Logger.debug(
+          "#{__MODULE__} start_link exit with #{inspect(res)} ans name #{inspect({:global, {__MODULE__, build_id}})}"
+        )
+
         res
 
       :error ->
@@ -35,7 +39,7 @@ defmodule Lenra.Kubernetes.Status do
 
   def handle_call(:check, _from, _state) do
     Process.send_after(self(), :check, @check_delay)
-    {:noreply, :ok}
+    {:reply, :ok, :ok}
   end
 
   def handle_info(:check, state) do
