@@ -16,7 +16,9 @@ defmodule Lenra.Kubernetes.Status do
   def start_link(opts) do
     case Keyword.fetch(opts, :build_id) do
       {:ok, build_id} ->
-        GenServer.start_link(__MODULE__, opts, name: {:global, {__MODULE__, build_id}})
+        res = GenServer.start_link(__MODULE__, opts, name: {:global, {__MODULE__, build_id}})
+        Logger.debug("#{__MODULE__} start_link exit with #{inspect(res)} ans name #{inspect({__MODULE__, build_id})}")
+        res
 
       :error ->
         raise DevError.exception(message: "Status need a build_id, a namespace and an job_name")
