@@ -22,7 +22,7 @@ defmodule LenraWeb.Endpoint do
   plug Stripe.WebhookPlug,
     at: "/webhook/stripe",
     handler: Lenra.StripeHandler,
-    secret: Application.fetch_env!(:lenra, :webhook_secret)
+    secret: Application.get_env(:lenra, :webhook_secret)
 
   # Serve at "/" the static files from "priv/static" directory.
   #
