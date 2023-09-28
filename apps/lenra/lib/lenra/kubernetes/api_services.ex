@@ -250,10 +250,10 @@ defmodule Lenra.Kubernetes.ApiServices do
     deployment = Repo.get_by(Deployment, build_id: build_id)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:build, Apps.update_build(build, %{status: :failure}))
+    |> Ecto.Multi.update(:build, Build.update(build, %{status: :failure}))
     |> Ecto.Multi.update(
       :deployment,
-      Apps.update_deployement(deployment, %{status: :failure})
+      Ecto.Changeset.change(deployment, %{status: :failure})
     )
     |> Repo.transaction()
   end
