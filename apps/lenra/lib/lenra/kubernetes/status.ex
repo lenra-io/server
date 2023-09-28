@@ -46,7 +46,7 @@ defmodule Lenra.Kubernetes.Status do
     case check_job_status(state) do
       :success -> check_and_update_build_status(state[:build_id], :success)
       :failure -> check_and_update_build_status(state[:build_id], :failure)
-      :running -> GenServer.call({:global, {__MODULE__, state[:build_id]}}, :check)
+      :running -> Process.send_after(self(), :check, @check_delay)
     end
 
     {:noreply, state}
