@@ -78,7 +78,7 @@ defmodule Lenra.Kubernetes.ApiServices do
         :ok
 
       :secret_exist ->
-        Finch.build(:delete, secrets_url <> "/build_name", headers)
+        Finch.build(:delete, secrets_url <> "/#{build_name}", headers)
         |> Finch.request(PipelineHttp)
         |> response()
 
