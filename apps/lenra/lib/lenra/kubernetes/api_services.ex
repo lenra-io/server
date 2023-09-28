@@ -1,10 +1,14 @@
-defmodule Lenra.KubernetesApiServices do
+defmodule Lenra.Kubernetes.ApiServices do
   @moduledoc """
   The service used to call Kubernetes API.
   Curently only support the request to create a new pipeline.
   """
 
   alias Lenra.Apps
+  alias Lenra.Apps.Build
+  alias Lenra.Apps.Deployment
+  alias Lenra.Kubernetes.StatusDynSup
+  alias Lenra.Repo
   require Logger
 
   @doc """
@@ -14,7 +18,14 @@ defmodule Lenra.KubernetesApiServices do
   The build_id is the id of the freshly created build. It is used to set to create the runner callback url
   The build_number is the number of the freshly created build. It us used to set the docker image URL.
   """
-  def create_pipeline(service_name, app_repository, app_repository_branch, build_id, build_number) do
+  def create_pipeline(
+        service_name,
+        app_repository,
+        app_repository_branch,
+        build_id,
+        build_number,
+        retry \\ 0
+      ) do
     runner_callback_url = Application.fetch_env!(:lenra, :runner_callback_url)
     runner_secret = Application.fetch_env!(:lenra, :runner_secret)
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
@@ -35,7 +46,9 @@ defmodule Lenra.KubernetesApiServices do
 
     base64_repository = Base.encode64(app_repository)
     base64_repository_branch = Base.encode64(app_repository_branch || "")
+
     base64_callback_url = Base.encode64("#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}")
+
     base64_image_name = Base.encode64(Apps.image_name(service_name, build_number))
 
     secret_body =
@@ -191,9 +204,53 @@ defmodule Lenra.KubernetesApiServices do
         }
       })
 
-    Finch.build(:post, jobs_url, headers, body)
-    |> Finch.request(PipelineHttp)
-    |> response()
+    response =
+      Finch.build(:post, jobs_url, headers, body)
+      |> Finch.request(PipelineHttp)
+      |> response()
+
+    case response do
+      {:ok, _data} = response ->
+        response
+
+      :secret_exist ->
+        Finch.build(:delete, secrets_url <> "/build_name", headers)
+        |> Finch.request(PipelineHttp)
+        |> response()
+
+        if retry < 1 do
+          create_pipeline(
+            service_name,
+            app_repository,
+            app_repository_branch,
+            build_id,
+            build_number,
+            retry + 1
+          )
+        else
+          set_fail(build_id)
+        end
+
+      _error ->
+        set_fail(build_id)
+    end
+
+    StatusDynSup.start_build_status(build_id, kubernetes_build_namespace, build_name)
+
+    response
+  end
+
+  defp set_fail(build_id) do
+    build = Repo.get(Build, build_id)
+    deployment = Repo.get_by(Deployment, build_id: build_id)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:build, Apps.update_build(build, %{status: :failure}))
+    |> Ecto.Multi.update(
+      :deployment,
+      Apps.update_deployement(deployment, %{status: :failure})
+    )
+    |> Repo.transaction()
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}})
@@ -206,8 +263,19 @@ defmodule Lenra.KubernetesApiServices do
     raise "Kubernetes API could not be reached. It should not happen. #{reason}"
   end
 
-  defp response({:ok, %Finch.Response{status: status_code, body: body}})
-       when status_code not in [200, 201, 202] do
-    raise "Kubernetes API error (#{status_code}) #{body}"
+  defp response(
+         {:ok,
+          %Finch.Response{
+            status: status_code
+          }}
+       )
+       when status_code in [409] do
+    :secret_exist
+  end
+
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}) do
+    Logger.critical("#{__MODULE__} kubernetes return status code #{status_code} with message #{inspect(body)}")
+
+    {:error, :kubernetes_error}
   end
 end

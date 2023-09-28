@@ -1,7 +1,7 @@
 defmodule LenraWeb.RunnerController do
   use LenraWeb, :controller
 
-  alias Lenra.Apps
+  alias Lenra.{Apps, Kubernetes}
   require Logger
 
   defp maybe_deploy_in_main_env(build, "success"),
@@ -20,6 +20,11 @@ defmodule LenraWeb.RunnerController do
     with {:ok, build} <- Apps.fetch_build(build_id),
          {:ok, _} <- Apps.update_build(build, %{status: status}),
          {:ok, _} <- maybe_deploy_in_main_env(build, status) do
+      if String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) == "kubernetes" do
+        pid = Swarm.whereis_name(Kubernetes.Status.get_full_name(build_id))
+        GenServer.stop(pid)
+      end
+
       reply(conn)
     end
   end

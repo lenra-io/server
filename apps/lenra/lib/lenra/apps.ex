@@ -19,10 +19,13 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
+  alias Lenra.Kubernetes.StatusDynSup
   alias Lenra.Repo
   alias Lenra.Subscriptions
 
-  alias Lenra.{Accounts, EmailWorker, GitlabApiServices, KubernetesApiServices, OpenfaasServices}
+  alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices}
+
+  alias Lenra.Kubernetes.ApiServices
 
   alias Lenra.Apps.{
     App,
@@ -247,7 +250,7 @@ defmodule Lenra.Apps do
               )
 
             "kubernetes" ->
-              KubernetesApiServices.create_pipeline(
+              ApiServices.create_pipeline(
                 app.service_name,
                 app.repository,
                 app.repository_branch,
