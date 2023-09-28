@@ -37,9 +37,9 @@ defmodule Lenra.Kubernetes.Status do
     {:ok, [build_id: build_id, namespace: namespace, job_name: job_name]}
   end
 
-  def handle_call(:check, _from, _state) do
+  def handle_call(:check, _from, state) do
     Process.send_after(self(), :check, @check_delay)
-    {:reply, :ok, :ok}
+    {:reply, :ok, state}
   end
 
   def handle_info(:check, state) do
