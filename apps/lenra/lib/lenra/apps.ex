@@ -206,11 +206,13 @@ defmodule Lenra.Apps do
 
     with {:ok, %App{} = app} <- fetch_app(app_id),
          preloaded_app <- Repo.preload(app, :main_env),
-         {:ok, %{inserted_build: inserted_build}} <-
-           create_build_and_trigger_pipeline(creator_id, app_id, params) do
+         {:ok, %{inserted_build: %Build{} = build}} <-
+           creator_id
+           |> create_build(app.id, params)
+           |> Repo.transaction() do
       case create_deployment(
              preloaded_app.main_env.environment_id,
-             inserted_build.id,
+             build.id,
              creator_id,
              params
            ) do
@@ -222,24 +224,21 @@ defmodule Lenra.Apps do
         _res ->
           Logger.debug("#{__MODULE__} create_build_and_deploy exit successfully")
 
-          {:ok, %{inserted_build: inserted_build}}
+          trigger_pipeline(build, app_id, params)
+
+          {:ok, %{inserted_build: build}}
       end
     end
   end
 
-  def create_build_and_trigger_pipeline(creator_id, app_id, params) do
+  def trigger_pipeline(build, app_id, params) do
     Logger.debug(
-      "#{__MODULE__} create_build_and_trigger_pipeline with params #{inspect(%{creator_id: creator_id, app_id: app_id, params: params})}"
+      "#{__MODULE__} create_build_and_trigger_pipeline with params #{inspect(%{build: build, app_id: app_id, params: params})}"
     )
 
     res =
       with {:ok, %App{} = app} <- fetch_app(app_id) do
-        {:ok, %{inserted_build: %Build{} = build}} =
-          creator_id
-          |> create_build(app.id, params)
-          |> Repo.transaction()
-
-        {:ok, %{id: pipeline_id}} =
+        {:ok, %{"id" => pipeline_id}} =
           case String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) do
             "gitlab" ->
               GitlabApiServices.create_pipeline(
