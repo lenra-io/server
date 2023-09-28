@@ -68,10 +68,33 @@ defmodule Lenra.Kubernetes.ApiServices do
         }
       })
 
-    {:ok, _} =
+    secret_response =
       Finch.build(:post, secrets_url, headers, secret_body)
       |> Finch.request(PipelineHttp)
       |> response()
+
+    case secret_response do
+      {:ok, _} ->
+        :ok
+
+      :secret_exist ->
+        Finch.build(:delete, secrets_url <> "/build_name", headers)
+        |> Finch.request(PipelineHttp)
+        |> response()
+
+        if retry < 1 do
+          create_pipeline(
+            service_name,
+            app_repository,
+            app_repository_branch,
+            build_id,
+            build_number,
+            retry + 1
+          )
+        else
+          set_fail(build_id)
+        end
+    end
 
     body =
       Jason.encode!(%{
@@ -212,24 +235,6 @@ defmodule Lenra.Kubernetes.ApiServices do
     case response do
       {:ok, _data} = response ->
         response
-
-      :secret_exist ->
-        Finch.build(:delete, secrets_url <> "/build_name", headers)
-        |> Finch.request(PipelineHttp)
-        |> response()
-
-        if retry < 1 do
-          create_pipeline(
-            service_name,
-            app_repository,
-            app_repository_branch,
-            build_id,
-            build_number,
-            retry + 1
-          )
-        else
-          set_fail(build_id)
-        end
 
       _error ->
         set_fail(build_id)

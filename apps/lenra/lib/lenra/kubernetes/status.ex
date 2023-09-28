@@ -3,7 +3,6 @@ defmodule Lenra.Kubernetes.Status do
     Lenra.Kubernetes.Status check status for kubernetes build
   """
   use GenServer
-  use SwarmNamed
 
   alias Lenra.Apps.Build
   alias LenraCommon.Errors.DevError
@@ -17,7 +16,7 @@ defmodule Lenra.Kubernetes.Status do
   def start_link(opts) do
     case Keyword.fetch(opts, :build_id) do
       {:ok, build_id} ->
-        GenServer.start_link(__MODULE__, opts, name: get_full_name({build_id}))
+        GenServer.start_link(__MODULE__, opts, name: {:global, {Status, build_id}})
 
       :error ->
         raise DevError.exception(message: "Status need a build_id, a namespace and an job_name")
@@ -32,11 +31,16 @@ defmodule Lenra.Kubernetes.Status do
     {:ok, [build_id: build_id, namespace: namespace, job_name: job_name]}
   end
 
+  def handle_call(:check, _from, _state) do
+    Process.send_after(self(), :check, @check_delay)
+    {:noreply, :ok}
+  end
+
   def handle_info(:check, state) do
     case check_job_status(state) do
       :success -> check_and_update_build_status(state[:build_id], :success)
       :failure -> check_and_update_build_status(state[:build_id], :failure)
-      :running -> Process.send_after(self(), :check, @check_delay)
+      :running -> GenServer.call({:global, {Status, state[:build_id]}}, :check)
     end
 
     {:noreply, state}

@@ -72,7 +72,7 @@ if config_env() == :prod do
     env: System.fetch_env!("ENVIRONMENT"),
     scale_to_zero: System.get_env("SCALE_TO_ZERO", "true") == "true"
 
-  config :stripity_stripe, api_key: System.get_env("STRIPE_API_KEY")
+  config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET")
 
   config :application_runner, ApplicationRunner.Repo,
     username: System.fetch_env!("POSTGRES_USER"),

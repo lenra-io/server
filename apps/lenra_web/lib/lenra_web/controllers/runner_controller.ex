@@ -21,8 +21,7 @@ defmodule LenraWeb.RunnerController do
          {:ok, _} <- Apps.update_build(build, %{status: status}),
          {:ok, _} <- maybe_deploy_in_main_env(build, status) do
       if String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) == "kubernetes" do
-        pid = Swarm.whereis_name(Kubernetes.Status.get_full_name(build_id))
-        GenServer.stop(pid)
+        GenServer.stop({:global, {Kubernetes.Status, build_id}})
       end
 
       reply(conn)

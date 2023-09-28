@@ -14,22 +14,13 @@ defmodule Lenra.Subscriptions do
   require Logger
 
   def get_subscription_by_app_id(application_id) do
-    subscription =
-      Repo.one(
-        from(s in Subscription,
-          where:
-            s.application_id == ^application_id and s.end_date >= ^Date.utc_today() and
-              s.start_date <= ^Date.utc_today()
-        )
+    Repo.one(
+      from(s in Subscription,
+        where:
+          s.application_id == ^application_id and s.end_date >= ^Date.utc_today() and
+            s.start_date <= ^Date.utc_today()
       )
-
-    case subscription do
-      nil ->
-        BusinessError.subscription_required_tuple()
-
-      subscription ->
-        subscription
-    end
+    )
   end
 
   def get_customer_portal_url(user) do
