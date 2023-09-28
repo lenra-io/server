@@ -16,7 +16,7 @@ defmodule Lenra.Kubernetes.Status do
   def start_link(opts) do
     case Keyword.fetch(opts, :build_id) do
       {:ok, build_id} ->
-        GenServer.start_link(__MODULE__, opts, name: {:global, {Status, build_id}})
+        GenServer.start_link(__MODULE__, opts, name: {:global, {__MODULE__, build_id}})
 
       :error ->
         raise DevError.exception(message: "Status need a build_id, a namespace and an job_name")
@@ -40,7 +40,7 @@ defmodule Lenra.Kubernetes.Status do
     case check_job_status(state) do
       :success -> check_and_update_build_status(state[:build_id], :success)
       :failure -> check_and_update_build_status(state[:build_id], :failure)
-      :running -> GenServer.call({:global, {Status, state[:build_id]}}, :check)
+      :running -> GenServer.call({:global, {__MODULE__, state[:build_id]}}, :check)
     end
 
     {:noreply, state}
