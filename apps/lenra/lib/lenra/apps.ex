@@ -234,7 +234,7 @@ defmodule Lenra.Apps do
 
     res =
       with {:ok, %App{} = app} <- fetch_app(app_id) do
-        %{inserted_build: %Build{} = build} =
+        {:ok, %{inserted_build: %Build{} = build}} =
           creator_id
           |> create_build(app.id, params)
           |> Repo.transaction()
