@@ -50,14 +50,35 @@ defmodule LenraWeb.AppAdapter do
   end
 
   @impl ApplicationRunner.Adapter
-  def resource_from_params(params) do
-    case HydraApi.check_token_and_get_subject(params["token"], "app:websocket") do
-      {:ok, subject, _resp} ->
-        {:ok, subject}
+  def resource_from_params(%{"token" => token} = params) do
+    case HydraApi.check_token_and_get_subject(token, "app:websocket") do
+      {:ok, user_id, resp} ->
+        case get_app_name(resp.body["client"], params) do
+          {:ok, app_name} ->
+            {:ok, user_id, app_name, ApplicationRunner.AppSocket.extract_context(params)}
+
+          error ->
+            error
+        end
 
       _error ->
         BusinessError.forbidden_tuple()
     end
+  end
+
+  def resource_from_params(_params) do
+    BusinessError.forbidden_tuple()
+  end
+
+  defp get_app_name(%{"metadata" => %{"environment_id" => env_id}}, _params) do
+    case Apps.fetch_app_for_env(env_id) do
+      {:ok, app} -> {:ok, app.service_name}
+      _ -> BusinessError.forbidden_tuple()
+    end
+  end
+
+  defp get_app_name(_resp, params) do
+    ApplicationRunner.AppSocket.extract_appname(params)
   end
 
   defp get_app(app_name) do
