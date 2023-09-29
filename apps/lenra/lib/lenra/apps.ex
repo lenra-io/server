@@ -472,7 +472,7 @@ defmodule Lenra.Apps do
       nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
 
       if length(nb_user_env_access) >= 3 do
-        BusinessError.subscription_required()
+        BusinessError.subscription_required_tuple()
       else
         create_user_env_access_transaction(env_id, email)
       end
