@@ -262,7 +262,7 @@ defmodule Lenra.Apps do
               BusinessError.pipeline_runner_unkown_service_tuple()
           end
 
-          build |> Build.changeset(%{"pipeline_id" => pipeline_id}) |> Repo.update()
+        build |> Build.changeset(%{"pipeline_id" => pipeline_id}) |> Repo.update()
       end
 
     Logger.debug("#{__MODULE__} create_build_and_trigger_pipeline exit with res #{inspect(res)}")
