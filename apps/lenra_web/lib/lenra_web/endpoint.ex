@@ -39,8 +39,7 @@ defmodule LenraWeb.Endpoint do
       headers: %{
         "Access-Control-Allow-Origin" => "http://localhost:10000",
         "Access-Control-Allow-Methods" => "GET, OPTIONS",
-        "Access-Control-Allow-Headers" =>
-          "Accept, Content-Type, X-Requested-With, X-CSRF-Token, Authorization",
+        "Access-Control-Allow-Headers" => "Accept, Content-Type, X-Requested-With, X-CSRF-Token, Authorization",
         "Access-Control-Allow-Credentials" => "true",
         "Access-Control-Max-Age" => "240"
       }

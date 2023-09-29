@@ -11,7 +11,7 @@ defmodule Lenra.OpenfaasServices do
 
   @min_scale_label "com.openfaas.scale.min"
   @max_scale_label "com.openfaas.scale.max"
-  @min_scale_default "0"
+  @min_scale_default "1"
 
   defp get_http_context do
     base_url = Application.fetch_env!(:lenra, :faas_url)
