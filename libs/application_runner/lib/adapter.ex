@@ -18,5 +18,5 @@ defmodule ApplicationRunner.Adapter do
   """
   @callback get_env_id(String.t()) :: number()
 
-  @callback resource_from_params(map()) :: {:ok, number} | {:error, any()}
+  @callback resource_from_params(map()) :: {:ok, number, any(), map()} | {:error, any()}
 end
