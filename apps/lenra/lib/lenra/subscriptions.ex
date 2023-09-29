@@ -14,22 +14,13 @@ defmodule Lenra.Subscriptions do
   require Logger
 
   def get_subscription_by_app_id(application_id) do
-    subscription =
-      Repo.one(
-        from(s in Subscription,
-          where:
-            s.application_id == ^application_id and s.end_date >= ^Date.utc_today() and
-              s.start_date <= ^Date.utc_today()
-        )
+    Repo.one(
+      from(s in Subscription,
+        where:
+          s.application_id == ^application_id and s.end_date >= ^Date.utc_today() and
+            s.start_date <= ^Date.utc_today()
       )
-
-    case subscription do
-      nil ->
-        BusinessError.subscription_required_tuple()
-
-      subscription ->
-        subscription
-    end
+    )
   end
 
   def get_customer_portal_url(user) do
@@ -86,22 +77,26 @@ defmodule Lenra.Subscriptions do
         },
         app
       ) do
-    "#{app.id}"
-    |> Stripe.Product.retrieve()
-    |> case do
-      {:ok, %Stripe.Product{} = product} ->
-        handle_create_session(plan, success_url, cancel_url, product.id, customer, app.id)
+    if get_subscription_by_app_id(app.id) != nil do
+      BusinessError.subscription_already_exist_tuple()
+    else
+      "#{app.id}"
+      |> Stripe.Product.retrieve()
+      |> case do
+        {:ok, %Stripe.Product{} = product} ->
+          handle_create_session(plan, success_url, cancel_url, product.id, customer, app.id)
 
-      {:error, _} ->
-        product_id = create_product(app.id, app.name)
-        handle_create_session(plan, success_url, cancel_url, product_id, customer, app.id)
-    end
-    |> case do
-      {:ok, session} ->
-        session.url
+        {:error, _} ->
+          product_id = create_product(app.id, app.name)
+          handle_create_session(plan, success_url, cancel_url, product_id, customer, app.id)
+      end
+      |> case do
+        {:ok, session} ->
+          session.url
 
-      {:error, error} ->
-        BusinessError.stripe_error(error)
+        {:error, error} ->
+          BusinessError.stripe_error(error)
+      end
     end
   end
 
