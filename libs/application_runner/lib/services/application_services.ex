@@ -287,7 +287,7 @@ defmodule ApplicationRunner.ApplicationServices do
           app
           |> Map.put(:service, function_name)
           |> Map.put(:labels, Map.merge(Map.get(app, :labels, %{}), labels))
-          |> Map.delete(:imagePullSecrets)
+          |> Map.delete(:secrets)
 
         body = Jason.encode!(app)
 
