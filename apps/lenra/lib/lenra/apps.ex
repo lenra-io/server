@@ -19,7 +19,8 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
-  alias Lenra.Kubernetes.StatusDynSup
+  alias ApplicationRunner.ApplicationServices
+
   alias Lenra.Repo
   alias Lenra.Subscriptions
 
@@ -387,7 +388,7 @@ defmodule Lenra.Apps do
           end)
           |> Repo.transaction()
 
-        ApplicationServices.stop_app('#{OpenfaasServices.get_function_name(service_name, build_number)}')
+        ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
         transaction
 
       # Function not found in openfaas, 2 retry (10s),
