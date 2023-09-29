@@ -57,7 +57,7 @@ defmodule LenraWeb.AppAdapter do
            HydraApi.check_token_and_get_subject(token, "app:websocket"),
          user_id = String.to_integer(subject),
          {:ok, resp} <- HydraApi.get_hydra_client(client_id),
-         {:ok, app_name} <- get_app_name(resp["body"], params) do
+         {:ok, app_name} <- get_app_name(resp.body, params) do
       {:ok, user_id, app_name, ApplicationRunner.AppSocket.extract_context(params)}
     else
       error ->
