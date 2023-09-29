@@ -21,6 +21,6 @@ defmodule ApplicationRunner.FakeAppAdapter do
 
   @impl ApplicationRunner.Adapter
   def resource_from_params(_params) do
-    {:ok, 1}
+    {:ok, 1, "name", %{}}
   end
 end
