@@ -53,7 +53,7 @@ defmodule LenraWeb.AppAdapter do
   def resource_from_params(%{"token" => token} = params) do
     case HydraApi.check_token_and_get_subject(token, "app:websocket") do
       {:ok, user_id, resp} ->
-        case get_app_name(resp.body["client"], params) do
+        case get_app_name(resp["client"], params) do
           {:ok, app_name} ->
             {:ok, user_id, app_name, ApplicationRunner.AppSocket.extract_context(params)}
 
