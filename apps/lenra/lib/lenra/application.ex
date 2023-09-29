@@ -60,9 +60,10 @@ defmodule Lenra.Application do
            end},
         id: :finch_gitlab_http
       ),
-      {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
-      Lenra.Kubernetes.StatusDynSup,
-      {Lenra.Kubernetes.StatusTask, []}
+      {Cluster.Supervisor,
+       [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
+      Kubernetes.StatusDynSup,
+      {Kubernetes.StatusTask, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
