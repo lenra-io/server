@@ -70,7 +70,7 @@ defmodule LenraWeb.AppAdapter do
     BusinessError.forbidden_tuple()
   end
 
-  defp get_app_name(%{"metadata" => %{"environment_id" => env_id}}, _params) when not is_nil(env_id) do
+  defp get_app_name(%{"metadata" => %{"environment_id" => env_id}}, _params) when not is_integer(env_id) do
     case Apps.fetch_app_for_env(env_id) do
       {:ok, app} -> {:ok, app.service_name}
       _error -> BusinessError.forbidden_tuple()
