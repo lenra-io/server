@@ -29,7 +29,7 @@ defmodule Lenra.Apps.DeploymentTest do
 
     app = Enum.at(Repo.all(App), 0)
 
-    Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+    Apps.create_build_and_deploy(app.creator_id, app.id, %{
       commit_hash: "abcdef"
     })
 

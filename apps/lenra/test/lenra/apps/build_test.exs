@@ -36,7 +36,7 @@ defmodule Lenra.Apps.BuildTest do
     end
 
     test "existing build", %{app: app} do
-      Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+      Apps.create_build_and_deploy(app.creator_id, app.id, %{
         commit_hash: "abcdef"
       })
 
@@ -46,7 +46,7 @@ defmodule Lenra.Apps.BuildTest do
     end
 
     test "and check that pipeline_id is properly set", %{app: app} do
-      Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+      Apps.create_build_and_deploy(app.creator_id, app.id, %{
         commit_hash: "abcdef"
       })
 
@@ -58,7 +58,7 @@ defmodule Lenra.Apps.BuildTest do
 
   describe("get by") do
     test "build_number", %{app: app} do
-      Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+      Apps.create_build_and_deploy(app.creator_id, app.id, %{
         commit_hash: "abcdef"
       })
 
@@ -69,13 +69,13 @@ defmodule Lenra.Apps.BuildTest do
   describe "create" do
     test "build but invalid params", %{app: app} do
       assert {:error, :inserted_build, _failed_value, _changes_so_far} =
-               Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+               Apps.create_build_and_deploy(app.creator_id, app.id, %{
                  commit_hash: 12
                })
     end
 
     test "build successfully", %{app: app} do
-      Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+      Apps.create_build_and_deploy(app.creator_id, app.id, %{
         commit_hash: "abcdef"
       })
 
@@ -88,7 +88,7 @@ defmodule Lenra.Apps.BuildTest do
   describe "update" do
     test "build successfully", %{app: app} do
       {:ok, %{inserted_build: build}} =
-        Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+        Apps.create_build_and_deploy(app.creator_id, app.id, %{
           commit_hash: "abcdef"
         })
 

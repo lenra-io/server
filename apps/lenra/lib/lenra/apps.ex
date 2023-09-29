@@ -8,7 +8,7 @@ defmodule Lenra.Apps do
     This associated Environment is used by default to deploy a build.
     An app can only have one "MainEnv"
 
-    When we create a new build with create_build_and_trigger_pipeline/3 :
+    When we create a new build with create_build_and_deploy/3 :
     First a new build is inserted in the database.
     Then, the Gitlab pipeline is triggered to create the docker image associated with the build.
     When the pipeline end (success or failure) we can update the build to change the status.
@@ -233,7 +233,7 @@ defmodule Lenra.Apps do
 
   def trigger_pipeline(build, app_id, params) do
     Logger.debug(
-      "#{__MODULE__} create_build_and_trigger_pipeline with params #{inspect(%{build: build, app_id: app_id, params: params})}"
+      "#{__MODULE__} create_build_and_deploy with params #{inspect(%{build: build, app_id: app_id, params: params})}"
     )
 
     res =
@@ -265,7 +265,7 @@ defmodule Lenra.Apps do
         build |> Build.changeset(%{"pipeline_id" => pipeline_id}) |> Repo.update()
       end
 
-    Logger.debug("#{__MODULE__} create_build_and_trigger_pipeline exit with res #{inspect(res)}")
+    Logger.debug("#{__MODULE__} create_build_and_deploy exit with res #{inspect(res)}")
 
     res
   end
