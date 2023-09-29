@@ -10,6 +10,8 @@ defmodule LenraWeb.AppAdapter do
   alias Lenra.Apps.{App, Environment, MainEnv}
   alias Lenra.Errors.BusinessError
 
+  require Logger
+
   @impl ApplicationRunner.Adapter
   def allow(user_id, app_name) do
     with %App{} = app <- get_app(app_name),
@@ -51,19 +53,15 @@ defmodule LenraWeb.AppAdapter do
 
   @impl ApplicationRunner.Adapter
   def resource_from_params(%{"token" => token} = params) do
-    case HydraApi.check_token_and_get_subject(token, "app:websocket") do
-      {:ok, subject, resp} ->
-        user_id = String.to_integer(subject)
-
-        case get_app_name(resp["client"], params) do
-          {:ok, app_name} ->
-            {:ok, user_id, app_name, ApplicationRunner.AppSocket.extract_context(params)}
-
-          error ->
-            error
-        end
-
-      _error ->
+    with {:ok, subject, %{"client_id" => client_id}} <-
+           HydraApi.check_token_and_get_subject(token, "app:websocket"),
+         user_id = String.to_integer(subject),
+         {:ok, resp} <- HydraApi.get_hydra_client(client_id),
+         {:ok, app_name} <- get_app_name(resp["body"], params) do
+      {:ok, user_id, app_name, ApplicationRunner.AppSocket.extract_context(params)}
+    else
+      error ->
+        Logger.error(error)
         BusinessError.forbidden_tuple()
     end
   end
