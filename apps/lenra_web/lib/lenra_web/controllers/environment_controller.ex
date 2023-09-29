@@ -1,11 +1,11 @@
 defmodule LenraWeb.EnvsController do
-  alias Lenra.Errors.BusinessError
   use LenraWeb, :controller
 
   use LenraWeb.Policy,
     module: LenraWeb.EnvsController.Policy
 
   alias Lenra.Apps
+  alias Lenra.Errors.BusinessError
   alias alias Lenra.Subscriptions
   alias Lenra.Subscriptions.Subscription
 
