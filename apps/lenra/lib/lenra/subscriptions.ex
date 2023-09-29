@@ -77,22 +77,26 @@ defmodule Lenra.Subscriptions do
         },
         app
       ) do
-    "#{app.id}"
-    |> Stripe.Product.retrieve()
-    |> case do
-      {:ok, %Stripe.Product{} = product} ->
-        handle_create_session(plan, success_url, cancel_url, product.id, customer, app.id)
+    if get_subscription_by_app_id(app.id) != nil do
+      BusinessError.subscription_already_exist_tuple()
+    else
+      "#{app.id}"
+      |> Stripe.Product.retrieve()
+      |> case do
+        {:ok, %Stripe.Product{} = product} ->
+          handle_create_session(plan, success_url, cancel_url, product.id, customer, app.id)
 
-      {:error, _} ->
-        product_id = create_product(app.id, app.name)
-        handle_create_session(plan, success_url, cancel_url, product_id, customer, app.id)
-    end
-    |> case do
-      {:ok, session} ->
-        session.url
+        {:error, _} ->
+          product_id = create_product(app.id, app.name)
+          handle_create_session(plan, success_url, cancel_url, product_id, customer, app.id)
+      end
+      |> case do
+        {:ok, session} ->
+          session.url
 
-      {:error, error} ->
-        BusinessError.stripe_error(error)
+        {:error, error} ->
+          BusinessError.stripe_error(error)
+      end
     end
   end
 
