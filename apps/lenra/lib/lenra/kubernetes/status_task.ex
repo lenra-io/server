@@ -1,4 +1,6 @@
 defmodule Lenra.Kubernetes.StatusTask do
+  @moduledoc false
+
   use Task
 
   alias Lenra.Kubernetes
@@ -8,12 +10,10 @@ defmodule Lenra.Kubernetes.StatusTask do
   end
 
   def run do
-    try do
-      Kubernetes.StatusDynSup.init_status()
-      {:ok, []}
-    catch
-      _error ->
-        {:error, :init_status_failed}
-    end
+    Kubernetes.StatusDynSup.init_status()
+    {:ok, []}
+  catch
+    _error ->
+      {:error, :init_status_failed}
   end
 end
