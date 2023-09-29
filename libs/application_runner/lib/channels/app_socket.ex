@@ -43,8 +43,7 @@ defmodule ApplicationRunner.AppSocket do
       # performing token verification on connect.
       @impl true
       def connect(params, socket, _connect_info) do
-        with {:ok, app_name, context} <- ApplicationRunner.AppSocket.extract_params(params),
-             {:ok, user_id} <- @adapter_mod.resource_from_params(params),
+        with {:ok, user_id, app_name, context} <- @adapter_mod.resource_from_params(params),
              :ok <- @adapter_mod.allow(user_id, app_name),
              {:ok, env_metadata, session_metadata} <-
                ApplicationRunner.AppSocket.create_metadatas(
@@ -144,14 +143,14 @@ defmodule ApplicationRunner.AppSocket do
     end
   end
 
-  defp extract_context(params) do
+  def extract_context(params) do
     case Map.get(params, "context", %{}) do
       res when is_map(res) -> res
       _not_map -> %{}
     end
   end
 
-  defp extract_appname(params) do
+  def extract_appname(params) do
     app_name = Map.get(params, "app")
 
     if is_nil(app_name) do
