@@ -47,7 +47,7 @@ defmodule Lenra.OpenfaasServices do
         },
         "labels" => %{
           @min_scale_label => @min_scale_default,
-          @max_scale_label => replicas
+          @max_scale_label => "#{replicas}"
         }
       })
 
