@@ -13,7 +13,22 @@ defmodule Lenra.Kubernetes.StatusDynSup do
   require Logger
 
   def start_link(opts) do
-    DynamicSupervisor.start_link(__MODULE__, opts, name: {:via, :swarm, __MODULE__})
+    res =
+      case DynamicSupervisor.start_link(__MODULE__, opts, name: {:global, __MODULE__}) do
+        {:ok, pid} ->
+          {:ok, pid}
+
+        {:error, {:already_started, pid}} ->
+          Process.link(pid)
+          {:ok, pid}
+
+        error ->
+          error
+      end
+
+    Logger.debug("#{__MODULE__} start_link exit with #{inspect(res)}")
+
+    res
   end
 
   @impl true
@@ -28,7 +43,7 @@ defmodule Lenra.Kubernetes.StatusDynSup do
     case start_child(build_id, namespace, job_name) do
       {:ok, pid} ->
         Logger.info("Lenra.Kubernetes.Status started")
-        Process.send_after(pid, :check, 10_000)
+        GenServer.call({:global, {Status, build_id}}, :check)
         {:ok, pid}
 
       {:error, {:already_started, pid}} ->
@@ -47,7 +62,7 @@ defmodule Lenra.Kubernetes.StatusDynSup do
       job_name: job_name
     ]
 
-    DynamicSupervisor.start_child({:via, :swarm, __MODULE__}, {Status, init_value})
+    DynamicSupervisor.start_child({:global, __MODULE__}, {Status, init_value})
   end
 
   def init_status do

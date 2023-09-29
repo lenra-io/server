@@ -58,7 +58,9 @@ if config_env() == :prod do
     kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build"),
     kubernetes_build_scripts: System.get_env("KUBERNETES_BUILD_SCRIPTS", "lenra-build-scripts"),
     kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra-build-secret"),
-    stripe_coupon: System.get_env("STRIPE_COUPON")
+    stripe_coupon: System.get_env("STRIPE_COUPON"),
+    stripe_secret: System.get_env("STRIPE_SECRET"),
+    webhook_secret: System.get_env("WEBHOOK_SECRET")
 
   config :application_runner,
     internal_api_url: "http://" <> System.fetch_env!("API_ENDPOINT") <> ":" <> System.fetch_env!("PORT"),
@@ -72,7 +74,7 @@ if config_env() == :prod do
     env: System.fetch_env!("ENVIRONMENT"),
     scale_to_zero: System.get_env("SCALE_TO_ZERO", "true") == "true"
 
-  config :stripity_stripe, api_key: System.get_env("STRIPE_API_KEY")
+  config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET")
 
   config :application_runner, ApplicationRunner.Repo,
     username: System.fetch_env!("POSTGRES_USER"),

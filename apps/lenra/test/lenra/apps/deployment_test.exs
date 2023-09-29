@@ -29,7 +29,7 @@ defmodule Lenra.Apps.DeploymentTest do
 
     app = Enum.at(Repo.all(App), 0)
 
-    Apps.create_build_and_trigger_pipeline(app.creator_id, app.id, %{
+    Apps.create_build_and_deploy(app.creator_id, app.id, %{
       commit_hash: "abcdef"
     })
 
@@ -72,11 +72,12 @@ defmodule Lenra.Apps.DeploymentTest do
           icon: "60189"
         })
 
+      deployment_count = Enum.count(Repo.all(Deployment))
+
       build = Enum.at(Repo.all(Build), 0)
       error = Apps.create_deployment(wrong_env.id, build.id, app.creator_id)
-
       assert {:error, :inserted_deployment, _failed_value, _changes_so_far} = error
-      assert nil == Enum.at(Repo.all(Deployment), 0)
+      assert deployment_count == Enum.count(Repo.all(Deployment))
     end
   end
 end

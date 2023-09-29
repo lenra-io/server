@@ -8,7 +8,7 @@ defmodule Lenra.Apps do
     This associated Environment is used by default to deploy a build.
     An app can only have one "MainEnv"
 
-    When we create a new build with create_build_and_trigger_pipeline/3 :
+    When we create a new build with create_build_and_deploy/3 :
     First a new build is inserted in the database.
     Then, the Gitlab pipeline is triggered to create the docker image associated with the build.
     When the pipeline end (success or failure) we can update the build to change the status.
@@ -19,7 +19,8 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
-  alias Lenra.Kubernetes.StatusDynSup
+  alias ApplicationRunner.ApplicationServices
+
   alias Lenra.Repo
   alias Lenra.Subscriptions
 
@@ -206,11 +207,13 @@ defmodule Lenra.Apps do
 
     with {:ok, %App{} = app} <- fetch_app(app_id),
          preloaded_app <- Repo.preload(app, :main_env),
-         {:ok, %{inserted_build: inserted_build}} <-
-           create_build_and_trigger_pipeline(creator_id, app_id, params) do
+         {:ok, %{inserted_build: %Build{} = build}} <-
+           creator_id
+           |> create_build(app.id, params)
+           |> Repo.transaction() do
       case create_deployment(
              preloaded_app.main_env.environment_id,
-             inserted_build.id,
+             build.id,
              creator_id,
              params
            ) do
@@ -222,23 +225,21 @@ defmodule Lenra.Apps do
         _res ->
           Logger.debug("#{__MODULE__} create_build_and_deploy exit successfully")
 
-          {:ok, %{inserted_build: inserted_build}}
+          trigger_pipeline(build, app_id, params)
+
+          {:ok, %{inserted_build: build}}
       end
     end
   end
 
-  def create_build_and_trigger_pipeline(creator_id, app_id, params) do
+  def trigger_pipeline(build, app_id, params) do
     Logger.debug(
-      "#{__MODULE__} create_build_and_trigger_pipeline with params #{inspect(%{creator_id: creator_id, app_id: app_id, params: params})}"
+      "#{__MODULE__} create_build_and_deploy with params #{inspect(%{build: build, app_id: app_id, params: params})}"
     )
 
     res =
       with {:ok, %App{} = app} <- fetch_app(app_id) do
-        creator_id
-        |> create_build(app.id, params)
-        |> Ecto.Multi.run(:gitlab_pipeline, fn _repo, %{inserted_build: %Build{} = build} ->
-          # If pipeline_runner env var is "kubernetes" then use `KubernetesApiService.create_pipeline`,
-          # if not, use `GitlabApiService.create_pipeline`
+        {:ok, %{"id" => pipeline_id}} =
           case String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) do
             "gitlab" ->
               GitlabApiServices.create_pipeline(
@@ -261,12 +262,11 @@ defmodule Lenra.Apps do
             _anything ->
               BusinessError.pipeline_runner_unkown_service_tuple()
           end
-        end)
-        |> update_build_after_pipeline()
-        |> Repo.transaction()
+
+        build |> Build.changeset(%{"pipeline_id" => pipeline_id}) |> Repo.update()
       end
 
-    Logger.debug("#{__MODULE__} create_build_and_trigger_pipeline exit with res #{inspect(res)}")
+    Logger.debug("#{__MODULE__} create_build_and_deploy exit with res #{inspect(res)}")
 
     res
   end
@@ -375,17 +375,21 @@ defmodule Lenra.Apps do
       when retry <= 120 do
     case OpenfaasServices.is_deploy(service_name, build_number) do
       true ->
-        Ecto.Multi.new()
-        |> Ecto.Multi.update(
-          :updated_deployment,
-          Ecto.Changeset.change(deployment, status: :success)
-        )
-        |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
-          env
-          |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
-          |> Repo.update()
-        end)
-        |> Repo.transaction()
+        transaction =
+          Ecto.Multi.new()
+          |> Ecto.Multi.update(
+            :updated_deployment,
+            Ecto.Changeset.change(deployment, status: :success)
+          )
+          |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
+            env
+            |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
+            |> Repo.update()
+          end)
+          |> Repo.transaction()
+
+        ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
+        transaction
 
       # Function not found in openfaas, 2 retry (10s),
       # To let openfaas deploy in case of overload, after 2 retry -> failure
@@ -469,7 +473,7 @@ defmodule Lenra.Apps do
       nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
 
       if length(nb_user_env_access) >= 3 do
-        BusinessError.subscription_required()
+        BusinessError.subscription_required_tuple()
       else
         create_user_env_access_transaction(env_id, email)
       end

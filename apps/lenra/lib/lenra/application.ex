@@ -61,7 +61,8 @@ defmodule Lenra.Application do
         id: :finch_gitlab_http
       ),
       {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
-      Lenra.Kubernetes.StatusDynSup
+      Kubernetes.StatusDynSup,
+      {Kubernetes.StatusTask, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -72,7 +73,6 @@ defmodule Lenra.Application do
     res = Supervisor.start_link(children, opts)
     Lenra.Seeds.run()
     Logger.info("Lenra Supervisor Started")
-    Kubernetes.StatusDynSup.init_status()
     res
   end
 end

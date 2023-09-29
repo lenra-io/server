@@ -3,7 +3,6 @@ defmodule Lenra.Kubernetes.Status do
     Lenra.Kubernetes.Status check status for kubernetes build
   """
   use GenServer
-  use SwarmNamed
 
   alias Lenra.Apps.Build
   alias LenraCommon.Errors.DevError
@@ -17,7 +16,13 @@ defmodule Lenra.Kubernetes.Status do
   def start_link(opts) do
     case Keyword.fetch(opts, :build_id) do
       {:ok, build_id} ->
-        GenServer.start_link(__MODULE__, opts, name: get_full_name({build_id}))
+        res = GenServer.start_link(__MODULE__, opts, name: {:global, {__MODULE__, build_id}})
+
+        Logger.debug(
+          "#{__MODULE__} start_link exit with #{inspect(res)} ans name #{inspect({:global, {__MODULE__, build_id}})}"
+        )
+
+        res
 
       :error ->
         raise DevError.exception(message: "Status need a build_id, a namespace and an job_name")
@@ -30,6 +35,11 @@ defmodule Lenra.Kubernetes.Status do
     {:ok, job_name} = Keyword.fetch(init_arg, :job_name)
 
     {:ok, [build_id: build_id, namespace: namespace, job_name: job_name]}
+  end
+
+  def handle_call(:check, _from, state) do
+    Process.send_after(self(), :check, @check_delay)
+    {:reply, :ok, state}
   end
 
   def handle_info(:check, state) do
@@ -47,7 +57,7 @@ defmodule Lenra.Kubernetes.Status do
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
     kubernetes_api_token = Application.fetch_env!(:lenra, :kubernetes_api_token)
 
-    url = "#{kubernetes_api_url}/apis/batch/v1/namespaces/#{job[:namespace]}/jods/#{job[:job_name]}/status"
+    url = "#{kubernetes_api_url}/apis/batch/v1/namespaces/#{job[:namespace]}/jobs/#{job[:job_name]}/status"
 
     headers = [{"Authorization", "Bearer #{kubernetes_api_token}"}]
 

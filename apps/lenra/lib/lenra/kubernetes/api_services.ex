@@ -68,10 +68,33 @@ defmodule Lenra.Kubernetes.ApiServices do
         }
       })
 
-    {:ok, _} =
+    secret_response =
       Finch.build(:post, secrets_url, headers, secret_body)
       |> Finch.request(PipelineHttp)
-      |> response()
+      |> response(:secret)
+
+    case secret_response do
+      {:ok, _} ->
+        :ok
+
+      :secret_exist ->
+        Finch.build(:delete, secrets_url <> "/#{build_name}", headers)
+        |> Finch.request(PipelineHttp)
+        |> response(:secret)
+
+        if retry < 1 do
+          create_pipeline(
+            service_name,
+            app_repository,
+            app_repository_branch,
+            build_id,
+            build_number,
+            retry + 1
+          )
+        else
+          set_fail(build_id)
+        end
+    end
 
     body =
       Jason.encode!(%{
@@ -207,29 +230,11 @@ defmodule Lenra.Kubernetes.ApiServices do
     response =
       Finch.build(:post, jobs_url, headers, body)
       |> Finch.request(PipelineHttp)
-      |> response()
+      |> response(:build)
 
     case response do
       {:ok, _data} = response ->
         response
-
-      :secret_exist ->
-        Finch.build(:delete, secrets_url <> "/build_name", headers)
-        |> Finch.request(PipelineHttp)
-        |> response()
-
-        if retry < 1 do
-          create_pipeline(
-            service_name,
-            app_repository,
-            app_repository_branch,
-            build_id,
-            build_number,
-            retry + 1
-          )
-        else
-          set_fail(build_id)
-        end
 
       _error ->
         set_fail(build_id)
@@ -245,21 +250,26 @@ defmodule Lenra.Kubernetes.ApiServices do
     deployment = Repo.get_by(Deployment, build_id: build_id)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:build, Apps.update_build(build, %{status: :failure}))
+    |> Ecto.Multi.update(:build, Build.update(build, %{status: :failure}))
     |> Ecto.Multi.update(
       :deployment,
-      Apps.update_deployement(deployment, %{status: :failure})
+      Ecto.Changeset.change(deployment, %{status: :failure})
     )
     |> Repo.transaction()
   end
 
-  defp response({:ok, %Finch.Response{status: status_code, body: body}})
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, :secret)
+       when status_code in [200, 201, 202] do
+    {:ok, Jason.decode!(body)}
+  end
+
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, :build)
        when status_code in [200, 201, 202] do
     %{"metadata" => %{"name" => name}} = Jason.decode!(body)
     {:ok, %{"id" => name}}
   end
 
-  defp response({:error, %Mint.TransportError{reason: reason}}) do
+  defp response({:error, %Mint.TransportError{reason: reason}}, _atom) do
     raise "Kubernetes API could not be reached. It should not happen. #{reason}"
   end
 
@@ -267,13 +277,14 @@ defmodule Lenra.Kubernetes.ApiServices do
          {:ok,
           %Finch.Response{
             status: status_code
-          }}
+          }},
+         _atom
        )
        when status_code in [409] do
     :secret_exist
   end
 
-  defp response({:ok, %Finch.Response{status: status_code, body: body}}) do
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, _atom) do
     Logger.critical("#{__MODULE__} kubernetes return status code #{status_code} with message #{inspect(body)}")
 
     {:error, :kubernetes_error}

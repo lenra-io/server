@@ -268,7 +268,7 @@ defmodule ApplicationRunner.ApplicationServices do
       url,
       headers
     )
-    |> Finch.request(AppHttp, receive_timeout: 1000)
+    |> Finch.request(AppHttp, receive_timeout: 5000)
     |> response(:get_app)
   end
 
@@ -283,12 +283,20 @@ defmodule ApplicationRunner.ApplicationServices do
 
     case get_app_status(function_name) do
       {:ok, app} ->
-        app =
-          app
-          |> Map.put(:service, function_name)
-          |> Map.put(:labels, Map.merge(Map.get(app, :labels, %{}), labels))
-
-        body = Jason.encode!(app)
+        body =
+          Jason.encode!(%{
+            "image" => app["image"],
+            "service" => function_name,
+            "limits" => %{
+              "memory" => "256Mi",
+              "cpu" => "100m"
+            },
+            "requests" => %{
+              "memory" => "128Mi",
+              "cpu" => "50m"
+            },
+            "labels" => Map.merge(Map.get(app, :labels, %{}), labels)
+          })
 
         Logger.debug("Set Openfaas application #{function_name} labels \n#{inspect(labels)}")
 
@@ -298,7 +306,7 @@ defmodule ApplicationRunner.ApplicationServices do
           headers,
           body
         )
-        |> Finch.request(AppHttp, receive_timeout: 1000)
+        |> Finch.request(AppHttp, receive_timeout: 5000)
         |> response(:update_app)
 
       _ ->

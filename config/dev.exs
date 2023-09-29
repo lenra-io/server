@@ -102,7 +102,7 @@ config :lenra,
   stripe_secret: System.get_env("STRIPE_SECRET"),
   webhook_secret: System.get_env("WEBHOOK_SECRET")
 
-config :stripity_stripe, api_key: System.get_env("STRIPE_API_KEY")
+config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET")
 
 config :lenra, Lenra.Mailer, sandbox: true, api_key: System.get_env("SENDGRID_API_KEY")
 
