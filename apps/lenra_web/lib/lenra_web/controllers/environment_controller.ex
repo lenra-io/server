@@ -5,6 +5,7 @@ defmodule LenraWeb.EnvsController do
     module: LenraWeb.EnvsController.Policy
 
   alias Lenra.Apps
+  alias Lenra.Errors.BusinessError
   alias alias Lenra.Subscriptions
   alias Lenra.Subscriptions.Subscription
 
@@ -39,6 +40,9 @@ defmodule LenraWeb.EnvsController do
          {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
       conn
       |> reply(env)
+    else
+      nil -> BusinessError.subscription_required_tuple()
+      error -> error
     end
   end
 
