@@ -38,11 +38,11 @@ defmodule Lenra.OpenfaasServices do
         "service" => get_function_name(service_name, build_number),
         "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
         "limits" => %{
-          "memory" => "256Mi",
+          "memory" => "384Mi",
           "cpu" => "100m"
         },
         "requests" => %{
-          "memory" => "128Mi",
+          "memory" => "256Mi",
           "cpu" => "50m"
         },
         "labels" => %{
