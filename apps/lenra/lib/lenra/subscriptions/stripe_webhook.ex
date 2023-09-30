@@ -52,6 +52,8 @@ defmodule Lenra.StripeHandler do
         ApplicationServices.set_app_max_scale(function_name, 5)
       end
     end
+
+    :ok
   end
 
   @impl true
