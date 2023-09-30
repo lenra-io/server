@@ -33,6 +33,6 @@ defmodule Lenra.Errors.BusinessError do
        "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes])"},
       {:subscription_required, "You need a subscirption", 402},
       {:stripe_error, "Stripe error"},
-      {:subscription_already_exist, "You already have a subscription for this app"}
+      {:subscription_already_exist, "You already have a subscription for this app", 403}
     ]
 end
