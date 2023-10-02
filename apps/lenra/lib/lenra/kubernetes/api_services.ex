@@ -112,49 +112,6 @@ defmodule Lenra.Kubernetes.ApiServices do
               name: build_name
             },
             spec: %{
-              initContainers: [
-                %{
-                  name: "get-lenra",
-                  image: "alpine/curl",
-                  command: ["/bin/sh"],
-                  args: ["-c", "/tmp/lenra-scripts/get-lenra.sh"],
-                  imagePullPolicy: "IfNotPresent",
-                  volumeMounts: [
-                    %{
-                      mountPath: "/tmp/lenra",
-                      name: "lenra"
-                    },
-                    %{
-                      mountPath: "/tmp/lenra-scripts",
-                      name: "lenra-scripts"
-                    }
-                  ]
-                },
-                %{
-                  name: "get-app",
-                  image: "alpine/git",
-                  command: ["/bin/sh"],
-                  args: ["-c", "/tmp/lenra-scripts/get-app.sh"],
-                  envFrom: [
-                    %{
-                      secretRef: %{
-                        name: build_name
-                      }
-                    }
-                  ],
-                  imagePullPolicy: "IfNotPresent",
-                  volumeMounts: [
-                    %{
-                      mountPath: "/tmp/app",
-                      name: "app"
-                    },
-                    %{
-                      mountPath: "/tmp/lenra-scripts",
-                      name: "lenra-scripts"
-                    }
-                  ]
-                }
-              ],
               containers: [
                 %{
                   name: "build",
@@ -178,14 +135,6 @@ defmodule Lenra.Kubernetes.ApiServices do
                   imagePullPolicy: "IfNotPresent",
                   volumeMounts: [
                     %{
-                      mountPath: "/tmp/app",
-                      name: "app"
-                    },
-                    %{
-                      mountPath: "/tmp/lenra",
-                      name: "lenra"
-                    },
-                    %{
                       mountPath: "/tmp/lenra-scripts",
                       name: "lenra-scripts"
                     }
@@ -202,14 +151,6 @@ defmodule Lenra.Kubernetes.ApiServices do
                     # 0555
                     defaultMode: 365
                   }
-                },
-                %{
-                  name: "app",
-                  emptyDir: %{}
-                },
-                %{
-                  name: "lenra",
-                  emptyDir: %{}
                 }
               ]
             },
