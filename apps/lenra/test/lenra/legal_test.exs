@@ -97,7 +97,7 @@ defmodule Lenra.LegalTest do
 
       {:ok, cgs} =
         Repo.insert(
-          %{path: "test2.html", hash: "b", version: @next_cgs_version+1}
+          %{path: "test2.html", hash: "b", version: @next_cgs_version + 1}
           |> CGS.new()
           |> Ecto.Changeset.put_change(
             :inserted_at,

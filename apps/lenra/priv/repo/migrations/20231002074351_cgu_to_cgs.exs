@@ -16,8 +16,11 @@ defmodule Lenra.Repo.Migrations.CguToCgs do
     rename(table(:user_accept_cgu_versions), :cgu_id, to: :cgs_id)
     rename(table(:cgu), to: table(:cgs))
     rename(table(:user_accept_cgu_versions), to: table(:user_accept_cgs_versions))
-    execute "ALTER INDEX user_accept_cgu_versions_pkey RENAME TO user_accept_cgs_versions_pkey"
-    execute "ALTER TABLE user_accept_cgs_versions RENAME CONSTRAINT user_accept_cgu_versions_user_id_fkey TO user_accept_cgs_versions_user_id_fkey"
+    execute("ALTER INDEX user_accept_cgu_versions_pkey RENAME TO user_accept_cgs_versions_pkey")
+
+    execute(
+      "ALTER TABLE user_accept_cgs_versions RENAME CONSTRAINT user_accept_cgu_versions_user_id_fkey TO user_accept_cgs_versions_user_id_fkey"
+    )
 
     create(unique_index(:cgs, [:path]))
     create(unique_index(:cgs, [:hash]))
