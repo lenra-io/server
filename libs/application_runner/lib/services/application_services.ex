@@ -175,7 +175,7 @@ defmodule ApplicationRunner.ApplicationServices do
     %{
       "image" => image_name,
       "service" => function_name,
-      "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
+      "secrets" => Application.fetch_env!(:application_runner, :faas_secrets),
       "requests" => %{
         "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
         "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
