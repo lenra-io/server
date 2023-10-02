@@ -170,33 +170,47 @@ defmodule ApplicationRunner.ApplicationServices do
     |> response(:resource)
   end
 
+  @spec generate_function_object(String.t(), String.t(), map()) :: map()
+  def generate_function_object(function_name, image_name, labels) do
+    %{
+      "image" => image_name,
+      "service" => function_name,
+      "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
+      "requests" => %{
+        "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
+        "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
+      },
+      "limits" => %{
+        "cpu" => Application.fetch_env!(:application_runner, :faas_limit_cpu),
+        "memory" => Application.fetch_env!(:application_runner, :faas_limit_memory)
+      },
+      "labels" => labels
+    }
+  end
+
   @doc """
   Deploy an application to OpenFaaS.
   """
-  @spec deploy_app(String.t(), String.t()) :: :ok | {:error, struct} | {:ok, any}
-  def deploy_app(image_name, function_name) do
+  @spec deploy_app(String.t(), String.t(), integer()) :: :ok | {:error, struct} | {:ok, any}
+  def deploy_app(function_name, image_name, replicas) do
+    Logger.info("Deploy Openfaas application #{function_name} with image #{image_name}")
+
     {base_url, headers} = get_http_context()
 
     url = "#{base_url}/system/functions"
 
     body =
-      Jason.encode!(%{
-        "image" => image_name,
-        "service" => function_name,
-        "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
-        "requests" => %{
-          "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
-          "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
-        },
-        "limits" => %{
-          "cpu" => Application.fetch_env!(:application_runner, :faas_limit_cpu),
-          "memory" => Application.fetch_env!(:application_runner, :faas_limit_memory)
-        },
-        "labels" => %{
-          @min_scale_label => @min_scale_default,
-          @max_scale_label => @max_scale_default
-        }
-      })
+      Jason.encode!(
+        generate_function_object(
+          function_name,
+          image_name,
+          %{
+            @min_scale_label => @min_scale_default,
+            @max_scale_label => replicas,
+            @scale_factor_label => @scale_factor_default
+          }
+        )
+      )
 
     Logger.debug("Deploy Openfaas application \n#{url} : \n#{body}")
 
@@ -284,19 +298,13 @@ defmodule ApplicationRunner.ApplicationServices do
     case get_app_status(function_name) do
       {:ok, app} ->
         body =
-          Jason.encode!(%{
-            "image" => app["image"],
-            "service" => function_name,
-            "requests" => %{
-              "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
-              "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
-            },
-            "limits" => %{
-              "cpu" => Application.fetch_env!(:application_runner, :faas_limit_cpu),
-              "memory" => Application.fetch_env!(:application_runner, :faas_limit_memory)
-            },
-            "labels" => Map.merge(Map.get(app, :labels, %{}), labels)
-          })
+          Jason.encode!(
+            generate_function_object(
+              function_name,
+              app["image"],
+              Map.merge(Map.get(app, :labels, %{}), labels)
+            )
+          )
 
         Logger.debug("Set Openfaas application #{function_name} labels \n#{inspect(labels)}")
 

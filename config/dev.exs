@@ -102,7 +102,7 @@ config :lenra,
   stripe_secret: System.get_env("STRIPE_SECRET"),
   webhook_secret: System.get_env("WEBHOOK_SECRET")
 
-  config :application_runner,
+config :application_runner,
   faas_request_cpu: System.get_env("FAAS_REQUEST_CPU", "50m"),
   faas_request_memory: System.get_env("FAAS_REQUEST_MEMORY", "128Mi"),
   faas_limit_cpu: System.get_env("FAAS_LIMIT_CPU", "100m"),
