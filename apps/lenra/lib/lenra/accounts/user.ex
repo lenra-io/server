@@ -21,7 +21,7 @@ defmodule Lenra.Accounts.User do
     Environment
   }
 
-  alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
+  alias Lenra.Legal.{CGS, UserAcceptCGSVersion}
 
   @type t :: %__MODULE__{}
 
@@ -48,7 +48,7 @@ defmodule Lenra.Accounts.User do
     has_many(:environments, Environment, foreign_key: :creator_id)
     has_many(:deployments, Deployment, foreign_key: :publisher_id)
     many_to_many(:environments_accesses, Environment, join_through: UserEnvironmentAccess)
-    many_to_many(:cgus, CGU, join_through: UserAcceptCGUVersion)
+    many_to_many(:cgss, CGS, join_through: UserAcceptCGSVersion)
     timestamps()
   end
 

@@ -37,7 +37,7 @@ defmodule LenraWeb.RunnerControllerTest do
       {:ok, %{conn: conn!, app: app, build: build}}
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "set state failure", %{conn: conn, build: build} do
       conn =
         put(
@@ -51,7 +51,7 @@ defmodule LenraWeb.RunnerControllerTest do
       assert %{} = json_response(conn, 200)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "set state success", %{conn: conn, build: build} do
       FaasStub.create_faas_stub()
       |> FaasStub.expect_deploy_app_once(%{"ok" => "200"})
@@ -68,7 +68,7 @@ defmodule LenraWeb.RunnerControllerTest do
       assert %{} = json_response(conn, 200)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "set state non working", %{conn: conn, build: build} do
       conn =
         put(

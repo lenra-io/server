@@ -15,7 +15,7 @@ defmodule LenraWeb.DeploymentControllerTest do
   end
 
   describe "create" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "deployment controller authenticated", %{conn: conn!} do
       conn! =
         post(conn!, Routes.apps_path(conn!, :create), %{
@@ -51,7 +51,7 @@ defmodule LenraWeb.DeploymentControllerTest do
       assert [] != Repo.all(Deployment)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "deployment controller but wrong environment", %{conn: conn!} do
       conn! =
         post(conn!, Routes.apps_path(conn!, :create), %{

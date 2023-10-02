@@ -1,8 +1,8 @@
 defmodule Lenra.Legal do
   @moduledoc """
     This module handle all legal aspect for a user.
-    - CGU acceptation
-    - CGU creation
+    - CGS acceptation
+    - CGS creation
     - ...
   """
 
@@ -10,53 +10,53 @@ defmodule Lenra.Legal do
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
   alias Lenra.Legal
-  alias Lenra.Legal.{CGU, UserAcceptCGUVersion}
+  alias Lenra.Legal.{CGS, UserAcceptCGSVersion}
   alias Lenra.Repo
   alias Lenra.Utils
 
-  def get_latest_cgu do
-    cgu = get_latest_cgu_query() |> Repo.one()
+  def get_latest_cgs do
+    cgs = get_latest_cgs_query() |> Repo.one()
 
-    case cgu do
-      nil -> TechnicalError.cgu_not_found_tuple()
-      cgu -> {:ok, cgu}
+    case cgs do
+      nil -> TechnicalError.cgs_not_found_tuple()
+      cgs -> {:ok, cgs}
     end
   end
 
-  def user_accepted_latest_cgu?(user_id) do
-    latest_cgu = get_latest_cgu_query() |> select([c], c.id)
+  def user_accepted_latest_cgs?(user_id) do
+    latest_cgs = get_latest_cgs_query() |> select([c], c.id)
 
     with false <-
            Repo.exists?(
              from(
-               u in UserAcceptCGUVersion,
-               where: u.user_id == ^user_id and u.cgu_id in subquery(latest_cgu)
+               u in UserAcceptCGSVersion,
+               where: u.user_id == ^user_id and u.cgs_id in subquery(latest_cgs)
              )
            ) do
-      not Repo.exists?(latest_cgu)
+      not Repo.exists?(latest_cgs)
     end
   end
 
-  defp get_latest_cgu_query do
-    Ecto.Query.last(CGU, :inserted_at)
+  defp get_latest_cgs_query do
+    Ecto.Query.last(CGS, :inserted_at)
   end
 
-  def accept_cgu(cgu_id, user_id) do
+  def accept_cgs(cgs_id, user_id) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(
-      :accepted_cgu,
-      UserAcceptCGUVersion.new(%{cgu_id: cgu_id, user_id: user_id})
+      :accepted_cgs,
+      UserAcceptCGSVersion.new(%{cgs_id: cgs_id, user_id: user_id})
     )
     |> Repo.transaction()
   rescue
-    Postgrex.Error -> BusinessError.not_latest_cgu_tuple()
+    Postgrex.Error -> BusinessError.not_latest_cgs_tuple()
   end
 
-  def add_cgu(path, version) do
+  def add_cgs(path, version) do
     hash = to_string(Utils.hash_file(path, :sha256))
 
     %{path: path, version: version, hash: hash}
-    |> Legal.CGU.new()
+    |> Legal.CGS.new()
     |> Repo.insert(on_conflict: :nothing)
   end
 end

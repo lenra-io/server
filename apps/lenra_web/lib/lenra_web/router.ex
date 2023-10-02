@@ -16,8 +16,8 @@ defmodule LenraWeb.Router do
     plug(Plug.VerifyRunnerSecret)
   end
 
-  pipeline :ensure_cgu_accepted do
-    plug(Plug.VerifyCgu)
+  pipeline :ensure_cgs_accepted do
+    plug(Plug.VerifyCgs)
   end
 
   pipeline :scope_profile do
@@ -59,7 +59,7 @@ defmodule LenraWeb.Router do
   # /api, No scope needed
   scope "/api", LenraWeb do
     pipe_through([:api])
-    get("/cgu/latest", CguController, :get_latest_cgu)
+    get("/cgs/latest", CgsController, :get_latest_cgs)
     get("/apps/:app_service_name", AppsController, :get_app_by_service_name)
   end
 
@@ -69,16 +69,16 @@ defmodule LenraWeb.Router do
     get("/me", UserController, :current_user)
   end
 
-  # /api, scope "manage_account" without CGU needed
+  # /api, scope "manage_account" without CGS needed
   scope "/api", LenraWeb do
     pipe_through([:api, :scope_manage_account])
-    post("/cgu/:cgu_id/accept", CguController, :accept)
-    get("/cgu/me/accepted_latest", CguController, :user_accepted_latest_cgu)
+    post("/cgs/:cgs_id/accept", CgsController, :accept)
+    get("/cgs/me/accepted_latest", CgsController, :user_accepted_latest_cgs)
   end
 
-  # /api, scope "manage_account" WITH CGU needed
+  # /api, scope "manage_account" WITH CGS needed
   scope "/api", LenraWeb do
-    pipe_through([:api, :scope_manage_account, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_manage_account, :ensure_cgs_accepted])
     post("/verify", UserController, :validate_user)
     post("/verify/lost", UserController, :resend_registration_token)
 
@@ -89,17 +89,17 @@ defmodule LenraWeb.Router do
     post("/webhooks", WebhooksController, :api_create)
   end
 
-  # /api, scope "store" & CGU Accepted
+  # /api, scope "store" & CGS Accepted
   scope "/api", LenraWeb do
-    pipe_through([:api, :scope_store, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_store, :ensure_cgs_accepted])
 
     get("/me/apps", AppsController, :get_user_apps)
     get("/me/opened_apps", AppsController, :all_apps_user_opened)
   end
 
-  # /api/apps, scope "manage_apps" & CGU Accepted
+  # /api/apps, scope "manage_apps" & CGS Accepted
   scope "/api/apps", LenraWeb do
-    pipe_through([:api, :scope_manage_apps, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_manage_apps, :ensure_cgs_accepted])
 
     resources("/", AppsController, only: [:index, :create, :update, :delete])
 
@@ -123,7 +123,7 @@ defmodule LenraWeb.Router do
   end
 
   scope "/api/environments", LenraWeb do
-    pipe_through [:api, :scope_manage_apps, :ensure_cgu_accepted]
+    pipe_through [:api, :scope_manage_apps, :ensure_cgs_accepted]
     post("/:environment_id/oauth2", OAuth2Controller, :create)
     get("/:environment_id/oauth2", OAuth2Controller, :index)
     put("/:environment_id/oauth2/:client_id", OAuth2Controller, :update)
@@ -131,7 +131,7 @@ defmodule LenraWeb.Router do
   end
 
   scope "/api/stripe", LenraWeb do
-    pipe_through([:api, :scope_manage_account, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_manage_account, :ensure_cgs_accepted])
     post("/customers", StripeController, :customer_create)
     get("/subscriptions", StripeController, :index)
     post("/checkout", StripeController, :checkout_create)
@@ -140,7 +140,7 @@ defmodule LenraWeb.Router do
 
   # /api resources, scope "resources"
   scope "/api", LenraWeb do
-    pipe_through([:api, :scope_resources, :ensure_cgu_accepted])
+    pipe_through([:api, :scope_resources, :ensure_cgs_accepted])
     ApplicationRunner.Router.resource_route(ResourcesController)
   end
 

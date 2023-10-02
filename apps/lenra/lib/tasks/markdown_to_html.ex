@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Md2html do
 
   use Mix.Task
 
-  @head_html "<head><meta charset=\"utf-8\"><title>CGU</title></head>"
+  @head_html "<head><meta charset=\"utf-8\"><title>CGS</title></head>"
   @before_html "<!doctype html><html>"
   @after_html "</html>"
 

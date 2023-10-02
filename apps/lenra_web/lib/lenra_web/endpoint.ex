@@ -35,7 +35,7 @@ defmodule LenraWeb.Endpoint do
       at: "/web",
       from: :lenra_web,
       gzip: false,
-      only: ~w(html css fonts images js favicon.ico robots.txt cgu),
+      only: ~w(html css fonts images js favicon.ico robots.txt cgs),
       headers: %{
         "Access-Control-Allow-Origin" => "http://localhost:10000",
         "Access-Control-Allow-Methods" => "GET, OPTIONS",
@@ -49,7 +49,7 @@ defmodule LenraWeb.Endpoint do
       at: "/web",
       from: :lenra_web,
       gzip: false,
-      only: ~w(html css fonts images js favicon.ico robots.txt cgu)
+      only: ~w(html css fonts images js favicon.ico robots.txt cgs)
     )
   end
 

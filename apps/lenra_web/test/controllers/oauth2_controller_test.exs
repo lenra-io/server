@@ -73,7 +73,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
   end
 
   describe "create a new OAuth client" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Create a simple oauth client", %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
       route = Routes.o_auth2_path(conn, :create, env_id)
@@ -100,7 +100,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
              } = json_response(conn, 200)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Create a simple oauth client : Wrong scopes", %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
       route = Routes.o_auth2_path(conn, :create, env_id)
@@ -118,7 +118,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
                json_response(conn, 403)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Create a simple oauth client : Wrong redirect_uris",
          %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
@@ -139,7 +139,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
              } = json_response(conn, 400)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Create a simple oauth client : Wrong allowed_origins",
          %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
@@ -160,7 +160,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
              } = json_response(conn, 400)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Create a simple oauth client : Wrong name", %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
       route = Routes.o_auth2_path(conn, :create, env_id)
@@ -182,7 +182,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
   end
 
   describe "Get client details" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Get the oauth client", %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
       # Setup, create the client
@@ -216,7 +216,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
   end
 
   describe "Update oauth client" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Update the oauth client", %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
 
@@ -248,7 +248,7 @@ defmodule LenraWeb.OAuth2ControllerTest do
   end
 
   describe "Delete oauth client" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "Delete the oauth client", %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
 

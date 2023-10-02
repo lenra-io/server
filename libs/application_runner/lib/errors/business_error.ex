@@ -10,7 +10,7 @@ defmodule ApplicationRunner.Errors.BusinessError do
     errors: [
       {:env_not_started, "Environment not stated."},
       {:invalid_token, "Your token is invalid."},
-      {:did_not_accept_cgu, "You must accept the CGU to use Lenra"},
+      {:did_not_accept_cgs, "You must accept the CGS to use Lenra"},
       {:unknow_listener_code, "No listeners found for the given code"},
       {:session_not_started, "Session not started"},
       {:json_format_invalid, "JSON format invalid"},

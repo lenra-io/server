@@ -1,2 +1,2 @@
 import "../css/app.css"
-import "../css/cgu.css"
+import "../css/cgs.css"

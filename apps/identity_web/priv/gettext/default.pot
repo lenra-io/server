@@ -107,8 +107,8 @@ msgstr ""
 msgid "Enter your e-mail address and we'll take care of it."
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:27
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:27
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:27
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:27
 #, elixir-autogen, elixir-format
 msgid "I accept"
 msgstr ""
@@ -119,8 +119,8 @@ msgstr ""
 msgid "I didn't receive my token"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:26
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:26
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:26
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:26
 #, elixir-autogen, elixir-format
 msgid "I refuse and logout"
 msgstr ""
@@ -149,14 +149,14 @@ msgstr ""
 msgid "Reset your account password"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:12
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:12
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:12
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "See the english translated version"
 msgstr ""
 
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:10
-#: lib/identity_web/templates/user_auth/cgu-validation.html.heex:10
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:10
+#: lib/identity_web/templates/user_auth/cgs-validation.html.heex:10
 #, elixir-autogen, elixir-format
 msgid "See the french original version"
 msgstr ""

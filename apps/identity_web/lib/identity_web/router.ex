@@ -27,8 +27,8 @@ defmodule IdentityWeb.Router do
     get "/users/email/check", UserAuthController, :check_email_page
     post "/users/email/check", UserAuthController, :check_email_token
     post "/users/email/check/new", UserAuthController, :resend_check_email_token
-    get "/users/cgu/validation", UserAuthController, :validate_cgu_page
-    post "/users/cgu/validation", UserAuthController, :validate_cgu
+    get "/users/cgs/validation", UserAuthController, :validate_cgs_page
+    post "/users/cgs/validation", UserAuthController, :validate_cgs
     get "/users/password/lost", UserAuthController, :lost_password_enter_email
     post("/users/password/lost", UserAuthController, :send_lost_password_code)
     put("/users/password/lost", UserAuthController, :change_lost_password)

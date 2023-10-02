@@ -32,7 +32,7 @@ defmodule LenraWeb.AppsControllerTest do
              }
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "apps controller authenticated", %{conn: conn!} do
       conn! = create_app_test(conn!)
       assert %{} = json_response(conn!, 200)
@@ -55,7 +55,7 @@ defmodule LenraWeb.AppsControllerTest do
   end
 
   describe "create" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "apps controller authenticated", %{conn: conn} do
       conn = create_app_test(conn)
       assert app = json_response(conn, 200)
@@ -73,7 +73,7 @@ defmodule LenraWeb.AppsControllerTest do
              } = app
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "apps controller authenticated but incorrect params", %{conn: conn} do
       conn =
         post(conn, Routes.apps_path(conn, :create), %{
@@ -88,7 +88,7 @@ defmodule LenraWeb.AppsControllerTest do
   end
 
   describe "get user apps" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "apps controller authenticated", %{conn: conn} do
       conn = create_app_test(conn)
       assert %{} = json_response(conn, 200)
@@ -114,7 +114,7 @@ defmodule LenraWeb.AppsControllerTest do
   end
 
   describe "delete" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "apps controller authenticated", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
@@ -126,7 +126,7 @@ defmodule LenraWeb.AppsControllerTest do
       assert [] == Repo.all(App)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "apps controller authenticated but app does not exist", %{conn: conn!} do
       route = Routes.apps_path(conn!, :delete, "42")
 
@@ -136,28 +136,28 @@ defmodule LenraWeb.AppsControllerTest do
                json_response(conn!, 404)
     end
 
-    @tag auth_user_with_cgu: :user
+    @tag auth_user_with_cgs: :user
     test "create app user authenticated but not a dev or admin", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(conn!, 403)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "create app user authenticated and is a dev", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
       assert _data = json_response(conn!, 200)
     end
 
-    @tag auth_user_with_cgu: :admin
+    @tag auth_user_with_cgs: :admin
     test "create app user authenticated and is admin", %{conn: conn!} do
       conn! = create_app_test(conn!)
 
       assert _data = json_response(conn!, 200)
     end
 
-    @tag auth_users_with_cgu: [:dev, :dev]
+    @tag auth_users_with_cgs: [:dev, :dev]
     test "delete app not same user", %{users: [conn1!, conn2!]} do
       conn1! = create_app_test(conn1!)
 
@@ -171,7 +171,7 @@ defmodule LenraWeb.AppsControllerTest do
       assert %{} = json_response(conn1!, 200)
     end
 
-    @tag auth_users_with_cgu: [:dev, :admin]
+    @tag auth_users_with_cgs: [:dev, :admin]
     test "delete app not same user but is admin", %{users: [conn1, conn2]} do
       conn1 = create_app_test(conn1)
       assert app = json_response(conn1, 200)
@@ -182,7 +182,7 @@ defmodule LenraWeb.AppsControllerTest do
   end
 
   describe "all_apps_user_opened" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "but never opened apps", %{conn: conn} do
       conn = get(conn, Routes.apps_path(conn, :index))
 
@@ -194,7 +194,7 @@ defmodule LenraWeb.AppsControllerTest do
   end
 
   describe "get_app_by_id" do
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "should return app if user is the creator", %{conn: conn} do
       conn = create_app_test(conn)
       assert app = json_response(conn, 200)
@@ -205,7 +205,7 @@ defmodule LenraWeb.AppsControllerTest do
                json_response(conn!, 200)
     end
 
-    @tag auth_users_with_cgu: [:dev, :dev]
+    @tag auth_users_with_cgs: [:dev, :dev]
     test "should return app if user is not the creator", %{users: [conn1!, conn2!]} do
       conn1! = create_app_test(conn1!)
       assert app = json_response(conn1!, 200)
@@ -216,7 +216,7 @@ defmodule LenraWeb.AppsControllerTest do
                json_response(conn2!, 200)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "should return 404 if app does not exist", %{conn: conn} do
       conn = get(conn, Routes.apps_path(conn, :get_app_by_service_name, Ecto.UUID.generate()))
 

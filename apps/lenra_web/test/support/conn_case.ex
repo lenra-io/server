@@ -18,7 +18,7 @@ defmodule LenraWeb.ConnCase do
   use ExUnit.CaseTemplate
   alias Ecto.Adapters.SQL.Sandbox
   alias Lenra.Legal
-  alias Lenra.Legal.CGU
+  alias Lenra.Legal.CGS
 
   using do
     quote do
@@ -49,8 +49,8 @@ defmodule LenraWeb.ConnCase do
       |> add_hydra_introspect_stub()
       |> auth_user(tags)
       |> auth_users(tags)
-      |> auth_user_with_cgu(tags)
-      |> auth_users_with_cgu(tags)
+      |> auth_user_with_cgs(tags)
+      |> auth_users_with_cgs(tags)
 
     {:ok, map}
   end
@@ -92,9 +92,9 @@ defmodule LenraWeb.ConnCase do
     end
   end
 
-  defp auth_users_with_cgu(map, tags) do
-    case tags[:auth_users_with_cgu] do
-      roles when is_list(roles) -> Map.put(map, :users, auth_users_with_cgu(roles))
+  defp auth_users_with_cgs(map, tags) do
+    case tags[:auth_users_with_cgs] do
+      roles when is_list(roles) -> Map.put(map, :users, auth_users_with_cgs(roles))
       _roles -> Map.put(map, :users, [])
     end
   end
@@ -108,17 +108,17 @@ defmodule LenraWeb.ConnCase do
     end
   end
 
-  defp auth_user_with_cgu(%{conn: conn} = map, tags) do
-    case tags[:auth_user_with_cgu] do
+  defp auth_user_with_cgs(%{conn: conn} = map, tags) do
+    case tags[:auth_user_with_cgs] do
       false -> map
       nil -> map
-      true -> Map.put(map, :conn, auth_john_doe_with_cgu(conn))
-      role -> Map.put(map, :conn, auth_john_doe_with_cgu(conn, %{"role" => role}))
+      true -> Map.put(map, :conn, auth_john_doe_with_cgs(conn))
+      role -> Map.put(map, :conn, auth_john_doe_with_cgs(conn, %{"role" => role}))
     end
   end
 
-  defp auth_users_with_cgu(users_role) do
-    {:ok, cgu} = %{path: "latest", hash: "latesthash", version: 2} |> CGU.new() |> Lenra.Repo.insert()
+  defp auth_users_with_cgs(users_role) do
+    {:ok, cgs} = %{path: "latest", hash: "latesthash", version: 2} |> CGS.new() |> Lenra.Repo.insert()
 
     users_role
     |> Enum.with_index()
@@ -126,7 +126,7 @@ defmodule LenraWeb.ConnCase do
       conn = Phoenix.ConnTest.build_conn()
       {:ok, %{inserted_user: user}} = UserTestHelper.register_user_nb(idx, role)
 
-      Legal.accept_cgu(cgu.id, user.id)
+      Legal.accept_cgs(cgs.id, user.id)
       conn_user(conn, user)
     end)
   end
@@ -146,12 +146,12 @@ defmodule LenraWeb.ConnCase do
     conn_user(conn, user)
   end
 
-  defp auth_john_doe_with_cgu(conn, params \\ %{}) do
+  defp auth_john_doe_with_cgs(conn, params \\ %{}) do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(params)
 
-    {:ok, cgu} = %{path: "latest", hash: "latesthash", version: 2} |> CGU.new() |> Lenra.Repo.insert()
+    {:ok, cgs} = %{path: "latest", hash: "latesthash", version: 2} |> CGS.new() |> Lenra.Repo.insert()
 
-    Legal.accept_cgu(cgu.id, user.id)
+    Legal.accept_cgs(cgs.id, user.id)
     conn_user(conn, user)
   end
 

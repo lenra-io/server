@@ -18,7 +18,7 @@ defmodule IdentityWeb.UserAuthController do
 
   defp register_changeset_or_new(changeset), do: changeset
 
-  # Check if the user has already have a verified email and has accepted the latest CGU.
+  # Check if the user has already have a verified email and has accepted the latest CGS.
   defp redirect_next_step(conn, user) do
     remember = get_session(conn, :remember)
     login_challenge = get_session(conn, :login_challenge)
@@ -35,11 +35,11 @@ defmodule IdentityWeb.UserAuthController do
           to: Routes.user_auth_path(conn, :check_email_page)
         )
 
-      # check CGU update
-      !Lenra.Legal.user_accepted_latest_cgu?(user.id) ->
-        # redirect to CGU page
+      # check CGS update
+      !Lenra.Legal.user_accepted_latest_cgs?(user.id) ->
+        # redirect to CGS page
         redirect(conn,
-          to: Routes.user_auth_path(conn, :validate_cgu_page)
+          to: Routes.user_auth_path(conn, :validate_cgs_page)
         )
 
       # accept login
@@ -52,18 +52,18 @@ defmodule IdentityWeb.UserAuthController do
     end
   end
 
-  defp render_cgu_page(conn, lang \\ "en", error_message \\ nil) do
-    {:ok, cgu} = Legal.get_latest_cgu()
+  defp render_cgs_page(conn, lang \\ "en", error_message \\ nil) do
+    {:ok, cgs} = Legal.get_latest_cgs()
 
-    cgu_text =
-      Application.app_dir(:identity_web, "priv/static/cgu/CGU_#{lang}_#{cgu.version}.html")
+    cgs_text =
+      Application.app_dir(:identity_web, "priv/static/cgs/CGS_#{lang}_#{cgs.version}.html")
       |> File.read!()
 
-    render_with_client(conn, "cgu-validation.html",
+    render_with_client(conn, "cgs-validation.html",
       error_message: error_message,
       lang: lang,
-      cgu_id: cgu.id,
-      cgu_text: cgu_text
+      cgs_id: cgs.id,
+      cgs_text: cgs_text
     )
   end
 
@@ -317,7 +317,7 @@ defmodule IdentityWeb.UserAuthController do
     render_with_client(conn, "email-token.html", error_message: nil)
   end
 
-  # Handle the email validation form and login the user if the CGU are accepted.
+  # Handle the email validation form and login the user if the CGS are accepted.
   def check_email_token(conn, %{"token" => token}) do
     user_id = get_session(conn, :user_id)
 
@@ -347,28 +347,28 @@ defmodule IdentityWeb.UserAuthController do
     json(conn, %{})
   end
 
-  ##### CGU VALIDATION #####
+  ##### CGS VALIDATION #####
 
   # Show the email validation form.
-  def validate_cgu_page(conn, %{"lang" => lang}) do
-    render_cgu_page(conn, lang)
+  def validate_cgs_page(conn, %{"lang" => lang}) do
+    render_cgs_page(conn, lang)
   end
 
   # Show the email validation form.
-  def validate_cgu_page(conn, _params) do
-    render_cgu_page(conn)
+  def validate_cgs_page(conn, _params) do
+    render_cgs_page(conn)
   end
 
-  # Handle the email validation form and login the user if the CGU are accepted.
-  def validate_cgu(conn, %{"cgu_id" => cgu_id, "lang" => lang}) do
+  # Handle the email validation form and login the user if the CGS are accepted.
+  def validate_cgs(conn, %{"cgs_id" => cgs_id, "lang" => lang}) do
     user_id = get_session(conn, :user_id)
 
-    case Legal.accept_cgu(cgu_id, user_id) do
+    case Legal.accept_cgs(cgs_id, user_id) do
       {:ok, _} ->
         redirect_next_step(conn, Accounts.get_user(user_id))
 
       _error ->
-        render_cgu_page(
+        render_cgs_page(
           conn,
           lang,
           "The validated terms and conditions are not the latest. Please try again."

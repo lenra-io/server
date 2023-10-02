@@ -27,7 +27,7 @@ defmodule LenraWeb.WebhooksControllerTest do
     })
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Get env webhooks should work properly", %{conn: conn, env: env} do
     WebhookServices.create(env.id, %{"listener" => "test"})
 
@@ -38,7 +38,7 @@ defmodule LenraWeb.WebhooksControllerTest do
     assert webhook["environment_id"] == env.id
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Get session webhooks should work properly", %{conn: conn, user: user, env: env} do
     WebhookServices.create(env.id, %{
       "listener" => "test",
@@ -53,14 +53,14 @@ defmodule LenraWeb.WebhooksControllerTest do
     assert webhook["user_id"] == user.id
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Get with no webhooks in db should work properly", %{conn: conn, env: env} do
     conn = get(conn, Routes.webhooks_path(conn, :index), %{"env_id" => env.id})
 
     assert [] == json_response(conn, 200)
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Create webhook should work properly", %{conn: conn, user: user, env: env} do
     conn =
       post(conn, Routes.webhooks_path(conn, :api_create), %{
@@ -78,7 +78,7 @@ defmodule LenraWeb.WebhooksControllerTest do
     assert webhook["environment_id"] == env.id
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Create webhook without env_id as parameter should fail", %{conn: conn, user: user} do
     conn =
       post(conn, Routes.webhooks_path(conn, :api_create), %{
@@ -108,7 +108,7 @@ defmodule LenraWeb.WebhooksControllerTest do
     end
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Trigger webhook in env should work properly", %{conn: conn, env: env} do
     {:ok, _} = start_supervised({ApplicationRunner.EventHandler, [mode: :env, id: env.id]})
 
@@ -151,7 +151,7 @@ defmodule LenraWeb.WebhooksControllerTest do
     assert _res = json_response(conn, 200)
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Trigger webhook with not related app_uuid/webhook_uuid should return 404", %{
     conn: conn,
     env: env
@@ -170,7 +170,7 @@ defmodule LenraWeb.WebhooksControllerTest do
     assert %{"message" => "Not Found.", "reason" => "error_404"} = json_response(conn, 404)
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "Trigger webhook that does not exist should return 404", %{conn: conn, env: _env} do
     conn =
       conn

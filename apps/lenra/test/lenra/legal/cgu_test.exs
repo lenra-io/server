@@ -1,66 +1,66 @@
-defmodule Lenra.CGUTest do
+defmodule Lenra.CGSTest do
   use Lenra.RepoCase, async: true
   use ExUnit.Case
 
-  alias Lenra.Legal.CGU
+  alias Lenra.Legal.CGS
 
-  @valid_cgu %{path: "Test", version: 2, hash: "test"}
-  @cgu_same_hash %{path: "test", version: 3, hash: "test"}
-  @cgu_same_version %{path: "test", version: 2, hash: "Test"}
-  @cgu_same_path %{path: "Test", version: 3, hash: "Test"}
-  @invalid_cgu %{path: nil, version: nil, hash: nil}
+  @valid_cgs %{path: "Test", version: 2, hash: "test"}
+  @cgs_same_hash %{path: "test", version: 3, hash: "test"}
+  @cgs_same_version %{path: "test", version: 2, hash: "Test"}
+  @cgs_same_path %{path: "Test", version: 3, hash: "Test"}
+  @invalid_cgs %{path: nil, version: nil, hash: nil}
 
-  describe "lenra_cgu" do
-    test "new/1 with valid data creates a cgu" do
-      assert %{changes: cgu, valid?: true} = CGU.new(@valid_cgu)
-      assert cgu.path == @valid_cgu.path
-      assert cgu.version == @valid_cgu.version
-      assert cgu.hash == @valid_cgu.hash
+  describe "lenra_cgs" do
+    test "new/1 with valid data creates a cgs" do
+      assert %{changes: cgs, valid?: true} = CGS.new(@valid_cgs)
+      assert cgs.path == @valid_cgs.path
+      assert cgs.version == @valid_cgs.version
+      assert cgs.hash == @valid_cgs.hash
     end
 
-    test "new/1 with invalid data creates an invalid cgu" do
-      assert %{changes: _cgu, valid?: false} = CGU.new(@invalid_cgu)
+    test "new/1 with invalid data creates an invalid cgs" do
+      assert %{changes: _cgs, valid?: false} = CGS.new(@invalid_cgs)
     end
 
-    test "inserting a valid cgu should succeed" do
-      # Test create and insert cgu
-      cgu = CGU.new(@valid_cgu)
-      {:ok, %CGU{} = inserted_cgu} = Repo.insert(cgu)
+    test "inserting a valid cgs should succeed" do
+      # Test create and insert cgs
+      cgs = CGS.new(@valid_cgs)
+      {:ok, %CGS{} = inserted_cgs} = Repo.insert(cgs)
 
-      assert %{valid?: true} = cgu
+      assert %{valid?: true} = cgs
 
-      all_cgu = Repo.all(from(CGU))
-      assert Enum.member?(all_cgu, inserted_cgu)
+      all_cgs = Repo.all(from(CGS))
+      assert Enum.member?(all_cgs, inserted_cgs)
     end
 
-    test "inserting an invalid cgu should not succeed" do
-      # Test create and insert cgu
-      cgu = CGU.new(@invalid_cgu)
+    test "inserting an invalid cgs should not succeed" do
+      # Test create and insert cgs
+      cgs = CGS.new(@invalid_cgs)
 
       assert {:error,
               %{errors: [path: {"can't be blank", _}, version: {"can't be blank", _}, hash: {"can't be blank", _}]}} =
-               Repo.insert(cgu)
+               Repo.insert(cgs)
     end
 
     test "hash must be unique" do
-      @valid_cgu |> CGU.new() |> Repo.insert()
+      @valid_cgs |> CGS.new() |> Repo.insert()
 
       assert {:error, %Ecto.Changeset{errors: [hash: {"has already been taken", _}]}} =
-               @cgu_same_hash |> CGU.new() |> Repo.insert()
+               @cgs_same_hash |> CGS.new() |> Repo.insert()
     end
 
     test "path must be unique" do
-      @valid_cgu |> CGU.new() |> Repo.insert()
+      @valid_cgs |> CGS.new() |> Repo.insert()
 
       assert {:error, %Ecto.Changeset{errors: [path: {"has already been taken", _}]}} =
-               @cgu_same_path |> CGU.new() |> Repo.insert()
+               @cgs_same_path |> CGS.new() |> Repo.insert()
     end
 
     test "version must be unique" do
-      @valid_cgu |> CGU.new() |> Repo.insert()
+      @valid_cgs |> CGS.new() |> Repo.insert()
 
       assert {:error, %Ecto.Changeset{errors: [version: {"has already been taken", _}]}} =
-               @cgu_same_version |> CGU.new() |> Repo.insert()
+               @cgs_same_version |> CGS.new() |> Repo.insert()
     end
   end
 end
