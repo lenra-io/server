@@ -7,10 +7,12 @@ defmodule LenraWeb.CgsControllerTest do
   alias Lenra.Legal.{CGS, UserAcceptCGSVersion}
   alias Lenra.Repo
 
-  @valid_cgs1 %{path: "Test", version: 2, hash: "test"}
-  @valid_cgs2 %{path: "Test1", version: 3, hash: "Test1"}
-  @valid_cgs3 %{path: "Test2", version: 4, hash: "Test2"}
-  @valid_cgs4 %{path: "Test3", version: 5, hash: "Test3"}
+  @next_cgs_version 100_000
+
+  @valid_cgs1 %{path: "Test", version: @next_cgs_version, hash: "test"}
+  @valid_cgs2 %{path: "Test1", version: @next_cgs_version + 1, hash: "Test1"}
+  @valid_cgs3 %{path: "Test2", version: @next_cgs_version + 2, hash: "Test2"}
+  @valid_cgs4 %{path: "Test3", version: @next_cgs_version + 3, hash: "Test3"}
 
   describe "get_latest_cgs" do
     test "test get_latest_cgs with 2 cgs in DB", %{conn: conn} do
@@ -25,7 +27,7 @@ defmodule LenraWeb.CgsControllerTest do
 
       conn = get(conn, Routes.cgs_path(conn, :get_latest_cgs))
 
-      assert %{"hash" => "Test1", "path" => "Test1", "version" => 3} = json_response(conn, 200)
+      assert %{"hash" => "Test1", "path" => "Test1", "version" => 100001} = json_response(conn, 200)
     end
 
     test "test get_latest_cgs with 4 cgs in DB", %{conn: conn} do
@@ -54,7 +56,7 @@ defmodule LenraWeb.CgsControllerTest do
 
       conn = get(conn, Routes.cgs_path(conn, :get_latest_cgs))
 
-      assert %{"hash" => "Test3", "path" => "Test3", "version" => 5} = json_response(conn, 200)
+      assert %{"hash" => "Test3", "path" => "Test3", "version" => 100003} = json_response(conn, 200)
     end
 
     test "test get_latest_cgs without cgs in database", %{conn: conn} do
@@ -62,7 +64,7 @@ defmodule LenraWeb.CgsControllerTest do
       conn = get(conn, Routes.cgs_path(conn, :get_latest_cgs))
 
       assert conn.resp_body ==
-               "{\"message\":\"Cgs cannot be found\",\"metadata\":{},\"reason\":\"cgs_not_found\"}"
+               "{\"message\":\"CGS cannot be found\",\"metadata\":{},\"reason\":\"cgs_not_found\"}"
     end
   end
 
@@ -101,7 +103,7 @@ defmodule LenraWeb.CgsControllerTest do
     @tag auth_user: :dev
     test "user accepted latest", %{conn: conn} do
       {:ok, cgs} =
-        %{hash: "user_accepted_latest_cgs", version: 2, path: "user_accepted_latest_cgs"}
+        %{hash: "user_accepted_latest_cgs", version: 10000, path: "user_accepted_latest_cgs"}
         |> CGS.new()
         |> Lenra.Repo.insert()
 
@@ -118,7 +120,7 @@ defmodule LenraWeb.CgsControllerTest do
     @tag auth_user: :dev
     test "user did not accept latest", %{conn: conn} do
       {:ok, _cgs} =
-        %{hash: "user_accepted_latest_cgs", version: 2, path: "user_accepted_latest_cgs"}
+        %{hash: "user_accepted_latest_cgs", version: 10000, path: "user_accepted_latest_cgs"}
         |> CGS.new()
         |> Lenra.Repo.insert()
 

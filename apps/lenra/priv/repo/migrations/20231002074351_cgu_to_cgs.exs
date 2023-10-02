@@ -6,7 +6,6 @@ defmodule Lenra.Repo.Migrations.CguToCgs do
     rename(table(:cgu), to: table(:cgs))
     rename(table(:user_accept_cgu_versions), to: table(:user_accept_cgs_versions))
 
-
     execute("DROP TRIGGER IF EXISTS check_version_cgu_is_latest ON user_accept_cgu_versions;")
     execute("DROP FUNCTION IF EXISTS check_version_cgu() CASCADE;")
 

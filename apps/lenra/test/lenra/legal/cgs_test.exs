@@ -4,10 +4,12 @@ defmodule Lenra.CGSTest do
 
   alias Lenra.Legal.CGS
 
-  @valid_cgs %{path: "Test", version: 2, hash: "test"}
-  @cgs_same_hash %{path: "test", version: 3, hash: "test"}
-  @cgs_same_version %{path: "test", version: 2, hash: "Test"}
-  @cgs_same_path %{path: "Test", version: 3, hash: "Test"}
+  @next_cgs_version 100_000
+
+  @valid_cgs %{path: "Test", version: @next_cgs_version, hash: "test"}
+  @cgs_same_hash %{path: "test", version: @next_cgs_version + 1, hash: "test"}
+  @cgs_same_version %{path: "test", version: @next_cgs_version, hash: "Test"}
+  @cgs_same_path %{path: "Test", version: @next_cgs_version + 1, hash: "Test"}
   @invalid_cgs %{path: nil, version: nil, hash: nil}
 
   describe "lenra_cgs" do

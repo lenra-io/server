@@ -20,6 +20,8 @@ defmodule LenraWeb.ConnCase do
   alias Lenra.Legal
   alias Lenra.Legal.CGS
 
+  @next_cgs_version 100_000
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -118,7 +120,7 @@ defmodule LenraWeb.ConnCase do
   end
 
   defp auth_users_with_cgs(users_role) do
-    {:ok, cgs} = %{path: "latest", hash: "latesthash", version: 2} |> CGS.new() |> Lenra.Repo.insert()
+    {:ok, cgs} = %{path: "latest", hash: "latesthash", version: @next_cgs_version} |> CGS.new() |> Lenra.Repo.insert()
 
     users_role
     |> Enum.with_index()
@@ -149,7 +151,7 @@ defmodule LenraWeb.ConnCase do
   defp auth_john_doe_with_cgs(conn, params \\ %{}) do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(params)
 
-    {:ok, cgs} = %{path: "latest", hash: "latesthash", version: 2} |> CGS.new() |> Lenra.Repo.insert()
+    {:ok, cgs} = %{path: "latest", hash: "latesthash", version: @next_cgs_version} |> CGS.new() |> Lenra.Repo.insert()
 
     Legal.accept_cgs(cgs.id, user.id)
     conn_user(conn, user)

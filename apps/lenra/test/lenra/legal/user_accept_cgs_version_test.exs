@@ -3,8 +3,10 @@ defmodule Lenra.Legal.UserAcceptCGSVersionTest do
 
   alias Lenra.Legal.{CGS, UserAcceptCGSVersion}
 
-  @valid_cgs1 %{path: "Test", version: 2, hash: "test"}
-  @valid_cgs2 %{path: "/tmp/aeg", version: 3, hash: "Test"}
+  @next_cgs_version 100_000
+
+  @valid_cgs1 %{path: "Test", version: @next_cgs_version, hash: "test"}
+  @valid_cgs2 %{path: "/tmp/aeg", version: @next_cgs_version + 1, hash: "Test"}
   @user %{
     "first_name" => "Test",
     "last_name" => "test",

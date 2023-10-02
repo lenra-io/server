@@ -1,0 +1,213 @@
+# TERMS AND CONDITIONS OF SERVICE
+
+LENRA.IO - COMMERCIAL VERSION
+
+These Terms and Conditions of Service are intended to define the terms of use of the Lenra.io platform in its commercial version (release).
+
+They constitute a contract (hereinafter the "Contract") concluded between Lenra, a simplified joint-stock company, with its registered office at 1 rue Fleming, 17000 La Rochelle, registered with the RCS of La Rochelle under number 812357317 (hereinafter "Lenra" or "Provider"), and any natural or legal person creating a customer account on the lenra.io platform and using Lenra Services (hereinafter the "Client"), the Client and Lenra being individually or collectively referred to as the "Party(ies)."
+
+The general terms of purchase and/or any other document usually used by the Client, including any other terms of use of the services, do not apply within the scope of these terms. The Contract supersedes all prior agreements, contracts, arrangements, deeds, oral and/or written, that may have been entered into between the Parties for the same purpose.
+
+## 0. PURPOSE
+
+0.1 These TCS aim to define the rights and obligations of the parties in connection with the use of the Lenra service.
+
+## 1. DEFINITIONS
+
+The following terms, identified by a capital letter in this Contract, shall have the meanings ascribed to them below:
+
+**Applications**: refer to the solutions developed by the Client using the tools available on the Platform.
+
+**Account**: refers to a dedicated space for the Client, accessible from the Platform, allowing access to and use of the Services.
+
+**Client Content**: refers to the Client's Applications, information, data, files, and any other element stored by the Client through the Platform and/or used in connection with the Services.
+
+**Documentation**: refers to the documentation related to the Platform and the Services.
+
+**Personal Data**: refers to any information concerning an identified or identifiable natural person; a person who can be identified, directly or indirectly, in particular by reference to an identifier, such as a name, an identification number, location data, an online identifier, or one or more specific elements specific to their physical, physiological, genetic, mental, economic, cultural, or social identity. Personal Data is Confidential Information.
+
+**State of the Art**: refers to all best practices, technologies, and reference documents related to the Platform, publicly accessible and known at the date of the provision of the Services.
+
+**Confidential Information**: refers to any information of any nature, whether oral, visual, computer or written, or in any other form whatsoever, representing economic value or strategic data, including any information relating to the Platform and the Services, disclosed by one Party to the other Party or of which either Party becomes aware in connection with the Contract. Confidential Information includes the provisions of this Contract.
+
+**Platform**: refers to the version of the lenra.io platform, provided in SaaS mode by the Provider, allowing, among other things, the storage of Client Content, the development, operation, and hosting of Applications.
+
+**Services**: refer to the SaaS provision services of the Platform, including its hosting, in the context of the usage phase.
+
+**Users**: refer to the developers authorized by the Client to use the Services for the purpose of developing Applications on the Platform, and having a Customer Account.
+
+## 2. USE OF THE PLATFORM AND SERVICES
+
+### 2.1. Description of the Platform and Services
+
+2.1.1. The Client is expressly informed that the Platform and the Services are standard and not personalized. The Services do not include the provision of specific developments, nor any commitments by the Provider in terms of maintenance and/or support.
+
+2.1.2. The Provider will ensure the hosting of the Platform under conditions in line with the State of the Art. The choice of hosting provider belongs exclusively to Lenra. The Client is informed that the hosting and backups of the Platform are currently provided by the following providers:
+
+- OVH, France.
+- ScaleWay, France.
+
+2.1.4. The Client remains responsible for all measures necessary to back up its Content used through the Platform and/or the Services, in order to guard against the risks of loss or deterioration, regardless of the cause.
+
+2.1.5. The Provider reserves the right to suspend or terminate the provision of all or part of the Services at any time and without compensation to the Client and/or its Users, especially for security reasons, maintenance, and/or any reason related to the evolution of the Platform, including in the event of a strategic decision to stop making it available. The Provider shall not be liable to the Client and/or its Users in the event of suspension or termination of the Platform.
+
+## 2.2. Platform Use Conditions
+
+2.2.1. To access the Platform, the Client creates a Customer Account accessible by means of login credentials and passwords. The Client remains solely responsible for managing access to the Platform by its Users, including the confidentiality of the login credentials and associated passwords.
+
+2.2.2. The Client undertakes not to use the Platform for purposes other than those of using the Platform in the commercial phase or for the benefit of third parties other than designated Users. The Client undertakes to use the Platform in accordance with the Contract, the Documentation, as well as any applicable regulations.
+
+2.2.3. Client Content used through the Platform must be lawful and used in accordance with best practices and the laws and regulations in force. The Provider does not intervene in the management of Client Content and refrains from accessing it for purposes other than the execution of the Contract. In particular, it does not perform any control, validation, or updating of said Content.
+
+In this regard, the following uses of Content, the Platform, and/or Services by the Client are expressly prohibited:
+
+- Any abusive and/or fraudulent use of the Platform, Services, and Client Content, including any use that could jeopardize the stability and security of systems and/or lead to a deterioration in the performance of Services.
+- Any use of illegal Content (such as child pornography, content promoting or inciting crimes against humanity, acts of terrorism, pedophilia, anti-Semitism, racism, or other, or content inciting hatred towards individuals based on their sex, religion, sexual orientation or identity, or disability), defamatory, discriminatory, or of any other harmful nature.
+- Any use of Content and/or Applications in violation of third-party rights, such as personality rights and/or intellectual property rights.
+- Use of Services for purposes other than those provided for in these terms and/or in violation of these terms and/or any applicable regulations.
+
+2.2.4. It is the responsibility of the Client to promptly inform the Provider, as soon as it becomes aware, in the event of a breach of the Platform's terms of use and/or Services by a User. In the event of a breach identified by the Client, the Client undertakes to take all necessary measures to stop said breach immediately, without prejudice to the Provider's right to suspend, in whole or in part, access by the concerned User and/or the Client to the Platform and/or Services and/or to exercise any other available remedies.
+
+2.2.5. To use the Platform and/or Services, the Client must have, at its own expense and responsibility, remote access. The Client is informed that the Internet network presents technical uncertainties and security risks outside the technical means implemented by the Provider within the framework of the Services. The Provider is not responsible for failures of Internet service providers or
+
+ other third-party data transport network operators (including reliability of connection lines, bandwidth fluctuations, interruptions, etc.), including the consequences of such failures, especially when they result in unavailability and/or discontinuity of the Service.
+
+## 3. CONFIDENTIALITY - PERSONAL DATA
+
+### 3.1. Confidentiality
+
+3.1.1. Each of the Parties receiving Confidential Information undertakes to:
+
+- not use Confidential Information for purposes other than those set forth herein;
+- take all necessary measures to protect its confidentiality;
+- strictly limit the disclosure and access to those of its directors, employees, representatives, consultants, or subcontractors who need to know such information, and, in such case, ensure that these persons respect the confidential nature of this information;
+- not make any copies for third parties, subject to the reservation below.
+
+3.1.2. Information that is (i) known to the receiving Party prior to transmission by the disclosing Party, directly or indirectly, in part not subject to an obligation of confidentiality towards the disclosing Party, (ii) made known to the receiving Party (independently of their transmission by the disclosing Party), directly or indirectly, by a party not subject to an obligation of confidentiality towards the disclosing Party, (iii) made public or cease to be confidential, except in the event of a breach of this Contract by the receiving Party, or (iv) independently developed by the receiving Party, are not considered Confidential Information.
+
+3.1.3. This obligation of confidentiality shall remain in effect for three (3) years after the expiration of the Contract.
+
+### 3.2. Protection of Personal Data
+
+Each Party undertakes to comply with the obligations incumbent upon it under the applicable data protection legislation, including General Data Protection Regulation 2016/679 of April 27, 2016, and Law No. 78-17 of January 6, 1978, as amended, and its implementing decrees (hereinafter "Data Protection Legislation"). Within the meaning of the provisions of the Data Protection Legislation and under this Contract, each Party acts as a separate data controller.
+
+## 4. INTELLECTUAL PROPERTY RIGHTS
+### 4.1. License to Use
+
+4.1.1. The Platform, as well as any associated Documentation, are and remain the property of the Provider or its rights holders. Within the framework of these terms, the Provider grants the Client a non-exclusive, limited, personal, revocable, non-transferable, worldwide, and for the duration of use, license to access and use the Platform for the purpose of use.
+
+4.1.2. It is expressly agreed between the Parties that the rights granted to the Client do not include the right to:
+
+- Provide access to the Platform to third parties other than Users.
+- Publish the results of tests performed on the Platform in any way.
+- Delete, modify, or conceal any ownership notice or any trademark belonging to Lenra.
+- Reproduce any feature or function of the Platform, in whole or in part, develop or have developed by a third party a product competing with the Platform.
+- Decompilation, reverse engineering, decryption, disassembly, or any other attempt to obtain or modify the source code of the Platform and/or Lenra Applications accessible from the Platform, except to the extent provided for in Article L.122-6-1 of the French Intellectual Property Code.
+
+4.1.3. The Provider reserves all rights not expressly granted in this Contract.
+
+### 4.2. Feedback
+
+4.2.1. The Client may provide ideas, suggestions, or other proposals related to the Platform.
+
+## 5. WARRANTY
+
+5.1. The platform is provided as-is, without any warranty.
+
+5.2. The Client is expressly informed that the Platform may contain open-source components subject to their own licensing terms. In this regard, the Client undertakes to comply with them and ensures compliance by its Users.
+
+5.3. The Client declares that it has all necessary rights for the use of the Platform, including the development and operation of Applications on the Platform, and warrants the Provider against any claims by third parties in this regard and any resulting damage to the Provider.
+
+## 6. TERM OF THE CONTRACT - TERMINATION
+
+6.1. This Contract enters into force upon the creation of the Customer Account and remains in effect for an initial period of 1 year.
+
+6.2. At the end of the initial term, the Contract may be renewed under the terms and conditions agreed upon by the Parties.
+
+6.3. Each Party may terminate the Contract upon thirty (30) days' notice sent by any means to the other Party. It is agreed that the Provider may terminate the Contract immediately and without any compensation to the Client in the event of a serious breach by the Client of its contractual obligations, particularly in the event of a violation by the Client of the terms of use of the Platform and/or the license granted under this Contract, or for reasons related to the security of the Platform, notified to the Client by email.
+
+6.4. Notwithstanding the expiration or termination of the Contract for any reason whatsoever, the articles "Confidentiality," "Liability," "Applicable Law and Disputes," as well as any other clause that by its nature survives the end of the Contract, shall remain in force.
+
+## 7. PRICES AND PAYMENT
+
+7.1. The Client may subscribe to a monthly subscription at a price of €8 excluding taxes per application or an annual subscription at a price of €80 excluding taxes.
+
+7.2. Payments are due upon subscription to each subscription and must be made in accordance with the payment terms agreed upon by the Parties.
+
+## 8. LIABILITY
+
+8.1
+
+. The Client is responsible for all activities of its application hosted by the Provider, as well as for the actions taken by its users in the context of this application.
+
+8.2. Indirect damages recognized by the case law of the French courts and courts, including loss of profits, data, operations, turnover, margins, orders, customers, revenues, business actions, or expected results, are considered indirect damages.
+
+8.3. In any case, given the purpose of using the Platform in the commercial phase, the Provider's liability is limited to one thousand (1,000) euros, all causes and all claims combined, regardless of the legal basis for the claim and the procedure used to enforce it. The action in liability must be brought within one (1) year from the occurrence of the damage.
+
+## 9. SUBCONTRACTING - ASSIGNMENT
+
+9.1. The Provider is authorized by the Client to subcontract all or part of the Services covered by this Contract.
+
+9.2. This Contract may not be subject to total or partial assignment, for consideration or free of charge, except with the prior written and express consent of the other Party. However, the Provider may, after written notice to the Client, freely assign and/or transfer in full or in part its rights and obligations under the Contract to any other entity.
+
+## 10. GENERAL PROVISIONS
+
+10.1. The Provider reserves the right to modify these General Terms and Conditions of Service at any time to adapt to the evolution of the Lenra.io platform in the commercial use.
+
+10.2. If any provision of this Contract is cancelled or invalidated, this shall not invalidate or invalidate the other provisions, unless otherwise decided by a court order.
+
+10.3. The Parties agree that the effective nature of the delivery of an electronic document can be established by any means.
+
+10.4. The Contract is governed by French law, and any dispute shall be brought before the La Rochelle Judicial Tribunal.
+
+10.5. The Parties shall not be liable for breaches in the performance of their obligations due to a force majeure event as defined in Article 1218 of the French Civil Code and commonly recognized by French jurisprudence. In the event of a force majeure event, the affected Party shall promptly inform the other Party. The Parties shall work together to mitigate the effects of the force majeure event on the Contract and agree on its consequences.
+
+10.6. The Parties agree that the effective nature of the delivery of an electronic document can be established by any means. Computer logs, registers, and connection logs, regardless of which Party maintains them, shall be validly considered as means of proof against any Party to whom they are opposed.
+
+## 11. SUPPORT AND MAINTENANCE
+
+11.1. No specific support is included in this subscription.
+
+## 12. CONFIDENTIALITY
+
+12.1. The Client authorizes the Provider to use the email address provided at registration to contact it in the event of a problem or potential problem.
+
+## 13. INTELLECTUAL PROPERTY RIGHTS
+
+13.1. No transfer of intellectual property rights is provided for in this subscription.
+
+## 14. TERMINATION
+
+14.1. Each Party may terminate the Contract by giving fifteen (15) days' notice to the other Party. The Provider may terminate the Contract immediately in the event of a serious breach by the Client of these General Terms and Conditions of Service.
+
+## 15. APPLICABLE LAW - JURISDICTION
+
+15.1 The Contract is governed by French law, to the exclusion of any other legislation. Any dispute that may arise in the course of the execution of the Contract shall be brought to the attention of the other Party by registered letter with acknowledgment of receipt, specifying the grievances precisely for the purpose of conciliation and before any judicial action. In order to find an amicable solution together, the Parties agree to consult within thirty (30) calendar days from the notification of the dispute by one of the Parties. In the absence of an amicable solution, jurisdiction is vested in the La Rochelle Judicial Tribunal.
+
+## 16. MISCELLANEOUS
+
+16.1 The failure of Lenra to avail itself of a failure by the user to meet any of the obligations set forth in these General Terms and Conditions of Service shall not be interpreted as a waiver of the obligation in question.
+
+## ANNEX 01 - SPECIFIC CONDITIONS OF THE PAID VERSION
+
+The paid version of Lenra offers the following features:
+
+- No limit on users.
+- The application scales automatically between 0 and 5 instances to adapt to users.
+
+The price of the paid version is €8 excluding taxes per month or €80 excluding taxes per year.
+
+## ANNEX 02 - SPECIFIC CONDITIONS OF THE FREE VERSION
+
+The free version of Lenra offers the following features:
+
+- Limited to 3 users (including the creator).
+- A maximum of one instance of the application.
+
+The free version is available at no cost.
+
+## AMENDMENTS TO THE ANNEXES
+
+Lenra reserves the right to modify the annexes to these General Terms and Conditions of Service at any time.
+
+Changes to the annexes are effective upon publication on the Lenra website.
