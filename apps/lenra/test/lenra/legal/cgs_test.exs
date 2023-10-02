@@ -40,8 +40,13 @@ defmodule Lenra.CGSTest do
       cgs = CGS.new(@invalid_cgs)
 
       assert {:error,
-              %{errors: [path: {"can't be blank", _}, version: {"can't be blank", _}, hash: {"can't be blank", _}]}} =
-               Repo.insert(cgs)
+              %{
+                errors: [
+                  path: {"can't be blank", _},
+                  version: {"can't be blank", _},
+                  hash: {"can't be blank", _}
+                ]
+              }} = Repo.insert(cgs)
     end
 
     test "hash must be unique" do
@@ -61,8 +66,9 @@ defmodule Lenra.CGSTest do
     test "version must be unique" do
       @valid_cgs |> CGS.new() |> Repo.insert()
 
-      assert {:error, %Ecto.Changeset{errors: [version: {"has already been taken", _}]}} =
-               @cgs_same_version |> CGS.new() |> Repo.insert()
+      result = @cgs_same_version |> CGS.new() |> Repo.insert()
+
+      assert {:error, %Ecto.Changeset{errors: [version: {"has already been taken", _}]}} = result
     end
   end
 end
