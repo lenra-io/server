@@ -138,8 +138,7 @@ defmodule Lenra.Kubernetes.ApiServices do
                       mountPath: "/tmp/lenra-scripts",
                       name: "lenra-scripts"
                     }
-                  ],
-                  workingDir: "/tmp/app/"
+                  ]
                 }
               ],
               restartPolicy: "Never",
