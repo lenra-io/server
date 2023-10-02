@@ -98,6 +98,7 @@ config :application_runner,
   lenra_user_table: "users",
   repo: Lenra.Repo,
   internal_api_url: System.get_env("HOST", "http://localhost:4000"),
+  faas_secrets: [],
   faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
   faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
@@ -105,11 +106,7 @@ config :application_runner,
   listeners_timeout: 1 * 60 * 60 * 1000,
   view_timeout: 1 * 30 * 1000,
   manifest_timeout: 1 * 30 * 1000,
-  scale_to_zero: false,
-  faas_request_cpu: System.get_env("FAAS_REQUEST_CPU", "50m"),
-  faas_request_memory: System.get_env("FAAS_REQUEST_MEMORY", "128Mi"),
-  faas_limit_cpu: System.get_env("FAAS_LIMIT_CPU", "100m"),
-  faas_limit_memory: System.get_env("FAAS_LIMIT_MEMORY", "256Mi")
+  scale_to_zero: false
 
 config :application_runner, :mongo,
   hostname: System.get_env("MONGO_HOSTNAME", "localhost"),
@@ -125,7 +122,6 @@ config :application_runner, ApplicationRunner.Scheduler, storage: ApplicationRun
 # additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
 
 config :lenra,
-  faas_secrets: [],
   kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build")
 
 config :argon2_elixir,

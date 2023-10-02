@@ -46,8 +46,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-${{ vars.CACHE_VERSION }}-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-${{ vars.CACHE_VERSION }}-
+          key: server-${{ runner.os }}-mix-${{ vars.CACHE_VERSION }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: server-${{ runner.os }}-mix-${{ vars.CACHE_VERSION }}-${{ hashFiles('**/mix.lock') }}
       # Don't cache PLTs based on mix.lock hash, as Dialyzer can incrementally update even old ones
       # Cache key based on Elixir & Erlang version (also useful when running in matrix)
       # (Source : https://github.com/jeremyjh/dialyxir#github-actions)
@@ -56,9 +56,9 @@ jobs:
         id: plt_cache
         with:
           key: |
-            ${{ runner.os }}-${{ vars.CACHE_VERSION }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+            server-${{ runner.os }}-${{ vars.CACHE_VERSION }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
           restore-keys: |
-            ${{ runner.os }}-${{ vars.CACHE_VERSION }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+            server-${{ runner.os }}-${{ vars.CACHE_VERSION }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
           path: |
             .plts
       - name: Install dependencies
@@ -121,14 +121,27 @@ jobs:
         with:
           elixir-version: "1.13" # Define the elixir version [required]
           otp-version: "24" # Define the OTP version [required]
-      - name: Restore dependencies cache
+      - name: Restore dependencies & build cache
         uses: actions/cache@v2
         with:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-
+          key: application-runner-${{ runner.os }}-mix-${{ vars.CACHE_VERSION }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: application-runner-${{ runner.os }}-mix-${{ vars.CACHE_VERSION }}-${{ hashFiles('**/mix.lock') }}
+      # Don't cache PLTs based on mix.lock hash, as Dialyzer can incrementally update even old ones
+      # Cache key based on Elixir & Erlang version (also useful when running in matrix)
+      # (Source : https://github.com/jeremyjh/dialyxir#github-actions)
+      - name: Restore PLT cache
+        uses: actions/cache@v2
+        id: plt_cache
+        with:
+          key: |
+            application-runner-${{ runner.os }}-${{ vars.CACHE_VERSION }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+          restore-keys: |
+            application-runner-${{ runner.os }}-${{ vars.CACHE_VERSION }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+          path: |
+            .plts
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.7.0
         with:

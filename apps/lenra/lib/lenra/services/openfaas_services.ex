@@ -3,6 +3,7 @@ defmodule Lenra.OpenfaasServices do
     The service that manage calls to an Openfaas function with `run_action/3`
   """
 
+  alias ApplicationRunner.ApplicationServices
   alias Lenra.Apps
   alias Lenra.Errors.TechnicalError
   alias LenraCommon.Errors
@@ -28,39 +29,11 @@ defmodule Lenra.OpenfaasServices do
   end
 
   def deploy_app(service_name, build_number, replicas) do
-    {base_url, headers} = get_http_context()
-
-    url = "#{base_url}/system/functions"
-
-    body =
-      Jason.encode!(%{
-        "image" => Apps.image_name(service_name, build_number),
-        "service" => get_function_name(service_name, build_number),
-        "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
-        "requests" => %{
-          "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
-          "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
-        },
-        "limits" => %{
-          "cpu" => Application.fetch_env!(:application_runner, :faas_limit_cpu),
-          "memory" => Application.fetch_env!(:application_runner, :faas_limit_memory)
-        },
-        "labels" => %{
-          @min_scale_label => @min_scale_default,
-          @max_scale_label => "#{replicas}"
-        }
-      })
-
-    Logger.debug("Deploy Openfaas application \n#{url} : \n#{body}")
-
-    Finch.build(
-      :post,
-      url,
-      headers,
-      body
+    ApplicationServices.deploy_app(
+      get_function_name(service_name, build_number),
+      Apps.image_name(service_name, build_number),
+      replicas
     )
-    |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:deploy_app)
   end
 
   def is_deploy(service_name, build_number) do
@@ -94,11 +67,6 @@ defmodule Lenra.OpenfaasServices do
     )
     |> Finch.request(FaasHttp, receive_timeout: 1000)
     |> response(:delete_app)
-  end
-
-  defp response({:ok, %Finch.Response{status: status_code}}, :deploy_app)
-       when status_code in [200, 202] do
-    {:ok, status_code}
   end
 
   defp response(
