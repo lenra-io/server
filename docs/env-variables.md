@@ -21,6 +21,10 @@ This document provides a list of the environment variables that need to be set f
 - `FAAS_URL`: The URL for the FaaS service.
 - `FAAS_AUTH`: The authentication for the FaaS service.
 - `FAAS_REGISTRY`: The registry for the FaaS service.
+- `FAAS_REQUEST_CPU`: The CPU request for the FaaS service. Default is "50m".
+- `FAAS_REQUEST_MEMORY`: The memory request for the FaaS service. Default is "128Mi".
+- `FAAS_LIMIT_CPU`: The CPU limit for the FaaS service. Default is "100m".
+- `FAAS_LIMIT_MEMORY`: The memory limit for the FaaS service. Default is "256Mi".
 
 ## Pipeline Configuration
 
