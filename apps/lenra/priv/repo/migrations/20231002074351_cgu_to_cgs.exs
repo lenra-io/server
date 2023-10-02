@@ -35,7 +35,7 @@ defmodule Lenra.Repo.Migrations.CguToCgs do
       DECLARE
         last_version_id bigint;
       BEGIN
-        SELECT id into last_version_id FROM cgs ORDER BY inserted_at DESC LIMIT 1;
+        SELECT id into last_version_id FROM cgs ORDER BY version DESC LIMIT 1;
         IF last_version_id = NEW.cgs_id THEN
           RETURN NEW;
         ELSE

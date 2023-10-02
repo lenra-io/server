@@ -38,7 +38,7 @@ defmodule Lenra.Legal do
   end
 
   defp get_latest_cgs_query do
-    Ecto.Query.last(CGS, :inserted_at)
+    Ecto.Query.last(CGS, :version)
   end
 
   def accept_cgs(cgs_id, user_id) do
