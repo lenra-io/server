@@ -27,7 +27,11 @@ config :application_runner,
   faas_url: System.get_env("FAAS_URL", "https://openfaas-dev.lenra.me"),
   faas_auth: System.get_env("FAAS_AUTH", "Basic YWRtaW46Z0Q4VjNHR1YxeUpS"),
   faas_registry: System.get_env("FAAS_REGISTRY", "registry.gitlab.com/lenra/platform/lenra-ci"),
-  scale_to_zero: true
+  scale_to_zero: true,
+  faas_request_cpu: System.get_env("FAAS_REQUEST_CPU", "50m"),
+  faas_request_memory: System.get_env("FAAS_REQUEST_MEMORY", "128Mi"),
+  faas_limit_cpu: System.get_env("FAAS_LIMIT_CPU", "100m"),
+  faas_limit_memory: System.get_env("FAAS_LIMIT_MEMORY", "256Mi")
 
 config :application_runner, :mongo,
   hostname: "localhost",
