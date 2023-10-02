@@ -105,7 +105,11 @@ config :application_runner,
   listeners_timeout: 1 * 60 * 60 * 1000,
   view_timeout: 1 * 30 * 1000,
   manifest_timeout: 1 * 30 * 1000,
-  scale_to_zero: false
+  scale_to_zero: false,
+  faas_request_cpu: System.get_env("FAAS_REQUEST_CPU", "50m"),
+  faas_request_memory: System.get_env("FAAS_REQUEST_MEMORY", "128Mi"),
+  faas_limit_cpu: System.get_env("FAAS_LIMIT_CPU", "100m"),
+  faas_limit_memory: System.get_env("FAAS_LIMIT_MEMORY", "256Mi")
 
 config :application_runner, :mongo,
   hostname: System.get_env("MONGO_HOSTNAME", "localhost"),

@@ -13,6 +13,7 @@ defmodule Lenra.OpenfaasServices do
   @max_scale_label "com.openfaas.scale.max"
   @min_scale_default "1"
 
+
   defp get_http_context do
     base_url = Application.fetch_env!(:lenra, :faas_url)
     auth = Application.fetch_env!(:lenra, :faas_auth)
@@ -37,13 +38,13 @@ defmodule Lenra.OpenfaasServices do
         "image" => Apps.image_name(service_name, build_number),
         "service" => get_function_name(service_name, build_number),
         "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
-        "limits" => %{
-          "memory" => "384Mi",
-          "cpu" => "100m"
-        },
         "requests" => %{
-          "memory" => "256Mi",
-          "cpu" => "50m"
+          "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
+          "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
+        },
+        "limits" => %{
+          "cpu" => Application.fetch_env!(:application_runner, :faas_limit_cpu),
+          "memory" => Application.fetch_env!(:application_runner, :faas_limit_memory)
         },
         "labels" => %{
           @min_scale_label => @min_scale_default,

@@ -184,13 +184,13 @@ defmodule ApplicationRunner.ApplicationServices do
         "image" => image_name,
         "service" => function_name,
         "secrets" => Application.fetch_env!(:lenra, :faas_secrets),
-        "limits" => %{
-          "memory" => "256Mi",
-          "cpu" => "100m"
-        },
         "requests" => %{
-          "memory" => "128Mi",
-          "cpu" => "50m"
+          "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
+          "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
+        },
+        "limits" => %{
+          "cpu" => Application.fetch_env!(:application_runner, :faas_limit_cpu),
+          "memory" => Application.fetch_env!(:application_runner, :faas_limit_memory)
         },
         "labels" => %{
           @min_scale_label => @min_scale_default,
@@ -287,13 +287,13 @@ defmodule ApplicationRunner.ApplicationServices do
           Jason.encode!(%{
             "image" => app["image"],
             "service" => function_name,
-            "limits" => %{
-              "memory" => "256Mi",
-              "cpu" => "100m"
-            },
             "requests" => %{
-              "memory" => "128Mi",
-              "cpu" => "50m"
+              "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
+              "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)
+            },
+            "limits" => %{
+              "cpu" => Application.fetch_env!(:application_runner, :faas_limit_cpu),
+              "memory" => Application.fetch_env!(:application_runner, :faas_limit_memory)
             },
             "labels" => Map.merge(Map.get(app, :labels, %{}), labels)
           })
