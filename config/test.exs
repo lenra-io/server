@@ -34,7 +34,11 @@ config :lenra,
   pipeline_runner: "gitlab"
 
 config :application_runner,
-  faas_url: "http://localhost:1234"
+  faas_url: "http://localhost:1234",
+  faas_request_cpu: "50m",
+  faas_request_memory: "128Mi",
+  faas_limit_cpu: "100m",
+  faas_limit_memory: "256Mi"
 
 config :lenra, Lenra.Repo,
   username: "postgres",

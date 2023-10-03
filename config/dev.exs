@@ -88,7 +88,6 @@ config :lenra,
       "RUNNER_SECRET",
       "sZWshq6h0RNO9T1GgUnzLmPpDkSkDAoukmd30mTuwQAGIHYIIVdl7VD2h305"
     ),
-  faas_secrets: ["gitlab-registry"],
   lenra_email: System.get_env("LENRA_EMAIL", "contact@lenra.io"),
   lenra_app_url: System.get_env("LENRA_APP_URL", "https://localhost:10000"),
   pipeline_runner: System.get_env("PIPELINE_RUNNER", "GitLab"),
@@ -101,6 +100,13 @@ config :lenra,
   stripe_coupon: System.get_env("STRIPE_COUPON"),
   stripe_secret: System.get_env("STRIPE_SECRET"),
   webhook_secret: System.get_env("WEBHOOK_SECRET")
+
+config :application_runner,
+  faas_secrets: ["gitlab-registry"],
+  faas_request_cpu: System.get_env("FAAS_REQUEST_CPU", "50m"),
+  faas_request_memory: System.get_env("FAAS_REQUEST_MEMORY", "128Mi"),
+  faas_limit_cpu: System.get_env("FAAS_LIMIT_CPU", "100m"),
+  faas_limit_memory: System.get_env("FAAS_LIMIT_MEMORY", "256Mi")
 
 config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET")
 
