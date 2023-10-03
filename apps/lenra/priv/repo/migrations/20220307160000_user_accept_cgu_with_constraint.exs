@@ -11,7 +11,7 @@ defmodule Lenra.Repo.Migrations.UserAcceptCguWithConstraint do
         IF last_version_id = NEW.cgu_id THEN
           RETURN NEW;
         ELSE
-          RAISE EXCEPTION 'Not latest CGS';
+          RAISE EXCEPTION 'Not latest CGU';
         END IF;
       END;
     $func$ LANGUAGE plpgsql;")
