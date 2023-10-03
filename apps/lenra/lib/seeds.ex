@@ -4,15 +4,15 @@ defmodule Lenra.Seeds do
   """
 
   def run do
-    generate_cgu()
+    generate_cgs()
   end
 
-  def generate_cgu do
-    Application.app_dir(:identity_web, "/priv/static/cgu/CGU_fr_*.md")
+  def generate_cgs do
+    Application.app_dir(:identity_web, "/priv/static/cgs/CGS_fr_*.md")
     |> Path.wildcard()
     |> Enum.each(fn path ->
-      "CGU_fr_" <> version = path |> Path.basename(".md")
-      Lenra.Legal.add_cgu(path, version)
+      "CGS_fr_" <> version = path |> Path.basename(".md")
+      Lenra.Legal.add_cgs(path, version)
     end)
   end
 end

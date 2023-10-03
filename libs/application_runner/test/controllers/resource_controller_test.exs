@@ -33,7 +33,7 @@ defmodule LenraWeb.ResourcesControllerTest do
       assert response(conn, 200)
     end
 
-    @tag auth_user_with_cgu: :dev
+    @tag auth_user_with_cgs: :dev
     test "apps resource sub directory", %{conn: conn} do
       uuid = UUID.generate()
 

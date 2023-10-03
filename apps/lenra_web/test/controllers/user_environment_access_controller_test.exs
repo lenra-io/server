@@ -24,7 +24,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
              }
     end
 
-    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
+    @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "get user environment access check authorizations", %{users: [creator!, user, other_dev, admin]} do
       creator! = create_app(creator!)
 
@@ -64,7 +64,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
   end
 
   describe "create" do
-    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
+    @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "user environment access controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
       assert app = json_response(creator!, 200)
@@ -109,7 +109,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
   end
 
   describe "add_user_env_access_from_email" do
-    @tag auth_users_with_cgu: [:dev, :user, :dev, :admin]
+    @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "successfull authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       creator! = create_app(creator!)
       assert app = json_response(creator!, 200)

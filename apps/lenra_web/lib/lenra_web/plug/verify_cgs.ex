@@ -1,6 +1,6 @@
-defmodule LenraWeb.Plug.VerifyCgu do
+defmodule LenraWeb.Plug.VerifyCgs do
   @moduledoc """
-  Plug that checks whether the latest cgu has been accepted or not
+  Plug that checks whether the latest cgs has been accepted or not
   """
   use LenraWeb, :controller
 
@@ -11,12 +11,12 @@ defmodule LenraWeb.Plug.VerifyCgu do
   def call(conn, _opts) do
     user = LenraWeb.Auth.current_resource(conn)
 
-    if Lenra.Legal.user_accepted_latest_cgu?(user.id) do
+    if Lenra.Legal.user_accepted_latest_cgs?(user.id) do
       conn
     else
       conn
       |> put_view(LenraCommonWeb.BaseView)
-      |> assign_error(BusinessError.did_not_accept_cgu())
+      |> assign_error(BusinessError.did_not_accept_cgs())
       |> reply()
     end
   end

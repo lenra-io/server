@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Md2htmlTest do
     end
 
     test "md2html/1 test content of html file after mix md2html" do
-      # head_html = "<head><meta charset=\"utf-8\"><title>CGU</title></head>"
+      # head_html = "<head><meta charset=\"utf-8\"><title>CGS</title></head>"
 
       # before_html = "<!doctype html><html>"
 

@@ -1,16 +1,16 @@
-main.cgu {
+main.cgs {
     height: 100%;
     justify-content: start;
     padding-bottom: 0;
 }
 
-main.cgu>form {
+main.cgs>form {
     flex: 1;
     padding-top: 1.5rem;
     padding-bottom: 2rem;
 }
 
-main.cgu>form>article {
+main.cgs>form>article {
     flex: 1 1 0;
     width: 100%;
     min-height: 20rem;
@@ -19,10 +19,10 @@ main.cgu>form>article {
     padding: 1rem;
 }
 
-main.cgu>form>a[lang] {
+main.cgs>form>a[lang] {
     align-self: end;
 }
 
-main.cgu>form>nav {
+main.cgs>form>nav {
     padding-top: 1.5rem;
 }

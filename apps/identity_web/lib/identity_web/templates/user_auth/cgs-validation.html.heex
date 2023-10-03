@@ -1,12 +1,12 @@
-<main class="arrows cgu">
+<main class="arrows cgs">
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
   <%= oauth_header "auth", @client %>
-  <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :validate_cgu)}>
+  <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :validate_cgs)}>
     <%= if @lang == "en" do %>
-      <%= link gettext("See the french original version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=fr", class: "btn", lang: "fr"%>
+      <%= link gettext("See the french original version"), to: Routes.user_auth_path(@conn, :validate_cgs_page) <> "?lang=fr", class: "btn", lang: "fr"%>
     <% else %>
-      <%= link gettext("See the english translated version"), to: Routes.user_auth_path(@conn, :validate_cgu_page) <> "?lang=en", class: "btn", lang: "en"%>
+      <%= link gettext("See the english translated version"), to: Routes.user_auth_path(@conn, :validate_cgs_page) <> "?lang=en", class: "btn", lang: "en"%>
     <% end %>
 
     <%= if @error_message do %>
@@ -14,11 +14,11 @@
     <% end %>
 
     <article>
-      <%= raw @cgu_text %>
+      <%= raw @cgs_text %>
     </article>
     
       <%= hidden_input f, :lang, value: @lang %>
-      <%= hidden_input f, :cgu_id, value: @cgu_id %>
+      <%= hidden_input f, :cgs_id, value: @cgs_id %>
     <nav>
       <%= link gettext("I refuse and logout"), to: Routes.user_auth_path(@conn, :cancel_login), class: "btn"%>
       <%= submit gettext("I accept"), class: "primary lenra-icon-check" %>

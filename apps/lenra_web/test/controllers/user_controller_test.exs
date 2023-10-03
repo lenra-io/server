@@ -16,7 +16,7 @@ defmodule LenraWeb.UserControllerTest do
     "password_confirmation" => "Johndoe@thefirst"
   }
 
-  @tag auth_user_with_cgu: :unverified_user
+  @tag auth_user_with_cgs: :unverified_user
   test "code verification test", %{conn: conn} do
     email = @john_doe_user_params["email"]
 
@@ -34,7 +34,7 @@ defmodule LenraWeb.UserControllerTest do
     assert %{"first_name" => "John", "last_name" => "Doe"} = json_response(conn, 200)
   end
 
-  @tag auth_user_with_cgu: :unverified_user
+  @tag auth_user_with_cgs: :unverified_user
   test "code verification error test", %{conn: conn!} do
     conn! = post(conn!, Routes.user_path(conn!, :validate_user, %{"code" => "12345678"}))
 
@@ -42,7 +42,7 @@ defmodule LenraWeb.UserControllerTest do
              json_response(conn!, 400)
   end
 
-  @tag :auth_user_with_cgu
+  @tag :auth_user_with_cgs
   test "change password test", %{conn: conn} do
     new_password = "New@password"
 
@@ -61,7 +61,7 @@ defmodule LenraWeb.UserControllerTest do
     assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.fr", new_password)
   end
 
-  @tag :auth_user_with_cgu
+  @tag :auth_user_with_cgs
   test "change password error test", %{conn: conn} do
     conn =
       put(
@@ -161,14 +161,14 @@ defmodule LenraWeb.UserControllerTest do
   #   assert %{} = json_response(conn!, 400)
   # end
 
-  # @tag auth_user_with_cgu: :user
+  # @tag auth_user_with_cgs: :user
   # test "change lost password wrong email test", %{conn: conn} do
   #   conn = post(conn, Routes.user_path(conn, :send_lost_password_code, %{email: "wrong@email.me"}))
 
   #   assert %{} = json_response(conn, 200)
   # end
 
-  # @tag auth_user_with_cgu: :user
+  # @tag auth_user_with_cgs: :user
   # test "change lost password error code test", %{conn: conn} do
   #   post(conn, Routes.user_path(conn, :send_lost_password_code, @john_doe_user_params))
 
@@ -189,7 +189,7 @@ defmodule LenraWeb.UserControllerTest do
   #          } = json_response(conn, 400)
   # end
 
-  # @tag auth_user_with_cgu: :user
+  # @tag auth_user_with_cgs: :user
   # test "change lost password error password test", %{conn: conn} do
   #   %{assigns: %{user: user}} = conn
 
@@ -216,7 +216,7 @@ defmodule LenraWeb.UserControllerTest do
 
   @tag :auth_user
   test "change password code 4 time with password 1 test", %{conn: conn!} do
-    Repo.delete_all("cgu")
+    Repo.delete_all("cgs")
     new_password = "Newpassword@"
     new_password_2 = "Newpassword@2"
     new_password_3 = "Newpassword@3"
@@ -263,14 +263,14 @@ defmodule LenraWeb.UserControllerTest do
     assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.fr", "Johndoe@thefirst")
   end
 
-  @tag :auth_user_with_cgu
+  @tag :auth_user_with_cgs
   test "validate dev user", %{conn: conn} do
     conn = put(conn, Routes.user_path(conn, :validate_dev))
 
     assert %{} = json_response(conn, 200)
   end
 
-  @tag auth_user_with_cgu: :dev
+  @tag auth_user_with_cgs: :dev
   test "validate dev user already dev", %{conn: conn} do
     conn = put(conn, Routes.user_path(conn, :validate_dev))
 
