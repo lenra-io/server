@@ -1,4 +1,4 @@
-The terms and conditions of use (CGS in french) are managed thanks to markdown files.
+The terms and conditions of service (CGS in french) are managed thanks to markdown files.
 
 The markdown files are located in the `apps/identity_web/priv/static/cgs/` folder.
 
