@@ -72,7 +72,11 @@ if config_env() == :prod do
     view_timeout: String.to_integer(System.fetch_env!("VIEW_TIMEOUT")),
     manifest_timeout: String.to_integer(System.fetch_env!("MANIFEST_TIMEOUT")),
     env: System.fetch_env!("ENVIRONMENT"),
-    scale_to_zero: System.get_env("SCALE_TO_ZERO", "true") == "true"
+    scale_to_zero: System.get_env("SCALE_TO_ZERO", "true") == "true",
+    faas_request_cpu: System.get_env("FAAS_REQUEST_CPU", "50m"),
+    faas_request_memory: System.get_env("FAAS_REQUEST_MEMORY", "128Mi"),
+    faas_limit_cpu: System.get_env("FAAS_LIMIT_CPU", "100m"),
+    faas_limit_memory: System.get_env("FAAS_LIMIT_MEMORY", "256Mi")
 
   config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET")
 
@@ -90,11 +94,7 @@ if config_env() == :prod do
     username: System.get_env("MONGO_USERNAME"),
     password: System.get_env("MONGO_PASSWORD"),
     ssl: System.get_env("MONGO_SSL", "false"),
-    auth_source: System.get_env("MONGO_AUTH_SOURCE"),
-    faas_request_cpu: System.get_env("FAAS_REQUEST_CPU", "50m"),
-    faas_request_memory: System.get_env("FAAS_REQUEST_MEMORY", "128Mi"),
-    faas_limit_cpu: System.get_env("FAAS_LIMIT_CPU", "100m"),
-    faas_limit_memory: System.get_env("FAAS_LIMIT_MEMORY", "256Mi")
+    auth_source: System.get_env("MONGO_AUTH_SOURCE")
 
   # Do not print debug messages in production
   config :logger, level: String.to_atom(System.get_env("LOG_LEVEL", "info"))

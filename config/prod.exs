@@ -14,5 +14,5 @@ config :lenra_web, LenraWeb.Endpoint,
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
-config :lenra,
+config :application_runner,
   faas_secrets: ["gitlab-registry"]
