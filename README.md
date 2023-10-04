@@ -64,7 +64,7 @@ Init git submodules : `git submodule update --init --recursive`
 
 You will then need to install and setup elixir prerequisites for the server to run properly :
 
-* Install erlang in version 24.2 and elixir in version 1.12.3 otp-24
+* Install erlang in version 24.2 and elixir in version 1.14.3 otp-24
 * Create the database and start migration `mix setup`. This is equivalent to running the following commands : 
   * `mix deps.get` to install the dependencies
   * `mix ecto.create` to create database
