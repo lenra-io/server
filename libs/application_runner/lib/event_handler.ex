@@ -80,8 +80,11 @@ defmodule ApplicationRunner.EventHandler do
 
     case listener do
       "navTo" ->
-        ApplicationRunner.RoutesChannel.get_name(session_id)
+        IO.inspect(ApplicationRunner.RoutesChannel.get_name(session_id))
         |> Swarm.send({:send, :navTo, props})
+
+      _ ->
+        Logger.warn("Unknown listener: #{inspect(listener)}")
     end
 
     {:reply, :ok, state}
