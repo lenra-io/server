@@ -70,7 +70,7 @@ defmodule ApplicationRunner.EventHandler do
 
   @impl true
   def handle_call(
-        {:send_event, "@lenra:" <> listener, props, event, uuid, session_id},
+        {:send_event, "@lenra:" <> listener, props, event, session_id, uuid},
         _from,
         state
       ) do
