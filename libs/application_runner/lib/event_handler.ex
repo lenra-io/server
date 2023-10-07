@@ -70,7 +70,7 @@ defmodule ApplicationRunner.EventHandler do
 
   @impl true
   def handle_call(
-        {:send_event, "@lenra:" <> listener, props, event, uuid, session_id},
+        {:send_event, "@lenra:" <> listener, props, event, session_id, uuid},
         _from,
         state
       ) do
@@ -82,6 +82,9 @@ defmodule ApplicationRunner.EventHandler do
       "navTo" ->
         ApplicationRunner.RoutesChannel.get_name(session_id)
         |> Swarm.send({:send, :navTo, props})
+
+      _ ->
+        Logger.warn("Unknown listener: #{inspect(listener)}")
     end
 
     {:reply, :ok, state}
