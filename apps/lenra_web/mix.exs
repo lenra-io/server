@@ -40,7 +40,7 @@ defmodule LenraWeb.MixProject do
       {:telemetry_poller, "~> 1.0.0"},
       {:plug_cowboy, "~> 2.6"},
       {:phoenix_ecto, "~> 4.4"},
-      {:sentry, "~> 8.0"},
+      {:sentry, "~> 9.1"},
       {:lenra, in_umbrella: true},
       {:hydra_api, in_umbrella: true},
       {:cors_plug, "~> 3.0", only: :dev, runtime: false},
