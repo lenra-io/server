@@ -80,7 +80,7 @@ defmodule ApplicationRunner.EventHandler do
 
     case listener do
       "navTo" ->
-        IO.inspect(ApplicationRunner.RoutesChannel.get_name(session_id))
+        ApplicationRunner.RoutesChannel.get_name(session_id)
         |> Swarm.send({:send, :navTo, props})
 
       _ ->
