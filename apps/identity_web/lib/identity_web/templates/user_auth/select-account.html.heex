@@ -1,0 +1,17 @@
+<main class="arrows">
+  <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+  <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/consent.css")} media="print" onload='this.media="all"'/>
+  <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
+  <%= oauth_header "consent", @client %>
+  <%# TODO: For each connected_users, add a link to select it %>
+  <h1>Choose an account</h1>
+  <ul>
+    <%= for user <- @connected_users do %>
+      <li>
+        <a href={Routes.user_auth_path(@conn, :new, user.id)}>
+          <%= user.email %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</main>

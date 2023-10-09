@@ -138,22 +138,53 @@ defmodule IdentityWeb.UserAuthController do
   #################
 
   # The "New" show the login/register form to the user if not already logged in.
-  def new(conn, %{"login_challenge" => login_challenge}) do
-    {:ok, response} = HydraApi.get_login_request(login_challenge)
+  def new(conn, %{"login_challenge" => login_challenges}) do
+    # login_challenges is an array of login_challenge
+    # Use array map to get response for each login_challenge
+    # and check if the user is already logged in.
 
-    if response.body["skip"] do
-      # Can do logic stuff here like update the session.
-      # The user is already logged in, skip login and redirect.
+    connected_client = login_challenges |>
+      Enum.reduce([], fn (login_challenge, acc) ->
+        {:ok, response} = HydraApi.get_login_request(login_challenge)
 
-      redirect_next_step(conn, Accounts.get_user(response.body["subject"]), login_challenge, true)
+        if response.body["skip"] do
+          # Can do logic stuff here like update the session.
+          # The user is already logged in, skip login and redirect.
+
+          acc ++ [response.body]
+        else
+          acc
+        end
+      end)
+
+    if length(connected_client) > 0 do
+      # TODO: Send an html page that ask for the user to choose which client to connect to.
+      select_account_page(conn, %{"connected_client" => connected_client})
     else
-      # client = response.body["client"]
-      conn
-      |> delete_session(:user_id)
-      |> delete_session(:remember)
-      |> delete_session(:email)
-      |> put_session(:login_challenge, login_challenge)
-      |> redirect(to: Routes.user_auth_path(conn, :register_page))
+      # The user is not logged in, show the login page.
+      login_page(conn, %{"login_challenge" => login_challenges})
+    end
+  end
+
+  def new(conn, %{"user_id" => user_id}) do
+    current_user = get_session(:login_challenge)
+      |> Enum.find(fn (login_challenge) ->
+        HydraApi.get_login_request(login_challenge) |> Map.get("subject") == user_id
+      end)
+
+    case current_user do
+      nil ->
+        conn
+        |> delete_session(:user_id)
+        |> delete_session(:email)
+        |> delete_session(:remember)
+        |> redirect(to: Routes.user_auth_path(conn, :register_page))
+        # TODO: Handle error page
+      _ ->
+        conn
+          |> delete_session(:email)
+          |> put_session(:user_id, current_user["subject"])
+          |> redirect_next_step(current_user)
     end
   end
 
@@ -163,6 +194,15 @@ defmodule IdentityWeb.UserAuthController do
   # Display the login page
   def login_page(conn, _params) do
     render_with_client(conn, "new.html",
+      submit_action: "login",
+      error_message: nil,
+      changeset: register_changeset_or_new(nil)
+    )
+  end
+
+  # Display the select_user page
+  def select_account_page(conn, _params) do
+    render_with_client(conn, "select_account.html",
       submit_action: "login",
       error_message: nil,
       changeset: register_changeset_or_new(nil)
@@ -183,8 +223,7 @@ defmodule IdentityWeb.UserAuthController do
     case Accounts.login_user(email, password) do
       {:ok, user} ->
         conn
-        |> put_session(:user_id, user.id)
-        |> put_session(:remember, remember == "true")
+        |> put_session(:user_accounts, get_session(conn, :user_accounts) ++ %{ "user_id" => user.id, "remember" => remember == "true" })
         |> redirect_next_step(user)
 
       _error ->
