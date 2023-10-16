@@ -37,6 +37,7 @@ defmodule LenraWeb.Plug.VerifyScope do
         |> reply_error(err)
         |> halt()
 
+      # In case the user from the token is nil, it means that the token is invalid
       nil ->
         conn
         |> reply_error(BusinessError.invalid_token())

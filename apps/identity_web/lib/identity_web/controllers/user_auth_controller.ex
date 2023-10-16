@@ -146,7 +146,8 @@ defmodule IdentityWeb.UserAuthController do
       # The user is already logged in, skip login and redirect.
 
       case Accounts.get_user(response.body["subject"]) do
-        nil -> {:error, "Bad access token"}
+        # In case the user from the token is nil, the token is invalid
+        nil -> {:error, {:invalid_token, "The token is invalid.", 403}}
         res -> redirect_next_step(conn, res, login_challenge, true)
       end
     else
