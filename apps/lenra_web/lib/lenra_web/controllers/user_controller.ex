@@ -2,16 +2,18 @@ defmodule LenraWeb.UserController do
   use LenraWeb, :controller
 
   alias Lenra.Accounts
+  alias LenraWeb.Errors.BusinessError
 
   def current_user(conn, _params) do
-    with %Lenra.Accounts.User{} = user <- LenraWeb.Auth.current_resource(conn) do
-      reply(conn, user)
-    else
+    case LenraWeb.Auth.current_resource(conn) do
+      %Lenra.Accounts.User{} = user ->
+        reply(conn, user)
+
       # In case the conn does not contain a user resource, the token is invalid
       _err ->
         conn
         |> put_view(LenraCommonWeb.BaseView)
-        |> assign_error(LenraWeb.Errors.BusinessError.invalid_token())
+        |> assign_error(BusinessError.invalid_token())
         |> reply()
     end
   end
