@@ -145,7 +145,11 @@ defmodule IdentityWeb.UserAuthController do
       # Can do logic stuff here like update the session.
       # The user is already logged in, skip login and redirect.
 
-      redirect_next_step(conn, Accounts.get_user(response.body["subject"]), login_challenge, true)
+      case Accounts.get_user(response.body["subject"]) do
+        # In case the user from the token is nil, the token is invalid
+        nil -> {:error, {:invalid_token, "The token is invalid.", 403}}
+        res -> redirect_next_step(conn, res, login_challenge, true)
+      end
     else
       # client = response.body["client"]
       conn
