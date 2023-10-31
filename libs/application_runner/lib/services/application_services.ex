@@ -14,7 +14,7 @@ defmodule ApplicationRunner.ApplicationServices do
   @min_scale_label "com.openfaas.scale.min"
   @max_scale_label "com.openfaas.scale.max"
   @scale_factor_label "com.openfaas.scale.factor"
-  @min_scale_default "0"
+  @min_scale_default "1"
   @max_scale_default "5"
   @scale_factor_default "10"
 
@@ -206,7 +206,7 @@ defmodule ApplicationRunner.ApplicationServices do
           image_name,
           %{
             @min_scale_label => @min_scale_default,
-            @max_scale_label => replicas,
+            @max_scale_label => to_string(replicas),
             @scale_factor_label => @scale_factor_default
           }
         )
@@ -337,6 +337,7 @@ defmodule ApplicationRunner.ApplicationServices do
 
   defp response({:ok, %Finch.Response{status: status_code}}, :deploy_app)
        when status_code in [200, 202] do
+    Logger.debug("Openfaas application deployed")
     {:ok, status_code}
   end
 

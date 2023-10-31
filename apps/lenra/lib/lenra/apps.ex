@@ -335,6 +335,9 @@ defmodule Lenra.Apps do
       update_deployement(deployment, status: :waitingForAppReady)
 
       spawn(fn ->
+        Logger.debug(
+          "#{__MODULE__} start waiting for app ready with params #{inspect(%{build: build, loaded_app: loaded_app, deployment: deployment})}"
+        )
         update_deployement_after_deploy(
           deployment,
           loaded_app.main_env.environment,
