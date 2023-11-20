@@ -34,7 +34,7 @@ defmodule Lenra.MixProject do
     [
       {:phoenix_pubsub, "~> 2.1.1"},
       {:telemetry, "~> 1.2.0", override: true},
-      {:ecto_sql, "~> 3.9.2"},
+      {:ecto_sql, "~> 3.11.0"},
       {:bamboo, "~> 2.2.0"},
       {:bamboo_smtp, "~> 4.2.2"},
       {:postgrex, "~> 0.16.5"},
