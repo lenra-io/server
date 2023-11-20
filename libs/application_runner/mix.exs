@@ -40,7 +40,7 @@ defmodule ApplicationRunner.MixProject do
       {:json_diff, "~> 0.1.3"},
       {:telemetry, "~> 1.2.0"},
       {:swarm, "~> 3.4"},
-      {:ecto_sql, "~> 3.9.2"},
+      {:ecto_sql, "~> 3.11.0"},
       {:postgrex, "~> 0.16.5"},
       {:guardian, "~> 2.3.1"},
       {:phoenix, "~> 1.6.15"},
