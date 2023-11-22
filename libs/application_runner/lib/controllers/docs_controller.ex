@@ -213,9 +213,7 @@ defmodule ApplicationRunner.DocsController do
              doc_id,
              transaction_id
            ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
@@ -230,9 +228,7 @@ defmodule ApplicationRunner.DocsController do
       ) do
     with :ok <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :delete_doc, [env.id, coll, doc_id]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
@@ -278,7 +274,15 @@ defmodule ApplicationRunner.DocsController do
     end
   end
 
-  def find(conn, %{"coll" => coll}, filter, %{environment: env}, replace_params) do
+  def find(
+        conn,
+        %{"coll" => coll},
+        %{
+          "query" => query
+        },
+        %{environment: env},
+        replace_params
+      ) do
     Logger.warning(
       "This form of query is deprecated, prefer using: {query: <your query>, projection: {projection}}, more info at: https://www.mongodb.com/docs/manual/reference/method/db.collection.find/#mongodb-method-db.collection.find"
     )
@@ -287,7 +291,7 @@ defmodule ApplicationRunner.DocsController do
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
              env.id,
              coll,
-             Parser.replace_params(filter, replace_params)
+             Parser.replace_params(query, replace_params)
            ]) do
       Logger.debug(
         "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
@@ -370,9 +374,7 @@ defmodule ApplicationRunner.DocsController do
              transaction_id,
              env.id
            ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
@@ -390,9 +392,7 @@ defmodule ApplicationRunner.DocsController do
              transaction_id,
              env.id
            ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
