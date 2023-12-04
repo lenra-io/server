@@ -43,7 +43,7 @@ defmodule Lenra.MixProject do
       {:guardian, "~> 2.3.1"},
       {:guardian_db, "~> 2.1"},
       {:argon2_elixir, "~> 3.0"},
-      {:sentry, "~> 8.0.6"},
+      {:sentry, "~> 10.0.3"},
       {:bypass, "~> 2.1", only: :test},
       {:event_queue, git: "https://github.com/lenra-io/event-queue.git", tag: "v1.0.0"},
       {:earmark, "~> 1.4.20", only: [:dev, :test], runtime: false},
