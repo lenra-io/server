@@ -70,6 +70,9 @@ defmodule ApplicationRunner.DocsController do
     end
   end
 
+  def create(conn, %{"coll" => coll}, docs, %{environment: env, transaction_id: transaction_id}, replace_params) do
+  end
+
   def create(
         conn,
         %{"coll" => coll},
@@ -168,9 +171,7 @@ defmodule ApplicationRunner.DocsController do
              doc_id,
              transaction_id
            ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
@@ -185,9 +186,7 @@ defmodule ApplicationRunner.DocsController do
       ) do
     with :ok <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :delete_doc, [env.id, coll, doc_id]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
@@ -310,9 +309,7 @@ defmodule ApplicationRunner.DocsController do
              transaction_id,
              env.id
            ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
@@ -330,9 +327,7 @@ defmodule ApplicationRunner.DocsController do
              transaction_id,
              env.id
            ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
-      )
+      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
 
       reply(conn)
     end
