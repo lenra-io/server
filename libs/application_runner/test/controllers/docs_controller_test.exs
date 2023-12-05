@@ -116,14 +116,17 @@ defmodule ApplicationRunner.DocsControllerTest do
     end
 
     test "Should create multiple docs if a list is passed", %{conn: conn, token: token, mongo_pid: mongo_pid} do
+      assert {:ok, body} = Jason.encode([%{"foo" => "bar"}, %{"foo" => "baz"}])
+
       conn =
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.docs_path(conn, :create, @coll), [%{"foo" => "bar"}, %{"foo" => "baz"}])
+        |> Plug.Conn.put_req_header("content-type", "application/json")
+        |> post(Routes.docs_path(conn, :create, "multipledocs"), body)
 
       assert %{} = json_response(conn, 200)
 
-      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, "multipledocs", %{}) |> Enum.to_list()
     end
   end
 

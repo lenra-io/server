@@ -88,7 +88,7 @@ defmodule ApplicationRunner.MongoStorage do
 
       {:ok, res} ->
         # TODO: Think about something to return
-        {:ok, {}}
+        {:ok, %{}}
     end
   end
 
@@ -108,7 +108,7 @@ defmodule ApplicationRunner.MongoStorage do
 
       {:ok, res} ->
         # TODO: Think about something to return
-        {:ok, {}}
+        {:ok, %{}}
     end
   end
 
