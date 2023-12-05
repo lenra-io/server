@@ -77,10 +77,10 @@ defmodule ApplicationRunner.DocsController do
            MongoInstance.run_mongo_task(env.id, MongoStorage, :create_docs, [
              env.id,
              coll,
-             Parser.replace_params(filtered_doc, replace_params)
+             Parser.replace_params(filtered_docs, replace_params)
            ]) do
       Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs_res)}"
       )
 
       reply(conn, docs_res)
