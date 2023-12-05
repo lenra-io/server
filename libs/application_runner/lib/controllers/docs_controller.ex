@@ -77,6 +77,24 @@ defmodule ApplicationRunner.DocsController do
            MongoInstance.run_mongo_task(env.id, MongoStorage, :create_docs, [
              env.id,
              coll,
+             Parser.replace_params(filtered_docs, replace_params),
+             transaction_id
+           ]) do
+      Logger.debug(
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs_res)}"
+      )
+
+      reply(conn, docs_res)
+    end
+  end
+
+  def create(conn, %{"coll" => coll}, docs, %{environment: env}, replace_params)
+      when is_list(docs) do
+    with filtered_docs <- IO.inspect(Enum.map(docs, fn doc -> Map.delete(doc, "_id") end)),
+         {:ok, docs_res} <-
+           MongoInstance.run_mongo_task(env.id, MongoStorage, :create_docs, [
+             env.id,
+             coll,
              Parser.replace_params(filtered_docs, replace_params)
            ]) do
       Logger.debug(

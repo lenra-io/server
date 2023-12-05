@@ -119,9 +119,9 @@ defmodule ApplicationRunner.DocsControllerTest do
       conn =
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.docs_path(conn, :create, @coll), [%{"foo" => "bar"}, %{"foo" => "baz"}])
+        |> Plug.Conn.put_req_header("content-type", "application/json")
+        |> post(Routes.docs_path(conn, :create, @coll), Poison.encode!([%{"foo" => "bar"}, %{"foo" => "baz"}]))
 
-      IO.inspect(Poison.encode!([%{"foo" => "bar"}, %{"foo" => "baz"}]))
       assert %{} = json_response(conn, 200)
 
       assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()

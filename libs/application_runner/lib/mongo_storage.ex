@@ -92,6 +92,26 @@ defmodule ApplicationRunner.MongoStorage do
     end
   end
 
+  def create_docs(env_id, coll, doc, session_uuid) do
+    Logger.debug(
+      "#{__MODULE__} create_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(doc)}, session_uuid: #{inspect(session_uuid)}"
+    )
+
+    decoded_docs = Enum.map(docs, fn doc -> decode_ids(doc) end)
+
+    env_id
+    |> mongo_instance()
+    |> Mongo.insert_many(coll, decoded_docs, session: Swarm.whereis_name(session_uuid))
+    |> case do
+      {:error, err} ->
+        TechnicalError.mongo_error_tuple(err)
+
+      {:ok, res} ->
+        # TODO: Think about something to return
+        {:ok, {}}
+    end
+  end
+
   @spec create_doc(number(), String.t(), map(), any()) ::
           {:ok, map()} | {:error, TechnicalErrorType.t()}
   def create_doc(env_id, coll, doc) do
