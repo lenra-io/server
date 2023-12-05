@@ -72,7 +72,7 @@ defmodule ApplicationRunner.DocsController do
 
   def create(conn, %{"coll" => coll}, docs, %{environment: env, transaction_id: transaction_id}, replace_params)
       when is_list(docs) do
-    with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
+    with filtered_docs <- IO.inspect(Enum.map(docs, fn doc -> Map.delete(doc, "_id") end)),
          {:ok, docs_res} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :create_docs, [
              env.id,

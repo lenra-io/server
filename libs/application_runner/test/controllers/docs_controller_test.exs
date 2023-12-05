@@ -27,8 +27,7 @@ defmodule ApplicationRunner.DocsControllerTest do
       {Task.Supervisor,
        name:
          {:via, :swarm,
-          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
-           Environment.MongoInstance.get_name(env.id)}}}
+          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, Environment.MongoInstance.get_name(env.id)}}}
     )
 
     Mongo.drop_collection(pid, @coll)
@@ -113,8 +112,19 @@ defmodule ApplicationRunner.DocsControllerTest do
 
       assert %{} = json_response(conn, 200)
 
-      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] =
-               Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
+    end
+
+    test "Should create multiple docs if a list is passed", %{conn: conn, token: token, mongo_pid: mongo_pid} do
+      conn =
+        conn
+        |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
+        |> post(Routes.docs_path(conn, :create, @coll), [%{"foo" => "bar"}, %{"foo" => "baz"}])
+
+      IO.inspect(Poison.encode!([%{"foo" => "bar"}, %{"foo" => "baz"}]))
+      assert %{} = json_response(conn, 200)
+
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
     end
   end
 
