@@ -119,8 +119,7 @@ defmodule ApplicationRunner.DocsControllerTest do
       conn =
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
-        |> Plug.Conn.put_req_header("content-type", "application/json")
-        |> post(Routes.docs_path(conn, :create, @coll), Poison.encode!([%{"foo" => "bar"}, %{"foo" => "baz"}]))
+        |> post(Routes.docs_path(conn, :create, @coll), [%{"foo" => "bar"}, %{"foo" => "baz"}])
 
       assert %{} = json_response(conn, 200)
 

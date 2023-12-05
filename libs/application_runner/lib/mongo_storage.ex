@@ -92,9 +92,9 @@ defmodule ApplicationRunner.MongoStorage do
     end
   end
 
-  def create_docs(env_id, coll, doc, session_uuid) do
+  def create_docs(env_id, coll, docs, session_uuid) do
     Logger.debug(
-      "#{__MODULE__} create_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(doc)}, session_uuid: #{inspect(session_uuid)}"
+      "#{__MODULE__} create_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(docs)}, session_uuid: #{inspect(session_uuid)}"
     )
 
     decoded_docs = Enum.map(docs, fn doc -> decode_ids(doc) end)
