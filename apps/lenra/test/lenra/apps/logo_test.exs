@@ -45,13 +45,15 @@ defmodule Lenra.Apps.LogoTest do
       logo = Enum.at(Repo.all(Logo), 0)
 
       assert %Image{
-              #  creator_id: app.creator_id, type: image_type, data: image_data
+              #  creator_id: app.creator.id,
+               type: image_type,
+               data: image_data
              } = image
 
       assert %Logo{
-                # application_id: app.id,
-                # environment_id: nil,
-                # image_id: image.id
+               # application_id: app.id,
+               # environment_id: nil,
+               # image_id: image.id
              } = logo
     end
 
