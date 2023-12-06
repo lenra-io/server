@@ -1,6 +1,6 @@
 defmodule Lenra.Apps.Image do
   @moduledoc """
-    The environment schema.
+    The image schema.
   """
 
   use Lenra.Schema

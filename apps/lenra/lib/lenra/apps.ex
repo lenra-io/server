@@ -642,19 +642,42 @@ defmodule Lenra.Apps do
 
   def set_logo(user_id, %{"app_id" => app_id, "env_id" => env_id} = params) do
     Ecto.Multi.new()
-    # TODO: create the image
+    # create the image
     |> Ecto.Multi.insert(:inserted_image, Image.new(user_id, params))
-    # TODO: check if there already a logo for this app (or env ?)
-    # |> Ecto.Multi.insert(:inserted_image, Image.new(user_id, params))
-    |> Ecto.Multi.insert(:inserted_logo, Logo.new(app_id, env_id, image_id))
-    # TODO: update the app/env with the image id
-    # TODO: delete the previous image if it's not used anymore
-    |> create_env_multi(user_id, %{name: "live", is_ephemeral: false, is_public: false})
-    |> Ecto.Multi.insert(:application_main_env, fn %{
-                                                     inserted_application: app,
-                                                     inserted_env: env
-                                                   } ->
-      MainEnv.new(app.id, env.id)
+    # check if there already a logo for this app (or env ?)
+    |> Ecto.Multi.one(
+      :old_logo,
+      if env_id == nil do
+        from(
+          l in Logo,
+          where:
+            l.application_id == ^app_id and
+              is_nil(l.environment_id)
+        )
+      else
+        from(
+          l in Logo,
+          where:
+            l.application_id == ^app_id and
+              l.environment_id == ^env_id
+        )
+      end
+    )
+    #  update the app/env with the image id
+    |> Ecto.Multi.run(:new_logo, fn transaction, %{inserted_image: image, old_logo: old_logo} ->
+      if old_logo == nil do
+        transaction.insert(Logo.new(app_id, env_id, %{image_id: image.id}))
+      else
+        result = transaction.update(Map.put(old_logo, :image_id, image.id))
+
+        # delete the previous image if it's not used anymore
+        if !transaction.exists?(Logo, image_id: old_logo.image_id) do
+          old_image = transaction.get!(Image, old_logo.image_id)
+          transaction.delete(old_image)
+        end
+
+        result
+      end
     end)
     |> Repo.transaction()
   end

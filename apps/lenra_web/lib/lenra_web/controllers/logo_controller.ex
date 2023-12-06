@@ -5,7 +5,6 @@ defmodule LenraWeb.LogosController do
     module: LenraWeb.BuildsController.Policy
 
   alias Lenra.Apps
-  alias Lenra.Apps.Image
 
   # TODO: check the "data" and "type" types
   def put_logo(conn, %{"app_id" => app_id, "data" => data, "type" => _type} = params) do

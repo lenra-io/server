@@ -1,6 +1,6 @@
 defmodule Lenra.Apps.Logo do
   @moduledoc """
-    The environment schema.
+    The logo schema.
   """
 
   use Lenra.Schema
@@ -25,20 +25,20 @@ defmodule Lenra.Apps.Logo do
     timestamps()
   end
 
-  def changeset(logo) do
+  def changeset(logo, params) do
     logo
+    |> cast(params, [:image_id])
     |> validate_required([:application_id, :image_id])
     |> foreign_key_constraint(:application_id)
     |> foreign_key_constraint(:environment_id)
     |> foreign_key_constraint(:image_id)
   end
 
-  def new(application_id, environment_id, image_id) do
+  def new(application_id, environment_id, params \\ %{}) do
     %__MODULE__{
       application_id: application_id,
-      environment_id: environment_id,
-      image_id: image_id
+      environment_id: environment_id
     }
-    |> __MODULE__.changeset()
+    |> __MODULE__.changeset(params)
   end
 end
