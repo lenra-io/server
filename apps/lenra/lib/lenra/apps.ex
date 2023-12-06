@@ -19,6 +19,8 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
+  alias Lenra.Apps.Logo
+  alias Lenra.Apps.Image
   alias ApplicationRunner.ApplicationServices
 
   alias Lenra.Repo
@@ -338,6 +340,7 @@ defmodule Lenra.Apps do
         Logger.debug(
           "#{__MODULE__} start waiting for app ready with params #{inspect(%{build: build, loaded_app: loaded_app, deployment: deployment})}"
         )
+
         update_deployement_after_deploy(
           deployment,
           loaded_app.main_env.environment,
@@ -633,5 +636,26 @@ defmodule Lenra.Apps do
       error_tuple, _acc ->
         {:halt, error_tuple}
     end)
+  end
+
+  # Manage Images
+
+  def set_logo(user_id, %{"app_id" => app_id, "env_id" => env_id} = params) do
+    Ecto.Multi.new()
+    # TODO: create the image
+    |> Ecto.Multi.insert(:inserted_image, Image.new(user_id, params))
+    # TODO: check if there already a logo for this app (or env ?)
+    # |> Ecto.Multi.insert(:inserted_image, Image.new(user_id, params))
+    |> Ecto.Multi.insert(:inserted_logo, Logo.new(app_id, env_id, image_id))
+    # TODO: update the app/env with the image id
+    # TODO: delete the previous image if it's not used anymore
+    |> create_env_multi(user_id, %{name: "live", is_ephemeral: false, is_public: false})
+    |> Ecto.Multi.insert(:application_main_env, fn %{
+                                                     inserted_application: app,
+                                                     inserted_env: env
+                                                   } ->
+      MainEnv.new(app.id, env.id)
+    end)
+    |> Repo.transaction()
   end
 end

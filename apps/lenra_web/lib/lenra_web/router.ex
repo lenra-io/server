@@ -1,6 +1,7 @@
 defmodule LenraWeb.Router do
   use LenraWeb, :router
 
+  alias LenraWeb.LogosController
   alias LenraWeb.Plug
 
   require ApplicationRunner.Router
@@ -110,6 +111,10 @@ defmodule LenraWeb.Router do
 
     # Invitations to env
     resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+
+    # App logo
+    put("/:app_id/logo", LogosController, :put_logo)
+    put("/:app_id/environments/:env_id/logo", LogosController, :put_logo)
 
     get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
     post("/invitations/:id", UserEnvironmentAccessController, :accept)
