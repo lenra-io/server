@@ -56,7 +56,7 @@ defmodule ApplicationRunner.ApplicationServices do
 
     headers = [
       {"Content-Type", "application/json"},
-      {"Content-length", to_string(String.length(body))} | base_headers
+      {"Content-length", to_string(byte_size(body))} | base_headers
     ]
 
     Logger.debug("Call to Openfaas : #{function_name}")
@@ -95,7 +95,7 @@ defmodule ApplicationRunner.ApplicationServices do
 
     headers = [
       {"Content-Type", "application/json"},
-      {"Content-length", to_string(String.length(body))} | base_headers
+      {"Content-length", to_string(byte_size(body))} | base_headers
     ]
 
     Logger.debug("Fetch application view \n#{url} : \n#{body}")
@@ -160,7 +160,7 @@ defmodule ApplicationRunner.ApplicationServices do
 
     headers = [
       {"Content-Type", "application/json"},
-      {"Content-length", to_string(String.length(body))} | base_headers
+      {"Content-length", to_string(byte_size(body))} | base_headers
     ]
 
     Finch.build(:post, url, headers, body)
