@@ -122,11 +122,11 @@ defmodule ApplicationRunner.DocsControllerTest do
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
         |> Plug.Conn.put_req_header("content-type", "application/json")
-        |> post(Routes.docs_path(conn, :create, "multipledocs"), body)
+        |> post(Routes.docs_path(conn, :create, "insert_many"), body)
 
       assert %{} = json_response(conn, 200)
 
-      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, "multipledocs", %{}) |> Enum.to_list()
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, "insert_many", %{}) |> Enum.to_list()
     end
   end
 

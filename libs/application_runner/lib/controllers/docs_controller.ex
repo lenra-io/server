@@ -80,7 +80,7 @@ defmodule ApplicationRunner.DocsController do
       when is_list(docs) do
     with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
          {:ok, docs_res} <-
-           MongoInstance.run_mongo_task(env.id, MongoStorage, :create_docs, [
+           MongoInstance.run_mongo_task(env.id, MongoStorage, :insert_many, [
              env.id,
              coll,
              Parser.replace_params(filtered_docs, replace_params),
@@ -97,7 +97,7 @@ defmodule ApplicationRunner.DocsController do
   def create(conn, %{"coll" => coll}, %{"_json" => docs}, %{environment: env}, replace_params) when is_list(docs) do
     with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
          {:ok, docs_res} <-
-           MongoInstance.run_mongo_task(env.id, MongoStorage, :create_docs, [
+           MongoInstance.run_mongo_task(env.id, MongoStorage, :insert_many, [
              env.id,
              coll,
              Parser.replace_params(filtered_docs, replace_params)

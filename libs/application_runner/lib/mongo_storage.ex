@@ -74,8 +74,8 @@ defmodule ApplicationRunner.MongoStorage do
   @doc """
   Creates documents from the specified `docs`
   """
-  def create_docs(env_id, coll, docs) do
-    Logger.debug("#{__MODULE__} create_docs for env_id: #{env_id}, coll: #{coll}, docs: #{inspect(docs)}")
+  def insert_many(env_id, coll, docs) do
+    Logger.debug("#{__MODULE__} insert_many for env_id: #{env_id}, coll: #{coll}, docs: #{inspect(docs)}")
 
     decoded_docs = Enum.map(docs, fn doc -> decode_ids(doc) end)
 
@@ -92,7 +92,7 @@ defmodule ApplicationRunner.MongoStorage do
     end
   end
 
-  def create_docs(env_id, coll, docs, session_uuid) do
+  def insert_many(env_id, coll, docs, session_uuid) do
     Logger.debug(
       "#{__MODULE__} create_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(docs)}, session_uuid: #{inspect(session_uuid)}"
     )
