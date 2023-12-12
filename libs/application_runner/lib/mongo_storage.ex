@@ -48,7 +48,9 @@ defmodule ApplicationRunner.MongoStorage do
 
   @spec get_mongo_user_link!(number(), number()) :: any
   def get_mongo_user_link!(env_id, user_id) do
-    repo().one!(from(mul in MongoUserLink, where: mul.user_id == ^user_id and mul.environment_id == ^env_id))
+    repo().one!(
+      from(mul in MongoUserLink, where: mul.user_id == ^user_id and mul.environment_id == ^env_id)
+    )
   end
 
   @spec has_user_link?(number(), number()) :: any()
@@ -75,7 +77,9 @@ defmodule ApplicationRunner.MongoStorage do
   Creates documents from the specified `docs`
   """
   def insert_many(env_id, coll, docs) do
-    Logger.debug("#{__MODULE__} insert_many for env_id: #{env_id}, coll: #{coll}, docs: #{inspect(docs)}")
+    Logger.debug(
+      "#{__MODULE__} insert_many for env_id: #{env_id}, coll: #{coll}, docs: #{inspect(docs)}"
+    )
 
     decoded_docs = Enum.map(docs, fn doc -> decode_ids(doc) end)
 
@@ -115,7 +119,9 @@ defmodule ApplicationRunner.MongoStorage do
   @spec create_doc(number(), String.t(), map(), any()) ::
           {:ok, map()} | {:error, TechnicalErrorType.t()}
   def create_doc(env_id, coll, doc) do
-    Logger.debug("#{__MODULE__} create_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(doc)}")
+    Logger.debug(
+      "#{__MODULE__} create_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(doc)}"
+    )
 
     decoded_doc = decode_ids(doc)
 
@@ -152,7 +158,9 @@ defmodule ApplicationRunner.MongoStorage do
 
   @spec fetch_doc(number(), String.t(), term()) :: {:ok, map()} | {:error, TechnicalErrorType.t()}
   def fetch_doc(env_id, coll, doc_id) when is_bitstring(doc_id) do
-    Logger.debug("#{__MODULE__} fetch_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(doc_id)}")
+    Logger.debug(
+      "#{__MODULE__} fetch_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(doc_id)}"
+    )
 
     with {:ok, bson_doc_id} <- decode_object_id(doc_id) do
       fetch_doc(env_id, coll, bson_doc_id)
@@ -160,7 +168,9 @@ defmodule ApplicationRunner.MongoStorage do
   end
 
   def fetch_doc(env_id, coll, bson_doc_id) when is_struct(bson_doc_id, BSON.ObjectId) do
-    Logger.debug("#{__MODULE__} fetch_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(bson_doc_id)}")
+    Logger.debug(
+      "#{__MODULE__} fetch_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(bson_doc_id)}"
+    )
 
     env_id
     |> mongo_instance()
@@ -194,7 +204,9 @@ defmodule ApplicationRunner.MongoStorage do
   @spec filter_docs(number(), String.t(), map(), keyword()) ::
           {:ok, list(map())} | {:error, TechnicalErrorType.t()}
   def filter_docs(env_id, coll, filter, opts \\ []) do
-    Logger.debug("#{__MODULE__} filter_docs for env_id: #{env_id}, coll: #{coll}, filter: #{inspect(filter)}")
+    Logger.debug(
+      "#{__MODULE__} filter_docs for env_id: #{env_id}, coll: #{coll}, filter: #{inspect(filter)}"
+    )
 
     clean_filter = decode_ids(filter)
 
@@ -243,7 +255,9 @@ defmodule ApplicationRunner.MongoStorage do
          {_value, filtered_doc} <- Map.pop(decoded_doc, "_id") do
       env_id
       |> mongo_instance()
-      |> Mongo.replace_one(coll, %{"_id" => bson_doc_id}, filtered_doc, session: Swarm.whereis_name(session_uuid))
+      |> Mongo.replace_one(coll, %{"_id" => bson_doc_id}, filtered_doc,
+        session: Swarm.whereis_name(session_uuid)
+      )
       |> case do
         {:error, err} ->
           TechnicalError.mongo_error_tuple(err)
@@ -272,7 +286,9 @@ defmodule ApplicationRunner.MongoStorage do
 
   @spec delete_doc(number(), String.t(), String.t()) :: :ok | {:error, TechnicalErrorType.t()}
   def delete_doc(env_id, coll, doc_id) do
-    Logger.debug("#{__MODULE__} update_doc for env_id: #{env_id}, coll: #{coll}, doc_id: #{inspect(doc_id)}")
+    Logger.debug(
+      "#{__MODULE__} update_doc for env_id: #{env_id}, coll: #{coll}, doc_id: #{inspect(doc_id)}"
+    )
 
     with {:ok, bson_doc_id} <- decode_object_id(doc_id) do
       env_id

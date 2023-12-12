@@ -27,7 +27,8 @@ defmodule ApplicationRunner.DocsControllerTest do
       {Task.Supervisor,
        name:
          {:via, :swarm,
-          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, Environment.MongoInstance.get_name(env.id)}}}
+          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
+           Environment.MongoInstance.get_name(env.id)}}}
     )
 
     Mongo.drop_collection(pid, @coll)
@@ -112,10 +113,15 @@ defmodule ApplicationRunner.DocsControllerTest do
 
       assert %{} = json_response(conn, 200)
 
-      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] =
+               Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
     end
 
-    test "Should create multiple docs if a list is passed", %{conn: conn, token: token, mongo_pid: mongo_pid} do
+    test "Should create multiple docs if a list is passed", %{
+      conn: conn,
+      token: token,
+      mongo_pid: mongo_pid
+    } do
       assert {:ok, body} = Jason.encode([%{"foo" => "bar"}, %{"foo" => "baz"}])
 
       conn =
@@ -126,7 +132,8 @@ defmodule ApplicationRunner.DocsControllerTest do
 
       assert %{} = json_response(conn, 200)
 
-      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, "insert_many", %{}) |> Enum.to_list()
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] =
+               Mongo.find(mongo_pid, "insert_many", %{}) |> Enum.to_list()
     end
   end
 

@@ -94,7 +94,8 @@ defmodule ApplicationRunner.DocsController do
     end
   end
 
-  def create(conn, %{"coll" => coll}, %{"_json" => docs}, %{environment: env}, replace_params) when is_list(docs) do
+  def create(conn, %{"coll" => coll}, %{"_json" => docs}, %{environment: env}, replace_params)
+      when is_list(docs) do
     with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
          {:ok, docs_res} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :insert_many, [
@@ -208,7 +209,9 @@ defmodule ApplicationRunner.DocsController do
              doc_id,
              transaction_id
            ]) do
-      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
+      Logger.debug(
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
+      )
 
       reply(conn)
     end
@@ -223,7 +226,9 @@ defmodule ApplicationRunner.DocsController do
       ) do
     with :ok <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :delete_doc, [env.id, coll, doc_id]) do
-      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
+      Logger.debug(
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
+      )
 
       reply(conn)
     end
@@ -346,7 +351,9 @@ defmodule ApplicationRunner.DocsController do
              transaction_id,
              env.id
            ]) do
-      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
+      Logger.debug(
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
+      )
 
       reply(conn)
     end
@@ -364,7 +371,9 @@ defmodule ApplicationRunner.DocsController do
              transaction_id,
              env.id
            ]) do
-      Logger.debug("#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok")
+      Logger.debug(
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with status :ok"
+      )
 
       reply(conn)
     end
