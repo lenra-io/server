@@ -91,8 +91,7 @@ defmodule ApplicationRunner.MongoStorage do
         TechnicalError.mongo_error_tuple(err)
 
       {:ok, res} ->
-        # TODO: Think about something to return
-        {:ok, %{}}
+        {:ok, res.inserted_ids}
     end
   end
 
@@ -111,8 +110,7 @@ defmodule ApplicationRunner.MongoStorage do
         TechnicalError.mongo_error_tuple(err)
 
       {:ok, res} ->
-        # TODO: Think about something to return
-        {:ok, %{}}
+        {:ok, res.inserted_ids}
     end
   end
 

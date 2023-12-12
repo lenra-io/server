@@ -70,14 +70,13 @@ defmodule ApplicationRunner.DocsController do
     end
   end
 
-  def create(
+  def insert_many(
         conn,
         %{"coll" => coll},
         %{"_json" => docs},
         %{environment: env, transaction_id: transaction_id},
         replace_params
-      )
-      when is_list(docs) do
+      ) do
     with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
          {:ok, docs_res} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :insert_many, [
@@ -94,8 +93,13 @@ defmodule ApplicationRunner.DocsController do
     end
   end
 
-  def create(conn, %{"coll" => coll}, %{"_json" => docs}, %{environment: env}, replace_params)
-      when is_list(docs) do
+  def insert_many(
+        conn,
+        %{"coll" => coll},
+        %{"_json" => docs},
+        %{environment: env},
+        replace_params
+      ) do
     with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
          {:ok, docs_res} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :insert_many, [

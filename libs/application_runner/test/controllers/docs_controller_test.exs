@@ -116,7 +116,9 @@ defmodule ApplicationRunner.DocsControllerTest do
       assert [%{"foo" => "bar"}, %{"foo" => "baz"}] =
                Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
     end
+  end
 
+  describe "ApplicationRunner.DocsController.insert_many" do
     test "Should create multiple docs if a list is passed", %{
       conn: conn,
       token: token,
@@ -128,9 +130,9 @@ defmodule ApplicationRunner.DocsControllerTest do
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
         |> Plug.Conn.put_req_header("content-type", "application/json")
-        |> post(Routes.docs_path(conn, :create, "insert_many"), body)
+        |> post(Routes.docs_path(conn, :insert_many, "insert_many"), body)
 
-      assert %{} = json_response(conn, 200)
+      assert [foo, bar] = json_response(conn, 200)
 
       assert [%{"foo" => "bar"}, %{"foo" => "baz"}] =
                Mongo.find(mongo_pid, "insert_many", %{}) |> Enum.to_list()
