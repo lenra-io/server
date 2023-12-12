@@ -119,7 +119,7 @@ defmodule ApplicationRunner.DocsControllerTest do
   end
 
   describe "ApplicationRunner.DocsController.insert_many" do
-    test "Should create multiple docs if a list is passed", %{
+    test "Should insert multiple docs", %{
       conn: conn,
       token: token,
       mongo_pid: mongo_pid
