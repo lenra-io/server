@@ -198,7 +198,9 @@ defmodule ApplicationRunner.DocsController do
         %{"coll" => coll},
         %{
           "query" => query,
-          "projection" => projection
+          "projection" => projection,
+          "skip" => skip,
+          "limit" => limit,
         },
         %{environment: env},
         replace_params
@@ -208,7 +210,7 @@ defmodule ApplicationRunner.DocsController do
              env.id,
              coll,
              Parser.replace_params(query, replace_params),
-             [projection: projection]
+             [projection: projection, skip: skip, limit: limit]
            ]) do
       Logger.debug(
         "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
