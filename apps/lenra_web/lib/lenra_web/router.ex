@@ -1,7 +1,6 @@
 defmodule LenraWeb.Router do
   use LenraWeb, :router
 
-  alias LenraWeb.LogosController
   alias LenraWeb.Plug
 
   require ApplicationRunner.Router

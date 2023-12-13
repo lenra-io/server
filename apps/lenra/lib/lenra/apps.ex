@@ -640,34 +640,36 @@ defmodule Lenra.Apps do
 
   # Manage Images
 
-  def set_logo(user_id, %{"app_id" => app_id, "env_id" => env_id} = params) do
+  def set_logo(user_id, %{"app_id" => app_id} = params) do
     Ecto.Multi.new()
     # create the image
     |> Ecto.Multi.insert(:inserted_image, Image.new(user_id, params))
     # check if there already a logo for this app (or env ?)
     |> Ecto.Multi.one(
       :old_logo,
-      if env_id == nil do
-        from(
-          l in Logo,
-          where:
-            l.application_id == ^app_id and
-              is_nil(l.environment_id)
-        )
-      else
-        from(
-          l in Logo,
-          where:
-            l.application_id == ^app_id and
-              l.environment_id == ^env_id
-        )
+      case params do
+        %{"env_id" => env_id} ->
+          from(
+            l in Logo,
+            where:
+              l.application_id == ^app_id and
+                l.environment_id == ^env_id
+          )
+
+        _ ->
+          from(
+            l in Logo,
+            where:
+              l.application_id == ^app_id and
+                is_nil(l.environment_id)
+          )
       end
     )
     #  update the app/env with the image id
     |> Ecto.Multi.run(:new_logo, fn transaction, %{inserted_image: image, old_logo: old_logo} ->
       case old_logo do
         nil ->
-          transaction.insert(Logo.new(app_id, env_id, %{image_id: image.id}))
+          transaction.insert(Logo.new(app_id, params["env_id"], %{image_id: image.id}))
 
         %Logo{image_id: old_logo_image_id} ->
           result = transaction.update(Logo.changeset(old_logo, %{image_id: image.id}))

@@ -5,7 +5,7 @@ defmodule Lenra.Apps.LogoTest do
   use Lenra.RepoCase, async: true
 
   alias Lenra.Apps
-  alias Lenra.Apps.{App, Image, Logo}
+  alias Lenra.Apps.{Image, Logo}
   alias Lenra.Repo
 
   setup do
@@ -36,9 +36,11 @@ defmodule Lenra.Apps.LogoTest do
 
   describe "put app logo" do
     test "not existing", %{app: app, png_image: png_image} do
+      initial_images_len = length(Repo.all(Image))
+      initial_logo_len = length(Repo.all(Logo))
+
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
-        "env_id" => nil,
         "data" => png_image.data,
         "type" => png_image.type
       })
@@ -46,11 +48,11 @@ defmodule Lenra.Apps.LogoTest do
       images = Repo.all(Image)
       logos = Repo.all(Logo)
 
-      assert length(images) == 1
-      assert length(logos) == 1
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
 
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       assert image.creator_id == app.creator_id
       assert image.type == png_image.type
@@ -66,19 +68,21 @@ defmodule Lenra.Apps.LogoTest do
       png_image: png_image,
       svg_image: svg_image
     } do
+      initial_images_len = length(Repo.all(Image))
+      initial_logo_len = length(Repo.all(Logo))
+
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
-        "env_id" => nil,
         "data" => png_image.data,
         "type" => png_image.type
       })
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 1
-      assert length(logos) == 1
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       png_image_id = image.id
 
@@ -87,17 +91,16 @@ defmodule Lenra.Apps.LogoTest do
 
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
-        "env_id" => nil,
         "data" => svg_image.data,
         "type" => svg_image.type
       })
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 1
-      assert length(logos) == 1
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       assert image.type == svg_image.type
       assert logo.image_id == image.id
@@ -110,21 +113,28 @@ defmodule Lenra.Apps.LogoTest do
       png_image: png_image,
       svg_image: svg_image
     } do
+      initial_images_len = length(Repo.all(Image))
+      initial_logo_len = length(Repo.all(Logo))
+
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
-        "env_id" => nil,
         "data" => png_image.data,
         "type" => png_image.type
       })
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 1
-      assert length(logos) == 1
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       Repo.insert(Logo.new(app.id, env.id, %{image_id: image.id}))
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == initial_images_len + 2
+      assert length(logos) == initial_logo_len + 2
 
       png_image_id = image.id
 
@@ -133,15 +143,14 @@ defmodule Lenra.Apps.LogoTest do
 
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
-        "env_id" => nil,
         "data" => svg_image.data,
         "type" => svg_image.type
       })
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 2
-      assert length(logos) == 2
+      assert length(images) == initial_images_len + 2
+      assert length(logos) == initial_logo_len + 2
       logo = Repo.one(from(l in Logo, where: l.application_id == ^app.id and is_nil(l.environment_id)))
       image_id = logo.image_id
       image = Repo.one(from(i in Image, where: i.id == ^image_id))
@@ -154,6 +163,9 @@ defmodule Lenra.Apps.LogoTest do
 
   describe "put env logo" do
     test "not existing", %{app: app, env: env, png_image: png_image} do
+      initial_images_len = length(Repo.all(Image))
+      initial_logo_len = length(Repo.all(Logo))
+
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
         "env_id" => env.id,
@@ -163,12 +175,10 @@ defmodule Lenra.Apps.LogoTest do
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-
-      assert length(images) == 1
-      assert length(logos) == 1
-
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       assert image.creator_id == app.creator_id
       assert image.type == png_image.type
@@ -185,6 +195,9 @@ defmodule Lenra.Apps.LogoTest do
       png_image: png_image,
       svg_image: svg_image
     } do
+      initial_images_len = length(Repo.all(Image))
+      initial_logo_len = length(Repo.all(Logo))
+
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
         "env_id" => env.id,
@@ -194,10 +207,10 @@ defmodule Lenra.Apps.LogoTest do
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 1
-      assert length(logos) == 1
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       png_image_id = image.id
 
@@ -213,10 +226,10 @@ defmodule Lenra.Apps.LogoTest do
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 1
-      assert length(logos) == 1
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       assert image.type == svg_image.type
       assert logo.image_id == image.id
@@ -229,6 +242,9 @@ defmodule Lenra.Apps.LogoTest do
       png_image: png_image,
       svg_image: svg_image
     } do
+      initial_images_len = length(Repo.all(Image))
+      initial_logo_len = length(Repo.all(Logo))
+
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
         "env_id" => env.id,
@@ -238,10 +254,10 @@ defmodule Lenra.Apps.LogoTest do
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 1
-      assert length(logos) == 1
-      image = Enum.at(images, 0)
-      logo = Enum.at(logos, 0)
+      assert length(images) == initial_images_len + 1
+      assert length(logos) == initial_logo_len + 1
+      image = Enum.at(images, initial_images_len)
+      logo = Enum.at(logos, initial_logo_len)
 
       Repo.insert(Logo.new(app.id, nil, %{image_id: image.id}))
 
@@ -259,8 +275,8 @@ defmodule Lenra.Apps.LogoTest do
 
       images = Repo.all(Image)
       logos = Repo.all(Logo)
-      assert length(images) == 2
-      assert length(logos) == 2
+      assert length(images) == initial_images_len + 2
+      assert length(logos) == initial_logo_len + 2
       logo = Repo.one(from(l in Logo, where: l.application_id == ^app.id and l.environment_id == ^env.id))
       image_id = logo.image_id
       image = Repo.one(from(i in Image, where: i.id == ^image_id))
