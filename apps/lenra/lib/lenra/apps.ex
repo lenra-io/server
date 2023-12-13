@@ -665,18 +665,20 @@ defmodule Lenra.Apps do
     )
     #  update the app/env with the image id
     |> Ecto.Multi.run(:new_logo, fn transaction, %{inserted_image: image, old_logo: old_logo} ->
-      if old_logo == nil do
-        transaction.insert(Logo.new(app_id, env_id, %{image_id: image.id}))
-      else
-        result = transaction.update(Map.put(old_logo, :image_id, image.id))
+      case old_logo do
+        nil ->
+          transaction.insert(Logo.new(app_id, env_id, %{image_id: image.id}))
 
-        # delete the previous image if it's not used anymore
-        if !transaction.exists?(Logo, image_id: old_logo.image_id) do
-          old_image = transaction.get!(Image, old_logo.image_id)
-          transaction.delete(old_image)
-        end
+        %Logo{image_id: old_logo_image_id} ->
+          result = transaction.update(Logo.changeset(old_logo, %{image_id: image.id}))
 
-        result
+          # delete the previous image if it's not used anymore
+          if !transaction.exists?(from l in Logo, where: l.image_id == ^old_logo_image_id) do
+            old_image = transaction.get!(Image, old_logo_image_id)
+            transaction.delete(old_image)
+          end
+
+          result
       end
     end)
     |> Repo.transaction()

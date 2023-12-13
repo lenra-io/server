@@ -4,20 +4,24 @@ defmodule Lenra.Apps.LogoTest do
   """
   use Lenra.RepoCase, async: true
 
-  alias Lenra.{
-    FaasStub,
-    GitlabStubHelper,
-    Repo
-  }
-
   alias Lenra.Apps
-  alias Lenra.Apps.{App, Image, Logo, Environment}
+  alias Lenra.Apps.{App, Image, Logo}
+  alias Lenra.Repo
 
   setup do
+    {:ok, %{inserted_application: app, inserted_env: env}} = create_and_return_application()
+
     {:ok,
-     app: create_and_return_application(),
-     image_data: File.read!(Application.app_dir(:identity_web, "/priv/static/images/appicon.png")),
-     image_type: "image/png"}
+     app: app,
+     env: env,
+     png_image: %{
+       data: File.read!(Application.app_dir(:identity_web, "/priv/static/images/appicon.png")),
+       type: "image/png"
+     },
+     svg_image: %{
+       data: File.read!(Application.app_dir(:identity_web, "/priv/static/images/logo.svg")),
+       type: "image/svg+xml"
+     }}
   end
 
   defp create_and_return_application do
@@ -28,43 +32,242 @@ defmodule Lenra.Apps.LogoTest do
       color: "FFFFFF",
       icon: "60189"
     })
-
-    Enum.at(Repo.all(App), 0)
   end
 
-  describe "put" do
-    test "not existing app logo", %{app: app, image_data: image_data, image_type: image_type} do
+  describe "put app logo" do
+    test "not existing", %{app: app, png_image: png_image} do
       Apps.set_logo(app.creator_id, %{
         "app_id" => app.id,
         "env_id" => nil,
-        "data" => image_data,
-        "type" => image_type
+        "data" => png_image.data,
+        "type" => png_image.type
       })
 
-      image = Enum.at(Repo.all(Image), 0)
-      logo = Enum.at(Repo.all(Logo), 0)
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
 
-      assert %Image{
-              #  creator_id: app.creator.id,
-               type: image_type,
-               data: image_data
-             } = image
+      assert length(images) == 1
+      assert length(logos) == 1
 
-      assert %Logo{
-               # application_id: app.id,
-               # environment_id: nil,
-               # image_id: image.id
-             } = logo
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
+
+      assert image.creator_id == app.creator_id
+      assert image.type == png_image.type
+      assert image.data == png_image.data
+
+      assert logo.application_id == app.id
+      assert logo.environment_id == nil
+      assert logo.image_id == image.id
     end
 
-    # test "existing", %{app: app} do
-    #   Apps.create_build_and_deploy(app.creator_id, app.id, %{
-    #     commit_hash: "abcdef"
-    #   })
+    test "existing", %{
+      app: app,
+      png_image: png_image,
+      svg_image: svg_image
+    } do
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => nil,
+        "data" => png_image.data,
+        "type" => png_image.type
+      })
 
-    #   build = Enum.at(Repo.all(Build), 0)
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 1
+      assert length(logos) == 1
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
 
-    #   assert %Build{commit_hash: "abcdef", status: :pending} = build
-    # end
+      png_image_id = image.id
+
+      assert image.type == png_image.type
+      assert logo.image_id == image.id
+
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => nil,
+        "data" => svg_image.data,
+        "type" => svg_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 1
+      assert length(logos) == 1
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
+
+      assert image.type == svg_image.type
+      assert logo.image_id == image.id
+      assert image.id != png_image_id, "image id should be different"
+    end
+
+    test "existing and reused image", %{
+      app: app,
+      env: env,
+      png_image: png_image,
+      svg_image: svg_image
+    } do
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => nil,
+        "data" => png_image.data,
+        "type" => png_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 1
+      assert length(logos) == 1
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
+
+      Repo.insert(Logo.new(app.id, env.id, %{image_id: image.id}))
+
+      png_image_id = image.id
+
+      assert image.type == png_image.type
+      assert logo.image_id == image.id
+
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => nil,
+        "data" => svg_image.data,
+        "type" => svg_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 2
+      assert length(logos) == 2
+      logo = Repo.one(from(l in Logo, where: l.application_id == ^app.id and is_nil(l.environment_id)))
+      image_id = logo.image_id
+      image = Repo.one(from(i in Image, where: i.id == ^image_id))
+
+      assert image.type == svg_image.type
+      assert logo.image_id == image.id
+      assert image.id != png_image_id, "image id should be different"
+    end
+  end
+
+  describe "put env logo" do
+    test "not existing", %{app: app, env: env, png_image: png_image} do
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => env.id,
+        "data" => png_image.data,
+        "type" => png_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+
+      assert length(images) == 1
+      assert length(logos) == 1
+
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
+
+      assert image.creator_id == app.creator_id
+      assert image.type == png_image.type
+      assert image.data == png_image.data
+
+      assert logo.application_id == app.id
+      assert logo.environment_id == env.id
+      assert logo.image_id == image.id
+    end
+
+    test "existing", %{
+      app: app,
+      env: env,
+      png_image: png_image,
+      svg_image: svg_image
+    } do
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => env.id,
+        "data" => png_image.data,
+        "type" => png_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 1
+      assert length(logos) == 1
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
+
+      png_image_id = image.id
+
+      assert image.type == png_image.type
+      assert logo.image_id == image.id
+
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => env.id,
+        "data" => svg_image.data,
+        "type" => svg_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 1
+      assert length(logos) == 1
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
+
+      assert image.type == svg_image.type
+      assert logo.image_id == image.id
+      assert image.id != png_image_id, "image id should be different"
+    end
+
+    test "existing and reused image", %{
+      app: app,
+      env: env,
+      png_image: png_image,
+      svg_image: svg_image
+    } do
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => env.id,
+        "data" => png_image.data,
+        "type" => png_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 1
+      assert length(logos) == 1
+      image = Enum.at(images, 0)
+      logo = Enum.at(logos, 0)
+
+      Repo.insert(Logo.new(app.id, nil, %{image_id: image.id}))
+
+      png_image_id = image.id
+
+      assert image.type == png_image.type
+      assert logo.image_id == image.id
+
+      Apps.set_logo(app.creator_id, %{
+        "app_id" => app.id,
+        "env_id" => env.id,
+        "data" => svg_image.data,
+        "type" => svg_image.type
+      })
+
+      images = Repo.all(Image)
+      logos = Repo.all(Logo)
+      assert length(images) == 2
+      assert length(logos) == 2
+      logo = Repo.one(from(l in Logo, where: l.application_id == ^app.id and l.environment_id == ^env.id))
+      image_id = logo.image_id
+      image = Repo.one(from(i in Image, where: i.id == ^image_id))
+
+      assert image.type == svg_image.type
+      assert logo.image_id == image.id
+      assert image.id != png_image_id, "image id should be different"
+    end
   end
 end
