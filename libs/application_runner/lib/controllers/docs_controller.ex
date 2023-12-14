@@ -197,20 +197,20 @@ defmodule ApplicationRunner.DocsController do
         conn,
         %{"coll" => coll},
         %{
-          "query" => query,
-          "projection" => projection,
-          "skip" => skip,
-          "limit" => limit,
-        },
+          "query" => query
+        } = commands,
         %{environment: env},
         replace_params
       ) do
+    # Delete the query key as it is already caught with the pattern match
+    commands = Map.delete(commands, "query")
+
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
              env.id,
              coll,
              Parser.replace_params(query, replace_params),
-             [projection: projection, skip: skip, limit: limit]
+             Enum.map(commands, fn {k, v} -> {String.to_atom(k), v} end)
            ]) do
       Logger.debug(
         "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"

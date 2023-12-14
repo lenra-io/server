@@ -100,18 +100,18 @@ defmodule ApplicationRunner.DocsControllerTest do
     test "Pagination should work", %{conn: conn, token: token, mongo_pid: pid} do
       coll = "pagination"
 
-      Enum.each(0..99, fn(x) ->
+      Mongo.drop_collection(pid, coll)
+
+      Enum.each(0..99, fn x ->
         Mongo.insert_one!(pid, coll, %{"id" => x})
       end)
-
-      IO.inspect(Mongo.find(pid, coll, %{}))
 
       conn =
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
         |> post(Routes.docs_path(conn, :find, coll), %{"query" => %{}, "limit" => 5})
 
-        assert Enum.count(IO.inspect(json_response(conn, 200))) == 5
+      assert Enum.count(json_response(conn, 200)) == 5
     end
   end
 
