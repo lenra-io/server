@@ -205,6 +205,9 @@ defmodule ApplicationRunner.DocsController do
     # Delete the query key as it is already caught with the pattern match
     commands = Map.delete(commands, "query")
 
+    IO.inspect("FIND WITH COMMANDS")
+    IO.inspect(commands)
+
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
              env.id,
@@ -224,6 +227,9 @@ defmodule ApplicationRunner.DocsController do
     Logger.warning(
       "This form of query is deprecated, prefer using: {query: <your query>, projection: {projection}}, more info at: https://www.mongodb.com/docs/manual/reference/method/db.collection.find/#mongodb-method-db.collection.find"
     )
+
+    IO.inspect("BASIC FIND")
+    IO.inspect(filter)
 
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
