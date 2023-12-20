@@ -4,10 +4,11 @@ defmodule Lenra.Repo.Migrations.ManageAppAndEnvLogo do
   def change do
     create table(:images) do
       add(:creator_id, references(:users))
-      add :data, :binary
-      add :type, :string
+      add(:data, :binary)
+      add(:type, :string)
       timestamps()
     end
+
     create table(:logos) do
       add(:application_id, references(:applications))
       add(:environment_id, references(:applications), null: true)

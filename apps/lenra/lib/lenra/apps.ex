@@ -675,7 +675,7 @@ defmodule Lenra.Apps do
           result = transaction.update(Logo.changeset(old_logo, %{image_id: image.id}))
 
           # delete the previous image if it's not used anymore
-          if !transaction.exists?(from l in Logo, where: l.image_id == ^old_logo_image_id) do
+          if !transaction.exists?(from(l in Logo, where: l.image_id == ^old_logo_image_id)) do
             old_image = transaction.get!(Image, old_logo_image_id)
             transaction.delete(old_image)
           end

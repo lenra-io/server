@@ -11,7 +11,8 @@ defmodule LenraWeb.LogosController do
          :ok <- allow(conn, env),
          user <- LenraWeb.Auth.current_resource(conn),
          decoded_data <- decode_data(params),
-         {:ok, %{new_logo: logo}} <- Apps.set_logo(user.id, Map.merge(decoded_data, %{ "app_id" => env.application_id, "env_id" => env.id })) do
+         {:ok, %{new_logo: logo}} <-
+           Apps.set_logo(user.id, Map.merge(decoded_data, %{"app_id" => env.application_id, "env_id" => env.id})) do
       conn
       |> reply(logo)
     end
@@ -22,7 +23,7 @@ defmodule LenraWeb.LogosController do
          :ok <- allow(conn, app),
          user <- LenraWeb.Auth.current_resource(conn),
          decoded_data <- decode_data(params),
-         {:ok, %{new_logo: logo}} <- Apps.set_logo(user.id, Map.merge(decoded_data, %{ "app_id" => app.id })) do
+         {:ok, %{new_logo: logo}} <- Apps.set_logo(user.id, Map.merge(decoded_data, %{"app_id" => app.id})) do
       conn
       |> reply(logo)
     end

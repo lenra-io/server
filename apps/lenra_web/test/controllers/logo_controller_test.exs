@@ -47,8 +47,8 @@ defmodule LenraWeb.BuildControllerTest do
                "application_id" => image_app_id,
                "environment_id" => nil,
                "image_id" => _
-             } =
-               json_response(conn!, 200)
+             } = json_response(conn!, 200)
+
       assert image_app_id == app["id"]
     end
 
@@ -77,8 +77,7 @@ defmodule LenraWeb.BuildControllerTest do
                "application_id" => image_app_id,
                "environment_id" => image_env_id,
                "image_id" => 1
-             } =
-               json_response(conn!, 200)
+             } = json_response(conn!, 200)
 
       assert image_app_id == app["id"]
       assert image_env_id == env.id
