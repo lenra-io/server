@@ -1,7 +1,9 @@
-defmodule LenraWeb.BuildControllerTest do
+defmodule LenraWeb.LogoControllerTest do
+  alias Lenra.Apps.Image
+  alias Lenra.Apps.Logo
   alias Lenra.Apps.Environment
   alias Lenra.Repo
-  use LenraWeb.ConnCase, async: true
+  use LenraWeb.ConnCase, async: false
 
   setup %{conn: conn} do
     {:ok,
@@ -22,6 +24,11 @@ defmodule LenraWeb.BuildControllerTest do
       "color" => "ffffff",
       "icon" => 12
     })
+  end
+
+  defp clean_repo do
+    Repo.delete_all(Logo)
+    Repo.delete_all(Image)
   end
 
   @tag auth_user_with_cgs: :dev
@@ -50,6 +57,7 @@ defmodule LenraWeb.BuildControllerTest do
              } = json_response(conn!, 200)
 
       assert image_app_id == app["id"]
+      clean_repo()
     end
 
     @tag auth_user_with_cgs: :dev
@@ -81,6 +89,7 @@ defmodule LenraWeb.BuildControllerTest do
 
       assert image_app_id == app["id"]
       assert image_env_id == env.id
+      clean_repo()
     end
   end
 end
