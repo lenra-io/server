@@ -685,4 +685,17 @@ defmodule Lenra.Apps do
     end)
     |> Repo.transaction()
   end
+
+  def get_logo(app_id, env_id) do
+    Logger.debug("#{__MODULE__} get logo for app id #{app_id} and env id #{env_id}")
+    Repo.one(from(l in Logo, where: l.application_id == ^app_id and (l.environment_id == ^env_id or is_nil(l.environment_id)), order_by: is_nil(l.environment_id), limit: 1))
+  end
+
+  def fetch_image(image_id) do
+    Repo.fetch(Image, image_id)
+  end
+
+  def get_image(image_id) do
+    Repo.get(Image, image_id)
+  end
 end

@@ -6,6 +6,14 @@ defmodule LenraWeb.LogosController do
 
   alias Lenra.Apps
 
+  def get_image_content(conn, %{"image_id" => image_id}) do
+    {:ok, image} = Apps.fetch_image(image_id)
+
+    conn
+    |> put_resp_content_type(image.type)
+    |> Plug.Conn.send_resp(:ok, image.data)
+  end
+
   def put_logo(conn, %{"app_id" => _app_id, "env_id" => env_id} = params) do
     with {:ok, env} <- Apps.fetch_env(env_id),
          :ok <- allow(conn, env),

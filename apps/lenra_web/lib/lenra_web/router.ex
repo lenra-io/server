@@ -112,7 +112,9 @@ defmodule LenraWeb.Router do
     resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
 
     # App logo
+    # get("/:app_id/logo", LogosController, :get_logo)
     put("/:app_id/logo", LogosController, :put_logo)
+    get("/:app_id/environments/:env_id/logo", LogosController, :get_logo)
     put("/:app_id/environments/:env_id/logo", LogosController, :put_logo)
 
     get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
@@ -153,6 +155,7 @@ defmodule LenraWeb.Router do
 
     pipe_through([:api])
     post("/apps/:app_uuid/webhooks/:webhook_uuid", WebhooksController, :trigger)
+    get("/apps/images/:image_id", LogosController, :get_image_content)
   end
 
   # Enables LiveDashboard only for development

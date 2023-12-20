@@ -126,6 +126,8 @@ defmodule IdentityWeb.UserAuthController do
       |> get_session(:login_challenge)
       |> HydraApi.get_login_request()
 
+    IO.inspect(response.body["client"])
+
     render(
       conn,
       template,
