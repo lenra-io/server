@@ -32,7 +32,7 @@ defmodule ApplicationRunner.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7.2", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
       {:ex_component_schema,
        git: "https://github.com/lenra-io/ex_component_schema", ref: "v1.0.0-beta.6"},
