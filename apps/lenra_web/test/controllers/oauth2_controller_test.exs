@@ -101,6 +101,33 @@ defmodule LenraWeb.OAuth2ControllerTest do
     end
 
     @tag auth_user_with_cgs: :dev
+    test "Create a oauth client with custom URL scheme", %{conn: conn, env_id: env_id} = ctx do
+      stub_hydra(ctx)
+      route = Routes.o_auth2_path(conn, :create, env_id)
+
+      params = %{
+        "name" => "Foo",
+        "scopes" => ["app:websocket"],
+        "redirect_uris" => ["io.lenra.app:/oauth2/callback"],
+        "allowed_origins" => ["http://localhost:10000"]
+      }
+
+      conn = post(conn, route, params)
+
+      assert %{
+               "client" => %{
+                 "allowed_origins" => ["http://localhost:10000"],
+                 "environment_id" => ^env_id,
+                 "name" => "Foo",
+                 "oauth2_client_id" => "a-valid-uuid",
+                 "redirect_uris" => ["io.lenra.app:/oauth2/callback"],
+                 "scopes" => ["app:websocket"]
+               },
+               "secret" => %{"expiration" => 42, "value" => "maybe_a_valid_secret"}
+             } = json_response(conn, 200)
+    end
+
+    @tag auth_user_with_cgs: :dev
     test "Create a simple oauth client : Wrong scopes", %{conn: conn, env_id: env_id} = ctx do
       stub_hydra(ctx)
       route = Routes.o_auth2_path(conn, :create, env_id)

@@ -10,7 +10,7 @@ defmodule Lenra.Apps.OAuth2Client do
 
   @type t :: %__MODULE__{}
 
-  @redirect_uris_regex ~r/^https?:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/
+  @redirect_uris_regex ~r/^(.+):\/.*$/
   @allowed_origins_regex ~r/^https?:\/\/\w+(\.\w+)*(:[0-9]+)?$/
   @allowed_scopes ["profile", "store", "resources", "manage:account", "manage:apps", "app:websocket"]
 
