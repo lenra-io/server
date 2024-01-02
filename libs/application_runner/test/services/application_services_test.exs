@@ -104,7 +104,6 @@ defmodule ApplicationRunner.ApplicationServicesTest do
       "POST",
       "/function/#{@function_name}",
       fn conn ->
-        IO.inspect(conn)
         content_length = Plug.Conn.get_req_header(conn, "content-length")
         assert ["49"] = content_length
 
@@ -129,7 +128,6 @@ defmodule ApplicationRunner.ApplicationServicesTest do
       "POST",
       "/function/#{@function_name}",
       fn conn ->
-        IO.inspect(conn)
         content_length = Plug.Conn.get_req_header(conn, "content-length")
         assert ["51"] = content_length
 
