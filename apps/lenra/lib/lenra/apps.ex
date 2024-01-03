@@ -656,7 +656,7 @@ defmodule Lenra.Apps do
                 l.environment_id == ^env_id
           )
 
-        _ ->
+        _params ->
           from(
             l in Logo,
             where:
@@ -666,29 +666,38 @@ defmodule Lenra.Apps do
       end
     )
     #  update the app/env with the image id
-    |> Ecto.Multi.run(:new_logo, fn transaction, %{inserted_image: image, old_logo: old_logo} ->
-      case old_logo do
-        nil ->
-          transaction.insert(Logo.new(app_id, params["env_id"], %{image_id: image.id}))
-
-        %Logo{image_id: old_logo_image_id} ->
-          result = transaction.update(Logo.changeset(old_logo, %{image_id: image.id}))
-
-          # delete the previous image if it's not used anymore
-          if !transaction.exists?(from(l in Logo, where: l.image_id == ^old_logo_image_id)) do
-            old_image = transaction.get!(Image, old_logo_image_id)
-            transaction.delete(old_image)
-          end
-
-          result
-      end
-    end)
+    |> Ecto.Multi.run(:new_logo, fn repo, state -> upsert_logo(repo, state, params) end)
     |> Repo.transaction()
+  end
+
+  defp upsert_logo(transaction, %{inserted_image: image, old_logo: old_logo} = state, %{"app_id" => app_id} = params) do
+    case old_logo do
+      nil ->
+        transaction.insert(Logo.new(app_id, params["env_id"], %{image_id: image.id}))
+
+      %Logo{image_id: old_logo_image_id} ->
+        result = transaction.update(Logo.changeset(old_logo, %{image_id: image.id}))
+
+        # delete the previous image if it's not used anymore
+        if !transaction.exists?(from(l in Logo, where: l.image_id == ^old_logo_image_id)) do
+          old_image = transaction.get!(Image, old_logo_image_id)
+          transaction.delete(old_image)
+        end
+
+        result
+    end
   end
 
   def get_logo(app_id, env_id) do
     Logger.debug("#{__MODULE__} get logo for app id #{app_id} and env id #{env_id}")
-    Repo.one(from(l in Logo, where: l.application_id == ^app_id and (l.environment_id == ^env_id or is_nil(l.environment_id)), order_by: is_nil(l.environment_id), limit: 1))
+
+    Repo.one(
+      from(l in Logo,
+        where: l.application_id == ^app_id and (l.environment_id == ^env_id or is_nil(l.environment_id)),
+        order_by: is_nil(l.environment_id),
+        limit: 1
+      )
+    )
   end
 
   def fetch_image(image_id) do

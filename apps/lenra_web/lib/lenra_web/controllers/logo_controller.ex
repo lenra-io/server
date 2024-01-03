@@ -14,6 +14,7 @@ defmodule LenraWeb.LogosController do
     |> Plug.Conn.send_resp(:ok, image.data)
   end
 
+  @spec put_logo(any(), map()) :: any()
   def put_logo(conn, %{"app_id" => _app_id, "env_id" => env_id} = params) do
     with {:ok, env} <- Apps.fetch_env(env_id),
          :ok <- allow(conn, env),

@@ -2,7 +2,7 @@ defmodule Lenra.Apps.LogoTest do
   @moduledoc """
     Test the logo services
   """
-  use Lenra.RepoCase, async: true
+  use Lenra.RepoCase, async: false
 
   alias Lenra.Apps
   alias Lenra.Apps.Logo
@@ -12,7 +12,8 @@ defmodule Lenra.Apps.LogoTest do
     {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe()
     {:ok, %{inserted_application: app, inserted_env: env}} = create_and_return_application(user, "logo test1")
 
-    {:ok, %{inserted_application: other_app, inserted_env: other_env}} = create_and_return_application(user, "logo test2")
+    {:ok, %{inserted_application: _other_app, inserted_env: other_env}} =
+      create_and_return_application(user, "logo test2")
 
     {:ok,
      app: app,
@@ -29,14 +30,12 @@ defmodule Lenra.Apps.LogoTest do
   end
 
   defp create_and_return_application(user, name) do
-
     Apps.create_app(user.id, %{
       name: name,
       color: "FFFFFF",
       icon: "60189"
     })
   end
-
 
   describe "put app logo" do
     test "not existing", %{app: app, png_image: png_image} do
@@ -98,7 +97,7 @@ defmodule Lenra.Apps.LogoTest do
       png_image: png_image,
       svg_image: svg_image
     } do
-      assert {:ok, %{inserted_image: initial_image, old_logo: initial_old_logo, new_logo: initial_logo}} =
+      assert {:ok, %{inserted_image: initial_image, old_logo: _initial_old_logo, new_logo: initial_logo}} =
                Apps.set_logo(app.creator_id, %{
                  "app_id" => app.id,
                  "data" => png_image.data,
@@ -128,7 +127,7 @@ defmodule Lenra.Apps.LogoTest do
 
   describe "put env logo" do
     test "not existing", %{app: app, env: env, png_image: png_image} do
-      assert {:ok, %{inserted_image: initial_image, old_logo: initial_old_logo, new_logo: initial_logo}} =
+      assert {:ok, %{inserted_image: initial_image, old_logo: _initial_old_logo, new_logo: initial_logo}} =
                Apps.set_logo(app.creator_id, %{
                  "app_id" => app.id,
                  "env_id" => env.id,
@@ -191,7 +190,7 @@ defmodule Lenra.Apps.LogoTest do
       png_image: png_image,
       svg_image: svg_image
     } do
-      assert {:ok, %{inserted_image: initial_image, old_logo: initial_old_logo, new_logo: initial_logo}} =
+      assert {:ok, %{inserted_image: initial_image, old_logo: _initial_old_logo, new_logo: initial_logo}} =
                Apps.set_logo(app.creator_id, %{
                  "app_id" => app.id,
                  "env_id" => env.id,

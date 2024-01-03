@@ -87,9 +87,7 @@ defmodule IdentityWeb.OAuthHelpers do
   end
 
   defp create_logo_tag(app, env_id, tagname) do
-    logo = Apps.get_logo(app.id, env_id)
-
-    case logo do
+    case Apps.get_logo(app.id, env_id) do
       nil ->
         letter =
           app.name
@@ -102,9 +100,9 @@ defmodule IdentityWeb.OAuthHelpers do
           "data-color": get_color(app.service_name)
         )
 
-      _ ->
+      logo ->
         content_tag tagname, class: "logo" do
-          img_tag("http://localhost:4000/apps/images/#{logo.image_id}", alt: app.name)
+          img_tag("#{Application.fetch_env!(:lenra_web, :public_api_url)}/apps/images/#{logo.image_id}", alt: app.name)
         end
     end
   end
