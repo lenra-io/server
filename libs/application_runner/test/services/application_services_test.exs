@@ -94,4 +94,52 @@ defmodule ApplicationRunner.ApplicationServicesTest do
              }
            } = result
   end
+
+  test "fetch_view" do
+    bypass = Bypass.open(port: 1234)
+
+    # Check view fetch request
+    Bypass.expect_once(
+      bypass,
+      "POST",
+      "/function/#{@function_name}",
+      fn conn ->
+        content_length = Plug.Conn.get_req_header(conn, "content-length")
+        assert ["49"] = content_length
+
+        {:ok, body, conn} = Plug.Conn.read_body(conn)
+        app = Jason.decode!(body)
+        assert "test" = app["view"]
+
+        conn
+        |> send_resp(200, body)
+      end
+    )
+
+    ApplicationServices.fetch_view(@function_name, "test", %{}, %{}, %{})
+  end
+
+  test "fetch_view with accent" do
+    bypass = Bypass.open(port: 1234)
+
+    # Check view fetch request
+    Bypass.expect_once(
+      bypass,
+      "POST",
+      "/function/#{@function_name}",
+      fn conn ->
+        content_length = Plug.Conn.get_req_header(conn, "content-length")
+        assert ["51"] = content_length
+
+        {:ok, body, conn} = Plug.Conn.read_body(conn)
+        app = Jason.decode!(body)
+        assert "testé" = app["view"]
+
+        conn
+        |> send_resp(200, body)
+      end
+    )
+
+    ApplicationServices.fetch_view(@function_name, "testé", %{}, %{}, %{})
+  end
 end
