@@ -1,9 +1,9 @@
 defmodule LenraWeb.LogoControllerTest do
+  use LenraWeb.ConnCase, async: false
+  alias Lenra.Apps
   alias Lenra.Apps.Image
   alias Lenra.Apps.Logo
-  alias Lenra.Apps
   alias Lenra.Repo
-  use LenraWeb.ConnCase, async: false
 
   setup %{conn: conn} do
     {:ok,

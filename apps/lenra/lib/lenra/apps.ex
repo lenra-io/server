@@ -19,8 +19,6 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
-  alias Lenra.Apps.Logo
-  alias Lenra.Apps.Image
   alias ApplicationRunner.ApplicationServices
 
   alias Lenra.Repo
@@ -35,6 +33,8 @@ defmodule Lenra.Apps do
     Build,
     Deployment,
     Environment,
+    Image,
+    Logo,
     MainEnv,
     OAuth2Client,
     UserEnvironmentAccess

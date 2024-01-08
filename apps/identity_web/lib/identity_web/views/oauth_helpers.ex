@@ -2,9 +2,9 @@ defmodule IdentityWeb.OAuthHelpers do
   @moduledoc """
   Conveniences for translating OAuth scopes.
   """
-  alias Lenra.Apps
-
   use Phoenix.HTML
+
+  alias Lenra.Apps
 
   @colors ["blue", "green", "red", "yellow"]
   @colors_length length(@colors)
