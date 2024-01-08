@@ -38,8 +38,7 @@ defmodule LenraWeb.LogosController do
     end
   end
 
-  # TODO: check the "data" and "type" types
-  defp decode_data(%{"data" => data, "type" => type}) do
+  defp decode_data(%{"data" => data, "type" => type}) when is_binary(data) and is_binary(type) do
     %{"data" => Base.decode64!(data), "type" => type}
   end
 end
