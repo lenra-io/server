@@ -1,5 +1,5 @@
 defmodule LenraWeb.AppsControllerTest do
-  use LenraWeb.ConnCase, async: true
+  use LenraWeb.ConnCase, async: false
 
   alias Lenra.Apps.App
   alias Lenra.Repo
