@@ -73,7 +73,7 @@ defmodule ApplicationRunner.DocsController do
   def insert_many(
         conn,
         %{"coll" => coll},
-        %{"_json" => docs},
+        %{"documents" => docs},
         %{environment: env, transaction_id: transaction_id},
         replace_params
       ) do
@@ -96,7 +96,7 @@ defmodule ApplicationRunner.DocsController do
   def insert_many(
         conn,
         %{"coll" => coll},
-        %{"_json" => docs},
+        %{"documents" => docs},
         %{environment: env},
         replace_params
       ) do

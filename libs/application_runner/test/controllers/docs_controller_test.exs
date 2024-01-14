@@ -124,7 +124,7 @@ defmodule ApplicationRunner.DocsControllerTest do
       token: token,
       mongo_pid: mongo_pid
     } do
-      assert {:ok, body} = Jason.encode([%{"foo" => "bar"}, %{"foo" => "baz"}])
+      assert {:ok, body} = Jason.encode(%{"documents" => [%{"foo" => "bar"}, %{"foo" => "baz"}]})
 
       conn =
         conn
@@ -132,7 +132,9 @@ defmodule ApplicationRunner.DocsControllerTest do
         |> Plug.Conn.put_req_header("content-type", "application/json")
         |> post(Routes.docs_path(conn, :insert_many, "insert_many"), body)
 
-      assert [foo, bar] = json_response(conn, 200)
+      assert %{"insertedIds" => ids} = json_response(conn, 200)
+
+      assert length(ids) == 2
 
       assert [%{"foo" => "bar"}, %{"foo" => "baz"}] =
                Mongo.find(mongo_pid, "insert_many", %{}) |> Enum.to_list()

@@ -90,8 +90,8 @@ defmodule ApplicationRunner.MongoStorage do
       {:error, err} ->
         TechnicalError.mongo_error_tuple(err)
 
-      {:ok, res} ->
-        {:ok, res.inserted_ids}
+      {:ok, %Mongo.InsertManyResult{} = res} ->
+        {:ok, %{"insertedIds" => res.inserted_ids}}
     end
   end
 
@@ -109,8 +109,8 @@ defmodule ApplicationRunner.MongoStorage do
       {:error, err} ->
         TechnicalError.mongo_error_tuple(err)
 
-      {:ok, res} ->
-        {:ok, res.inserted_ids}
+      {:ok, %Mongo.InsertManyResult{} = res} ->
+        {:ok, %{"insertedIds" => res.inserted_ids}}
     end
   end
 
