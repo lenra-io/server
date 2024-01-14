@@ -1,5 +1,5 @@
 defmodule LenraWeb.EnvironmentControllerTest do
-  use LenraWeb.ConnCase, async: true
+  use LenraWeb.ConnCase, async: false
 
   alias Lenra.Repo
   alias Lenra.Subscriptions.Subscription
