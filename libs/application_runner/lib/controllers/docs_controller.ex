@@ -3,7 +3,7 @@ defmodule ApplicationRunner.DocsController do
 
   alias ApplicationRunner.Environment.MongoInstance
   alias ApplicationRunner.Environment.TokenAgent
-  alias LenraCommon.Errors.DevError
+  alias LenraCommon.Errors.{DevError, TechnicalError}
   alias ApplicationRunner.{Guardian.AppGuardian, MongoStorage}
   alias QueryParser.Parser
 
@@ -269,12 +269,12 @@ defmodule ApplicationRunner.DocsController do
 
         reply(conn, docs)
 
-      {:error, %LenraCommon.Errors.TechnicalError{metadata: %Mongo.Error{message: message}}} ->
+      {:error, %TechnicalError{metadata: %Mongo.Error{message: message}}} ->
         Logger.debug(
           "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with error #{inspect(message)}"
         )
 
-        LenraCommon.Errors.TechnicalError.bad_request_tuple(message)
+        TechnicalError.bad_request_tuple(message)
     end
   end
 
