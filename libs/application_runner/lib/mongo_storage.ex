@@ -73,6 +73,47 @@ defmodule ApplicationRunner.MongoStorage do
   # DATA #
   ########
 
+  @doc """
+  Creates documents from the specified `docs`
+  """
+  def insert_many(env_id, coll, docs) do
+    Logger.debug(
+      "#{__MODULE__} insert_many for env_id: #{env_id}, coll: #{coll}, docs: #{inspect(docs)}"
+    )
+
+    decoded_docs = Enum.map(docs, fn doc -> decode_ids(doc) end)
+
+    env_id
+    |> mongo_instance()
+    |> Mongo.insert_many(coll, decoded_docs)
+    |> case do
+      {:error, err} ->
+        TechnicalError.mongo_error_tuple(err)
+
+      {:ok, %Mongo.InsertManyResult{} = res} ->
+        {:ok, %{"insertedIds" => res.inserted_ids}}
+    end
+  end
+
+  def insert_many(env_id, coll, docs, session_uuid) do
+    Logger.debug(
+      "#{__MODULE__} create_doc for env_id: #{env_id}, coll: #{coll}, doc: #{inspect(docs)}, session_uuid: #{inspect(session_uuid)}"
+    )
+
+    decoded_docs = Enum.map(docs, fn doc -> decode_ids(doc) end)
+
+    env_id
+    |> mongo_instance()
+    |> Mongo.insert_many(coll, decoded_docs, session: Swarm.whereis_name(session_uuid))
+    |> case do
+      {:error, err} ->
+        TechnicalError.mongo_error_tuple(err)
+
+      {:ok, %Mongo.InsertManyResult{} = res} ->
+        {:ok, %{"insertedIds" => res.inserted_ids}}
+    end
+  end
+
   @spec create_doc(number(), String.t(), map(), any()) ::
           {:ok, map()} | {:error, TechnicalErrorType.t()}
   def create_doc(env_id, coll, doc) do

@@ -2,8 +2,9 @@ defmodule IdentityWeb.OAuthHelpers do
   @moduledoc """
   Conveniences for translating OAuth scopes.
   """
-
   use Phoenix.HTML
+
+  alias Lenra.Apps
 
   @colors ["blue", "green", "red", "yellow"]
   @colors_length length(@colors)
@@ -22,23 +23,14 @@ defmodule IdentityWeb.OAuthHelpers do
   Render the header of the OAuth pages.
   """
   def oauth_header("consent", %{"metadata" => %{"environment_id" => env_id}})
-      when is_binary(env_id) do
+      when is_integer(env_id) or is_binary(env_id) do
     content_tag :header, class: "external-client" do
       {:ok, app} = Lenra.Apps.fetch_app_for_env(env_id)
-
-      letter =
-        app.name
-        |> String.slice(0..0)
-        |> String.upcase()
 
       [
         content_tag :ul do
           [
-            content_tag(:li, app.name,
-              class: "logo",
-              "data-letter": letter,
-              "data-color": get_color(app.service_name)
-            ),
+            create_logo_tag(app, env_id, :li),
             content_tag(:li, "Lenra", class: "lenra")
           ]
         end,
@@ -51,21 +43,12 @@ defmodule IdentityWeb.OAuthHelpers do
   end
 
   def oauth_header(_context, %{"metadata" => %{"environment_id" => env_id}})
-      when is_binary(env_id) do
+      when is_integer(env_id) or is_binary(env_id) do
     content_tag :header, class: "external-client" do
       {:ok, app} = Lenra.Apps.fetch_app_for_env(env_id)
 
-      letter =
-        app.name
-        |> String.slice(0..0)
-        |> String.upcase()
-
       [
-        content_tag(:h1, app.name,
-          class: "logo",
-          "data-letter": letter,
-          "data-color": get_color(app.service_name)
-        ),
+        create_logo_tag(app, env_id, :h1),
         content_tag :p do
           [
             "Powered by ",
@@ -76,7 +59,7 @@ defmodule IdentityWeb.OAuthHelpers do
     end
   end
 
-  def oauth_header(_context, _client) do
+  def oauth_header(_context, client) do
     content_tag :header do
       content_tag(:h1, "Lenra")
     end
@@ -101,5 +84,26 @@ defmodule IdentityWeb.OAuthHelpers do
   """
   def get_translated_scope_description(scope) do
     Gettext.dgettext(IdentityWeb.Gettext, "oauth", "scope." <> scope)
+  end
+
+  defp create_logo_tag(app, env_id, tagname) do
+    case Apps.get_logo(app.id, env_id) do
+      nil ->
+        letter =
+          app.name
+          |> String.slice(0..0)
+          |> String.upcase()
+
+        content_tag(tagname, app.name,
+          class: "logo",
+          "data-letter": letter,
+          "data-color": get_color(app.service_name)
+        )
+
+      logo ->
+        content_tag tagname, class: "logo" do
+          img_tag("#{Application.fetch_env!(:lenra_web, :public_api_url)}/apps/images/#{logo.image_id}", alt: app.name)
+        end
+    end
   end
 end

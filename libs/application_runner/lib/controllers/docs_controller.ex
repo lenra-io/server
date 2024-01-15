@@ -70,6 +70,51 @@ defmodule ApplicationRunner.DocsController do
     end
   end
 
+  def insert_many(
+        conn,
+        %{"coll" => coll},
+        %{"documents" => docs},
+        %{environment: env, transaction_id: transaction_id},
+        replace_params
+      ) do
+    with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
+         {:ok, docs_res} <-
+           MongoInstance.run_mongo_task(env.id, MongoStorage, :insert_many, [
+             env.id,
+             coll,
+             Parser.replace_params(filtered_docs, replace_params),
+             transaction_id
+           ]) do
+      Logger.debug(
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs_res)}"
+      )
+
+      reply(conn, docs_res)
+    end
+  end
+
+  def insert_many(
+        conn,
+        %{"coll" => coll},
+        %{"documents" => docs},
+        %{environment: env},
+        replace_params
+      ) do
+    with filtered_docs <- Enum.map(docs, fn doc -> Map.delete(doc, "_id") end),
+         {:ok, docs_res} <-
+           MongoInstance.run_mongo_task(env.id, MongoStorage, :insert_many, [
+             env.id,
+             coll,
+             Parser.replace_params(filtered_docs, replace_params)
+           ]) do
+      Logger.debug(
+        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs_res)}"
+      )
+
+      reply(conn, docs_res)
+    end
+  end
+
   def create(
         conn,
         %{"coll" => coll},

@@ -122,7 +122,7 @@ header.external-client>p>a::after {
     --logo-bg-color: rgba(var(--red-data), var(--disabled-opacity));
 }
 
-.logo::before {
+.logo[data-letter]::before {
     content: attr(data-letter);
     display: block;
     width: var(--logo-vertical-height);
@@ -135,6 +135,11 @@ header.external-client>p>a::after {
     background-color: var(--logo-bg-color);
     color: var(--logo-color);
     text-align: center;
+}
+
+.logo>img {
+    width: var(--logo-vertical-height);
+    height: var(--logo-vertical-height);
 }
 
 header.external-client>h1.logo::before {

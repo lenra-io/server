@@ -63,6 +63,9 @@ config :lenra_web, LenraWeb.Endpoint,
   code_reloader: true,
   watchers: []
 
+config :lenra_web,
+  public_api_url: "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
