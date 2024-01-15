@@ -109,12 +109,16 @@ defmodule ApplicationRunner.DocsControllerTest do
       conn =
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.docs_path(conn, :find, coll), %{"query" => %{}, "options" => %{"limit" => 5}})
+        |> post(Routes.docs_path(conn, :find, coll), %{
+          "query" => %{},
+          "options" => %{"limit" => 5}
+        })
 
       paginated_res = json_response(conn, 200)
       assert Enum.count(paginated_res) == 5
 
-      assert [%{"id" => 0}, %{"id" => 1}, %{"id" => 2}, %{"id" => 3}, %{"id" => 4}] = paginated_res
+      assert [%{"id" => 0}, %{"id" => 1}, %{"id" => 2}, %{"id" => 3}, %{"id" => 4}] =
+               paginated_res
     end
 
     test "Pagination with limit & skip should work", %{conn: conn, token: token, mongo_pid: pid} do
@@ -129,12 +133,16 @@ defmodule ApplicationRunner.DocsControllerTest do
       conn =
         conn
         |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.docs_path(conn, :find, coll), %{"query" => %{}, "options" => %{"limit" => 5, "skip" => 5}})
+        |> post(Routes.docs_path(conn, :find, coll), %{
+          "query" => %{},
+          "options" => %{"limit" => 5, "skip" => 5}
+        })
 
       paginated_res = json_response(conn, 200)
       assert Enum.count(paginated_res) == 5
 
-      assert [%{"id" => 5}, %{"id" => 6}, %{"id" => 7}, %{"id" => 8}, %{"id" => 9}] = paginated_res
+      assert [%{"id" => 5}, %{"id" => 6}, %{"id" => 7}, %{"id" => 8}, %{"id" => 9}] =
+               paginated_res
     end
   end
 

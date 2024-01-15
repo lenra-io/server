@@ -250,10 +250,11 @@ defmodule ApplicationRunner.DocsController do
     # Delete the query key as it is already caught with the pattern match
     commands = Map.delete(commands, "query")
 
-    mongo_opts = Keyword.merge(
-      [projection: Map.get(commands, "projection", %{})],
-      Enum.map(Map.get(commands, "options", %{}), fn {k, v} -> {String.to_atom(k), v} end)
-    )
+    mongo_opts =
+      Keyword.merge(
+        [projection: Map.get(commands, "projection", %{})],
+        Enum.map(Map.get(commands, "options", %{}), fn {k, v} -> {String.to_atom(k), v} end)
+      )
 
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
