@@ -208,9 +208,6 @@ defmodule ApplicationRunner.MongoStorage do
 
     clean_filter = decode_ids(filter)
 
-    IO.inspect("MONGO STORAGE")
-    IO.inspect(opts)
-
     env_id
     |> mongo_instance()
     |> Mongo.find(coll, clean_filter, opts)

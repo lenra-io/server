@@ -250,15 +250,17 @@ defmodule ApplicationRunner.DocsController do
     # Delete the query key as it is already caught with the pattern match
     commands = Map.delete(commands, "query")
 
-    IO.inspect("FIND WITH COMMANDS")
-    IO.inspect(commands)
+    mongo_opts = Keyword.merge(
+      [projection: Map.get(commands, "projection", %{})],
+      Enum.map(Map.get(commands, "options", %{}), fn {k, v} -> {String.to_atom(k), v} end)
+    )
 
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
              env.id,
              coll,
              Parser.replace_params(query, replace_params),
-             Enum.map(commands, fn {k, v} -> {String.to_atom(k), v} end)
+             mongo_opts
            ]) do
       Logger.debug(
         "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
@@ -272,9 +274,6 @@ defmodule ApplicationRunner.DocsController do
     Logger.warning(
       "This form of query is deprecated, prefer using: {query: <your query>, projection: {projection}}, more info at: https://www.mongodb.com/docs/manual/reference/method/db.collection.find/#mongodb-method-db.collection.find"
     )
-
-    IO.inspect("BASIC FIND")
-    IO.inspect(filter)
 
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
