@@ -144,6 +144,18 @@ defmodule ApplicationRunner.DocsControllerTest do
       assert [%{"id" => 5}, %{"id" => 6}, %{"id" => 7}, %{"id" => 8}, %{"id" => 9}] =
                paginated_res
     end
+
+    test "Wrong options should return an error", %{conn: conn, token: token, mongo_pid: pid} do
+      conn =
+        conn
+        |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
+        |> post(Routes.docs_path(conn, :find, "test"), %{
+          "query" => %{},
+          "options" => %{"limitwrong" => 5, "skipwrong" => 5, "skip" => "wrong"}
+        })
+
+      paginated_res = json_response(conn, 400)
+    end
   end
 
   describe "ApplicationRunner.DocsController.create" do

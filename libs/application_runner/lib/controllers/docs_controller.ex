@@ -268,6 +268,13 @@ defmodule ApplicationRunner.DocsController do
       )
 
       reply(conn, docs)
+    else
+      {:error, %LenraCommon.Errors.TechnicalError{metadata: %Mongo.Error{message: message}}} ->
+        Logger.debug(
+          "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with error #{inspect(message)}"
+        )
+
+        LenraCommon.Errors.TechnicalError.bad_request_tuple(message)
     end
   end
 
