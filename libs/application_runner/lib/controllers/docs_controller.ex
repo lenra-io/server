@@ -256,19 +256,19 @@ defmodule ApplicationRunner.DocsController do
         Enum.map(Map.get(commands, "options", %{}), fn {k, v} -> {String.to_atom(k), v} end)
       )
 
-    with {:ok, docs} <-
-           MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
-             env.id,
-             coll,
-             Parser.replace_params(query, replace_params),
-             mongo_opts
-           ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
-      )
+    case MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
+           env.id,
+           coll,
+           Parser.replace_params(query, replace_params),
+           mongo_opts
+         ]) do
+      {:ok, docs} ->
+        Logger.debug(
+          "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
+        )
 
-      reply(conn, docs)
-    else
+        reply(conn, docs)
+
       {:error, %LenraCommon.Errors.TechnicalError{metadata: %Mongo.Error{message: message}}} ->
         Logger.debug(
           "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with error #{inspect(message)}"
