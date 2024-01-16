@@ -3,7 +3,7 @@ defmodule ApplicationRunner.DocsController do
 
   alias ApplicationRunner.Environment.MongoInstance
   alias ApplicationRunner.Environment.TokenAgent
-  alias LenraCommon.Errors.DevError
+  alias LenraCommon.Errors.{DevError, TechnicalError}
   alias ApplicationRunner.{Guardian.AppGuardian, MongoStorage}
   alias QueryParser.Parser
 
@@ -242,24 +242,39 @@ defmodule ApplicationRunner.DocsController do
         conn,
         %{"coll" => coll},
         %{
-          "query" => query,
-          "projection" => projection
-        },
+          "query" => query
+        } = commands,
         %{environment: env},
         replace_params
       ) do
-    with {:ok, docs} <-
-           MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
-             env.id,
-             coll,
-             Parser.replace_params(query, replace_params),
-             [projection: projection]
-           ]) do
-      Logger.debug(
-        "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
+    # Delete the query key as it is already caught with the pattern match
+    commands = Map.delete(commands, "query")
+
+    mongo_opts =
+      Keyword.merge(
+        [projection: Map.get(commands, "projection", %{})],
+        Enum.map(Map.get(commands, "options", %{}), fn {k, v} -> {String.to_atom(k), v} end)
       )
 
-      reply(conn, docs)
+    case MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
+           env.id,
+           coll,
+           Parser.replace_params(query, replace_params),
+           mongo_opts
+         ]) do
+      {:ok, docs} ->
+        Logger.debug(
+          "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with res #{inspect(docs)}"
+        )
+
+        reply(conn, docs)
+
+      {:error, %TechnicalError{metadata: %Mongo.Error{message: message}}} ->
+        Logger.debug(
+          "#{__MODULE__} respond to #{inspect(conn.method)} on #{inspect(conn.request_path)} with error #{inspect(message)}"
+        )
+
+        TechnicalError.bad_request_tuple(message)
     end
   end
 
