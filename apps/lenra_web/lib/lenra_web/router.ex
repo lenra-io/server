@@ -99,7 +99,7 @@ defmodule LenraWeb.Router do
 
   # /api/apps, scope "manage_apps" & CGS Accepted
   scope "/api/apps", LenraWeb do
-    pipe_through([:api, :ensure_cgs_accepted])
+    pipe_through([:api, :scope_manage_account, :ensure_cgs_accepted])
 
     get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
     post("/invitations/:id", UserEnvironmentAccessController, :accept)
