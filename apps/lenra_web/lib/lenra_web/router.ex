@@ -99,7 +99,12 @@ defmodule LenraWeb.Router do
 
   # /api/apps, scope "manage_apps" & CGS Accepted
   scope "/api/apps", LenraWeb do
-    pipe_through([:api, :scope_manage_apps, :ensure_cgs_accepted])
+    pipe_through([:api, :scope_manage_account, :ensure_cgs_accepted])
+
+    get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
+    post("/invitations/:id", UserEnvironmentAccessController, :accept)
+
+    pipe_through([:scope_manage_apps])
 
     resources("/", AppsController, only: [:index, :create, :update, :delete])
 
@@ -116,9 +121,6 @@ defmodule LenraWeb.Router do
     put("/:app_id/logo", LogosController, :put_logo)
     get("/:app_id/environments/:env_id/logo", LogosController, :get_logo)
     put("/:app_id/environments/:env_id/logo", LogosController, :put_logo)
-
-    get("/invitations/:id", UserEnvironmentAccessController, :fetch_one)
-    post("/invitations/:id", UserEnvironmentAccessController, :accept)
 
     # Builds
     resources("/:app_id/builds", BuildsController, only: [:index, :create])
