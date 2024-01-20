@@ -35,6 +35,28 @@ defmodule LenraWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint LenraWeb.Endpoint
+
+      def create_app(conn) do
+        create_app(conn, "test")
+      end
+
+      def create_app(conn, name) when is_binary(name) do
+        create_app(conn, %{"name" => name})
+      end
+
+      def create_app(conn, params) when is_map(params) do
+        params =
+          Map.merge(
+            %{
+              "name" => "test",
+              "color" => "ffffff",
+              "icon" => 12
+            },
+            params
+          )
+
+        post(conn, Routes.apps_path(conn, :create), params)
+      end
     end
   end
 
@@ -71,7 +93,7 @@ defmodule LenraWeb.ConnCase do
 
   def hydra_introspect_response(conn) do
     conn = parse_body_params(conn)
-    %{"scope" => scope, "token" => token} = conn.body_params
+    %{"scope" => _scope, "token" => token} = conn.body_params
     resp = decode_fake_token(token)
 
     Plug.Conn.resp(conn, 200, Jason.encode!(resp))

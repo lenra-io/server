@@ -8,18 +8,6 @@ defmodule LenraWeb.EnvironmentControllerTest do
     {:ok, conn: conn}
   end
 
-  defp create_app(conn) do
-    create_app(conn, "test")
-  end
-
-  defp create_app(conn, name) do
-    post(conn, Routes.apps_path(conn, :create), %{
-      "name" => name,
-      "color" => "ffffff",
-      "icon" => 12
-    })
-  end
-
   describe "index" do
     test "environment controller not authenticated", %{conn: conn} do
       conn = get(conn, Routes.envs_path(conn, :index, 0))
@@ -116,17 +104,22 @@ defmodule LenraWeb.EnvironmentControllerTest do
       [env] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       update_env_path = Routes.envs_path(creator!, :update, app["id"], env["id"])
+      update_other_app_env_path = Routes.envs_path(other_dev!, :update, other_app["id"], env["id"])
 
-      creator! =
-        patch(creator!, update_env_path, %{
-          "is_public" => true
-        })
+      public_body = %{
+        "is_public" => true
+      }
+
+      private_body = %{
+        "is_public" => false
+      }
+
+      creator! = patch(creator!, update_env_path, public_body)
 
       assert %{"message" => "You need a subscirption", "reason" => "subscription_required"} =
                json_response(creator!, 402)
 
-      assert [%{"is_public" => false}] =
-               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert [^private_body] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
       subscription =
         Subscription.new(%{
@@ -138,46 +131,25 @@ defmodule LenraWeb.EnvironmentControllerTest do
 
       Repo.insert(subscription)
 
-      creator! =
-        patch(creator!, update_env_path, %{
-          "is_public" => true
-        })
+      forbidden_error = %{"message" => "Forbidden", "reason" => "forbidden"}
 
-      assert [%{"is_public" => true}] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      creator! = patch(creator!, update_env_path, public_body)
+      assert [^public_body] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
-      patch(admin!, update_env_path, %{
-        "is_public" => false
-      })
+      patch(admin!, update_env_path, private_body)
+      assert [^private_body] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
-      assert [%{"is_public" => false}] =
-               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      user! = patch(user!, update_env_path, public_body)
+      assert ^forbidden_erro = json_response(user!, 403)
 
-      user! =
-        patch(user!, update_env_path, %{
-          "is_public" => true
-        })
+      assert [^private_body] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
+      other_dev! = patch(other_dev!, update_env_path, public_body)
+      assert ^forbidden_erro = json_response(other_dev!, 403)
 
-      assert [%{"is_public" => false}] =
-               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
-
-      other_dev! =
-        patch(other_dev!, update_env_path, %{
-          "is_public" => true
-        })
-
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
-
-      assert [%{"is_public" => false}] =
-               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
-
-      wrong_app_con! =
-        patch(other_dev!, Routes.envs_path(other_dev!, :update, other_app["id"], env["id"]), %{
-          "is_public" => false
-        })
-
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(wrong_app_con!, 403)
+      assert [^private_body] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+      assert ^forbidden_erro = json_response(patch(creator!, update_other_app_env_path, private_body), 403)
+      assert ^forbidden_erro = json_response(patch(other_dev!, update_other_app_env_path, private_body), 403)
     end
   end
 
@@ -215,8 +187,8 @@ defmodule LenraWeb.EnvironmentControllerTest do
           "is_public" => false
         })
 
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
+      assert ^forbidden_erro = json_response(user!, 403)
+      assert ^forbidden_erro = json_response(other_dev!, 403)
     end
 
     @tag auth_user_with_cgs: :dev
