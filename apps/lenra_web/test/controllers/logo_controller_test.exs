@@ -90,7 +90,7 @@ defmodule LenraWeb.LogoControllerTest do
 
       [env] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
-      update_app_logo_path = Routes.logos_path(creator!, :put_logo, app["id"], env["id"])
+      update_app_logo_path = Routes.logos_path(creator!, :put_logo, app["id"])
       update_env_logo_path = Routes.logos_path(creator!, :put_logo, app["id"], env["id"])
       update_other_env_logo_path = Routes.logos_path(creator!, :put_logo, other_app["id"], env["id"])
 
