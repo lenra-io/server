@@ -5,14 +5,6 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
     {:ok, conn: conn}
   end
 
-  defp create_app(conn) do
-    post(conn, Routes.apps_path(conn, :create), %{
-      "name" => "test",
-      "color" => "ffffff",
-      "icon" => 12
-    })
-  end
-
   describe "index" do
     test "user environment access controller not authenticated", %{conn: conn} do
       conn = get(conn, Routes.user_environment_access_path(conn, :index, 0, 0))
@@ -26,9 +18,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
     @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "get user environment access check authorizations", %{users: [creator!, user, other_dev, admin]} do
-      creator! = create_app(creator!)
-
-      assert app = json_response(creator!, 200)
+      %{conn: creator!, app: app} = create_app(creator!)
 
       assert envs = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
@@ -66,8 +56,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
   describe "create" do
     @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "user environment access controller authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
-      creator! = create_app(creator!)
-      assert app = json_response(creator!, 200)
+      %{conn: creator!, app: app} = create_app(creator!)
 
       assert envs = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
@@ -111,8 +100,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
   describe "add_user_env_access_from_email" do
     @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "successfull authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
-      creator! = create_app(creator!)
-      assert app = json_response(creator!, 200)
+      %{conn: creator!, app: app} = create_app(creator!)
 
       assert envs = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 

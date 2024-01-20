@@ -26,8 +26,7 @@ defmodule LenraWeb.LogoControllerTest do
   @tag auth_user_with_cgs: :dev
   describe "put" do
     test "app not existing logo", %{conn: conn!, png_image: png_image} do
-      conn! = create_app(conn!)
-      assert app = json_response(conn!, 200)
+      %{conn: conn!, app: app} = create_app(conn!)
 
       encoded_data = Base.encode64(png_image.data)
 
@@ -55,8 +54,7 @@ defmodule LenraWeb.LogoControllerTest do
     @tag :skip
     @tag auth_user_with_cgs: :dev
     test "env not existing logo", %{conn: conn!, png_image: png_image} do
-      conn! = create_app(conn!)
-      assert app = json_response(conn!, 200)
+      %{conn: conn!, app: app} = create_app(conn!)
 
       {:ok, env} = Apps.fetch_main_env_for_app(app["id"])
 
@@ -87,11 +85,8 @@ defmodule LenraWeb.LogoControllerTest do
 
     @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "logo controller authenticated", %{users: [creator!, user!, other_dev!, admin!], png_image: png_image} do
-      creator! = create_app(creator!)
-      assert app = json_response(creator!, 200)
-
-      other_dev! = create_app(other_dev!, "test2")
-      assert other_app = json_response(other_dev!, 200)
+      %{conn: creator!, app: app} = create_app(creator!)
+      %{conn: other_dev!, app: other_app} = create_app(other_dev!, "test2")
 
       [env] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 

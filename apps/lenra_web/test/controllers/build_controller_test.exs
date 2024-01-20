@@ -8,14 +8,6 @@ defmodule LenraWeb.BuildControllerTest do
     {:ok, conn: conn}
   end
 
-  defp create_app(conn) do
-    post(conn, Routes.apps_path(conn, :create), %{
-      "name" => "test",
-      "color" => "ffffff",
-      "icon" => 12
-    })
-  end
-
   defp create_build(conn, app_id) do
     post(
       conn,
@@ -31,8 +23,7 @@ defmodule LenraWeb.BuildControllerTest do
   end
 
   defp create_app_and_build(conn!) do
-    conn! = create_app(conn!)
-    assert app = json_response(conn!, 200)
+    %{conn: conn!, app: app} = create_app(conn!)
 
     conn! = create_build(conn!, app["id"])
     assert build = json_response(conn!, 200)
@@ -91,8 +82,7 @@ defmodule LenraWeb.BuildControllerTest do
   describe "create" do
     @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
     test "build controller authenticated", %{users: [creator!, user, other_dev, admin]} do
-      creator! = create_app(creator!)
-      assert app = json_response(creator!, 200)
+      %{conn: creator!, app: app} = create_app(creator!)
 
       creator! = create_build(creator!, app["id"])
       admin = create_build(admin, app["id"])
@@ -131,9 +121,7 @@ defmodule LenraWeb.BuildControllerTest do
 
     @tag auth_user_with_cgs: :dev
     test "build controller authenticated but invalid params", %{conn: conn!} do
-      conn! = create_app(conn!)
-
-      assert app = json_response(conn!, 200)
+      %{conn: conn!, app: app} = create_app(conn!)
 
       conn! =
         post(

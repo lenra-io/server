@@ -55,7 +55,11 @@ defmodule LenraWeb.ConnCase do
             params
           )
 
-        post(conn, Routes.apps_path(conn, :create), params)
+        conn = post(conn, Routes.apps_path(conn, :create), params)
+
+        assert app = json_response(conn, 200)
+
+        %{conn: conn, app: app}
       end
     end
   end
