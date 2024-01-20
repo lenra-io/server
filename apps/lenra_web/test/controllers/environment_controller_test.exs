@@ -9,8 +9,12 @@ defmodule LenraWeb.EnvironmentControllerTest do
   end
 
   defp create_app(conn) do
+    create_app(conn, "test")
+  end
+
+  defp create_app(conn, name) do
     post(conn, Routes.apps_path(conn, :create), %{
-      "name" => "test",
+      "name" => name,
       "color" => "ffffff",
       "icon" => 12
     })
@@ -106,6 +110,24 @@ defmodule LenraWeb.EnvironmentControllerTest do
       creator! = create_app(creator!)
       assert app = json_response(creator!, 200)
 
+      other_dev! = create_app(other_dev!, "test2")
+      assert other_app = json_response(other_dev!, 200)
+
+      [env] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+
+      update_env_path = Routes.envs_path(creator!, :update, app["id"], env["id"])
+
+      creator! =
+        patch(creator!, update_env_path, %{
+          "is_public" => true
+        })
+
+      assert %{"message" => "You need a subscirption", "reason" => "subscription_required"} =
+               json_response(creator!, 402)
+
+      assert [%{"is_public" => false}] =
+               json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
+
       subscription =
         Subscription.new(%{
           application_id: app["id"],
@@ -115,10 +137,6 @@ defmodule LenraWeb.EnvironmentControllerTest do
         })
 
       Repo.insert(subscription)
-
-      [env] = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
-
-      update_env_path = Routes.envs_path(creator!, :update, app["id"], env["id"])
 
       creator! =
         patch(creator!, update_env_path, %{
@@ -139,6 +157,8 @@ defmodule LenraWeb.EnvironmentControllerTest do
           "is_public" => true
         })
 
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
+
       assert [%{"is_public" => false}] =
                json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
@@ -147,11 +167,17 @@ defmodule LenraWeb.EnvironmentControllerTest do
           "is_public" => true
         })
 
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
+
       assert [%{"is_public" => false}] =
                json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
+      wrong_app_con! =
+        patch(other_dev!, Routes.envs_path(other_dev!, :update, other_app["id"], env["id"]), %{
+          "is_public" => false
+        })
+
+      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(wrong_app_con!, 403)
     end
   end
 
