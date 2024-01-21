@@ -680,7 +680,7 @@ defmodule Lenra.Apps do
     |> Repo.transaction()
   end
 
-  defp upsert_logo(transaction, %{inserted_image: image, old_logo: old_logo} = state, %{"app_id" => app_id} = params) do
+  defp upsert_logo(transaction, %{inserted_image: image, old_logo: old_logo}, %{"app_id" => app_id} = params) do
     case old_logo do
       nil ->
         transaction.insert(Logo.new(app_id, params["env_id"], %{image_id: image.id}))
