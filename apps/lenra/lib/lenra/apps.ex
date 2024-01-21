@@ -158,6 +158,16 @@ defmodule Lenra.Apps do
     Repo.fetch(Environment, env_id)
   end
 
+  def fetch_app_env(app_id, env_id) do
+    Environment
+    |> Repo.get_by(id: env_id, application_id: app_id)
+    |> Repo.preload(:application)
+    |> case do
+      nil -> BusinessError.no_env_found_tuple()
+      env -> {:ok, env}
+    end
+  end
+
   def create_env(application_id, creator_id, params) do
     Ecto.Multi.new()
     |> Ecto.Multi.put(:inserted_application, %{id: application_id})

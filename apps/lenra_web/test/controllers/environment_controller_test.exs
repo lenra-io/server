@@ -147,8 +147,11 @@ defmodule LenraWeb.EnvironmentControllerTest do
       assert [%{"is_public" => false}] =
                json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
 
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(patch(creator!, update_other_app_env_path, private_body), 403)
-      assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(patch(other_dev!, update_other_app_env_path, private_body), 403)
+      assert %{"message" => "Environment not found", "reason" => "no_env_found"} =
+               json_response(patch(creator!, update_other_app_env_path, private_body), 404)
+
+      assert %{"message" => "Environment not found", "reason" => "no_env_found"} =
+               json_response(patch(other_dev!, update_other_app_env_path, private_body), 404)
     end
   end
 
