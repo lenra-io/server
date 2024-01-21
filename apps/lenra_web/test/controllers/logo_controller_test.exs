@@ -49,8 +49,6 @@ defmodule LenraWeb.LogoControllerTest do
 
       encoded_data = Base.encode64(png_image.data)
 
-      IO.inspect("env #{env["id"]}")
-
       conn! =
         put(
           conn!,
