@@ -8,19 +8,6 @@ defmodule LenraWeb.ApplicationMainEnvControllerTest do
     {:ok, conn: conn}
   end
 
-  def create_app(conn) do
-    conn =
-      post(conn, Routes.apps_path(conn, :create), %{
-        "name" => "test",
-        "color" => "ffffff",
-        "icon" => 12
-      })
-
-    app = json_response(conn, 200)
-
-    %{conn: conn, app: app}
-  end
-
   describe "index" do
     test "application main env controller not authenticated", %{conn: conn} do
       conn = get(conn, Routes.application_main_env_path(conn, :index, 0))
