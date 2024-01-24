@@ -83,6 +83,7 @@ defmodule ApplicationRunner.IntegrationTest do
       session_metadata: %Session.Metadata{
         env_id: env.id,
         user_id: user.id,
+        roles: ["user"],
         session_id: @session_id,
         function_name: @function_name,
         context: %{}

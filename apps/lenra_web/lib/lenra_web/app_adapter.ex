@@ -58,7 +58,18 @@ defmodule LenraWeb.AppAdapter do
          user_id = String.to_integer(subject),
          {:ok, resp} <- HydraApi.get_hydra_client(client_id),
          {:ok, app_name} <- get_app_name(resp.body, params) do
-      {:ok, user_id, app_name, ApplicationRunner.AppSocket.extract_context(params)}
+      {:ok, user_id, ["user"], app_name, ApplicationRunner.AppSocket.extract_context(params)}
+    else
+      error ->
+        Logger.error(error)
+        BusinessError.forbidden_tuple()
+    end
+  end
+
+  @impl ApplicationRunner.Adapter
+  def resource_from_params(params) do
+    with {:ok, app_name} <- get_app_name(nil, params) do
+      {:ok, nil, ["guest"], app_name, ApplicationRunner.AppSocket.extract_context(params)}
     else
       error ->
         Logger.error(error)

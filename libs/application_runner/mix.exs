@@ -44,6 +44,7 @@ defmodule ApplicationRunner.MixProject do
       {:postgrex, "~> 0.16.5"},
       {:guardian, "~> 2.3.1"},
       {:phoenix, "~> 1.6.15"},
+      {:phoenix_pubsub, "~> 2.1.1"},
       {:finch, "~> 0.14"},
       {:bypass, "~> 2.1", only: :test},
       {:mongodb_driver, "~> 1.2.1"},

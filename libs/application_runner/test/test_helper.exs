@@ -10,6 +10,7 @@ Ecto.Adapters.SQL.Sandbox.mode(ApplicationRunner.Repo, :manual)
 
 Logger.configure(level: :warning)
 
+# Supervisor.start_link(Phoenix.PubSub, name: ApplicationRunner.PubSub)
 ApplicationRunner.FakeEndpoint.start_link()
 
 ExUnit.start()

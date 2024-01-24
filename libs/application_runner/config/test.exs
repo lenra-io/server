@@ -23,7 +23,8 @@ config :application_runner, ApplicationRunner.Guardian.AppGuardian,
 config :application_runner, ApplicationRunner.FakeEndpoint,
   http: [port: 4002],
   server: false,
-  secret_key_base: "jtmuKvO3YYasTYRMAMGs+LSgnBEIFLQIOh439wO3ZoQdSfvDhXrnjKg2R5lCuK04"
+  secret_key_base: "jtmuKvO3YYasTYRMAMGs+LSgnBEIFLQIOh439wO3ZoQdSfvDhXrnjKg2R5lCuK04",
+  pubsub_server: ApplicationRunner.PubSub
 
 config :swarm,
   sync_nodes_timeout: 0,

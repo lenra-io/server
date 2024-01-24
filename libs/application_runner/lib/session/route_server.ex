@@ -140,6 +140,7 @@ defmodule ApplicationRunner.Session.RouteServer do
   end
 
   defp find_route(routes, url) do
+    # TODO: manage user roles
     Enum.reduce_while(
       routes,
       :error,

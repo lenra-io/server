@@ -41,12 +41,12 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
 
   @spec get_lenra_routes(number()) :: map()
   def get_lenra_routes(env_id) do
-    GenServer.call(get_full_name(env_id), :get_lenra_routes)
+    GenServer.call(get_full_name(env_id), {:get_routes, "lenra"})
   end
 
   @spec get_json_routes(number()) :: map()
   def get_json_routes(env_id) do
-    GenServer.call(get_full_name(env_id), :get_json_routes)
+    GenServer.call(get_full_name(env_id), {:get_routes, "json"})
   end
 
   @impl true
@@ -56,20 +56,12 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
     {:reply, Map.get(state, :manifest), state}
   end
 
-  def handle_call(:get_lenra_routes, _from, state) do
-    Logger.debug("#{__MODULE__} handle call for :get_lenra_routes with #{inspect(state)}")
+  def handle_call({:get_routes, exposer}, _from, state) do
+    Logger.debug("#{__MODULE__} handle call for :get_routes for #{exposer} with #{inspect(state)}")
 
     manifest = Map.get(state, :manifest)
 
-    {:reply, get_exposer_routes(manifest, "lenra"), state}
-  end
-
-  def handle_call(:get_json_routes, _from, state) do
-    Logger.debug("#{__MODULE__} handle call for :get_json_routes with #{inspect(state)}")
-
-    manifest = Map.get(state, :manifest)
-
-    {:reply, get_exposer_routes(manifest, "json"), state}
+    {:reply, get_exposer_routes(manifest, exposer), state}
   end
 
   defp get_exposer_routes(manifest, exposer) do

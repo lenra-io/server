@@ -43,12 +43,13 @@ defmodule ApplicationRunner.AppSocket do
       # performing token verification on connect.
       @impl true
       def connect(params, socket, _connect_info) do
-        with {:ok, user_id, app_name, context} <- @adapter_mod.resource_from_params(params),
+        with {:ok, user_id, roles, app_name, context} <- @adapter_mod.resource_from_params(params),
              :ok <- @adapter_mod.allow(user_id, app_name),
              {:ok, env_metadata, session_metadata} <-
                ApplicationRunner.AppSocket.create_metadatas(
                  @adapter_mod,
                  user_id,
+                 roles,
                  app_name,
                  context
                ),
@@ -106,7 +107,7 @@ defmodule ApplicationRunner.AppSocket do
   alias ApplicationRunner.Errors.BusinessError
   alias ApplicationRunner.Session
 
-  def create_metadatas(adapter_mod, user_id, app_name, context) do
+  def create_metadatas(adapter_mod, user_id, roles, app_name, context) do
     session_id = Ecto.UUID.generate()
 
     with function_name when is_bitstring(function_name) <-
@@ -117,6 +118,7 @@ defmodule ApplicationRunner.AppSocket do
         env_id: env_id,
         session_id: session_id,
         user_id: user_id,
+        roles: roles,
         function_name: function_name,
         context: context
       }
