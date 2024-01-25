@@ -40,11 +40,11 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
   end
 
   @spec get_routes(number(), String.t()) :: map()
-  def get_routes(env_id, exposer) when exposer in ["lenra", "json"] do
+  defp get_routes(env_id, exposer) when exposer in ["lenra", "json"] do
     {:ok, GenServer.call(get_full_name(env_id), {:get_routes, exposer})}
   end
 
-  def get_routes(env_id, exposer) do
+  defp get_routes(env_id, exposer) do
     {:error, "Exposer #{exposer} not supported"}
   end
 
@@ -53,10 +53,12 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
     case get_routes(env_id, exposer) do
       {:ok, routes} ->
         filter_routes(routes, roles)
+
       {:error, reason} ->
         Logger.error(
           "Could not get routes for env_id #{env_id} and exposer #{exposer} with reason #{inspect(reason)}"
         )
+
         []
     end
   end

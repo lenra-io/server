@@ -28,32 +28,48 @@ defmodule ApplicationRunner.ChannelCase do
     session_id = :rand.uniform(1_000_000)
 
     socket =
-      %Phoenix.Socket{ assigns: %{env_id: env_id, session_id: session_id, roles: ["guest"]}}
+      %Phoenix.Socket{assigns: %{env_id: env_id, session_id: session_id, roles: ["guest"]}}
       |> user(tags)
 
     {:ok, socket: socket, env_id: env_id, session_id: session_id}
   end
 
   defp user(%{assigns: assigns} = socket, tags) do
-    IO.inspect(socket)
-
     case tags[:user] do
-      roles when is_list(roles) ->
-        Map.put(
-          socket,
-          :assigns,
-          Map.put(
-            assigns,
-            :roles,
-            case roles do
-              [] -> ["user"]
-              _ -> roles
-            end
-          )
-        )
-
-      _roles ->
+      nil ->
         socket
+
+      true ->
+        set_roles(socket, ["user"])
+
+      roles ->
+        set_roles(socket, roles)
     end
+  end
+
+  defp set_roles(socket, role) when is_bitstring(role) do
+    set_roles(socket, [role])
+  end
+
+  defp set_roles(%{assigns: assigns} = socket, roles) when is_list(roles) do
+    if Enum.member?(roles, "guest") do
+      throw("A user cannot be a guest")
+    end
+    roles = case Enum.member?(roles, "user") do
+      true ->
+        roles
+
+      false ->
+        ["user" | roles]
+    end
+    socket
+    |> Map.put(
+      :assigns,
+      assigns
+      |> Map.put(
+        :roles,
+        roles
+      )
+    )
   end
 end

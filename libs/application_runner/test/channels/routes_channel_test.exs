@@ -56,8 +56,8 @@ defmodule LenraWeb.RoutesChannelTest do
                subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
     end
 
-    @tag user: "user"
-    test "lenra authenticated", %{env_id: env_id} do
+    @tag :user
+    test "lenra authenticated", %{socket: socket} do
       assert {:ok,
               %{
                 "lenraRoutes" => [
