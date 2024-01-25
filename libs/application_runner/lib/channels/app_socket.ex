@@ -43,7 +43,8 @@ defmodule ApplicationRunner.AppSocket do
       # performing token verification on connect.
       @impl true
       def connect(params, socket, _connect_info) do
-        with {:ok, user_id, roles, app_name, context} <- @adapter_mod.resource_from_params(params),
+        with {:ok, user_id, roles, app_name, context} <-
+               @adapter_mod.resource_from_params(params),
              :ok <- @adapter_mod.allow(user_id, app_name),
              {:ok, env_metadata, session_metadata} <-
                ApplicationRunner.AppSocket.create_metadatas(

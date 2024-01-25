@@ -26,7 +26,7 @@ defmodule ApplicationRunner.RoutesChannel do
         roles = socket.assigns.roles
 
         res = %{
-          "lenraRoutes" => filter_routes(LenraBuilder.get_routes(env_id), roles),
+          "lenraRoutes" => LenraBuilder.get_routes(env_id, roles)
         }
 
         case Swarm.register_name(get_swarm_name(session_id), self()) do
@@ -54,7 +54,7 @@ defmodule ApplicationRunner.RoutesChannel do
         env_id = socket.assigns.env_id
         roles = socket.assigns.roles
 
-        res = %{"jsonRoutes" => filter_routes(JsonBuilder.get_routes(env_id), roles)}
+        res = %{"jsonRoutes" => JsonBuilder.get_routes(env_id, roles)}
 
         {:ok, res, socket}
       end
@@ -76,13 +76,6 @@ defmodule ApplicationRunner.RoutesChannel do
 
       def get_swarm_name(session_id) do
         ApplicationRunner.RoutesChannel.get_name(session_id)
-      end
-
-      defp filter_routes(routes, roles) do
-        Enum.filter(routes, fn route ->
-          Map.get(route, "roles", ["user"])
-          |> Enum.any?(&Enum.member?(roles, &1))
-        end)
       end
     end
   end

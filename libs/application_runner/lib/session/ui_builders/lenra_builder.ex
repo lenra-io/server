@@ -15,8 +15,8 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
   @type view :: map()
   @type component :: map()
 
-  def get_routes(env_id) do
-    Environment.ManifestHandler.get_lenra_routes(env_id)
+  def get_routes(env_id, roles) do
+    Environment.ManifestHandler.get_routes(env_id, "lenra", roles)
   end
 
   def build_ui(session_metadata, view_uid) do

@@ -39,14 +39,33 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
     GenServer.call(get_full_name(env_id), :get_manifest)
   end
 
-  @spec get_lenra_routes(number()) :: map()
-  def get_lenra_routes(env_id) do
-    GenServer.call(get_full_name(env_id), {:get_routes, "lenra"})
+  @spec get_routes(number(), String.t()) :: map()
+  def get_routes(env_id, exposer) when exposer in ["lenra", "json"] do
+    {:ok, GenServer.call(get_full_name(env_id), {:get_routes, exposer})}
   end
 
-  @spec get_json_routes(number()) :: map()
-  def get_json_routes(env_id) do
-    GenServer.call(get_full_name(env_id), {:get_routes, "json"})
+  def get_routes(env_id, exposer) do
+    {:error, "Exposer #{exposer} not supported"}
+  end
+
+  @spec get_routes(number(), String.t(), {:array, :string}) :: map()
+  def get_routes(env_id, exposer, roles) do
+    case get_routes(env_id, exposer) do
+      {:ok, routes} ->
+        filter_routes(routes, roles)
+      {:error, reason} ->
+        Logger.error(
+          "Could not get routes for env_id #{env_id} and exposer #{exposer} with reason #{inspect(reason)}"
+        )
+        []
+    end
+  end
+
+  defp filter_routes(routes, roles) do
+    Enum.filter(routes, fn route ->
+      Map.get(route, "roles", ["user"])
+      |> Enum.any?(&Enum.member?(roles, &1))
+    end)
   end
 
   @impl true
@@ -57,7 +76,9 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
   end
 
   def handle_call({:get_routes, exposer}, _from, state) do
-    Logger.debug("#{__MODULE__} handle call for :get_routes for #{exposer} with #{inspect(state)}")
+    Logger.debug(
+      "#{__MODULE__} handle call for :get_routes for #{exposer} with #{inspect(state)}"
+    )
 
     manifest = Map.get(state, :manifest)
 

@@ -88,7 +88,7 @@ defmodule ApplicationRunner.Session.RouteServer do
   def load_ui(session_id, mode, route) do
     session_metadata = Session.MetadataAgent.get_metadata(session_id)
     builder_mod = get_builder_mode(mode)
-    routes = builder_mod.get_routes(session_metadata.env_id)
+    routes = builder_mod.get_routes(session_metadata.env_id, session_metadata.roles)
 
     Logger.debug("#{__MODULE__} load_ui for state session_id:#{session_id}")
 
