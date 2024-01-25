@@ -21,6 +21,7 @@ defmodule ApplicationRunner.ChannelCase do
     start_supervised({Phoenix.PubSub, name: ApplicationRunner.PubSub})
     :ok = Sandbox.checkout(ApplicationRunner.Repo)
 
+
     unless tags[:async] do
       Sandbox.mode(ApplicationRunner.Repo, {:shared, self()})
     end
@@ -42,6 +43,19 @@ defmodule ApplicationRunner.ChannelCase do
       |> assign(:session_id, session_id)
       |> assign(:roles, ["guest"])
       |> user(tags)
+
+      start_supervised(
+        {ApplicationRunner.Session.MetadataAgent,
+         %ApplicationRunner.Session.Metadata{
+           session_id: socket.assigns.session_id,
+           env_id: socket.assigns.env_id,
+          #  TODO: user_id: socket.assigns.user_id,
+           user_id: 1,
+           roles: socket.assigns.roles,
+           function_name: "",
+           context: %{}
+         }}
+      )
 
     {:ok, socket: socket}
   end
