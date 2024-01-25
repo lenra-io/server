@@ -1,6 +1,16 @@
 defmodule ApplicationRunner.FakeAppSocket do
-  use ApplicationRunner.AppSocket,
-    adapter: ApplicationRunner.FakeAppAdapter,
-    route_channel: ApplicationRunner.RouteChannel,
-    routes_channel: ApplicationRunner.RoutesChannel
+  use Phoenix.Socket
+
+  ## Channels
+  channel("route:*", ApplicationRunner.RouteChannel)
+  channel("routes", ApplicationRunner.RoutesChannel)
+
+  @impl true
+  def connect(_params, socket, _connect_info) do
+    IO.inspect("FakeAppSocket connect")
+    {:ok, socket}
+  end
+
+  @impl true
+  def id(socket), do: nil
 end

@@ -7,6 +7,7 @@ defmodule ApplicationRunner.ChannelCase do
 
   using do
     quote do
+      use Phoenix.ChannelTest
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
       import ApplicationRunner.ChannelCase
@@ -27,11 +28,22 @@ defmodule ApplicationRunner.ChannelCase do
     {:ok, %{id: env_id}} = Repo.insert(Contract.Environment.new())
     session_id = :rand.uniform(1_000_000)
 
+    {:ok, socket} =
+      Phoenix.ChannelTest.__connect__(
+        ApplicationRunner.FakeEndpoint,
+        ApplicationRunner.FakeAppSocket,
+        %{},
+        %{}
+      )
+
     socket =
-      %Phoenix.Socket{assigns: %{env_id: env_id, session_id: session_id, roles: ["guest"]}}
+      socket
+      |> assign(:env_id, env_id)
+      |> assign(:session_id, session_id)
+      |> assign(:roles, ["guest"])
       |> user(tags)
 
-    {:ok, socket: socket, env_id: env_id, session_id: session_id}
+    {:ok, socket: socket}
   end
 
   defp user(%{assigns: assigns} = socket, tags) do
@@ -55,20 +67,31 @@ defmodule ApplicationRunner.ChannelCase do
     if Enum.member?(roles, "guest") do
       throw("A user cannot be a guest")
     end
-    roles = case Enum.member?(roles, "user") do
-      true ->
-        roles
 
-      false ->
-        ["user" | roles]
-    end
+    roles =
+      case Enum.member?(roles, "user") do
+        true ->
+          roles
+
+        false ->
+          ["user" | roles]
+      end
+
+    socket
+    |> assign(
+      :roles,
+      roles
+    )
+  end
+
+  defp assign(socket, key, value) do
     socket
     |> Map.put(
       :assigns,
-      assigns
+      socket.assigns
       |> Map.put(
-        :roles,
-        roles
+        key,
+        value
       )
     )
   end

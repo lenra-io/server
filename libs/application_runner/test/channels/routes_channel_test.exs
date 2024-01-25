@@ -26,7 +26,9 @@ defmodule LenraWeb.RoutesChannelTest do
     }
   ]
 
-  setup %{socket: socket, env_id: env_id, session_id: session_id} do
+  setup %{socket: socket} do
+    env_id = socket.assigns.env_id
+
     GenServer.start_link(
       ApplicationRunner.StateInjectedGenServer,
       [state: @guest_and_roleless_routes],
@@ -37,11 +39,14 @@ defmodule LenraWeb.RoutesChannelTest do
       Swarm.unregister_name(ManifestHandler.get_full_name(env_id))
     end)
 
-    {:ok, socket: socket, env_id: env_id, session_id: session_id}
+    {:ok, socket: socket}
   end
 
   describe "join" do
     test "lenra not authenticated", %{socket: socket} do
+      IO.inspect(socket.assigns)
+      join_result = subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
+
       assert {:ok,
               %{
                 "lenraRoutes" => [
@@ -51,13 +56,14 @@ defmodule LenraWeb.RoutesChannelTest do
                     }
                   }
                 ]
-              },
-              socket} =
-               subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
+              }, socket} = join_result
     end
 
     @tag :user
     test "lenra authenticated", %{socket: socket} do
+      IO.inspect(socket.assigns)
+      join_result = subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
+
       assert {:ok,
               %{
                 "lenraRoutes" => [
@@ -67,9 +73,7 @@ defmodule LenraWeb.RoutesChannelTest do
                     }
                   }
                 ]
-              },
-              socket} =
-               subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
+              }, socket} = join_result
     end
   end
 end
