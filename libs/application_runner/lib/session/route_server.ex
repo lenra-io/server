@@ -43,6 +43,7 @@ defmodule ApplicationRunner.Session.RouteServer do
         {:ok, %{session_id: session_id, ui: ui, mode: mode, route: route}}
 
       {:error, reason} ->
+        Logger.debug("#{__MODULE__} init error #{inspect(reason)}")
         {:stop, reason}
     end
   end

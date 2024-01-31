@@ -48,7 +48,6 @@ defmodule ApplicationRunner.Session.RouteDynSup do
         Logger.critical(
           "#{__MODULE__} cannot start route_server for env_id: #{env_id}, session_id: #{session_id}, mode: #{mode}, route: #{route}\nError: #{inspect(err)}"
         )
-        IO.inspect(err)
 
         err
     end
