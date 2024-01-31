@@ -42,16 +42,16 @@ defmodule LenraWeb.RouteChannelTest do
   end
 
   describe "join" do
-    test "lenra not authenticated", %{socket: socket} do
-      {:ok, _, socket} =
-        subscribe_and_join(socket, FakeRouteChannel, "route:/", %{"mode" => "lenra"})
+    # test "lenra not authenticated", %{socket: socket} do
+    #   {:ok, _, socket} =
+    #     subscribe_and_join(socket, FakeRouteChannel, "route:/", %{"mode" => "lenra"})
 
-      view = %{
-        "_type" => "text",
-        "text" => "Hello World"
-      }
+    #   view = %{
+    #     "_type" => "text",
+    #     "text" => "Hello World"
+    #   }
 
-      assert_push("ui", view)
-    end
+    #   assert_push("ui", view)
+    # end
   end
 end

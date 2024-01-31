@@ -33,11 +33,11 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
     {:ok, %{id: env_id}} = Repo.insert(Contract.Environment.new())
 
     Bypass.open(port: 1234)
-    |> Bypass.stub("POST", "/function/#{@function_name}", &handle_resp/1)
+    |> Bypass.stub("POST", "/function/env_#{env_id}", &handle_resp/1)
 
     env_metadata = %Environment.Metadata{
       env_id: env_id,
-      function_name: @function_name
+      function_name: "env_#{env_id}"
     }
 
     {:ok, _pid} = start_supervised({Environment.Supervisor, env_metadata})
