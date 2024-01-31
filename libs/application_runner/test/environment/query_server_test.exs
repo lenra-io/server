@@ -391,9 +391,7 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
       assert not Process.alive?(qs_pid)
     end
 
-    test "should get have one query server and send filtered data for projection", %{
-      mongo_name: mongo_name
-    } do
+    test "should get have one query server and send filtered data for projection", %{} do
       {:ok, _} =
         QueryDynSup.ensure_child_started(
           @env_id,
