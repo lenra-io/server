@@ -168,9 +168,7 @@ defmodule ApplicationRunner.Session.RouteServer do
   end
 
   defp get_builder_mode(mode) do
-    raise Errors.DevError.exception(
-            "The view mode '#{mode}' is incorrect. No UI Builder module can be found."
-          )
+    raise Errors.DevError.exception("The view mode '#{mode}' is incorrect. No UI Builder module can be found.")
   end
 
   @spec create_view_uid(
@@ -197,15 +195,34 @@ defmodule ApplicationRunner.Session.RouteServer do
     query = Map.get(find, :query)
     projection = Map.get(find, :projection)
 
-    %MongoUserLink{mongo_user_id: mongo_user_id} =
-      MongoStorage.get_mongo_user_link!(session_metadata.env_id, session_metadata.user_id)
+    mongo_user_id =
+      case session_metadata.user_id do
+        nil ->
+          nil
 
-    params = query_params |> Map.merge(%{"me" => mongo_user_id})
+        _ ->
+          %MongoUserLink{mongo_user_id: mongo_user_id} =
+            MongoStorage.get_mongo_user_link!(session_metadata.env_id, session_metadata.user_id)
+
+          mongo_user_id
+      end
+
+    params =
+      query_params
+      |> Map.merge(%{
+        "me" => mongo_user_id,
+        "roles" => session_metadata.user_id
+      })
+
     query_transformed = Parser.replace_params(query, params)
 
     context =
       context
-      |> Map.merge(%{"me" => mongo_user_id, "pathParams" => query_params["route"]})
+      |> Map.merge(%{
+        "me" => mongo_user_id,
+        "roles" => session_metadata.user_id,
+        "pathParams" => query_params["route"]
+      })
       |> project_map(context_projection)
 
     with {:ok, query_parsed} <- parse_query(query, params) do
