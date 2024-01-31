@@ -14,7 +14,8 @@ config :application_runner, ApplicationRunner.Repo,
   password: "postgres",
   database: "applicationrunner_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: System.get_env("POSTGRES_HOST", "localhost"),
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  log: :debug
 
 config :application_runner, ApplicationRunner.Guardian.AppGuardian,
   issuer: "application_runner",

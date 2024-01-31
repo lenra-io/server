@@ -21,16 +21,27 @@ defmodule ApplicationRunner.Session.Supervisor do
 
   @impl true
   def init(%Session.Metadata{} = sm) do
-    children = [
-      # TODO: add module once they done !
-      {ApplicationRunner.Session.MetadataAgent, sm},
-      {ApplicationRunner.EventHandler, mode: :session, id: sm.session_id},
-      {Session.Events.OnUserFirstJoin,
-       session_id: sm.session_id, env_id: sm.env_id, user_id: sm.user_id},
-      {Session.Events.OnSessionStart, session_id: sm.session_id},
-      {Session.ListenersCache, session_id: sm.session_id},
-      {Session.RouteDynSup, session_id: sm.session_id}
-    ]
+    children =
+      [
+        # TODO: add module once they done !
+        {ApplicationRunner.Session.MetadataAgent, sm},
+        {ApplicationRunner.EventHandler, mode: :session, id: sm.session_id},
+        {Session.Events.OnSessionStart, session_id: sm.session_id}
+      ] ++
+        case sm.user_id do
+          nil ->
+            []
+
+          _ ->
+            [
+              {Session.Events.OnUserFirstJoin,
+               session_id: sm.session_id, env_id: sm.env_id, user_id: sm.user_id}
+            ]
+        end ++
+        [
+          {Session.ListenersCache, session_id: sm.session_id},
+          {Session.RouteDynSup, session_id: sm.session_id}
+        ]
 
     Supervisor.init(children, strategy: :one_for_one)
   end

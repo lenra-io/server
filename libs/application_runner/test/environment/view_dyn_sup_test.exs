@@ -83,7 +83,7 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
                ViewDynSup.ensure_child_started(
                  env_id,
                  @session_id,
-                 @function_name,
+                 "env_#{env_id}",
                  view_uid
                )
 

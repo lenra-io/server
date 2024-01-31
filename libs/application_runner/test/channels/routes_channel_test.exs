@@ -1,48 +1,60 @@
 defmodule LenraWeb.RoutesChannelTest do
   use ApplicationRunner.ChannelCase, async: true
 
-  alias ApplicationRunner.RoutesChannel
-  alias ApplicationRunner.Environment.ManifestHandler
-  alias ApplicationRunner.Repo
   alias ApplicationRunner.FakeRoutesChannel
-  alias ApplicationRunner.{Contract, Environment}
 
-  @guest_and_roleless_routes [
-    %{
-      "path" => "/",
-      "view" => %{
-        "_type" => "view",
-        "name" => "guestMain"
-      },
-      "roles" => ["guest"]
-    },
-    %{
-      "path" => "/",
-      "view" => %{
-        "_type" => "view",
-        "name" => "main"
-      }
+  @manifest %{
+    "lenra" => %{
+      "routes" => [
+        %{
+          "path" => "/",
+          "view" => %{
+            "_type" => "view",
+            "name" => "guestMain"
+          },
+          "roles" => ["guest"]
+        },
+        %{
+          "path" => "/",
+          "view" => %{
+            "_type" => "view",
+            "name" => "main"
+          }
+        }
+      ]
     }
-  ]
+  }
 
-  setup %{socket: socket} do
-    env_id = socket.assigns.env_id
+  setup %{create_socket: create_socket, openfaas_bypass: bypass, function_name: function_name} do
+    Bypass.stub(bypass, "POST", "/function/#{function_name}", fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
 
-    GenServer.start_link(
-      ApplicationRunner.StateInjectedGenServer,
-      [state: @guest_and_roleless_routes],
-      name: ManifestHandler.get_full_name(env_id)
-    )
+      result =
+        case Jason.decode!(body) do
+          %{"view" => _view} ->
+            %{}
 
-    on_exit(fn ->
-      Swarm.unregister_name(ManifestHandler.get_full_name(env_id))
+          %{"listener" => _listener} ->
+            %{}
+
+          %{} ->
+            @manifest
+        end
+
+      Plug.Conn.resp(conn, 200, Jason.encode!(result))
     end)
 
-    {:ok, socket: socket}
+    {:ok, socket} = create_socket.(%{})
+
+    on_exit(fn ->
+      close(socket)
+    end)
+
+    {:ok, socket: socket, openfaas_bypass: bypass, function_name: function_name}
   end
 
   describe "join" do
-    test "lenra not authenticated", %{socket: socket} do
+    test("lenra not authenticated", %{socket: socket}) do
       join_result = subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
 
       assert {:ok,
@@ -54,10 +66,11 @@ defmodule LenraWeb.RoutesChannelTest do
                     }
                   }
                 ]
-              }, socket} = join_result
+              }, _socket} = join_result
     end
 
     @tag :user
+    @tag telemetry_listen: [:application_runner, :app_listener, :start]
     test "lenra authenticated", %{socket: socket} do
       join_result = subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
 
@@ -70,7 +83,7 @@ defmodule LenraWeb.RoutesChannelTest do
                     }
                   }
                 ]
-              }, socket} = join_result
+              }, _socket} = join_result
     end
   end
 end

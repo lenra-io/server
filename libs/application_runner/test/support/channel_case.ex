@@ -1,14 +1,12 @@
 defmodule ApplicationRunner.ChannelCase do
-  alias Ecto.Adapters.SQL.Sandbox
   use ExUnit.CaseTemplate
 
   alias ApplicationRunner.Repo
-  alias ApplicationRunner.{Contract, Environment}
+  alias ApplicationRunner.Contract.{User, Environment}
+  alias Ecto.Adapters.SQL.Sandbox
 
   using do
     quote do
-      use Phoenix.ChannelTest
-      # Import conveniences for testing with channels
       import Phoenix.ChannelTest
       import ApplicationRunner.ChannelCase
 
@@ -18,95 +16,71 @@ defmodule ApplicationRunner.ChannelCase do
   end
 
   setup tags do
-    start_supervised({Phoenix.PubSub, name: ApplicationRunner.PubSub})
     :ok = Sandbox.checkout(ApplicationRunner.Repo)
+    Sandbox.mode(ApplicationRunner.Repo, {:shared, self()})
+    start_supervised({Phoenix.PubSub, name: ApplicationRunner.PubSub})
 
+    :telemetry.detach("application_runner.monitor")
 
-    unless tags[:async] do
-      Sandbox.mode(ApplicationRunner.Repo, {:shared, self()})
-    end
+    {:ok, %{id: env_id}} = Repo.insert(Environment.new())
 
-    {:ok, %{id: env_id}} = Repo.insert(Contract.Environment.new())
-    session_id = :rand.uniform(1_000_000)
+    function_name = "env_#{env_id}"
 
-    {:ok, socket} =
+    bypass = Bypass.open(port: 1234)
+
+    Bypass.expect_once(bypass, "GET", "/system/function/#{function_name}", fn conn ->
+      Plug.Conn.resp(conn, 200, Jason.encode!(%{name: function_name}))
+    end)
+
+    Bypass.expect_once(bypass, "PUT", "/system/functions", fn conn ->
+      Plug.Conn.resp(conn, 200, "ok")
+    end)
+
+    {user_id, roles} = user(env_id, tags)
+
+    create_socket = fn context ->
       Phoenix.ChannelTest.__connect__(
         ApplicationRunner.FakeEndpoint,
         ApplicationRunner.FakeAppSocket,
-        %{},
+        %{connect_result: {:ok, user_id, roles, function_name, context}},
         %{}
       )
+    end
 
-    socket =
-      socket
-      |> assign(:env_id, env_id)
-      |> assign(:session_id, session_id)
-      |> assign(:roles, ["guest"])
-      |> user(tags)
-
-      start_supervised(
-        {ApplicationRunner.Session.MetadataAgent,
-         %ApplicationRunner.Session.Metadata{
-           session_id: socket.assigns.session_id,
-           env_id: socket.assigns.env_id,
-          #  TODO: user_id: socket.assigns.user_id,
-           user_id: 1,
-           roles: socket.assigns.roles,
-           function_name: "",
-           context: %{}
-         }}
-      )
-
-    {:ok, socket: socket}
+    {:ok, create_socket: create_socket, openfaas_bypass: bypass, function_name: function_name}
   end
 
-  defp user(%{assigns: assigns} = socket, tags) do
+  defp user(env_id, tags) do
     case tags[:user] do
       nil ->
-        socket
+        {nil, ["guest"]}
 
       true ->
-        set_roles(socket, ["user"])
+        create_user(env_id, ["user"])
 
       roles ->
-        set_roles(socket, roles)
+        if Enum.member?(roles, "guest") do
+          throw("A user cannot be a guest")
+        end
+
+        roles =
+          case Enum.member?(roles, "user") do
+            true ->
+              roles
+
+            false ->
+              ["user" | roles]
+          end
+
+        create_user(env_id, roles)
     end
   end
 
-  defp set_roles(socket, role) when is_bitstring(role) do
-    set_roles(socket, [role])
-  end
+  defp create_user(_env_id, roles) do
+    user =
+      User.new(%{"email" => "test@lenra.io"})
+      |> Repo.insert!()
 
-  defp set_roles(%{assigns: assigns} = socket, roles) when is_list(roles) do
-    if Enum.member?(roles, "guest") do
-      throw("A user cannot be a guest")
-    end
-
-    roles =
-      case Enum.member?(roles, "user") do
-        true ->
-          roles
-
-        false ->
-          ["user" | roles]
-      end
-
-    socket
-    |> assign(
-      :roles,
-      roles
-    )
-  end
-
-  defp assign(socket, key, value) do
-    socket
-    |> Map.put(
-      :assigns,
-      socket.assigns
-      |> Map.put(
-        key,
-        value
-      )
-    )
+    {user.id, roles}
   end
 end

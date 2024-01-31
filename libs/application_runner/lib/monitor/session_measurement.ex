@@ -8,7 +8,7 @@ defmodule ApplicationRunner.Monitor.SessionMeasurement do
   alias ApplicationRunner.Contract.{Environment, User}
   alias ApplicationRunner.Monitor.SessionListenerMeasurement
 
-  @primary_key {:uuid, Ecto.UUID, autogenerate: true}
+  @primary_key {:uuid, Ecto.UUID, autogenerate: false}
   schema "session_measurement" do
     belongs_to(:user, User)
     belongs_to(:environment, Environment)
@@ -28,13 +28,19 @@ defmodule ApplicationRunner.Monitor.SessionMeasurement do
   def changeset(session_measurement, params \\ %{}) do
     session_measurement
     |> cast(params, [:start_time, :end_time, :duration])
-    |> validate_required([:start_time, :environment_id, :user_id])
+    |> validate_required([:start_time, :environment_id])
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:environment_id)
   end
 
-  def new(env_id, user_id, params \\ %{}) do
-    %__MODULE__{environment_id: env_id, user_id: user_id}
+  def new(session_id, env_id, user_id, params \\ %{}) do
+    params = case user_id do
+      nil ->
+        params
+      _ ->
+        Map.put(params, :user_id, user_id)
+    end
+    %__MODULE__{uuid: session_id, environment_id: env_id, user_id: user_id}
     |> __MODULE__.changeset(params)
   end
 

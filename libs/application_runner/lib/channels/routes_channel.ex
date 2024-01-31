@@ -23,7 +23,7 @@ defmodule ApplicationRunner.RoutesChannel do
       def join("routes", %{"mode" => "lenra"}, socket) do
         env_id = socket.assigns.env_id
         session_id = socket.assigns.session_id
-        roles = socket.assigns.roles
+        %Session.Metadata{roles: roles} = Session.MetadataAgent.get_metadata(session_id)
 
         res = %{
           "lenraRoutes" => LenraBuilder.get_routes(env_id, roles)

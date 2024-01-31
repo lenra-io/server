@@ -85,7 +85,7 @@ defmodule ApplicationRunner.IntegrationTest do
         user_id: user.id,
         roles: ["user"],
         session_id: @session_id,
-        function_name: @function_name,
+        function_name: "env_#{env.id}",
         context: %{}
       }
     }
@@ -95,7 +95,7 @@ defmodule ApplicationRunner.IntegrationTest do
     %{
       env_metadata: %Environment.Metadata{
         env_id: env.id,
-        function_name: @function_name
+        function_name: "env_#{env.id}"
       }
     }
   end

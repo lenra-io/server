@@ -111,9 +111,9 @@ defmodule ApplicationRunner.EventHandler do
     TokenAgent.revoke_token(env_id, uuid)
   end
 
-  defp create_token(%{function_name: function_name, user_id: user_id, env_id: env_id}, uuid) do
+  defp create_token(%{function_name: function_name, session_id: session_id, user_id: user_id, env_id: env_id}, uuid) do
     {:ok, token, _claims} =
-      AppGuardian.encode_and_sign(uuid, %{type: "session", env_id: env_id, user_id: user_id})
+      AppGuardian.encode_and_sign(uuid, %{type: "session", session_id: session_id, env_id: env_id, user_id: user_id})
 
     TokenAgent.add_token(env_id, uuid, token)
 
