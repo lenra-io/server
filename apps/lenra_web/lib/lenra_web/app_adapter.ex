@@ -70,9 +70,10 @@ defmodule LenraWeb.AppAdapter do
 
   @impl ApplicationRunner.Adapter
   def resource_from_params(params) do
-    with {:ok, app_name} <- get_app_name(nil, params) do
-      {:ok, nil, ["guest"], app_name, ApplicationRunner.AppSocket.extract_context(params)}
-    else
+    case get_app_name(nil, params) do
+      {:ok, app_name} ->
+        {:ok, nil, ["guest"], app_name, ApplicationRunner.AppSocket.extract_context(params)}
+
       error ->
         Logger.error(error)
         BusinessError.forbidden_tuple()
