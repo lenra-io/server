@@ -14,6 +14,11 @@ defmodule ApplicationRunner.MockGenServer do
 end
 
 defmodule ApplicationRunner.StateInjectedGenServer do
+  @moduledoc """
+  This module is a mock GenServer used for testing purposes.
+  It allows setting and getting the state of the GenServer.
+  """
+
   use GenServer
 
   def start_link(_) do

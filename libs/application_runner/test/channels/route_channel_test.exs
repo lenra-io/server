@@ -1,10 +1,8 @@
 defmodule LenraWeb.RouteChannelTest do
   use ApplicationRunner.ChannelCase, async: true
 
-  alias ApplicationRunner.RouteChannel
   alias ApplicationRunner.Environment.ManifestHandler
-  alias ApplicationRunner.Repo
-  alias ApplicationRunner.FakeRouteChannel
+  alias ApplicationRunner.{FakeRouteChannel, Repo, RouteChannel}
   alias ApplicationRunner.{Contract, Environment}
 
   @guest_and_roleless_routes [

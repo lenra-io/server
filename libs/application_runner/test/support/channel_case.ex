@@ -1,8 +1,16 @@
 defmodule ApplicationRunner.ChannelCase do
+  @moduledoc """
+  This module provides a test case template for testing Phoenix channels in the ApplicationRunner application.
+
+  It sets up the necessary aliases, imports, and configurations for testing Phoenix channels.
+  The `setup/1` function is used to set up the test environment before each test case.
+  The `user/2` function is a helper function for creating a user with specified roles.
+  """
+
   use ExUnit.CaseTemplate
 
   alias ApplicationRunner.Repo
-  alias ApplicationRunner.Contract.{User, Environment}
+  alias ApplicationRunner.Contract.{Environment, User}
   alias Ecto.Adapters.SQL.Sandbox
 
   using do
