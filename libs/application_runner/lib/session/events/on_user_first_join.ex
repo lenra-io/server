@@ -32,7 +32,9 @@ defmodule ApplicationRunner.Session.Events.OnUserFirstJoin do
              %{},
              %{}
            ) do
-      Logger.debug("#{__MODULE__} succesfully ran event for session_id: #{session_id}, env_id: #{env_id} and user: #{user_id}")
+      Logger.debug(
+        "#{__MODULE__} succesfully ran event for session_id: #{session_id}, env_id: #{env_id} and user: #{user_id}"
+      )
 
       {:ok, :ok, {:continue, :stop_me}}
     else
@@ -41,7 +43,9 @@ defmodule ApplicationRunner.Session.Events.OnUserFirstJoin do
         {:ok, :ok, {:continue, :stop_me}}
 
       {:error, reason} ->
-        Logger.warning("#{__MODULE__} cannot run event session_id: #{session_id}, env_id: #{env_id} and user: #{user_id}")
+        Logger.warning(
+          "#{__MODULE__} cannot run event session_id: #{session_id}, env_id: #{env_id} and user: #{user_id}"
+        )
 
         {:stop, reason}
     end

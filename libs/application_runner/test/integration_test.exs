@@ -114,9 +114,11 @@ defmodule ApplicationRunner.IntegrationTest do
   def setup_bypass(%{logger_agent: logger_agent, session_metadata: sm, env: env}) do
     bypass = Bypass.open(port: 1234)
     function_name = "env_#{env.id}"
+
     Bypass.stub(bypass, "GET", "/system/function/#{function_name}", fn conn ->
       Plug.Conn.resp(conn, 200, Jason.encode!(%{name: function_name, label: %{}}))
     end)
+
     Bypass.stub(bypass, "PUT", "/system/functions", &resp_update/1)
 
     Bypass.stub(bypass, "POST", "/function/#{function_name}", fn conn ->

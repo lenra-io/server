@@ -186,7 +186,7 @@ defmodule ApplicationRunner.DocsControllerTest do
     } do
       assert {:ok, body} = Jason.encode(%{"documents" => [%{"foo" => "bar"}, %{"foo" => "baz"}]})
 
-    Mongo.drop_collection(mongo_pid, @coll)
+      Mongo.drop_collection(mongo_pid, @coll)
 
       conn =
         conn

@@ -8,8 +8,7 @@ defmodule LenraCommon.Errors.TechnicalError do
 
   @errors [
     {:unknown_error, "Unknown error"},
-    {:bad_request, "Server cannot understand or process the request due to a client-side error.",
-     400},
+    {:bad_request, "Server cannot understand or process the request due to a client-side error.", 400},
     {:error_404, "Not Found.", 404},
     {:error_500, "Internal server error.", 500}
   ]

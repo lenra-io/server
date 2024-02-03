@@ -2,7 +2,6 @@ defmodule ApplicationRunner.Repo.Migrations.Data do
   use Ecto.Migration
 
   def change do
-
     create table(:environments) do
       timestamps()
     end

@@ -34,12 +34,15 @@ defmodule ApplicationRunner.Monitor.SessionMeasurement do
   end
 
   def new(session_id, env_id, user_id, params \\ %{}) do
-    params = case user_id do
-      nil ->
-        params
-      _ ->
-        Map.put(params, :user_id, user_id)
-    end
+    params =
+      case user_id do
+        nil ->
+          params
+
+        _ ->
+          Map.put(params, :user_id, user_id)
+      end
+
     %__MODULE__{uuid: session_id, environment_id: env_id, user_id: user_id}
     |> __MODULE__.changeset(params)
   end

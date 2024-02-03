@@ -169,7 +169,9 @@ defmodule ApplicationRunner.Session.RouteServer do
   end
 
   defp get_builder_mode(mode) do
-    raise Errors.DevError.exception("The view mode '#{mode}' is incorrect. No UI Builder module can be found.")
+    raise Errors.DevError.exception(
+            "The view mode '#{mode}' is incorrect. No UI Builder module can be found."
+          )
   end
 
   @spec create_view_uid(

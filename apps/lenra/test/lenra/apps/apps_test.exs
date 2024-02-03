@@ -99,7 +99,7 @@ defmodule Lenra.Apps.AppsTest do
            session_id: 1,
            env_id: env_id,
            user_id: user.id,
-            roles: ["user"],
+           roles: ["user"],
            function_name: "",
            context: %{}
          }}
@@ -122,7 +122,7 @@ defmodule Lenra.Apps.AppsTest do
            session_id: 1,
            env_id: env_id2,
            user_id: user.id,
-            roles: ["user"],
+           roles: ["user"],
            function_name: "",
            context: %{}
          }}
