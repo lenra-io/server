@@ -34,8 +34,7 @@ defmodule ApplicationRunner.MixProject do
     [
       {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
-      {:ex_component_schema,
-       git: "https://github.com/lenra-io/ex_component_schema", ref: "v1.0.0-beta.6"},
+      {:ex_component_schema, git: "https://github.com/lenra-io/ex_component_schema", ref: "v1.0.0-beta.6"},
       {:jason, "~> 1.4"},
       {:json_diff, "~> 0.1.3"},
       {:telemetry, "~> 1.2.0"},
