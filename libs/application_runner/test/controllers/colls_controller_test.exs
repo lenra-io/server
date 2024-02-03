@@ -27,8 +27,7 @@ defmodule ApplicationRunner.CollsControllerTest do
       {Task.Supervisor,
        name:
          {:via, :swarm,
-          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
-           Environment.MongoInstance.get_name(env.id)}}}
+          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, Environment.MongoInstance.get_name(env.id)}}}
     )
 
     Mongo.drop_collection(pid, @coll)

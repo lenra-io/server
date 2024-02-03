@@ -147,8 +147,7 @@ defmodule ApplicationRunner.MongoStorageTest do
 
       {:ok, %{"_id" => doc_id}} = MongoStorage.create_doc(env_id, "test", %{test: "test"})
 
-      assert :ok =
-               MongoStorage.delete_doc(1, "test", Jason.encode!(doc_id) |> Jason.decode!(), uuid)
+      assert :ok = MongoStorage.delete_doc(1, "test", Jason.encode!(doc_id) |> Jason.decode!(), uuid)
 
       assert :ok = MongoStorage.commit_transaction(uuid, env_id)
 

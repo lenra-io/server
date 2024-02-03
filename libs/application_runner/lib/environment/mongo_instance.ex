@@ -40,14 +40,11 @@ defmodule ApplicationRunner.Environment.MongoInstance do
   end
 
   def run_mongo_task(env_id, mod, fun, opts) do
-    Logger.debug(
-      "#{__MODULE__} run_mongo_task for #{env_id} with task #{inspect([mod, fun, opts])}"
-    )
+    Logger.debug("#{__MODULE__} run_mongo_task for #{env_id} with task #{inspect([mod, fun, opts])}")
 
     res =
       Task.Supervisor.async(
-        {:via, :swarm,
-         {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, get_name(env_id)}},
+        {:via, :swarm, {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, get_name(env_id)}},
         fn -> Kernel.apply(mod, fun, opts) end
       )
       |> Task.await()

@@ -146,9 +146,7 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
     start_supervised(
       {Task.Supervisor,
        name:
-         {:via, :swarm,
-          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
-           MongoInstance.get_name(@env_id)}}}
+         {:via, :swarm, {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, MongoInstance.get_name(@env_id)}}}
     )
 
     Mongo.drop_collection(mongo_name, "test")
@@ -166,8 +164,7 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
       Swarm.unregister_name(MongoInstance.get_name(@env_id))
 
       Swarm.unregister_name(
-        {ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
-         MongoInstance.get_name(@env_id)}
+        {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, MongoInstance.get_name(@env_id)}
       )
     end)
 
@@ -268,8 +265,7 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           %{}
         )
 
-      {:ok, pid2} =
-        QueryDynSup.ensure_child_started(@env_id, "foo", Parser.parse!("{}"), %{}, %{})
+      {:ok, pid2} = QueryDynSup.ensure_child_started(@env_id, "foo", Parser.parse!("{}"), %{}, %{})
 
       QueryServer.join_group(pid1, "42")
       QueryServer.join_group(pid1, "43")
@@ -280,11 +276,9 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
       assert pid1 in pids
       assert pid2 in pids
       # the two group share the same "test", "{}" server
-      assert [:ok] =
-               Swarm.multi_call(QueryServer.group_name("42"), {:mongo_event, insert_event(1)})
+      assert [:ok] = Swarm.multi_call(QueryServer.group_name("42"), {:mongo_event, insert_event(1)})
 
-      assert [:ok, :ok] =
-               Swarm.multi_call(QueryServer.group_name("43"), {:mongo_event, insert_event(1)})
+      assert [:ok, :ok] = Swarm.multi_call(QueryServer.group_name("43"), {:mongo_event, insert_event(1)})
     end
 
     test "should start once with the same coll/query" do
@@ -569,8 +563,7 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
       q2 = %{"idx" => 1}
       eq2 = Jason.encode!(q2)
 
-      {:ok, pid2} =
-        QueryDynSup.ensure_child_started(@env_id, "test", Parser.parse!(eq2), %{}, %{})
+      {:ok, pid2} = QueryDynSup.ensure_child_started(@env_id, "test", Parser.parse!(eq2), %{}, %{})
 
       QueryServer.join_group(pid1, "42")
       QueryServer.join_group(pid2, "42")

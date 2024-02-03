@@ -55,9 +55,7 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
         filter_routes(routes, roles)
 
       {:error, reason} ->
-        Logger.error(
-          "Could not get routes for env_id #{env_id} and exposer #{exposer} with reason #{inspect(reason)}"
-        )
+        Logger.error("Could not get routes for env_id #{env_id} and exposer #{exposer} with reason #{inspect(reason)}")
 
         []
     end
@@ -78,9 +76,7 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
   end
 
   def handle_call({:get_routes, exposer}, _from, state) do
-    Logger.debug(
-      "#{__MODULE__} handle call for :get_routes for #{exposer} with #{inspect(state)}"
-    )
+    Logger.debug("#{__MODULE__} handle call for :get_routes for #{exposer} with #{inspect(state)}")
 
     manifest = Map.get(state, :manifest)
 

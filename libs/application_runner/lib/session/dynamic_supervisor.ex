@@ -57,9 +57,7 @@ defmodule ApplicationRunner.Session.DynamicSupervisor do
   def stop_session(env_id, session_id) do
     case Swarm.whereis_name(Session.Supervisor.get_name(session_id)) do
       :undefined ->
-        Logger.debug(
-          "#{__MODULE__} Session not found by swarm for env_id: #{env_id}, session_id: #{session_id}"
-        )
+        Logger.debug("#{__MODULE__} Session not found by swarm for env_id: #{env_id}, session_id: #{session_id}")
 
         {:error, :app_not_started}
 

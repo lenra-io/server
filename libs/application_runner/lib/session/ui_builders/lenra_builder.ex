@@ -182,8 +182,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
          {:ok, listeners_map} <-
            build_listeners(session_metadata, component, listeners_keys) do
       new_context = %Ui.Context{
-        views_map:
-          Map.merge(merged_child_ui_context.views_map, merged_children_ui_context.views_map),
+        views_map: Map.merge(merged_child_ui_context.views_map, merged_children_ui_context.views_map),
         listeners_map:
           Map.merge(
             merged_child_ui_context.listeners_map,
@@ -371,9 +370,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
   @spec build_children(Session.Metadata.t(), map, String.t(), Ui.Context.t(), ViewUid.t()) ::
           {:error, UiBuilderAdapter.common_error()} | {:ok, list(component()), Ui.Context.t()}
   defp build_children(session_metadata, component, children_key, ui_context, view_uid) do
-    Logger.debug(
-      "#{__MODULE__} build_children with component: #{inspect(component)}, children_key: #{children_key}"
-    )
+    Logger.debug("#{__MODULE__} build_children with component: #{inspect(component)}, children_key: #{children_key}")
 
     case Map.get(component, children_key) do
       nil ->
@@ -416,9 +413,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
       fn builded_child, {built_components, ui_context_acc} ->
         case builded_child do
           {:ok, built_component, new_ui_context} ->
-            {:cont,
-             {built_components ++ [built_component],
-              merge_ui_context(ui_context_acc, new_ui_context)}}
+            {:cont, {built_components ++ [built_component], merge_ui_context(ui_context_acc, new_ui_context)}}
 
           {:error, child_error} ->
             {:halt, {:error, child_error}}

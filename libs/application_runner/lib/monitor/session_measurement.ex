@@ -18,9 +18,7 @@ defmodule ApplicationRunner.Monitor.SessionMeasurement do
 
     field(:duration, :integer)
 
-    has_many(:listener_measurement, SessionListenerMeasurement,
-      foreign_key: :session_measurement_uuid
-    )
+    has_many(:listener_measurement, SessionListenerMeasurement, foreign_key: :session_measurement_uuid)
 
     timestamps()
   end
