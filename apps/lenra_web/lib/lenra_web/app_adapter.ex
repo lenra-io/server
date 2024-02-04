@@ -80,10 +80,6 @@ defmodule LenraWeb.AppAdapter do
     end
   end
 
-  def resource_from_params(_params) do
-    BusinessError.forbidden_tuple()
-  end
-
   defp get_app_name(%{"metadata" => %{"environment_id" => env_id}}, _params) when is_integer(env_id) do
     case Apps.fetch_app_for_env(env_id) do
       {:ok, app} -> {:ok, app.service_name}
