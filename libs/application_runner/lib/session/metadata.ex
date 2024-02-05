@@ -16,7 +16,7 @@ defmodule ApplicationRunner.Session.Metadata do
           env_id: term(),
           session_id: integer(),
           user_id: term(),
-          roles: {:array, :string},
+          roles: list(binary()),
           function_name: String.t(),
           context: map()
         }
