@@ -42,7 +42,8 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
 
     {:ok, _pid} = start_supervised({Environment.Supervisor, env_metadata})
 
-    # TODO: This is causing the tests to fail because the app (or something in the test environment) is already closed by the time this line runs
+    # TODO: This is causing the tests to fail because the app
+    # (or something in the test environment) is already closed by the time this line runs
     # on_exit(fn ->
     #   Swarm.unregister_name(Environment.Supervisor.get_name(env_id))
     # end)
