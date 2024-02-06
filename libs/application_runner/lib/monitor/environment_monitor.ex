@@ -12,9 +12,7 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
     GenServer.call(__MODULE__, {:monitor, pid, metadata})
   rescue
     e ->
-      Logger.error(
-        "#{__MODULE__} fail in monitor with metadata #{inspect(metadata)} and error: #{inspect(e)}"
-      )
+      Logger.error("#{__MODULE__} fail in monitor with metadata #{inspect(metadata)} and error: #{inspect(e)}")
   end
 
   def start_link(_opts) do

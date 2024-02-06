@@ -54,8 +54,7 @@ defmodule ApplicationRunner.StorageTest do
     test "with invalid env_id should not work", %{} do
       job = CronHelper.basic_job(-1, "test")
 
-      assert {:error, %{errors: [environment_id: {"does not exist", _meta}]}} =
-               Storage.add_job(1, job)
+      assert {:error, %{errors: [environment_id: {"does not exist", _meta}]}} = Storage.add_job(1, job)
     end
   end
 

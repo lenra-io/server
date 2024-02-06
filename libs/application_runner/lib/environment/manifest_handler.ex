@@ -39,14 +39,33 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
     GenServer.call(get_full_name(env_id), :get_manifest)
   end
 
-  @spec get_lenra_routes(number()) :: map()
-  def get_lenra_routes(env_id) do
-    GenServer.call(get_full_name(env_id), :get_lenra_routes)
+  @spec get_routes(number(), String.t()) :: {:ok, list(binary())} | {:error, String.t()}
+  defp get_routes(env_id, exposer) when exposer in ["lenra", "json"] do
+    {:ok, GenServer.call(get_full_name(env_id), {:get_routes, exposer})}
   end
 
-  @spec get_json_routes(number()) :: map()
-  def get_json_routes(env_id) do
-    GenServer.call(get_full_name(env_id), :get_json_routes)
+  defp get_routes(env_id, exposer) do
+    {:error, "Exposer #{exposer} not supported"}
+  end
+
+  @spec get_routes(number(), String.t(), list(binary())) :: list(binary())
+  def get_routes(env_id, exposer, roles) do
+    case get_routes(env_id, exposer) do
+      {:ok, routes} ->
+        filter_routes(routes, roles)
+
+      {:error, reason} ->
+        Logger.error("Could not get routes for env_id #{env_id} and exposer #{exposer} with reason #{inspect(reason)}")
+
+        []
+    end
+  end
+
+  defp filter_routes(routes, roles) do
+    Enum.filter(routes, fn route ->
+      Map.get(route, "roles", ["user"])
+      |> Enum.any?(&Enum.member?(roles, &1))
+    end)
   end
 
   @impl true
@@ -56,20 +75,12 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
     {:reply, Map.get(state, :manifest), state}
   end
 
-  def handle_call(:get_lenra_routes, _from, state) do
-    Logger.debug("#{__MODULE__} handle call for :get_lenra_routes with #{inspect(state)}")
+  def handle_call({:get_routes, exposer}, _from, state) do
+    Logger.debug("#{__MODULE__} handle call for :get_routes for #{exposer} with #{inspect(state)}")
 
     manifest = Map.get(state, :manifest)
 
-    {:reply, get_exposer_routes(manifest, "lenra"), state}
-  end
-
-  def handle_call(:get_json_routes, _from, state) do
-    Logger.debug("#{__MODULE__} handle call for :get_json_routes with #{inspect(state)}")
-
-    manifest = Map.get(state, :manifest)
-
-    {:reply, get_exposer_routes(manifest, "json"), state}
+    {:reply, get_exposer_routes(manifest, exposer), state}
   end
 
   defp get_exposer_routes(manifest, exposer) do

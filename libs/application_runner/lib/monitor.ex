@@ -43,57 +43,43 @@ defmodule ApplicationRunner.Monitor do
   end
 
   def handle_event([:application_runner, :app_session, :start], measurements, metadata, _config) do
+    session_id = Map.get(metadata, :session_id)
     env_id = Map.get(metadata, :env_id)
     user_id = Map.get(metadata, :user_id)
 
-    @repo.insert(SessionMeasurement.new(env_id, user_id, measurements))
+    @repo.insert(SessionMeasurement.new(session_id, env_id, user_id, measurements))
   end
 
   def handle_event([:application_runner, :app_session, :stop], measurements, metadata, _config) do
-    env_id = Map.get(metadata, :env_id)
-    user_id = Map.get(metadata, :user_id)
+    session_id = Map.get(metadata, :session_id)
 
-    @repo.one!(
-      from(sm in SessionMeasurement,
-        where: sm.user_id == ^user_id and sm.environment_id == ^env_id,
-        order_by: [desc: sm.inserted_at],
-        limit: 1
-      )
-    )
+    @repo.get_by!(SessionMeasurement, uuid: session_id)
     |> SessionMeasurement.update(measurements)
     |> @repo.update()
   end
 
   def handle_event([:application_runner, :app_listener, :start], measurements, metadata, _config) do
-    env_id = Map.get(metadata, "env_id")
-
     Map.get(metadata, "type")
     |> case do
       "session" ->
-        user_id = Map.get(metadata, "user_id")
-
-        session_measurement = get_session_measurement(env_id, user_id)
-
-        @repo.insert(SessionListenerMeasurement.new(session_measurement.uuid, measurements))
+        session_id = Map.get(metadata, "session_id")
+        @repo.insert(SessionListenerMeasurement.new(session_id, measurements))
 
       "env" ->
+        env_id = Map.get(metadata, "env_id")
         @repo.insert(EnvListenerMeasurement.new(env_id, measurements))
     end
   end
 
   def handle_event([:application_runner, :app_listener, :stop], measurements, metadata, _config) do
-    env_id = Map.get(metadata, "env_id")
-
     Map.get(metadata, "type")
     |> case do
       "session" ->
-        user_id = Map.get(metadata, "user_id")
-
-        session_measurement = get_session_measurement(env_id, user_id)
+        session_id = Map.get(metadata, "session_id")
 
         @repo.one!(
           from(sm in SessionListenerMeasurement,
-            where: sm.session_measurement_uuid == ^session_measurement.uuid,
+            where: sm.session_measurement_uuid == ^session_id,
             order_by: [desc: sm.inserted_at],
             limit: 1
           )
@@ -102,6 +88,8 @@ defmodule ApplicationRunner.Monitor do
         |> @repo.update()
 
       "env" ->
+        env_id = Map.get(metadata, "env_id")
+
         @repo.one(
           from(em in EnvListenerMeasurement,
             where: em.environment_id == ^env_id,
@@ -127,15 +115,5 @@ defmodule ApplicationRunner.Monitor do
       :undefined -> AlertAgent.start_link(event)
       pid -> AlertAgent.send_alert(pid, event)
     end
-  end
-
-  defp get_session_measurement(env_id, user_id) do
-    @repo.one!(
-      from(sm in SessionMeasurement,
-        where: sm.user_id == ^user_id and sm.environment_id == ^env_id,
-        order_by: [desc: sm.inserted_at],
-        limit: 1
-      )
-    )
   end
 end

@@ -31,9 +31,7 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
   @spec start_env(term()) ::
           {:error, {:already_started, pid()}} | {:ok, pid()} | {:error, term()}
   defp start_env(%Environment.Metadata{} = env_metadata) do
-    Logger.debug(
-      "#{__MODULE__} Start Environment Supervisor with env_metadata: #{inspect(env_metadata)}"
-    )
+    Logger.debug("#{__MODULE__} Start Environment Supervisor with env_metadata: #{inspect(env_metadata)}")
 
     start_result =
       if Application.fetch_env!(:application_runner, :scale_to_zero) do
@@ -78,9 +76,7 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
         {:ok, pid}
 
       {:error, {:already_started, pid}} ->
-        Logger.info(
-          "Environment Supervisor already started for metadata: #{inspect(env_metadata)}"
-        )
+        Logger.info("Environment Supervisor already started for metadata: #{inspect(env_metadata)}")
 
         {:ok, pid}
 

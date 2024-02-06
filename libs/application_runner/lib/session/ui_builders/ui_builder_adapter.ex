@@ -12,5 +12,5 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
   @callback build_ui(Session.Metadata.t(), ViewUid.t()) ::
               {:ok, map()} | {:error, common_error()}
 
-  @callback get_routes(number()) :: map()
+  @callback get_routes(number(), list(binary())) :: list(binary())
 end

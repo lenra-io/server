@@ -13,6 +13,11 @@ defmodule ApplicationRunner.FakeEndpoint do
     signing_salt: "MFyEizGS"
   ]
 
+  socket("/socket", ApplicationRunner.FakeAppSocket,
+    websocket: true,
+    longpoll: true
+  )
+
   plug(Plug.RequestId)
 
   plug(Plug.Parsers,

@@ -36,6 +36,7 @@ defmodule ApplicationRunner.Webhooks.ControllerTest do
       env_id: env.id,
       session_id: session_uuid,
       user_id: user.id,
+      roles: ["user"],
       function_name: "test",
       context: %{}
     }

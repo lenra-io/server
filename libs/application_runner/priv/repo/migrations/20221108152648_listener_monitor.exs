@@ -21,6 +21,5 @@ defmodule ApplicationRunner.Repo.Migrations.ListenerMonitor do
 
       timestamps()
     end
-
   end
 end

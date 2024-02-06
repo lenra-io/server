@@ -1,5 +1,5 @@
 defmodule LenraWeb.ResourcesControllerTest do
-  use ApplicationRunner.ConnCase, async: true
+  use ApplicationRunner.ConnCase, async: false
 
   alias Ecto.UUID
 
@@ -22,7 +22,7 @@ defmodule LenraWeb.ResourcesControllerTest do
         )
 
       {:error, _} ->
-        Plug.Conn.resp(conn, 200, Jason.encode!(@manifest))
+        Plug.Conn.resp(conn, 200, Jason.encode!(%{}))
     end
   end
 

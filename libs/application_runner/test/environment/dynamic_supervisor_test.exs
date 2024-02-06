@@ -15,11 +15,11 @@ defmodule ApplicationRunner.Environment.DynamixSupervisorTest do
         Plug.Conn.resp(
           conn,
           200,
-          Jason.encode!(%{view: @view})
+          Jason.encode!(%{view: "test"})
         )
 
       {:error, _} ->
-        Plug.Conn.resp(conn, 200, Jason.encode!(@manifest))
+        Plug.Conn.resp(conn, 200, Jason.encode!(%{}))
     end
   end
 

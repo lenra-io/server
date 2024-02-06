@@ -35,9 +35,7 @@ defmodule ApplicationRunner.RouteChannel do
           {:ok, socket}
         else
           :no ->
-            Logger.critical(
-              BusinessError.could_not_register_appchannel(%{session_id: session_id, route: route})
-            )
+            Logger.critical(BusinessError.could_not_register_appchannel(%{session_id: session_id, route: route}))
 
             BusinessError.could_not_register_appchannel_tuple(%{
               session_id: session_id,

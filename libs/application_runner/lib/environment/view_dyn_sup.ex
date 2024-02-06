@@ -30,9 +30,7 @@ defmodule ApplicationRunner.Environment.ViewDynSup do
     query_transformed = view_uid.query_transformed
     projection = view_uid.projection
 
-    Logger.debug(
-      "#{__MODULE__} ensure_child_started for #{inspect(%{env_id: env_id, session_id: session_id})}"
-    )
+    Logger.debug("#{__MODULE__} ensure_child_started for #{inspect(%{env_id: env_id, session_id: session_id})}")
 
     with {:ok, qs_pid} <-
            QueryDynSup.ensure_child_started(

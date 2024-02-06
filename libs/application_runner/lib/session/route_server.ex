@@ -43,6 +43,7 @@ defmodule ApplicationRunner.Session.RouteServer do
         {:ok, %{session_id: session_id, ui: ui, mode: mode, route: route}}
 
       {:error, reason} ->
+        Logger.debug("#{__MODULE__} init error #{inspect(reason)}")
         {:stop, reason}
     end
   end
@@ -88,7 +89,7 @@ defmodule ApplicationRunner.Session.RouteServer do
   def load_ui(session_id, mode, route) do
     session_metadata = Session.MetadataAgent.get_metadata(session_id)
     builder_mod = get_builder_mode(mode)
-    routes = builder_mod.get_routes(session_metadata.env_id)
+    routes = builder_mod.get_routes(session_metadata.env_id, session_metadata.roles)
 
     Logger.debug("#{__MODULE__} load_ui for state session_id:#{session_id}")
 
@@ -140,6 +141,7 @@ defmodule ApplicationRunner.Session.RouteServer do
   end
 
   defp find_route(routes, url) do
+    # TODO: manage user roles
     Enum.reduce_while(
       routes,
       :error,
@@ -167,9 +169,7 @@ defmodule ApplicationRunner.Session.RouteServer do
   end
 
   defp get_builder_mode(mode) do
-    raise Errors.DevError.exception(
-            "The view mode '#{mode}' is incorrect. No UI Builder module can be found."
-          )
+    raise Errors.DevError.exception("The view mode '#{mode}' is incorrect. No UI Builder module can be found.")
   end
 
   @spec create_view_uid(
@@ -196,15 +196,34 @@ defmodule ApplicationRunner.Session.RouteServer do
     query = Map.get(find, :query)
     projection = Map.get(find, :projection)
 
-    %MongoUserLink{mongo_user_id: mongo_user_id} =
-      MongoStorage.get_mongo_user_link!(session_metadata.env_id, session_metadata.user_id)
+    mongo_user_id =
+      case session_metadata.user_id do
+        nil ->
+          nil
 
-    params = query_params |> Map.merge(%{"me" => mongo_user_id})
+        _ ->
+          %MongoUserLink{mongo_user_id: mongo_user_id} =
+            MongoStorage.get_mongo_user_link!(session_metadata.env_id, session_metadata.user_id)
+
+          mongo_user_id
+      end
+
+    params =
+      query_params
+      |> Map.merge(%{
+        "me" => mongo_user_id,
+        "roles" => session_metadata.user_id
+      })
+
     query_transformed = Parser.replace_params(query, params)
 
     context =
       context
-      |> Map.merge(%{"me" => mongo_user_id, "pathParams" => query_params["route"]})
+      |> Map.merge(%{
+        "me" => mongo_user_id,
+        "roles" => session_metadata.user_id,
+        "pathParams" => query_params["route"]
+      })
       |> project_map(context_projection)
 
     with {:ok, query_parsed} <- parse_query(query, params) do

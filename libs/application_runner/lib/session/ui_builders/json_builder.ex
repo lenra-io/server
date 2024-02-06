@@ -13,8 +13,8 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
   @type component :: map()
 
   @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
-  def get_routes(env_id) do
-    Environment.ManifestHandler.get_json_routes(env_id)
+  def get_routes(env_id, roles) do
+    Environment.ManifestHandler.get_routes(env_id, "json", roles)
   end
 
   @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter

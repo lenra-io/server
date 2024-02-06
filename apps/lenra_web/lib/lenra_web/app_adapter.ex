@@ -14,9 +14,8 @@ defmodule LenraWeb.AppAdapter do
 
   @impl ApplicationRunner.Adapter
   def allow(user_id, app_name) do
-    with %App{} = app <- get_app(app_name),
-         %App{} = application <- Repo.preload(app, main_env: [:environment]),
-         %User{} = user <- Accounts.get_user(user_id) do
+    with %App{} = application <- get_app(app_name),
+         user <- Accounts.get_user(user_id) do
       Bouncer.allow(LenraWeb.AppAdapter.Policy, :join_app, user, application)
     else
       _err ->
@@ -28,16 +27,19 @@ defmodule LenraWeb.AppAdapter do
   def get_function_name(app_name) do
     lenra_env = Application.fetch_env!(:lenra, :lenra_env)
 
-    with %App{} = app <- get_app(app_name),
-         %App{} = application <-
-           Repo.preload(app, main_env: [environment: [deployment: [:build]]]) do
-      build = application.main_env.environment.deployment.build
+    case get_app(app_name, environment: [deployment: [:build]]) do
+      %App{} = application ->
+        build = application.main_env.environment.deployment.build
 
-      if build do
-        String.downcase("#{lenra_env}-#{app_name}-#{build.build_number}")
-      else
-        BusinessError.application_not_built_tuple()
-      end
+        if build do
+          String.downcase("#{lenra_env}-#{app_name}-#{build.build_number}")
+        else
+          BusinessError.application_not_built_tuple()
+        end
+
+      error ->
+        Logger.error(error)
+        BusinessError.no_app_found_tuple()
     end
   end
 
@@ -58,7 +60,7 @@ defmodule LenraWeb.AppAdapter do
          user_id = String.to_integer(subject),
          {:ok, resp} <- HydraApi.get_hydra_client(client_id),
          {:ok, app_name} <- get_app_name(resp.body, params) do
-      {:ok, user_id, app_name, ApplicationRunner.AppSocket.extract_context(params)}
+      {:ok, user_id, ["user"], app_name, ApplicationRunner.AppSocket.extract_context(params)}
     else
       error ->
         Logger.error(error)
@@ -66,8 +68,16 @@ defmodule LenraWeb.AppAdapter do
     end
   end
 
-  def resource_from_params(_params) do
-    BusinessError.forbidden_tuple()
+  @impl ApplicationRunner.Adapter
+  def resource_from_params(params) do
+    case get_app_name(nil, params) do
+      {:ok, app_name} ->
+        {:ok, nil, ["guest"], app_name, ApplicationRunner.AppSocket.extract_context(params)}
+
+      error ->
+        Logger.error(error)
+        BusinessError.forbidden_tuple()
+    end
   end
 
   defp get_app_name(%{"metadata" => %{"environment_id" => env_id}}, _params) when is_integer(env_id) do
@@ -81,12 +91,15 @@ defmodule LenraWeb.AppAdapter do
     ApplicationRunner.AppSocket.extract_appname(params)
   end
 
-  defp get_app(app_name) do
+  defp get_app(app_name, preload \\ [:environment]) do
     App
     |> Repo.get_by(service_name: app_name)
     |> case do
-      nil -> BusinessError.no_app_found_tuple()
-      %App{} = app -> app
+      nil ->
+        BusinessError.no_app_found_tuple()
+
+      %App{} = app ->
+        Repo.preload(app, main_env: preload)
     end
   end
 

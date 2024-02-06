@@ -12,3 +12,28 @@ defmodule ApplicationRunner.MockGenServer do
     {:ok, %{}}
   end
 end
+
+defmodule ApplicationRunner.StateInjectedGenServer do
+  @moduledoc """
+  This module is a mock GenServer used for testing purposes.
+  It allows setting and getting the state of the GenServer.
+  """
+
+  use GenServer
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, [])
+  end
+
+  def init(state: state) do
+    {:ok, state}
+  end
+
+  def handle_call({:set_state, new_state}, _from, state) do
+    {:reply, {:ok}, new_state}
+  end
+
+  def handle_call(request, _from, state) do
+    {:reply, state, state}
+  end
+end
