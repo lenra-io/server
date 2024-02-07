@@ -27,8 +27,7 @@ defmodule ApplicationRunner.DocsControllerTest do
       {Task.Supervisor,
        name:
          {:via, :swarm,
-          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
-           Environment.MongoInstance.get_name(env.id)}}}
+          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor, Environment.MongoInstance.get_name(env.id)}}}
     )
 
     Mongo.drop_collection(pid, @coll)
@@ -96,6 +95,64 @@ defmodule ApplicationRunner.DocsControllerTest do
 
       assert [%{"foo" => "bar"}] = json_response(conn, 200)
     end
+
+    test "Simple pagination should work", %{conn: conn, token: token, mongo_pid: pid} do
+      coll = "pagination"
+
+      Mongo.drop_collection(pid, coll)
+
+      Enum.each(0..99, fn x ->
+        Mongo.insert_one!(pid, coll, %{"id" => x})
+      end)
+
+      conn =
+        conn
+        |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
+        |> post(Routes.docs_path(conn, :find, coll), %{
+          "query" => %{},
+          "options" => %{"limit" => 5}
+        })
+
+      paginated_res = json_response(conn, 200)
+      assert Enum.count(paginated_res) == 5
+
+      assert [%{"id" => 0}, %{"id" => 1}, %{"id" => 2}, %{"id" => 3}, %{"id" => 4}] = paginated_res
+    end
+
+    test "Pagination with limit & skip should work", %{conn: conn, token: token, mongo_pid: pid} do
+      coll = "pagination"
+
+      Mongo.drop_collection(pid, coll)
+
+      Enum.each(0..99, fn x ->
+        Mongo.insert_one!(pid, coll, %{"id" => x})
+      end)
+
+      conn =
+        conn
+        |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
+        |> post(Routes.docs_path(conn, :find, coll), %{
+          "query" => %{},
+          "options" => %{"limit" => 5, "skip" => 5}
+        })
+
+      paginated_res = json_response(conn, 200)
+      assert Enum.count(paginated_res) == 5
+
+      assert [%{"id" => 5}, %{"id" => 6}, %{"id" => 7}, %{"id" => 8}, %{"id" => 9}] = paginated_res
+    end
+
+    test "Wrong options should return an error", %{conn: conn, token: token, mongo_pid: pid} do
+      conn =
+        conn
+        |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
+        |> post(Routes.docs_path(conn, :find, "test"), %{
+          "query" => %{},
+          "options" => %{"limitwrong" => 5, "skipwrong" => 5, "skip" => "wrong"}
+        })
+
+      paginated_res = json_response(conn, 400)
+    end
   end
 
   describe "ApplicationRunner.DocsController.create" do
@@ -113,8 +170,31 @@ defmodule ApplicationRunner.DocsControllerTest do
 
       assert %{} = json_response(conn, 200)
 
-      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] =
-               Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
+    end
+  end
+
+  describe "ApplicationRunner.DocsController.insert_many" do
+    test "Should insert multiple docs", %{
+      conn: conn,
+      token: token,
+      mongo_pid: mongo_pid
+    } do
+      assert {:ok, body} = Jason.encode(%{"documents" => [%{"foo" => "bar"}, %{"foo" => "baz"}]})
+
+      Mongo.drop_collection(mongo_pid, @coll)
+
+      conn =
+        conn
+        |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
+        |> Plug.Conn.put_req_header("content-type", "application/json")
+        |> post(Routes.docs_path(conn, :insert_many, @coll), body)
+
+      assert %{"insertedIds" => ids} = json_response(conn, 200)
+
+      assert length(ids) == 2
+
+      assert [%{"foo" => "bar"}, %{"foo" => "baz"}] = Mongo.find(mongo_pid, @coll, %{}) |> Enum.to_list()
     end
   end
 

@@ -21,6 +21,7 @@ defmodule ApplicationRunner.Router do
         # Mongo functions
         post("/data/colls/:coll/find", DocsController, :find)
         post("/data/colls/:coll/updateMany", DocsController, :update_many)
+        post("/data/colls/:coll/insertMany", DocsController, :insert_many)
         # Transactions
         post("/data/transaction", DocsController, :transaction)
         post("/data/transaction/commit", DocsController, :commit_transaction)

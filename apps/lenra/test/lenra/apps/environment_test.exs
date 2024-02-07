@@ -2,7 +2,7 @@ defmodule Lenra.Apps.EnvironmentTest do
   @moduledoc """
     Test the environment services
   """
-  use Lenra.RepoCase, async: true
+  use Lenra.RepoCase, async: false
 
   alias Lenra.Repo
 

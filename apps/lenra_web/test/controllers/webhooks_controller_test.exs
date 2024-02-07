@@ -4,10 +4,8 @@ defmodule LenraWeb.WebhooksControllerTest do
   alias ApplicationRunner.Webhooks.WebhookServices
 
   setup %{conn: conn} do
-    conn = create_app(conn)
+    %{conn: conn, app: app} = create_app(conn)
     user = LenraWeb.Auth.current_resource(conn)
-
-    assert app = json_response(conn, 200)
 
     {:ok, %{inserted_env: env}} =
       Lenra.Apps.create_env(app["id"], user.id, %{
@@ -17,14 +15,6 @@ defmodule LenraWeb.WebhooksControllerTest do
       })
 
     {:ok, %{conn: conn, user: user, env: env}}
-  end
-
-  defp create_app(conn) do
-    post(conn, Routes.apps_path(conn, :create), %{
-      "name" => "test",
-      "color" => "ffffff",
-      "icon" => 12
-    })
   end
 
   @tag auth_user_with_cgs: :dev

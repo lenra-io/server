@@ -25,7 +25,8 @@ defmodule ApplicationRunner.Guardian.AppGuardian do
         "user_id" => user_id,
         "env_id" => env_id,
         "transaction_id" => transaction_id
-      }) do
+      })
+      when not is_nil(user_id) do
     env = MongoStorage.get_env!(env_id)
     user = MongoStorage.get_user!(user_id)
     mongo_user_link = MongoStorage.get_mongo_user_link!(env_id, user_id)
@@ -44,7 +45,8 @@ defmodule ApplicationRunner.Guardian.AppGuardian do
     {:ok, %{environment: env, transaction_id: transaction_id}}
   end
 
-  def resource_from_claims(%{"user_id" => user_id, "env_id" => env_id}) do
+  def resource_from_claims(%{"user_id" => user_id, "env_id" => env_id})
+      when not is_nil(user_id) do
     env = MongoStorage.get_env!(env_id)
     user = MongoStorage.get_user!(user_id)
     mongo_user_link = MongoStorage.get_mongo_user_link!(env_id, user_id)

@@ -76,9 +76,7 @@ defmodule ApplicationRunner.Environment.ViewServer do
     fna = Map.fetch!(state, :function_name)
     wuid = Map.fetch!(state, :view_uid)
 
-    Logger.debug(
-      "#{__MODULE__} handle_info for :data_changes with #{inspect(%{function_name: fna, view_uid: wuid})}"
-    )
+    Logger.debug("#{__MODULE__} handle_info for :data_changes with #{inspect(%{function_name: fna, view_uid: wuid})}")
 
     case ApplicationServices.fetch_view(fna, wuid.name, new_data, wuid.props, wuid.context) do
       {:ok, view} ->

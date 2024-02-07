@@ -30,10 +30,7 @@ defmodule ApplicationRunner.Environment.QueryServer do
       )
     else
       :error ->
-        raise DevError.exception(
-                message:
-                  "QueryServer need a coll, a query_transformed, a query_parsed and an env_id"
-              )
+        raise DevError.exception(message: "QueryServer need a coll, a query_transformed, a query_parsed and an env_id")
 
       {:error, reason} ->
         {:error, reason}
@@ -130,9 +127,7 @@ defmodule ApplicationRunner.Environment.QueryServer do
   end
 
   defp fetch_initial_data(env_id, coll, query_transformed) do
-    Logger.debug(
-      "#{__MODULE__} fetch_initial_data with data: #{inspect([env_id, coll, query_transformed])}"
-    )
+    Logger.debug("#{__MODULE__} fetch_initial_data with data: #{inspect([env_id, coll, query_transformed])}")
 
     MongoInstance.run_mongo_task(env_id, MongoStorage, :filter_docs, [
       env_id,
@@ -163,8 +158,7 @@ defmodule ApplicationRunner.Environment.QueryServer do
         %{data: data, projection_data: projection_data} = state
       )
       when projection != %{} do
-    new_state =
-      Map.put(state, :projection_data, add_projection_data(projection_data, data, projection))
+    new_state = Map.put(state, :projection_data, add_projection_data(projection_data, data, projection))
 
     {:reply, :ok, new_state}
   end

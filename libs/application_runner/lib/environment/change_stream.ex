@@ -47,9 +47,7 @@ defmodule ApplicationRunner.Environment.ChangeStream do
   end
 
   def handle_cast({:mongo_event, doc}, %{env_id: env_id} = state) do
-    Logger.debug(
-      "#{__MODULE__} cast #{inspect({:mongo_event, doc})} for env #{env_id} : #{inspect(doc)}"
-    )
+    Logger.debug("#{__MODULE__} cast #{inspect({:mongo_event, doc})} for env #{env_id} : #{inspect(doc)}")
 
     Swarm.publish(ChangeEventManager.get_group(env_id), {:mongo_event, doc})
     {:noreply, state}
@@ -59,9 +57,7 @@ defmodule ApplicationRunner.Environment.ChangeStream do
     mongo_name = MongoInstance.get_full_name(env_id)
     cs_name = get_full_name(env_id)
 
-    Logger.debug(
-      "#{__MODULE__}  start_change_stream for env #{env_id}, with mongo_name: #{inspect(mongo_name)}"
-    )
+    Logger.debug("#{__MODULE__}  start_change_stream for env #{env_id}, with mongo_name: #{inspect(mongo_name)}")
 
     Mongo.watch_db(
       mongo_name,

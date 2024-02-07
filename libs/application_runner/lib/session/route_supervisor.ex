@@ -24,8 +24,7 @@ defmodule ApplicationRunner.Session.RouteSupervisor do
     route = Keyword.fetch!(opts, :route)
 
     children = [
-      {Session.ChangeEventManager,
-       env_id: env_id, session_id: session_id, mode: mode, route: route},
+      {Session.ChangeEventManager, env_id: env_id, session_id: session_id, mode: mode, route: route},
       {Session.RouteServer, session_id: session_id, mode: mode, route: route}
     ]
 

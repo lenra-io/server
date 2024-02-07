@@ -33,6 +33,8 @@ defmodule Lenra.Apps do
     Build,
     Deployment,
     Environment,
+    Image,
+    Logo,
     MainEnv,
     OAuth2Client,
     UserEnvironmentAccess
@@ -154,6 +156,16 @@ defmodule Lenra.Apps do
 
   def fetch_env(env_id) do
     Repo.fetch(Environment, env_id)
+  end
+
+  def fetch_app_env(app_id, env_id) do
+    Environment
+    |> Repo.get_by(id: env_id, application_id: app_id)
+    |> Repo.preload(:application)
+    |> case do
+      nil -> BusinessError.no_env_found_tuple()
+      env -> {:ok, env}
+    end
   end
 
   def create_env(application_id, creator_id, params) do
@@ -338,6 +350,7 @@ defmodule Lenra.Apps do
         Logger.debug(
           "#{__MODULE__} start waiting for app ready with params #{inspect(%{build: build, loaded_app: loaded_app, deployment: deployment})}"
         )
+
         update_deployement_after_deploy(
           deployment,
           loaded_app.main_env.environment,
@@ -633,5 +646,75 @@ defmodule Lenra.Apps do
       error_tuple, _acc ->
         {:halt, error_tuple}
     end)
+  end
+
+  # Manage Images
+
+  def set_logo(user_id, %{"app_id" => app_id} = params) do
+    Ecto.Multi.new()
+    # create the image
+    |> Ecto.Multi.insert(:inserted_image, Image.new(user_id, params))
+    # check if there already a logo for this app (or env ?)
+    |> Ecto.Multi.one(
+      :old_logo,
+      case params do
+        %{"env_id" => env_id} ->
+          from(
+            l in Logo,
+            where:
+              l.application_id == ^app_id and
+                l.environment_id == ^env_id
+          )
+
+        _params ->
+          from(
+            l in Logo,
+            where:
+              l.application_id == ^app_id and
+                is_nil(l.environment_id)
+          )
+      end
+    )
+    #  update the app/env with the image id
+    |> Ecto.Multi.run(:new_logo, fn repo, state -> upsert_logo(repo, state, params) end)
+    |> Repo.transaction()
+  end
+
+  defp upsert_logo(transaction, %{inserted_image: image, old_logo: old_logo}, %{"app_id" => app_id} = params) do
+    case old_logo do
+      nil ->
+        transaction.insert(Logo.new(app_id, params["env_id"], %{image_id: image.id}))
+
+      %Logo{image_id: old_logo_image_id} ->
+        result = transaction.update(Logo.changeset(old_logo, %{image_id: image.id}))
+
+        # delete the previous image if it's not used anymore
+        if !transaction.exists?(from(l in Logo, where: l.image_id == ^old_logo_image_id)) do
+          old_image = transaction.get!(Image, old_logo_image_id)
+          transaction.delete(old_image)
+        end
+
+        result
+    end
+  end
+
+  def get_logo(app_id, env_id) do
+    Logger.debug("#{__MODULE__} get logo for app id #{app_id} and env id #{env_id}")
+
+    Repo.one(
+      from(l in Logo,
+        where: l.application_id == ^app_id and (l.environment_id == ^env_id or is_nil(l.environment_id)),
+        order_by: is_nil(l.environment_id),
+        limit: 1
+      )
+    )
+  end
+
+  def fetch_image(image_id) do
+    Repo.fetch(Image, image_id)
+  end
+
+  def get_image(image_id) do
+    Repo.get(Image, image_id)
   end
 end

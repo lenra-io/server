@@ -23,9 +23,10 @@ defmodule ApplicationRunner.RoutesChannel do
       def join("routes", %{"mode" => "lenra"}, socket) do
         env_id = socket.assigns.env_id
         session_id = socket.assigns.session_id
+        %Session.Metadata{roles: roles} = Session.MetadataAgent.get_metadata(session_id)
 
         res = %{
-          "lenraRoutes" => LenraBuilder.get_routes(env_id)
+          "lenraRoutes" => LenraBuilder.get_routes(env_id, roles)
         }
 
         case Swarm.register_name(get_swarm_name(session_id), self()) do
@@ -49,9 +50,11 @@ defmodule ApplicationRunner.RoutesChannel do
       end
 
       def join("routes", %{"mode" => "json"}, socket) do
+        # TODO: get user roles
         env_id = socket.assigns.env_id
+        roles = socket.assigns.roles
 
-        res = %{"jsonRoutes" => JsonBuilder.get_routes(env_id)}
+        res = %{"jsonRoutes" => JsonBuilder.get_routes(env_id, roles)}
 
         {:ok, res, socket}
       end

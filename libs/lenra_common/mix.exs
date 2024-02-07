@@ -34,7 +34,7 @@ defmodule LenraCommon.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.6.15"},
-      {:credo, "~> 1.6.7", only: [:dev], runtime: false},
+      {:credo, "~> 1.7.3", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.2", only: [:dev], runtime: false},
       {:jason, "~> 1.4"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}

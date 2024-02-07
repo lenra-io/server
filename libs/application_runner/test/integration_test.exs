@@ -13,8 +13,6 @@ defmodule ApplicationRunner.IntegrationTest do
   }
 
   @session_id Ecto.UUID.generate()
-  @function_name Ecto.UUID.generate()
-  @url "/function/#{@function_name}"
 
   @mode "lenra"
   @route "/"
@@ -83,8 +81,9 @@ defmodule ApplicationRunner.IntegrationTest do
       session_metadata: %Session.Metadata{
         env_id: env.id,
         user_id: user.id,
+        roles: ["user"],
         session_id: @session_id,
-        function_name: @function_name,
+        function_name: "env_#{env.id}",
         context: %{}
       }
     }
@@ -94,7 +93,7 @@ defmodule ApplicationRunner.IntegrationTest do
     %{
       env_metadata: %Environment.Metadata{
         env_id: env.id,
-        function_name: @function_name
+        function_name: "env_#{env.id}"
       }
     }
   end
@@ -112,12 +111,17 @@ defmodule ApplicationRunner.IntegrationTest do
     Agent.get(logger_agent, fn logs -> logs end)
   end
 
-  def setup_bypass(%{logger_agent: logger_agent, session_metadata: sm}) do
+  def setup_bypass(%{logger_agent: logger_agent, session_metadata: sm, env: env}) do
     bypass = Bypass.open(port: 1234)
-    Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &resp_app_info/1)
+    function_name = "env_#{env.id}"
+
+    Bypass.stub(bypass, "GET", "/system/function/#{function_name}", fn conn ->
+      Plug.Conn.resp(conn, 200, Jason.encode!(%{name: function_name, label: %{}}))
+    end)
+
     Bypass.stub(bypass, "PUT", "/system/functions", &resp_update/1)
 
-    Bypass.stub(bypass, "POST", @url, fn conn ->
+    Bypass.stub(bypass, "POST", "/function/#{function_name}", fn conn ->
       {:ok, body, conn} = Plug.Conn.read_body(conn)
 
       uuid = Ecto.UUID.generate()
@@ -147,10 +151,6 @@ defmodule ApplicationRunner.IntegrationTest do
     end)
 
     %{bypass: bypass}
-  end
-
-  def resp_app_info(conn) do
-    Plug.Conn.resp(conn, 200, Jason.encode!(%{name: @function_name, label: %{}}))
   end
 
   def resp_update(conn) do

@@ -31,8 +31,10 @@ defmodule ApplicationRunner.Environment.Supervisor do
       {Task.Supervisor,
        name:
          {:via, :swarm,
-          {ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
-           MongoInstance.get_name(em.env_id)}}},
+          {
+            ApplicationRunner.Environment.MongoInstance.TaskSupervisor,
+            MongoInstance.get_name(em.env_id)
+          }}},
       {Environment.Events.OnEnvStart, env_id: em.env_id},
       {Environment.ChangeStream, env_id: em.env_id},
       # MongoSessionDynamicSup

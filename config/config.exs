@@ -134,8 +134,7 @@ config :argon2_elixir,
 # The source file are linked to sentry.
 config :sentry,
   enable_source_code_context: true,
-  root_source_code_path: File.cwd!(),
-  included_environments: ~w(production staging)
+  root_source_code_path: File.cwd!()
 
 # Add sentry as logger backend (as well as console logging)
 config :logger, backends: [:console, Sentry.LoggerBackend]
