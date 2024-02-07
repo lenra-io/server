@@ -34,11 +34,8 @@ defmodule IdentityWeb.Router do
     put("/users/password/lost", UserAuthController, :change_lost_password)
     get "/users/consent", UserConsentController, :index
     post "/users/consent", UserConsentController, :consent
-  end
-
-  scope "/", IdentityWeb do
-    pipe_through [:browser]
 
     get "/users/logout", UserAuthController, :logout
+    post "/users/logout", UserAuthController, :logout_confirm
   end
 end
