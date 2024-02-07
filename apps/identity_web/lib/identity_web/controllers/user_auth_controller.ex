@@ -243,7 +243,7 @@ defmodule IdentityWeb.UserAuthController do
   def register(conn, params),
     do: cancel_login(conn, params)
 
-  # Logout the user and reject the login request.
+  # Reject the login request.
   def cancel_login(conn, _params) do
     login_challenge = get_session(conn, :login_challenge)
 
@@ -254,14 +254,36 @@ defmodule IdentityWeb.UserAuthController do
     |> redirect(external: accept_response.body["redirect_to"])
   end
 
+  ##### LOGOUT #####
+
   # The "logout" handle the logout request.
   def logout(conn, %{"logout_challenge" => logout_challenge}) do
-    {:ok, accept_response} = HydraApi.accept_logout(logout_challenge)
-    redirect(conn, external: accept_response.body["redirect_to"])
+    {:ok, response} = HydraApi.get_logout_request(logout_challenge)
+
+    render(
+      conn,
+      "logout.html",
+      logout_challenge: logout_challenge,
+      client: response.body["client"]
+    )
   end
 
   def logout(_conn, _params),
     do: throw("Expected a logout challenge to be set but received none")
+
+  def logout_confirm(conn, %{"accept" => "true", "logout_challenge" => logout_challenge}) do
+    {:ok, accept_response} = HydraApi.accept_logout(logout_challenge)
+
+    conn
+    |> redirect(external: accept_response.body["redirect_to"])
+  end
+
+  def logout_confirm(conn, %{"accept" => "false", "logout_challenge" => logout_challenge}) do
+    render(
+      conn,
+      "post_logout.html"
+    )
+  end
 
   ##### LOST PASSWORD #####
 

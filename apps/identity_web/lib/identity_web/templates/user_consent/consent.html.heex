@@ -21,8 +21,8 @@
       <%= label f, :remember_me, gettext("Remember my choice") %>
     </fieldset>
     <nav>
-      <%= submit "Decline", name: :accept, value: "false" %>
-      <%= submit "Accept", name: :accept, value: "true", class: "primary" %>
+      <%= submit gettext("Decline"), name: :accept, value: "false" %>
+      <%= submit gettext("Accept"), name: :accept, value: "true", class: "primary" %>
     </nav>
     <%# = link gettext("Connect with another account"), to: Routes.user_auth_path(@conn, :lost_password_enter_email), class: "login btn link lenra-icon-chevron-right" %>
   </.form>

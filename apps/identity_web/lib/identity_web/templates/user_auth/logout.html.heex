@@ -1,0 +1,16 @@
+<main class="arrows">
+  <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/form.css")} media="print" onload='this.media="all"'/>
+  <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/form.js")}></script>
+  <%= oauth_header "logout", @client %>
+  <.form let={f} for={@conn} action={Routes.user_auth_path(@conn, :logout_confirm)} >
+    <p><%= raw(gettext("You successfully disconnected from the app !")) %></p>
+    <p><%= raw(gettext("Would you like to disconnect your Lenra account from this device ?")) %></p>
+    <%= if assigns[:logout_challenge] do %>
+      <%= hidden_input f, :logout_challenge, value: @logout_challenge %>
+    <% end %>
+    <nav>
+      <%= submit gettext("Back"), name: :accept, value: "false" %>
+      <%= submit gettext("Disconnect"), name: :accept, value: "true", class: "primary" %>
+    </nav>
+  </.form>
+</main>

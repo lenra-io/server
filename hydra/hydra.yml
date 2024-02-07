@@ -36,6 +36,7 @@ urls:
   consent: http://localhost:4010/users/consent
   login: http://localhost:4010/users/auth
   logout: http://localhost:4010/users/logout
+  post_logout_redirect: https://www.lenra.io
 
 secrets:
   system:
