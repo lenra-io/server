@@ -270,7 +270,7 @@ defmodule ApplicationRunner.DocsController do
         AppGuardian.encode_and_sign(uuid, %{
           type: "session",
           env_id: env.id,
-          user: user.id,
+          user_id: user.id,
           transaction_id: transaction_id
         })
 
