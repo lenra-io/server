@@ -46,7 +46,7 @@ defmodule ApplicationRunner.MixProject do
       {:phoenix_pubsub, "~> 2.1.1"},
       {:finch, "~> 0.14"},
       {:bypass, "~> 2.1", only: :test},
-      {:mongodb_driver, "~> 1.2.1"},
+      {:mongodb_driver, "~> 1.4.0"},
       {:crontab, "~> 1.1.13"},
       {:quantum, "~> 3.0"},
       {:query_parser, "~> 1.0.0-beta.27"},
