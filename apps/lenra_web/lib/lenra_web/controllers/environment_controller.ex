@@ -72,7 +72,7 @@ defmodule LenraWeb.EnvsController do
         {:ok, secrets} -> conn |> reply(secrets)
         {:error, :secret_not_found} -> conn |> reply([])
         {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
-        {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
+        {:error, error} -> BusinessError.api_return_unexpected_response_tuple(error)
       end
     end
   end
@@ -83,7 +83,7 @@ defmodule LenraWeb.EnvsController do
       case ApiServices.get_environment_secrets(app.service_name, environment.id) do
         {:ok, secrets} ->
           case Enum.any?(secrets, fn (s) -> s == key end) do
-            false -> case ApiServices.update_environment_secrets(app.service_name, environment.id, Map.merge(secrets, %{key => value})) do
+            false -> case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
               {:ok, secrets} -> conn |> reply(secrets)
               {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple() # Should never happen
               {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()

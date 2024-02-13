@@ -9,6 +9,7 @@ defmodule Lenra.Kubernetes.ApiServices do
   alias Lenra.Apps.Deployment
   alias Lenra.Kubernetes.StatusDynSup
   alias Lenra.Repo
+  alias Ecto
   require Logger
 
   @doc """
@@ -180,7 +181,7 @@ defmodule Lenra.Kubernetes.ApiServices do
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, :secret)
     when status_code in [404] do
-    {:secret_not_exist, Jason.decode!(body)}
+    {:error, :secret_not_exist, Jason.decode!(body)}
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, :build)
@@ -222,8 +223,8 @@ defmodule Lenra.Kubernetes.ApiServices do
     case secret_response do
       {:ok, body} ->
           %{"data" => secret_data} = body
-          Enum.into(Enum.map(secret_data, fn ({key, value}) -> {key, Base.decode64(value)} end), %{})
-      _ -> {:secret_not_found}
+          {:ok, Enum.into(Enum.map(secret_data, fn ({key, value}) -> {key, Base.decode64(value)} end), %{})}
+      {:error, error} -> { :error, error |> IO.inspect(label: "Fetch error") }
     end
   end
 
@@ -321,8 +322,8 @@ defmodule Lenra.Kubernetes.ApiServices do
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
-      {:secret_not_found} -> {:error, :secret_not_found}
-      _ -> {:error, :unexpected_response}
+      {:error, :secret_not_exist} -> {:error, :secret_not_found}
+      {:error, error} -> {:error, error}
     end
   end
   def create_environment_secrets(service_name, env_id, secrets) do
@@ -331,7 +332,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     case create_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
       {:ok, secrets} ->
         env = Apps.fetch_env(env_id)
-            |> Ecto.preload(deployment: [:build])
+          |> Repo.preload(deployment: [:build])
         build_number =  env.deployment.build.build_number
         Lenra.OpenfaasServices.update_secrets(service_name, build_number, [])
         {:ok, Enum.map(secrets, fn ({key, value}) -> key end)}
@@ -361,9 +362,10 @@ defmodule Lenra.Kubernetes.ApiServices do
         case length(Map.keys(current_secrets)) do
           len when len <= 1 ->
             case Apps.fetch_env(env_id)
-              |> Ecto.preload(deployment: [:build]) do
+              |> Repo.preload(deployment: [:build]) do
                 %{ deployment: %{ build: build_number }} when not is_nil(build_number) ->
                   Lenra.OpenfaasServices.update_secrets(service_name, build_number, [secret_name])
+                  {:ok, []} # TODO: Return all other secrets
                 _ -> {:error, :build_not_exist}
               end
             case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
