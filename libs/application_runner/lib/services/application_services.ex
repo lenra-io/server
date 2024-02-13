@@ -172,10 +172,13 @@ defmodule ApplicationRunner.ApplicationServices do
 
   @spec generate_function_object(String.t(), String.t(), map()) :: map()
   def generate_function_object(function_name, image_name, labels) do
+    # secret_name = '#{app.service_name}-secret-#{env.id}'
+
     %{
       "image" => image_name,
       "service" => function_name,
-      "secrets" => Application.fetch_env!(:application_runner, :faas_secrets),
+      "secrets" => Application.fetch_env!(:application_runner, :faas_secrets),#,
+      # "environments" => ApiServices.get_environment_secrets(app.service_name, env.id),
       "requests" => %{
         "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
         "memory" => Application.fetch_env!(:application_runner, :faas_request_memory)

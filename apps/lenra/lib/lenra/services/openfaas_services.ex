@@ -50,6 +50,26 @@ defmodule Lenra.OpenfaasServices do
     |> response(:deploy_status)
   end
 
+  def update_secrets(service_name, build_number, secrets \\ []) do
+    {base_url, headers} = get_http_context()
+    function_name = get_function_name(service_name, build_number)
+    url = "#{base_url}/system/function/#{function_name}"
+
+    body = %{
+      "service" => function_name,
+      "secrets" => secrets
+    } |> Jason.encode!()
+
+    Finch.build(
+      :put,
+      url,
+      headers,
+      body
+    )
+    |> Finch.request(FaasHttp, receive_timeout: 1000)
+    |> response(:deploy_status)
+  end
+
   def delete_app_openfaas(service_name, build_number) do
     {base_url, headers} = get_http_context()
 

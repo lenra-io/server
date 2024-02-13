@@ -177,6 +177,10 @@ defmodule Lenra.Kubernetes.ApiServices do
        when status_code in [200, 201, 202] do
     {:ok, Jason.decode!(body)}
   end
+  defp response({:ok, %Finch.Response{status: status_code, body: body}}, :secret)
+    when status_code in [404] do
+    {:secret_not_exist, Jason.decode!(body)}
+  end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, :build)
        when status_code in [200, 201, 202] do
@@ -223,8 +227,8 @@ defmodule Lenra.Kubernetes.ApiServices do
     case secret_response do
       {:ok, body} ->
           %{"data" => secret_data} = body
-          Enum.into(Enum.map(secret_data, fn ({key, value}) -> {key, Base.decode64(value)} end, %{}))
-      _ -> {:secret_not_exist}
+          Enum.into(Enum.map(secret_data, fn ({key, value}) -> {key, Base.decode64(value)} end), %{})
+      _ -> {:secret_not_found}
     end
   end
 
@@ -248,7 +252,7 @@ defmodule Lenra.Kubernetes.ApiServices do
           name: secret_name,
           namespace: namespace
         },
-        data: Enum.into(Enum.map(data, fn ({key, value}) -> {key, Base.encode64(value)} end, %{}))
+        data: Enum.into(Enum.map(data, fn ({key, value}) -> {key, Base.encode64(value)} end), %{})
       })
 
     secret_response =
@@ -282,7 +286,7 @@ defmodule Lenra.Kubernetes.ApiServices do
           metadata: %{
             name: secret_name,
           },
-          data: Enum.into(Enum.map(secrets, fn ({key, value}) -> {key, Base.encode64(value)} end, %{}))
+          data: Enum.into(Enum.map(secrets, fn ({key, value}) -> {key, Base.encode64(value)} end), %{})
         })
 
     secret_response = Finch.build(:put, secrets_url, headers)
@@ -291,7 +295,7 @@ defmodule Lenra.Kubernetes.ApiServices do
 
     case secret_response do
       {:ok, _} -> {:ok}
-      _ -> {:secret_not_exist}
+      _ -> {:secret_not_found}
     end
 
   end
@@ -313,31 +317,39 @@ defmodule Lenra.Kubernetes.ApiServices do
 
     case secret_response do
       {:ok, _} -> {:ok}
-      _ -> {:secret_not_exist}
+      _ -> {:secret_not_found}
     end
   end
 
   def get_environment_secrets(service_name, env_id) do
+    secret_name = '#{service_name}-secret-#{env_id}'
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
-    case get_k8s_secret('#{service_name}_secret_#{env_id}', kubernetes_apps_namespace) do
+    case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, secrets} -> Enum.map(secrets, fn ({key, value}) -> key end)
       {:secret_not_found} -> {:error, :secret_not_found}
       _ -> {:error, :unexpected_response}
     end
   end
   def create_environment_secrets(service_name, env_id, secrets) do
+    secret_name = '#{service_name}-secret-#{env_id}'
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
-    case create_k8s_secret('#{service_name}_secret_#{env_id}', kubernetes_apps_namespace, secrets) do
-      {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, value}) -> key end)}
+    case create_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
+      {:ok, secrets} ->
+        env = Apps.fetch_env(env_id)
+            |> Ecto.preload(deployment: [:build])
+        build_number =  env.deployment.build.build_number
+        Lenra.OpenfaasServices.update_secrets(service_name, build_number, [])
+        {:ok, Enum.map(secrets, fn ({key, value}) -> key end)}
       {:secret_exist} -> {:error, :secret_exist}
       _ -> {:error, :unexpected_response}
     end
   end
   def update_environment_secrets(service_name, env_id, secrets) do
+    secret_name = '#{service_name}-secret-#{env_id}'
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
-    case get_k8s_secret('#{service_name}_secret_#{env_id}', kubernetes_apps_namespace) do
+    case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, current_secrets} ->
-        case update_k8s_secret('#{service_name}_secret_#{env_id}', kubernetes_apps_namespace, Map.merge(current_secrets, secrets)) do
+        case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.merge(current_secrets, secrets)) do
           {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, value}) -> key end)}
           {:secret_not_found} -> {:error, :secret_not_found}
           _ -> {:error, :unexpected_response}
@@ -345,19 +357,28 @@ defmodule Lenra.Kubernetes.ApiServices do
       error -> error
     end
   end
+
   def delete_environment_secrets(service_name, env_id, key) do
+    secret_name = '#{service_name}-secret-#{env_id}'
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
-    case get_k8s_secret('#{service_name}_secret_#{env_id}', kubernetes_apps_namespace) do
+    case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, current_secrets} ->
         case length(Map.keys(current_secrets)) do
           len when len <= 1 ->
-            case delete_k8s_secret('#{service_name}_secret_#{env_id}', kubernetes_apps_namespace) do
+            # TODO: Get App's last build_id to update it's OpenFaas secrets
+            _openfaas_secret_updated = case Apps.fetch_env(env_id)
+              |> Ecto.preload(deployment: [:build]) do
+                %{ deployment: %{ build: build_number }} when not is_nil(build_number) ->
+                  Lenra.OpenfaasServices.update_secrets(service_name, build_number, [secret_name])
+                _ -> {:error, :build_not_exist}
+              end
+            case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
               {:ok, _} -> {:ok, []}
               {:secret_not_found} -> {:error, :secret_not_found}
               _ -> {:error, :unexpected_response}
             end
           _ ->
-            case update_k8s_secret('#{service_name}_secret_#{env_id}', kubernetes_apps_namespace, Map.drop(current_secrets, [key])) do
+            case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.drop(current_secrets, [key])) do
               {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, value}) -> key end)}
               {:secret_not_found} -> {:error, :secret_not_found}
               _ -> {:error, :unexpected_response}
