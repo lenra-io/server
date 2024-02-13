@@ -231,7 +231,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
     kubernetes_api_token = Application.fetch_env!(:lenra, :kubernetes_api_token)
 
-    secrets_url = "#{kubernetes_api_url}/api/v1/namespaces/#{namespace}/secrets/#{secret_name}"
+    secrets_url = "#{kubernetes_api_url}/api/v1/namespaces/#{namespace}/secrets"
 
     headers = [
       {"Authorization", "Bearer #{kubernetes_api_token}"},
@@ -248,16 +248,16 @@ defmodule Lenra.Kubernetes.ApiServices do
           name: secret_name,
           namespace: namespace
         },
-        data: Enum.into(Enum.map(data, fn ({key, value}) -> {key, Base.encode64(value)} end) |> IO.inspect(label: "Encoded map"), %{}) |> IO.inspect(label: "Into map")
-      })
+        data: Enum.into(Enum.map(data |> IO.inspect(label: "Unencoded secret map"), fn ({key, value}) -> {key, Base.encode64(value)} end), %{}) |> IO.inspect(label: "Encoded map")
+      }) |> IO.inspect(label: "Full JSON secret resource")
 
     secret_response =
       Finch.build(:post, secrets_url, headers, secret_body)
       |> Finch.request(PipelineHttp)
       |> response(:secret)
 
-    case secret_response do
-      {:ok, _} -> :ok
+    case secret_response |> IO.inspect(label: "Create secret response") do
+      {:ok, _} -> {:ok, data}
 
       {:error, error} -> { :error, error }
     end
@@ -317,7 +317,7 @@ defmodule Lenra.Kubernetes.ApiServices do
   end
 
   def get_environment_secrets(service_name, env_id) do
-    secret_name = '#{service_name}-secret-#{env_id}'
+    secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
@@ -326,7 +326,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     end
   end
   def create_environment_secrets(service_name, env_id, secrets) do
-    secret_name = '#{service_name}-secret-#{env_id}'
+    secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
     case create_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
       {:ok, secrets} ->
@@ -340,12 +340,12 @@ defmodule Lenra.Kubernetes.ApiServices do
     end
   end
   def update_environment_secrets(service_name, env_id, secrets) do
-    secret_name = '#{service_name}-secret-#{env_id}'
+    secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, current_secrets} ->
         case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.merge(current_secrets, secrets)) do
-          {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, value}) -> key end)}
+          {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
           {:secret_not_found} -> {:error, :secret_not_found}
           _ -> {:error, :unexpected_response}
         end
@@ -354,14 +354,13 @@ defmodule Lenra.Kubernetes.ApiServices do
   end
 
   def delete_environment_secrets(service_name, env_id, key) do
-    secret_name = '#{service_name}-secret-#{env_id}'
+    secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, current_secrets} ->
         case length(Map.keys(current_secrets)) do
           len when len <= 1 ->
-            # TODO: Get App's last build_id to update it's OpenFaas secrets
-            _openfaas_secret_updated = case Apps.fetch_env(env_id)
+            case Apps.fetch_env(env_id)
               |> Ecto.preload(deployment: [:build]) do
                 %{ deployment: %{ build: build_number }} when not is_nil(build_number) ->
                   Lenra.OpenfaasServices.update_secrets(service_name, build_number, [secret_name])
