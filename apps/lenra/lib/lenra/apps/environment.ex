@@ -7,7 +7,7 @@ defmodule Lenra.Apps.Environment do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.Apps.{App, Deployment}
+  alias Lenra.Apps.{App, Deployment, EnvSecret}
   alias Lenra.Apps.UserEnvironmentAccess
 
   @type t :: %__MODULE__{}
@@ -30,6 +30,7 @@ defmodule Lenra.Apps.Environment do
     belongs_to(:creator, User)
     belongs_to(:deployment, Deployment)
     many_to_many(:shared_with, User, join_through: UserEnvironmentAccess)
+    has_many(:secrets, EnvSecret)
 
     timestamps()
   end

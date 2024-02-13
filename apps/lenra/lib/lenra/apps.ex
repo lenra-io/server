@@ -33,6 +33,7 @@ defmodule Lenra.Apps do
     Build,
     Deployment,
     Environment,
+    EnvSecret,
     Image,
     Logo,
     MainEnv,
@@ -195,6 +196,40 @@ defmodule Lenra.Apps do
   def fetch_main_env_for_app(app_id) do
     main_env = Repo.get_by(MainEnv, application_id: app_id)
     Repo.fetch_by(Environment, id: main_env.environment_id)
+  end
+
+  ###############
+  # Env Secrets #
+  ###############
+
+  def all_env_secrets_for_env(env_id) do
+    Repo.all(from(s in EnvSecret, where: s.environment_id == ^env_id))
+  end
+
+  def get_env_secret(secret_id) do
+    Repo.get(EnvSecret, secret_id)
+  end
+
+  def fetch_env_secret(secret_id) do
+    Repo.fetch(EnvSecret, secret_id)
+  end
+
+  def create_env_secret(env_id, key, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:inserted_env_secret, EnvSecret.new(env_id, key, params))
+    |> Repo.transaction()
+  end
+
+  def update_env_secret(env_secret, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:updated_env_secret, EnvSecret.update(env_secret, params))
+    |> Repo.transaction()
+  end
+
+  def delete_env_secret(env_secret, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete(:deleted_env, %{ id: env_secret.id })
+    |> Repo.transaction()
   end
 
   ##########
