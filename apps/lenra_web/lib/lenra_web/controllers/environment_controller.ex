@@ -68,66 +68,62 @@ defmodule LenraWeb.EnvsController do
   def list_secrets(conn, %{"env_id" => env_id} = params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, environment} <- Apps.fetch_env(env_id) do
-      env_secrets = case ApiServices.get_environment_secrets(app.service_name, environment.id) do
-        {:ok, secrets} -> secrets
-        {:secret_not_found} -> []
+      case ApiServices.get_environment_secrets(app.service_name, environment.id) do
+        {:ok, secrets} -> conn |> reply(secrets)
+        {:error, :secret_not_found} -> conn |> reply([])
+        {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
         {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
       end
-
-      conn
-      |> reply(env_secrets)
     end
   end
 
   def create_secret(conn, %{"env_id" => env_id, "key" => key, "value" => value} = params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, environment} <- Apps.fetch_env(env_id) do
-      secret_response = case ApiServices.get_environment_secrets(app.service_name, environment.id) do
+      case ApiServices.get_environment_secrets(app.service_name, environment.id) do
         {:ok, secrets} ->
           case Enum.any?(secrets, fn (s) -> s == key end) do
             false -> case ApiServices.update_environment_secrets(app.service_name, environment.id, Map.merge(secrets, %{key => value})) do
-              {:ok, secrets} -> secrets
-              {:secret_not_found} -> BusinessError.env_secret_not_found_tuple() # Should never happen
+              {:ok, secrets} -> conn |> reply(secrets)
+              {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple() # Should never happen
+              {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
               {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
             end
             true -> BusinessError.env_secret_already_exist_tuple()
           end
-        {:secret_not_found} -> case ApiServices.create_environment_secrets(app.service_name, environment.id, %{key => value}) do
-          {:ok, secrets} -> secrets
+        {:error, :secret_not_found} -> case ApiServices.create_environment_secrets(app.service_name, environment.id, %{key => value}) do
+          {:ok, secrets} -> conn |> reply(secrets)
           {:error, :secret_exist} -> BusinessError.env_secret_already_exist_tuple() # This should never happen
+          {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
           {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
         end
+        {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
         {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
       end
-      conn
-        |> reply(secret_response)
     end
   end
 
   def update_secret(conn, %{"env_id" => env_id, "key" => key, "value" => value} = params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, environment} <- Apps.fetch_env(env_id) do
-      update_secret_response = case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
-        {:ok, secrets } -> secrets
-        { :secret_not_found } -> BusinessError.env_secret_not_found_tuple()
+      case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
+        {:ok, secrets } -> conn |> reply(secrets)
+        {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple()
+        {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
         {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
       end
-      conn
-      |> reply(update_secret_response)
     end
   end
 
   def delete_secret(conn, %{"env_id" => env_id, "key" => key} = params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, environment} <- Apps.fetch_env(env_id) do
-      secret_response = case ApiServices.delete_environment_secrets(app.service_name, environment.id, key) do
-        {:ok, secrets} -> secrets
-        {:secret_not_found} -> BusinessError.env_secret_not_found_tuple()
+      case ApiServices.delete_environment_secrets(app.service_name, environment.id, key) do
+        {:ok, secrets} -> conn |> reply(secrets)
+        {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple()
+        {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
         {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
       end
-
-      conn
-      |> reply(secret_response)
     end
   end
 end

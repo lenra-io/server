@@ -177,7 +177,7 @@ defmodule Lenra.Kubernetes.ApiServices do
        when status_code in [200, 201, 202] do
     {:ok, Jason.decode!(body)}
   end
-  
+
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, :secret)
     when status_code in [404] do
     {:secret_not_exist, Jason.decode!(body)}
@@ -193,15 +193,9 @@ defmodule Lenra.Kubernetes.ApiServices do
     raise "Kubernetes API could not be reached. It should not happen. #{reason}"
   end
 
-  defp response(
-         {:ok,
-          %Finch.Response{
-            status: status_code
-          }},
-         _atom
-       )
+  defp response({:ok, %Finch.Response{status: status_code}}, _atom)
        when status_code in [409] do
-    :secret_exist
+    {:error, :secret_exist}
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, _atom) do
@@ -244,6 +238,7 @@ defmodule Lenra.Kubernetes.ApiServices do
       {"content-type", "application/json"}
     ]
 
+
     secret_body =
       Jason.encode!(%{
         apiVersion: "v1",
@@ -253,7 +248,7 @@ defmodule Lenra.Kubernetes.ApiServices do
           name: secret_name,
           namespace: namespace
         },
-        data: Enum.into(Enum.map(data, fn ({key, value}) -> {key, Base.encode64(value)} end), %{})
+        data: Enum.into(Enum.map(data, fn ({key, value}) -> {key, Base.encode64(value)} end) |> IO.inspect(label: "Encoded map"), %{}) |> IO.inspect(label: "Into map")
       })
 
     secret_response =
@@ -262,10 +257,9 @@ defmodule Lenra.Kubernetes.ApiServices do
       |> response(:secret)
 
     case secret_response do
-      {:ok, _} ->
-        :ok
+      {:ok, _} -> :ok
 
-      :secret_exist -> { :secret_exist }
+      {:error, error} -> { :error, error }
     end
   end
 
@@ -290,7 +284,7 @@ defmodule Lenra.Kubernetes.ApiServices do
           data: Enum.into(Enum.map(secrets, fn ({key, value}) -> {key, Base.encode64(value)} end), %{})
         })
 
-    secret_response = Finch.build(:put, secrets_url, headers)
+    secret_response = Finch.build(:put, secrets_url, headers, secret_body)
     |> Finch.request(PipelineHttp)
     |> response(:secret)
 
@@ -326,7 +320,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     secret_name = '#{service_name}-secret-#{env_id}'
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
-      {:ok, secrets} -> Enum.map(secrets, fn ({key, value}) -> key end)
+      {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
       {:secret_not_found} -> {:error, :secret_not_found}
       _ -> {:error, :unexpected_response}
     end
