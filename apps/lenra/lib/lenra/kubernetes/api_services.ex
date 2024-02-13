@@ -177,7 +177,8 @@ defmodule Lenra.Kubernetes.ApiServices do
        when status_code in [200, 201, 202] do
     {:ok, Jason.decode!(body)}
   end
-  defp response({:ok, %Finch.Response{status: status_code, body: body}}, :secret)
+
+  defp response({:error, %Finch.Response{status: status_code, body: body}}, :secret)
     when status_code in [404] do
     {:secret_not_exist, Jason.decode!(body)}
   end
