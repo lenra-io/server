@@ -58,6 +58,7 @@ if config_env() == :prod do
         )
         |> File.read!()
         |> String.trim(),
+    kubernetes_apps_namespace: System.get_env("KUBERNETES_APPS_NAMESPACE", "openfaas-fn"),
     kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build"),
     kubernetes_build_scripts: System.get_env("KUBERNETES_BUILD_SCRIPTS", "lenra-build-scripts"),
     kubernetes_build_secret: System.get_env("KUBERNETES_BUILD_SECRET", "lenra-build-secret"),

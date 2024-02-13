@@ -4,8 +4,8 @@ defmodule LenraWeb.EnvsController do
   use LenraWeb.Policy,
     module: LenraWeb.EnvsController.Policy
 
-  alias Lenra.{Apps, Repo}
-  alias Lenra.Apps.{Environment}
+  alias Lenra.{Apps}
+  alias Lenra.Kubernetes.ApiServices
   alias Lenra.Errors.BusinessError
   alias alias Lenra.Subscriptions
   alias Lenra.Subscriptions.Subscription
@@ -66,43 +66,47 @@ defmodule LenraWeb.EnvsController do
   end
 
   def list_secrets(conn, %{"env_id" => env_id} = params) do
-    with {:ok, _app} <- get_app_and_allow(conn, params),
+    with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, environment} <- Apps.fetch_env(env_id),
-         env_secrets <- Apps.all_env_secrets_for_env(environment.id) do
+         env_secrets <- ApiServices.get_environment_secrets(app.service_name, environment.id) do
       conn
       |> reply(env_secrets)
     end
   end
 
-  def create_secret(conn, %{"env_id" => env_id, "key" => key} = params) do
-    with {:ok, _app} <- get_app_and_allow(conn, params),
-         {:ok, environment} <- Apps.fetch_env(env_id),
-         {:ok, %{inserted_env_secret: env_secret}} <- Apps.create_env_secret(environment.id, key, params) do
+  def create_secret(conn, %{"env_id" => env_id, "key" => key, "value" => value} = params) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, environment} <- Apps.fetch_env(env_id) do
+      secret_response = case ApiServices.get_environment_secrets(app.service_name, environment.id) do
+        {:ok, secrets} ->
+          case Enum.any?(secrets, fn (s) -> s == key end) do
+            true -> {:secret_exist}
+            false -> ApiServices.update_environment_secrets(app.service_name, environment.id, Map.merge(secrets, %{key => value}))
+          end
+        {:secret_not_found} -> ApiServices.create_environment_secrets(app.service_name, environment.id, %{key => value})
+        error -> error
+      end
       conn
-      |> reply(env_secret)
+        |> reply(secret_response)
     end
   end
 
-  # def update_secret(conn, %{"env_id" => env_id, "key" => key} = params) do
-  #   with {:ok, _app} <- get_app_and_allow(conn, params),
-  #        {:ok, environment} <- Apps.fetch_env(env_id),
-  #        {:ok, secret} <- Repo.update_all(from(s in EnvSecret,
-  #           where: s.environment_id == environment.id and s.key == key ),
-  #           order_by: is_nil(s.environment_id),
-  #           limit: 1
-  #         ),
-  #        {:ok, %{updated_env_secret: env_secret}} <- Apps.update_env_secret(secret, params) do
-  #     conn
-  #     |> reply(env_secret)
-  #   end
-  # end
+  def update_secret(conn, %{"env_id" => env_id, "key" => key, "value" => value} = params) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, environment} <- Apps.fetch_env(env_id) do
+      update_secret_response = ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value})
+      conn
+      |> reply(update_secret_response)
+    end
+  end
 
   def delete_secret(conn, %{"env_id" => env_id, "key" => key} = params) do
-    with {:ok, _app} <- get_app_and_allow(conn, params),
-         {:ok, environment} <- Apps.fetch_env(env_id),
-         {:ok, %{deleted_env_secret: env_secret}} <- Apps.delete_env_secret(environment.id, key) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, environment} <- Apps.fetch_env(env_id) do
+        secret_response = ApiServices.delete_environment_secrets(app.service_name, environment.id, key)
+
       conn
-      |> reply(env_secret)
+      |> reply(secret_response)
     end
   end
 end
