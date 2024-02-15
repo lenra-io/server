@@ -15,12 +15,18 @@ defmodule LenraWeb.AppAdapter do
   @impl ApplicationRunner.Adapter
   def allow(user_id, app_name) do
     with %App{} = application <- get_app(app_name),
-         user <- Accounts.get_user(user_id) do
+         user <- get_user(user_id) do
       Bouncer.allow(LenraWeb.AppAdapter.Policy, :join_app, user, application)
     else
       _err ->
         BusinessError.forbidden_tuple()
     end
+  end
+
+  defp get_user(user_id) when is_nil(user_id), do: nil
+
+  defp get_user(user_id) do
+    Accounts.get_user(user_id)
   end
 
   @impl ApplicationRunner.Adapter
