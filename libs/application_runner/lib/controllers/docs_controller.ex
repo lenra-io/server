@@ -252,6 +252,7 @@ defmodule ApplicationRunner.DocsController do
         Enum.map(Map.get(commands, "options", %{}), fn {k, v} -> {String.to_atom(k), v} end)
       )
 
+    IO.inspect("mongo_opts")
     IO.inspect(mongo_opts)
 
     case MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
