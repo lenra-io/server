@@ -282,6 +282,9 @@ defmodule ApplicationRunner.DocsController do
       "This form of query is deprecated, prefer using: {query: <your query>, projection: {projection}}, more info at: https://www.mongodb.com/docs/manual/reference/method/db.collection.find/#mongodb-method-db.collection.find"
     )
 
+    IO.inspect("find_deprecated")
+    IO.inspect(filter)
+
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
              env.id,
