@@ -82,7 +82,7 @@ defmodule LenraWeb.EnvsController do
          {:ok, environment} <- Apps.fetch_env(env_id) do
       case ApiServices.get_environment_secrets(app.service_name, environment.id) do
         {:ok, secrets} ->
-          case Enum.any?(secrets |> IO.inspect(label: "Existing Secret keys"), fn (s) -> s == key end) do
+          case Enum.any?(secrets, fn (s) -> s == key end) do
             false -> case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
               {:ok, updated_secrets} -> conn |> reply(updated_secrets)
               {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple() # Should never happen

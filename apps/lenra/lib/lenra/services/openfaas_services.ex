@@ -5,6 +5,7 @@ defmodule Lenra.OpenfaasServices do
 
   alias ApplicationRunner.ApplicationServices
   alias Lenra.Apps
+  alias Lenra.Subscriptions
   alias Lenra.Errors.TechnicalError
   alias LenraCommon.Errors
 
@@ -50,15 +51,22 @@ defmodule Lenra.OpenfaasServices do
     |> response(:deploy_status)
   end
 
-  def update_secrets(service_name, build_number, secrets \\ []) do
+  def update_secrets(app, service_name, build_number, secrets \\ []) do
     {base_url, headers} = get_http_context()
     function_name = get_function_name(service_name, build_number)
     url = "#{base_url}/system/function/#{function_name}"
 
-    body = %{
-      "service" => function_name,
+    body = Map.merge(ApplicationServices.generate_function_object(
+      function_name,
+      Apps.image_name(service_name, build_number),
+      %{
+        @min_scale_label => @min_scale_default,
+        @max_scale_label => to_string(Subscriptions.get_max_replicas(app.id)),
+        @scale_factor_label => @scale_factor_default
+      }
+    ), %{
       "secrets" => secrets
-    } |> Jason.encode!()
+    }) |> Jason.encode!() |> IO.inspect(label: "OpenFaas Update Secret to")
 
     Finch.build(
       :put,
@@ -66,7 +74,7 @@ defmodule Lenra.OpenfaasServices do
       headers,
       body
     )
-    |> Finch.request(FaasHttp, receive_timeout: 1000)
+    |> Finch.request(FaasHttp, receive_timeout: 1000) |> IO.inspect(label: "OpenFaas Response")
     |> response(:deploy_status)
   end
 
