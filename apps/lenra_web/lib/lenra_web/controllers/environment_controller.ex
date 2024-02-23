@@ -82,9 +82,9 @@ defmodule LenraWeb.EnvsController do
          {:ok, environment} <- Apps.fetch_env(env_id) do
       case ApiServices.get_environment_secrets(app.service_name, environment.id) do
         {:ok, secrets} ->
-          case Enum.any?(secrets, fn (s) -> s == key end) do
+          case Enum.any?(secrets |> IO.inspect(label: "Existing Secret keys"), fn (s) -> s == key end) do
             false -> case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
-              {:ok, secrets} -> conn |> reply(secrets)
+              {:ok, updated_secrets} -> conn |> reply(updated_secrets)
               {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple() # Should never happen
               {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
               {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
