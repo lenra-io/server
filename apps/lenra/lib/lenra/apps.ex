@@ -33,7 +33,6 @@ defmodule Lenra.Apps do
     Build,
     Deployment,
     Environment,
-    EnvSecret,
     Image,
     Logo,
     MainEnv,
