@@ -35,7 +35,6 @@ defmodule LenraWeb.EnvsController do
     end
   end
 
-
   def create(conn, params) do
     with {:ok, app} <- get_app_and_allow(conn, params),
          user <- LenraWeb.Auth.current_resource(conn),
@@ -82,23 +81,34 @@ defmodule LenraWeb.EnvsController do
          {:ok, environment} <- Apps.fetch_env(env_id) do
       case ApiServices.get_environment_secrets(app.service_name, environment.id) do
         {:ok, secrets} ->
-          case Enum.any?(secrets, fn (s) -> s == key end) do
-            false -> case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
-              {:ok, updated_secrets} -> conn |> reply(updated_secrets)
-              {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple() # Should never happen
-              {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
-              {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
-            end
-            true -> BusinessError.env_secret_already_exist_tuple()
+          case Enum.any?(secrets, fn s -> s == key end) do
+            false ->
+              case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
+                {:ok, updated_secrets} -> conn |> reply(updated_secrets)
+                # Should never happen
+                {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple()
+                {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
+                {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
+              end
+
+            true ->
+              BusinessError.env_secret_already_exist_tuple()
           end
-        {:error, :secret_not_found} -> case ApiServices.create_environment_secrets(app.service_name, environment.id, %{key => value}) do
-          {:ok, secrets} -> conn |> reply(secrets)
-          {:error, :secret_exist} -> BusinessError.env_secret_already_exist_tuple() # This should never happen
-          {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
-          {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
-        end
-        {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
-        {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
+
+        {:error, :secret_not_found} ->
+          case ApiServices.create_environment_secrets(app.service_name, environment.id, %{key => value}) do
+            {:ok, secrets} -> conn |> reply(secrets)
+            # This should never happen
+            {:error, :secret_exist} -> BusinessError.env_secret_already_exist_tuple()
+            {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
+            {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
+          end
+
+        {:error, :kubernetes_error} ->
+          BusinessError.kubernetes_unexpected_response_tuple()
+
+        {:error, :unexpected_response} ->
+          BusinessError.api_return_unexpected_response_tuple()
       end
     end
   end
@@ -107,7 +117,7 @@ defmodule LenraWeb.EnvsController do
     with {:ok, app} <- get_app_and_allow(conn, params),
          {:ok, environment} <- Apps.fetch_env(env_id) do
       case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
-        {:ok, secrets } -> conn |> reply(secrets)
+        {:ok, secrets} -> conn |> reply(secrets)
         {:error, :secret_not_found} -> BusinessError.env_secret_not_found_tuple()
         {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
         {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()

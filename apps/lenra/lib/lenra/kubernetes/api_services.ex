@@ -45,19 +45,19 @@ defmodule Lenra.Kubernetes.ApiServices do
 
     build_name = "build-#{service_name}-#{build_number}"
 
-    secret_response = create_k8s_secret(build_name, kubernetes_build_namespace, %{
-      APP_REPOSITORY: app_repository,
-      REPOSITORY_BRANCH: app_repository_branch || "",
-      CALLBACK_URL: "#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}",
-      IMAGE_NAME: Apps.image_name(service_name, build_number)
-    })
+    secret_response =
+      create_k8s_secret(build_name, kubernetes_build_namespace, %{
+        APP_REPOSITORY: app_repository,
+        REPOSITORY_BRANCH: app_repository_branch || "",
+        CALLBACK_URL: "#{runner_callback_url}/runner/builds/#{build_id}?secret=#{runner_secret}",
+        IMAGE_NAME: Apps.image_name(service_name, build_number)
+      })
 
     case secret_response do
       {:ok} ->
         :ok
 
       :secret_exist ->
-
         if retry < 1 do
           create_pipeline(
             service_name,
@@ -180,7 +180,7 @@ defmodule Lenra.Kubernetes.ApiServices do
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, :secret)
-    when status_code in [404] do
+       when status_code in [404] do
     {:error, :secret_not_found, Jason.decode!(body)}
   end
 
@@ -216,15 +216,18 @@ defmodule Lenra.Kubernetes.ApiServices do
       {"content-type", "application/json"}
     ]
 
-    secret_response = Finch.build(:get, secrets_url, headers)
-        |> Finch.request(PipelineHttp)
-        |> response(:secret)
+    secret_response =
+      Finch.build(:get, secrets_url, headers)
+      |> Finch.request(PipelineHttp)
+      |> response(:secret)
 
     case secret_response do
       {:ok, body} ->
-          %{"data" => secret_data} = body
-          {:ok, Enum.into(Enum.map(secret_data, fn ({key, value}) -> {key, Base.decode64!(value)} end), %{})}
-      {:error, error, _} -> { :error, error |> IO.inspect(label: "Fetch error") }
+        %{"data" => secret_data} = body
+        {:ok, Enum.into(Enum.map(secret_data, fn {key, value} -> {key, Base.decode64!(value)} end), %{})}
+
+      {:error, error, _} ->
+        {:error, error |> IO.inspect(label: "Fetch error")}
     end
   end
 
@@ -239,7 +242,6 @@ defmodule Lenra.Kubernetes.ApiServices do
       {"content-type", "application/json"}
     ]
 
-
     secret_body =
       Jason.encode!(%{
         apiVersion: "v1",
@@ -249,7 +251,7 @@ defmodule Lenra.Kubernetes.ApiServices do
           name: secret_name,
           namespace: namespace
         },
-        data: Enum.into(Enum.map(data, fn ({key, value}) -> {key, Base.encode64(value)} end), %{})
+        data: Enum.into(Enum.map(data, fn {key, value} -> {key, Base.encode64(value)} end), %{})
       })
 
     secret_response =
@@ -259,8 +261,7 @@ defmodule Lenra.Kubernetes.ApiServices do
 
     case secret_response do
       {:ok, _} -> {:ok, data}
-
-      {:error, error} -> { :error, error }
+      {:error, error} -> {:error, error}
     end
   end
 
@@ -276,18 +277,19 @@ defmodule Lenra.Kubernetes.ApiServices do
     ]
 
     secret_body =
-        Jason.encode!(%{
-          apiVersion: "v1",
-          kind: "Secret",
-          metadata: %{
-            name: secret_name,
-          },
-          data: Enum.into(Enum.map(secrets, fn ({key, value}) -> {key, Base.encode64(value)} end), %{})
-        })
+      Jason.encode!(%{
+        apiVersion: "v1",
+        kind: "Secret",
+        metadata: %{
+          name: secret_name
+        },
+        data: Enum.into(Enum.map(secrets, fn {key, value} -> {key, Base.encode64(value)} end), %{})
+      })
 
-    secret_response = Finch.build(:put, secrets_url, headers, secret_body)
-    |> Finch.request(PipelineHttp)
-    |> response(:secret)
+    secret_response =
+      Finch.build(:put, secrets_url, headers, secret_body)
+      |> Finch.request(PipelineHttp)
+      |> response(:secret)
 
     case secret_response do
       {:ok, _} -> {:ok}
@@ -306,9 +308,10 @@ defmodule Lenra.Kubernetes.ApiServices do
       {"content-type", "application/json"}
     ]
 
-    secret_response = Finch.build(:delete, secrets_url, headers)
-        |> Finch.request(PipelineHttp)
-        |> response(:secret)
+    secret_response =
+      Finch.build(:delete, secrets_url, headers)
+      |> Finch.request(PipelineHttp)
+      |> response(:secret)
 
     case secret_response do
       {:ok, _} -> {:ok}
@@ -319,68 +322,95 @@ defmodule Lenra.Kubernetes.ApiServices do
   def get_environment_secrets(service_name, env_id) do
     secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
+
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
-      {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
+      {:ok, secrets} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
       {:error, :secret_not_found} -> {:error, :secret_not_found}
       {:error, error} -> {:error, error}
     end
   end
+
   def create_environment_secrets(service_name, env_id, secrets) do
     secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
+
     case create_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
       {:ok, secrets} ->
         {:ok, partial_env} = Apps.fetch_env(env_id)
         env = Repo.preload(partial_env, deployment: [:build]) |> Repo.preload([:application])
         build_number = env.deployment.build.build_number
-        Lenra.OpenfaasServices.update_secrets(env.application, service_name |> IO.inspect(label: "CreateEnvSecret - ServiceName"), build_number |> IO.inspect(label: "CreateEnvSecret - build_number"), [secret_name])
-        {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
-      {:error, :secret_exist} -> {:error, :secret_exist}
-      _ -> {:error, :unexpected_response}
+
+        Lenra.OpenfaasServices.update_secrets(
+          env.application,
+          service_name |> IO.inspect(label: "CreateEnvSecret - ServiceName"),
+          build_number |> IO.inspect(label: "CreateEnvSecret - build_number"),
+          [secret_name]
+        )
+
+        {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
+
+      {:error, :secret_exist} ->
+        {:error, :secret_exist}
+
+      _ ->
+        {:error, :unexpected_response}
     end
   end
+
   def update_environment_secrets(service_name, env_id, secrets) do
     secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
+
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, current_secrets} ->
         case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.merge(current_secrets, secrets)) do
-          {:ok} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
+          {:ok} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
           {:secret_not_found} -> {:error, :secret_not_found}
           _ -> {:error, :unexpected_response}
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 
   def delete_environment_secrets(service_name, env_id, key) do
     secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
+
     case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
       {:ok, current_secrets} ->
         case length(Map.keys(current_secrets)) do
           len when len <= 1 ->
             {:ok, partial_env} = Apps.fetch_env(env_id)
+
             case Repo.preload(partial_env, deployment: [:build])
-              |> Repo.preload([:application]) do
-              %{ application: app, deployment: %{ build: build }} when not is_nil(build) ->
+                 |> Repo.preload([:application]) do
+              %{application: app, deployment: %{build: build}} when not is_nil(build) ->
                 Lenra.OpenfaasServices.update_secrets(app, service_name, build.build_number, [])
-                {:ok, []} # TODO: Return all other secrets
-              _ -> {:error, :build_not_exist}
+                # TODO: Return all other secrets
+                {:ok, []}
+
+              _ ->
+                {:error, :build_not_exist}
             end
+
             case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
               {:ok, _} -> {:ok, []}
               {:secret_not_found} -> {:error, :secret_not_found}
               _ -> {:error, :unexpected_response}
             end
+
           _ ->
             case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.drop(current_secrets, [key])) do
-              {:ok, secrets} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
+              {:ok, secrets} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
               {:secret_not_found} -> {:error, :secret_not_found}
               _ -> {:error, :unexpected_response}
             end
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 end

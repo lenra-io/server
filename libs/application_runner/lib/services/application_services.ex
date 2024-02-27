@@ -177,7 +177,8 @@ defmodule ApplicationRunner.ApplicationServices do
     %{
       "image" => image_name,
       "service" => function_name,
-      "secrets" => Application.fetch_env!(:application_runner, :faas_secrets),#,
+      # ,
+      "secrets" => Application.fetch_env!(:application_runner, :faas_secrets),
       # "environments" => ApiServices.get_environment_secrets(app.service_name, env.id),
       "requests" => %{
         "cpu" => Application.fetch_env!(:application_runner, :faas_request_cpu),
