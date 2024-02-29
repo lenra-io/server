@@ -64,9 +64,9 @@ defmodule ApplicationRunner.Environment.QueryServer do
          {:ok, coll} <- Keyword.fetch(opts, :coll),
          {:ok, query_transformed} <- Keyword.fetch(opts, :query_transformed),
          {:ok, query_parsed} <- Keyword.fetch(opts, :query_parsed),
-         {:ok, data} <- fetch_initial_data(env_id, coll, query_transformed),
          {:ok, projection} <- Keyword.fetch(opts, :projection),
-         {:ok, options} <- Keyword.fetch(opts, :options) do
+         {:ok, options} <- Keyword.fetch(opts, :options),
+         {:ok, data} <- fetch_initial_data(env_id, coll, query_transformed, projection, options) do
       projection_data =
         if projection != %{} do
           %{projection => projection_data(data, projection)}
@@ -121,20 +121,28 @@ defmodule ApplicationRunner.Environment.QueryServer do
     Map.values(map_data)
   end
 
-  defp fetch_initial_data(_env_id, coll, query_transformed)
+  defp fetch_initial_data(_env_id, coll, query_transformed, projection, options)
        when is_nil(coll) or is_nil(query_transformed) do
     Logger.debug("#{__MODULE__} fetch_initial_data with nil query")
 
     {:ok, []}
   end
 
-  defp fetch_initial_data(env_id, coll, query_transformed) do
+  defp fetch_initial_data(env_id, coll, query_transformed, projection, options) do
     Logger.debug("#{__MODULE__} fetch_initial_data with data: #{inspect([env_id, coll, query_transformed])}")
+
+    mongo_opts =
+      Keyword.merge(
+        # [projection: projection],
+        [],
+        Enum.map(options, fn {k, v} -> {String.to_atom(k), v} end)
+      )
 
     MongoInstance.run_mongo_task(env_id, MongoStorage, :filter_docs, [
       env_id,
       coll,
-      query_transformed
+      query_transformed,
+      mongo_opts
     ])
   end
 
