@@ -29,6 +29,7 @@ defmodule ApplicationRunner.Environment.ViewDynSup do
     query_parsed = view_uid.query_parsed
     query_transformed = view_uid.query_transformed
     projection = view_uid.projection
+    options = view_uid.options
 
     Logger.debug("#{__MODULE__} ensure_child_started for #{inspect(%{env_id: env_id, session_id: session_id})}")
 
@@ -38,14 +39,15 @@ defmodule ApplicationRunner.Environment.ViewDynSup do
              coll,
              query_parsed,
              query_transformed,
-             projection
+             projection,
+             options
            ) do
       case start_child(env_id, function_name, view_uid) do
         {:ok, pid} ->
           Logger.info("ApplicationRunner.Environment.ViewServer")
 
           QueryServer.join_group(qs_pid, session_id)
-          ViewServer.join_group(pid, env_id, coll, query_parsed, projection)
+          ViewServer.join_group(pid, env_id, coll, query_parsed, projection, options)
           QueryServer.monitor(qs_pid, pid)
           {:ok, pid}
 
