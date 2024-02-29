@@ -46,11 +46,11 @@ defmodule ApplicationRunner.Environment.QueryServer do
     Swarm.join(group, pid)
   end
 
-  def get_data(env_id, coll, query_parsed, projection) do
-    GenServer.call(get_full_name({env_id, coll, query_parsed}), {:get_data, projection})
+  def get_data(env_id, coll, query_parsed, projection, options) do
+    GenServer.call(get_full_name({env_id, coll, query_parsed}), {:get_data, projection, options})
   end
 
-  def add_projection(env_id, coll, query_parsed, projection) do
+  def add_projection(env_id, coll, query_parsed, projection, options) do
     GenServer.call(get_full_name({env_id, coll, query_parsed}), {:add_projection, projection})
   end
 
@@ -65,7 +65,8 @@ defmodule ApplicationRunner.Environment.QueryServer do
          {:ok, query_transformed} <- Keyword.fetch(opts, :query_transformed),
          {:ok, query_parsed} <- Keyword.fetch(opts, :query_parsed),
          {:ok, data} <- fetch_initial_data(env_id, coll, query_transformed),
-         {:ok, projection} <- Keyword.fetch(opts, :projection) do
+         {:ok, projection} <- Keyword.fetch(opts, :projection),
+         {:ok, options} <- Keyword.fetch(opts, :options) do
       projection_data =
         if projection != %{} do
           %{projection => projection_data(data, projection)}
@@ -83,7 +84,8 @@ defmodule ApplicationRunner.Environment.QueryServer do
          latest_timestamp: Mongo.timestamp(DateTime.utc_now()),
          done_ids: MapSet.new(),
          w_pids: MapSet.new(),
-         projection_data: projection_data
+         projection_data: projection_data,
+         options: options
        }}
     else
       :error ->
