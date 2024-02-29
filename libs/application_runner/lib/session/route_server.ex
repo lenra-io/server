@@ -129,6 +129,8 @@ defmodule ApplicationRunner.Session.RouteServer do
     query = Map.get(find, "query", %{})
     projection = Map.get(find, "projection", %{})
 
+    Logger.warning("FIND OPTIONS: #{inspect(find)}")
+
     if find == %{} && coll_deprecated != nil do
       Logger.warning(
         "Definition of view #{name} is deprecated since applicationRunner beta 106 check https://docs.lenra.io/components-api/components/view.html."
