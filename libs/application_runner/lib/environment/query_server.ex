@@ -47,10 +47,10 @@ defmodule ApplicationRunner.Environment.QueryServer do
   end
 
   def get_data(env_id, coll, query_parsed, projection, options) do
-    GenServer.call(get_full_name({env_id, coll, query_parsed}), {:get_data, projection, options})
+    GenServer.call(get_full_name({env_id, coll, query_parsed}), {:get_data, projection})
   end
 
-  def add_projection(env_id, coll, query_parsed, projection, options) do
+  def add_projection(env_id, coll, query_parsed, projection) do
     GenServer.call(get_full_name({env_id, coll, query_parsed}), {:add_projection, projection})
   end
 
