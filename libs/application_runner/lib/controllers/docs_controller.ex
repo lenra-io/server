@@ -255,7 +255,7 @@ defmodule ApplicationRunner.DocsController do
     IO.inspect("mongo_opts")
     IO.inspect(mongo_opts)
 
-    Logger.warning("mongo_opts #{inspect(mongo_opts)}");
+    Logger.warning("mongo_opts #{inspect(mongo_opts)}")
 
     case MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
            env.id,
@@ -287,7 +287,7 @@ defmodule ApplicationRunner.DocsController do
     IO.inspect("find_deprecated")
     IO.inspect(filter)
 
-    Logger.warning("find_deprecated #{inspect(filter)}");
+    Logger.warning("find_deprecated #{inspect(filter)}")
 
     with {:ok, docs} <-
            MongoInstance.run_mongo_task(env.id, MongoStorage, :filter_docs, [
