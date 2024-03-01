@@ -341,7 +341,6 @@ defmodule Lenra.Kubernetes.ApiServices do
         build_number = env.deployment.build.build_number
 
         Lenra.OpenfaasServices.update_secrets(
-          env.application,
           service_name,
           build_number,
           [secret_name]
@@ -388,7 +387,7 @@ defmodule Lenra.Kubernetes.ApiServices do
                  |> Repo.preload(deployment: [:build])
                  |> Repo.preload([:application]) do
               %{application: app, deployment: %{build: build}} when not is_nil(build) ->
-                Lenra.OpenfaasServices.update_secrets(app, service_name, build.build_number, [])
+                Lenra.OpenfaasServices.update_secrets(service_name, build.build_number, [])
                 # TODO: Return all other secrets
                 {:ok, []}
 

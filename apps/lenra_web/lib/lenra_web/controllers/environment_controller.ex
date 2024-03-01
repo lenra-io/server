@@ -158,7 +158,7 @@ defmodule LenraWeb.EnvsController.Policy do
 
   def authorize(:list_secrets, %User{id: user_id}, %App{creator_id: user_id}), do: true
   def authorize(:create_secret, %User{id: user_id}, %App{creator_id: user_id}), do: true
-  # def authorize(:update_secret, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:update_secret, %User{id: user_id}, %App{creator_id: user_id}), do: true
   def authorize(:delete_secret, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout

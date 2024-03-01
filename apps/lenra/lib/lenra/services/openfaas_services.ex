@@ -51,7 +51,7 @@ defmodule Lenra.OpenfaasServices do
     |> response(:deploy_status)
   end
 
-  def update_secrets(app, service_name, build_number, secrets \\ []) do
+  def update_secrets(service_name, build_number, secrets \\ []) do
     {base_url, headers} = get_http_context()
     function_name = get_function_name(service_name, build_number)
     url = "#{base_url}/system/function/#{function_name}" |> IO.inspect(label: "Url")
