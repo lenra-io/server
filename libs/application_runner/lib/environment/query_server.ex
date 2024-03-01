@@ -133,8 +133,7 @@ defmodule ApplicationRunner.Environment.QueryServer do
 
     mongo_opts =
       Keyword.merge(
-        # [projection: projection],
-        [],
+        [projection: projection],
         Enum.map(options, fn {k, v} -> {String.to_atom(k), v} end)
       )
 
