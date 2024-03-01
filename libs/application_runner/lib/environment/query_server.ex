@@ -428,7 +428,6 @@ defmodule ApplicationRunner.Environment.QueryServer do
         if projection_change?(projection_data, new_data, k) do
           {k, v}
         else
-          # TODO: Check that the options are properly handled, we might want to get the options from the state
           group = ViewServer.group_name(env_id, coll, query_parsed, k, %{})
           Swarm.publish(group, {:data_changed, projection_data(new_data, k)})
           {k, projection_data(new_data, k)}
@@ -436,7 +435,6 @@ defmodule ApplicationRunner.Environment.QueryServer do
       end)
 
     # Notify ViewServer with no projection.
-    # TODO: Check that the options are properly handled, we might want to get the options from the state
     group = ViewServer.group_name(env_id, coll, query_parsed, %{}, %{})
     Swarm.publish(group, {:data_changed, new_data})
 
@@ -453,12 +451,10 @@ defmodule ApplicationRunner.Environment.QueryServer do
          }
        ) do
     Enum.each(Map.keys(projection_data), fn projection_key ->
-      # TODO: Check that the options are properly handled, we might want to get the options from the state
       group = ViewServer.group_name(env_id, old_coll, query_parsed, projection_key, %{})
       Swarm.publish(group, {:coll_changed, new_coll})
     end)
 
-    # TODO: Check that the options are properly handled, we might want to get the options from the state
     group = ViewServer.group_name(env_id, old_coll, query_parsed, %{}, %{})
     Swarm.publish(group, {:coll_changed, new_coll})
   end
