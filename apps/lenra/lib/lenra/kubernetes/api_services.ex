@@ -397,16 +397,18 @@ defmodule Lenra.Kubernetes.ApiServices do
             end
 
             case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
+              {:ok} -> {:ok, []}
               {:ok, _secret} -> {:ok, []}
               {:secret_not_found} -> {:error, :secret_not_found}
-              _other -> {:error, :unexpected_response}
+              # _other -> {:error, :unexpected_response}
             end
 
           _other ->
-            case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.drop(current_secrets, [key])) do
-              {:ok, secrets} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
+            secrets = Map.drop(current_secrets, [key])
+            case update_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
+              {:ok} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
               {:secret_not_found} -> {:error, :secret_not_found}
-              _other -> {:error, :unexpected_response}
+              # _other -> {:error, :unexpected_response}
             end
         end
 

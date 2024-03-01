@@ -54,31 +54,39 @@ defmodule Lenra.OpenfaasServices do
   def update_secrets(app, service_name, build_number, secrets \\ []) do
     {base_url, headers} = get_http_context()
     function_name = get_function_name(service_name, build_number)
-    url = "#{base_url}/system/function/#{function_name}"
+    url = "#{base_url}/system/function/#{function_name}" |> IO.inspect(label: "Url")
 
-    body =
-      ApplicationServices.generate_function_object(
-        function_name,
-        Apps.image_name(service_name, build_number),
-        %{
-          @min_scale_label => @min_scale_default,
-          @max_scale_label => to_string(Subscriptions.get_max_replicas(app.id)),
-          @scale_factor_label => @scale_factor_default
-        }
-      )
-      |> Map.merge(%{
-        "secrets" => secrets
-      })
-      |> Jason.encode!()
-
-    Finch.build(
-      :put,
+    function = case Finch.build(
+      :get,
       url,
-      headers,
-      body
+      headers
     )
     |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:deploy_status)
+    |> response(:get_function) do
+      {:ok, result} -> result
+      _other -> nil
+    end
+
+    if(function != nil) do
+      url = "#{base_url}/system/functions" |> IO.inspect(label: "Url")
+
+      body = function |> IO.inspect(label: "function")
+        |> Map.merge(%{
+          "secrets" => secrets
+        })
+        |> Jason.encode!()
+
+      Finch.build(
+        :put,
+        url,
+        headers,
+        body
+      )
+      |> Finch.request(FaasHttp, receive_timeout: 1000)
+      |> response(:deploy_status)
+    else
+      TechnicalError.openfaas_not_reachable_tuple()
+    end
   end
 
   def delete_app_openfaas(service_name, build_number) do
@@ -108,6 +116,14 @@ defmodule Lenra.OpenfaasServices do
     json_body = Jason.decode!(body)
     available_replicas = Map.get(json_body, "availableReplicas")
     available_replicas != 0 && available_replicas != nil
+  end
+
+  defp response(
+         {:ok, %Finch.Response{status: status_code, body: body}},
+         :get_function
+       )
+       when status_code in [200, 202] do
+    Jason.decode!(body)
   end
 
   defp response({:ok, %Finch.Response{status: status_code}}, :delete_app)
