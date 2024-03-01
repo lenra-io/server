@@ -226,8 +226,8 @@ defmodule Lenra.Kubernetes.ApiServices do
         %{"data" => secret_data} = body
         {:ok, Enum.into(Enum.map(secret_data, fn {key, value} -> {key, Base.decode64!(value)} end), %{})}
 
-      {:error, error, _} ->
-        {:error, error |> IO.inspect(label: "Fetch error")}
+      {:error, error, _reason} ->
+        {:error, error}
     end
   end
 
@@ -292,8 +292,8 @@ defmodule Lenra.Kubernetes.ApiServices do
       |> response(:secret)
 
     case secret_response do
-      {:ok, _} -> {:ok}
-      _ -> {:secret_not_found}
+      {:ok, _secret} -> {:ok}
+      _other -> {:secret_not_found}
     end
   end
 
@@ -314,8 +314,8 @@ defmodule Lenra.Kubernetes.ApiServices do
       |> response(:secret)
 
     case secret_response do
-      {:ok, _} -> {:ok}
-      _ -> {:secret_not_found}
+      {:ok, _secret} -> {:ok}
+      _error -> {:secret_not_found}
     end
   end
 
@@ -337,13 +337,13 @@ defmodule Lenra.Kubernetes.ApiServices do
     case create_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
       {:ok, secrets} ->
         {:ok, partial_env} = Apps.fetch_env(env_id)
-        env = Repo.preload(partial_env, deployment: [:build]) |> Repo.preload([:application])
+        env = partial_env |> Repo.preload(deployment: [:build]) |> Repo.preload([:application])
         build_number = env.deployment.build.build_number
 
         Lenra.OpenfaasServices.update_secrets(
           env.application,
-          service_name |> IO.inspect(label: "CreateEnvSecret - ServiceName"),
-          build_number |> IO.inspect(label: "CreateEnvSecret - build_number"),
+          service_name,
+          build_number,
           [secret_name]
         )
 
@@ -352,7 +352,7 @@ defmodule Lenra.Kubernetes.ApiServices do
       {:error, :secret_exist} ->
         {:error, :secret_exist}
 
-      _ ->
+      _other ->
         {:error, :unexpected_response}
     end
   end
@@ -366,7 +366,7 @@ defmodule Lenra.Kubernetes.ApiServices do
         case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.merge(current_secrets, secrets)) do
           {:ok} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
           {:secret_not_found} -> {:error, :secret_not_found}
-          _ -> {:error, :unexpected_response}
+          _other -> {:error, :unexpected_response}
         end
 
       error ->
@@ -384,28 +384,29 @@ defmodule Lenra.Kubernetes.ApiServices do
           len when len <= 1 ->
             {:ok, partial_env} = Apps.fetch_env(env_id)
 
-            case Repo.preload(partial_env, deployment: [:build])
+            case partial_env
+                 |> Repo.preload(deployment: [:build])
                  |> Repo.preload([:application]) do
               %{application: app, deployment: %{build: build}} when not is_nil(build) ->
                 Lenra.OpenfaasServices.update_secrets(app, service_name, build.build_number, [])
                 # TODO: Return all other secrets
                 {:ok, []}
 
-              _ ->
+              _other ->
                 {:error, :build_not_exist}
             end
 
             case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
-              {:ok, _} -> {:ok, []}
+              {:ok, _secret} -> {:ok, []}
               {:secret_not_found} -> {:error, :secret_not_found}
-              _ -> {:error, :unexpected_response}
+              _other -> {:error, :unexpected_response}
             end
 
-          _ ->
+          _other ->
             case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.drop(current_secrets, [key])) do
               {:ok, secrets} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
               {:secret_not_found} -> {:error, :secret_not_found}
-              _ -> {:error, :unexpected_response}
+              _other -> {:error, :unexpected_response}
             end
         end
 

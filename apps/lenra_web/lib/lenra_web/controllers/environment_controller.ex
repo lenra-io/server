@@ -4,10 +4,10 @@ defmodule LenraWeb.EnvsController do
   use LenraWeb.Policy,
     module: LenraWeb.EnvsController.Policy
 
-  alias Lenra.{Apps}
-  alias Lenra.Kubernetes.ApiServices
+  alias Lenra.Apps
   alias Lenra.Errors.BusinessError
-  alias alias Lenra.Subscriptions
+  alias Lenra.Kubernetes.ApiServices
+  alias Lenra.Subscriptions
   alias Lenra.Subscriptions.Subscription
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
