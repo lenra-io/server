@@ -2,7 +2,7 @@ defmodule ApplicationRunner.Environment.ViewUid do
   @moduledoc """
     This identify a unique widget for a given environment.
   """
-  @enforce_keys [:name, :coll, :query_parsed, :query_transformed, :props, :context, :projection]
+  @enforce_keys [:name, :coll, :query_parsed, :query_transformed, :props, :context, :projection, :options]
   defstruct [
     :name,
     :props,
@@ -11,6 +11,7 @@ defmodule ApplicationRunner.Environment.ViewUid do
     :context,
     :coll,
     :projection,
+    :options,
     prefix_path: ""
   ]
 
@@ -22,6 +23,7 @@ defmodule ApplicationRunner.Environment.ViewUid do
           coll: String.t() | nil,
           context: map() | nil,
           prefix_path: String.t(),
-          projection: map()
+          projection: map(),
+          options: map()
         }
 end

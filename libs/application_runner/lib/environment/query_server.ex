@@ -46,7 +46,7 @@ defmodule ApplicationRunner.Environment.QueryServer do
     Swarm.join(group, pid)
   end
 
-  def get_data(env_id, coll, query_parsed, projection) do
+  def get_data(env_id, coll, query_parsed, projection, options) do
     GenServer.call(get_full_name({env_id, coll, query_parsed}), {:get_data, projection})
   end
 
@@ -64,8 +64,9 @@ defmodule ApplicationRunner.Environment.QueryServer do
          {:ok, coll} <- Keyword.fetch(opts, :coll),
          {:ok, query_transformed} <- Keyword.fetch(opts, :query_transformed),
          {:ok, query_parsed} <- Keyword.fetch(opts, :query_parsed),
-         {:ok, data} <- fetch_initial_data(env_id, coll, query_transformed),
-         {:ok, projection} <- Keyword.fetch(opts, :projection) do
+         {:ok, projection} <- Keyword.fetch(opts, :projection),
+         {:ok, options} <- Keyword.fetch(opts, :options),
+         {:ok, data} <- fetch_initial_data(env_id, coll, query_transformed, projection, options) do
       projection_data =
         if projection != %{} do
           %{projection => projection_data(data, projection)}
@@ -83,7 +84,8 @@ defmodule ApplicationRunner.Environment.QueryServer do
          latest_timestamp: Mongo.timestamp(DateTime.utc_now()),
          done_ids: MapSet.new(),
          w_pids: MapSet.new(),
-         projection_data: projection_data
+         projection_data: projection_data,
+         options: options
        }}
     else
       :error ->
@@ -119,20 +121,27 @@ defmodule ApplicationRunner.Environment.QueryServer do
     Map.values(map_data)
   end
 
-  defp fetch_initial_data(_env_id, coll, query_transformed)
+  defp fetch_initial_data(_env_id, coll, query_transformed, projection, options)
        when is_nil(coll) or is_nil(query_transformed) do
     Logger.debug("#{__MODULE__} fetch_initial_data with nil query")
 
     {:ok, []}
   end
 
-  defp fetch_initial_data(env_id, coll, query_transformed) do
+  defp fetch_initial_data(env_id, coll, query_transformed, projection, options) do
     Logger.debug("#{__MODULE__} fetch_initial_data with data: #{inspect([env_id, coll, query_transformed])}")
+
+    mongo_opts =
+      Keyword.merge(
+        [projection: projection],
+        Enum.map(options, fn {k, v} -> {String.to_atom(k), v} end)
+      )
 
     MongoInstance.run_mongo_task(env_id, MongoStorage, :filter_docs, [
       env_id,
       coll,
-      query_transformed
+      query_transformed,
+      mongo_opts
     ])
   end
 
@@ -418,14 +427,14 @@ defmodule ApplicationRunner.Environment.QueryServer do
         if projection_change?(projection_data, new_data, k) do
           {k, v}
         else
-          group = ViewServer.group_name(env_id, coll, query_parsed, k)
+          group = ViewServer.group_name(env_id, coll, query_parsed, k, %{})
           Swarm.publish(group, {:data_changed, projection_data(new_data, k)})
           {k, projection_data(new_data, k)}
         end
       end)
 
     # Notify ViewServer with no projection.
-    group = ViewServer.group_name(env_id, coll, query_parsed, %{})
+    group = ViewServer.group_name(env_id, coll, query_parsed, %{}, %{})
     Swarm.publish(group, {:data_changed, new_data})
 
     new_projection_data
@@ -441,11 +450,11 @@ defmodule ApplicationRunner.Environment.QueryServer do
          }
        ) do
     Enum.each(Map.keys(projection_data), fn projection_key ->
-      group = ViewServer.group_name(env_id, old_coll, query_parsed, projection_key)
+      group = ViewServer.group_name(env_id, old_coll, query_parsed, projection_key, %{})
       Swarm.publish(group, {:coll_changed, new_coll})
     end)
 
-    group = ViewServer.group_name(env_id, old_coll, query_parsed, %{})
+    group = ViewServer.group_name(env_id, old_coll, query_parsed, %{}, %{})
     Swarm.publish(group, {:coll_changed, new_coll})
   end
 
