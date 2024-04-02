@@ -399,7 +399,10 @@ defmodule Lenra.Kubernetes.ApiServices do
     case partial_env
          |> Repo.preload(deployment: [:build])
          |> Repo.preload([:application]) do
-      %{application: app, deployment: %{build: build}} when not is_nil(build) ->
+      %{application: _app, deployment: %{build: nil}} ->
+        {:error, :build_not_exist}
+
+      %{application: _app, deployment: %{build: build}} ->
         Lenra.OpenfaasServices.update_secrets(service_name, build.build_number, [])
         # TODO: Return all other secrets
         {:ok, []}
