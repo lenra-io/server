@@ -54,7 +54,7 @@ defmodule Lenra.OpenfaasServices do
   def update_secrets(service_name, build_number, secrets \\ []) do
     {base_url, headers} = get_http_context()
     function_name = get_function_name(service_name, build_number)
-    url = "#{base_url}/system/function/#{function_name}" |> IO.inspect(label: "Url")
+    url = "#{base_url}/system/function/#{function_name}"
 
     function = case Finch.build(
       :get,
@@ -67,10 +67,10 @@ defmodule Lenra.OpenfaasServices do
       _other -> nil
     end
 
-    if(function != nil) do
-      url = "#{base_url}/system/functions" |> IO.inspect(label: "Url")
+    if function != nil do
+      url = "#{base_url}/system/functions"
 
-      body = function |> IO.inspect(label: "function")
+      body = function
         |> Map.merge(%{
           "secrets" => secrets
         })

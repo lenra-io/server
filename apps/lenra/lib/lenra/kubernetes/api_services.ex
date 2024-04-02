@@ -5,12 +5,12 @@ defmodule Lenra.Kubernetes.ApiServices do
   """
 
   alias ApplicationRunner.Errors.TechnicalError
+  alias Ecto
   alias Lenra.Apps
   alias Lenra.Apps.Build
   alias Lenra.Apps.Deployment
   alias Lenra.Kubernetes.StatusDynSup
   alias Lenra.Repo
-  alias Ecto
   require Logger
 
   @doc """
