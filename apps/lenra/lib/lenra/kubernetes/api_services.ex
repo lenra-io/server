@@ -382,8 +382,7 @@ defmodule Lenra.Kubernetes.ApiServices do
     secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
 
-    case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
-      {:ok, current_secrets} ->
+    with {:ok, current_secrets} <- get_k8s_secret(secret_name, kubernetes_apps_namespace) do
         case length(Map.keys(current_secrets)) do
           len when len <= 1 ->
             {:ok, partial_env} = Apps.fetch_env(env_id)
@@ -424,9 +423,6 @@ defmodule Lenra.Kubernetes.ApiServices do
                 # _other -> {:error, :unexpected_response}
             end
         end
-
-      error ->
-        error
     end
   end
 end
