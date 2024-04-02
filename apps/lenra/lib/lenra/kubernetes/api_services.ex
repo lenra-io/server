@@ -4,6 +4,7 @@ defmodule Lenra.Kubernetes.ApiServices do
   Curently only support the request to create a new pipeline.
   """
 
+  alias ApplicationRunner.Errors.TechnicalError
   alias Lenra.Apps
   alias Lenra.Apps.Build
   alias Lenra.Apps.Deployment
@@ -209,25 +210,29 @@ defmodule Lenra.Kubernetes.ApiServices do
     kubernetes_api_url = Application.fetch_env!(:lenra, :kubernetes_api_url)
     kubernetes_api_token = Application.fetch_env!(:lenra, :kubernetes_api_token)
 
-    secrets_url = "#{kubernetes_api_url}/api/v1/namespaces/#{namespace}/secrets/#{secret_name}"
+    if kubernetes_api_url == nil || kubernetes_api_token == nil do
+      TechnicalError.error_500_tuple("Kubernetes configured improperly.")
+    else
+      secrets_url = "#{kubernetes_api_url}/api/v1/namespaces/#{namespace}/secrets/#{secret_name}"
 
-    headers = [
-      {"Authorization", "Bearer #{kubernetes_api_token}"},
-      {"content-type", "application/json"}
-    ]
+      headers = [
+        {"Authorization", "Bearer #{kubernetes_api_token}"},
+        {"content-type", "application/json"}
+      ]
 
-    secret_response =
-      Finch.build(:get, secrets_url, headers)
-      |> Finch.request(PipelineHttp)
-      |> response(:secret)
+      secret_response =
+        Finch.build(:get, secrets_url, headers)
+        |> Finch.request(PipelineHttp)
+        |> response(:secret)
 
-    case secret_response do
-      {:ok, body} ->
-        %{"data" => secret_data} = body
-        {:ok, Enum.into(Enum.map(secret_data, fn {key, value} -> {key, Base.decode64!(value)} end), %{})}
+      case secret_response do
+        {:ok, body} ->
+          %{"data" => secret_data} = body
+          {:ok, Enum.into(Enum.map(secret_data, fn {key, value} -> {key, Base.decode64!(value)} end), %{})}
 
-      {:error, error, _reason} ->
-        {:error, error}
+        {:error, error, _reason} ->
+          {:error, error}
+      end
     end
   end
 
@@ -396,18 +401,27 @@ defmodule Lenra.Kubernetes.ApiServices do
             end
 
             case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
-              {:ok} -> {:ok, []}
-              {:ok, _secret} -> {:ok, []}
-              {:secret_not_found} -> {:error, :secret_not_found}
-              # _other -> {:error, :unexpected_response}
+              {:ok} ->
+                {:ok, []}
+
+              {:ok, _secret} ->
+                {:ok, []}
+
+              {:secret_not_found} ->
+                {:error, :secret_not_found}
+                # _other -> {:error, :unexpected_response}
             end
 
           _other ->
             secrets = Map.drop(current_secrets, [key])
+
             case update_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
-              {:ok} -> {:ok, Enum.map(secrets, fn ({key, _value}) -> key end)}
-              {:secret_not_found} -> {:error, :secret_not_found}
-              # _other -> {:error, :unexpected_response}
+              {:ok} ->
+                {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
+
+              {:secret_not_found} ->
+                {:error, :secret_not_found}
+                # _other -> {:error, :unexpected_response}
             end
         end
 
