@@ -56,21 +56,23 @@ defmodule Lenra.OpenfaasServices do
     function_name = get_function_name(service_name, build_number)
     url = "#{base_url}/system/function/#{function_name}"
 
-    function = case Finch.build(
-      :get,
-      url,
-      headers
-    )
-    |> Finch.request(FaasHttp, receive_timeout: 1000)
-    |> response(:get_function) do
-      {:ok, result} -> result
-      _other -> nil
-    end
+    function =
+      case Finch.build(
+             :get,
+             url,
+             headers
+           )
+           |> Finch.request(FaasHttp, receive_timeout: 1000)
+           |> response(:get_function) do
+        {:ok, result} -> result
+        _other -> nil
+      end
 
     if function != nil do
       url = "#{base_url}/system/functions"
 
-      body = function
+      body =
+        function
         |> Map.merge(%{
           "secrets" => secrets
         })
