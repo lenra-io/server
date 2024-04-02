@@ -383,46 +383,54 @@ defmodule Lenra.Kubernetes.ApiServices do
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
 
     with {:ok, current_secrets} <- get_k8s_secret(secret_name, kubernetes_apps_namespace) do
-        case length(Map.keys(current_secrets)) do
-          len when len <= 1 ->
-            {:ok, partial_env} = Apps.fetch_env(env_id)
+      case length(Map.keys(current_secrets)) do
+        len when len <= 1 ->
+          handle_delete_when_one_or_less_secrets(env_id, secret_name, kubernetes_apps_namespace, service_name)
 
-            case partial_env
-                 |> Repo.preload(deployment: [:build])
-                 |> Repo.preload([:application]) do
-              %{application: app, deployment: %{build: build}} when not is_nil(build) ->
-                Lenra.OpenfaasServices.update_secrets(service_name, build.build_number, [])
-                # TODO: Return all other secrets
-                {:ok, []}
+        _other ->
+          handle_delete_when_multiple_secrets(current_secrets, key, secret_name, kubernetes_apps_namespace)
+      end
+    end
+  end
 
-              _other ->
-                {:error, :build_not_exist}
-            end
+  defp handle_delete_when_one_or_less_secrets(env_id, secret_name, kubernetes_apps_namespace, service_name) do
+    {:ok, partial_env} = Apps.fetch_env(env_id)
 
-            case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
-              {:ok} ->
-                {:ok, []}
+    case partial_env
+         |> Repo.preload(deployment: [:build])
+         |> Repo.preload([:application]) do
+      %{application: app, deployment: %{build: build}} when not is_nil(build) ->
+        Lenra.OpenfaasServices.update_secrets(service_name, build.build_number, [])
+        # TODO: Return all other secrets
+        {:ok, []}
 
-              {:ok, _secret} ->
-                {:ok, []}
+      _other ->
+        {:error, :build_not_exist}
+    end
 
-              {:secret_not_found} ->
-                {:error, :secret_not_found}
-                # _other -> {:error, :unexpected_response}
-            end
+    case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
+      {:ok} ->
+        {:ok, []}
 
-          _other ->
-            secrets = Map.drop(current_secrets, [key])
+      {:ok, _secret} ->
+        {:ok, []}
 
-            case update_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
-              {:ok} ->
-                {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
+      {:secret_not_found} ->
+        {:error, :secret_not_found}
+        # _other -> {:error, :unexpected_response}
+    end
+  end
 
-              {:secret_not_found} ->
-                {:error, :secret_not_found}
-                # _other -> {:error, :unexpected_response}
-            end
-        end
+  defp handle_delete_when_multiple_secrets(current_secrets, key, secret_name, kubernetes_apps_namespace) do
+    secrets = Map.drop(current_secrets, [key])
+
+    case update_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
+      {:ok} ->
+        {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
+
+      {:secret_not_found} ->
+        {:error, :secret_not_found}
+        # _other -> {:error, :unexpected_response}
     end
   end
 end
