@@ -21,7 +21,11 @@ defmodule LenraWeb.RunnerController do
          {:ok, _} <- Apps.update_build(build, %{status: status}),
          {:ok, _} <- maybe_deploy_in_main_env(build, status) do
       if String.downcase(Application.fetch_env!(:lenra, :pipeline_runner)) == "kubernetes" do
-        GenServer.stop({:global, {Kubernetes.Status, build_id}})
+        try do
+          GenServer.stop({:global, {Kubernetes.Status, build_id}})
+        catch
+          :exit, {:noproc, _} -> :ok
+        end
       end
 
       reply(conn)
