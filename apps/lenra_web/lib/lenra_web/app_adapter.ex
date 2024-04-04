@@ -126,7 +126,9 @@ defmodule LenraWeb.AppAdapter do
         }),
         do: true
 
-    def authorize(:join_app, user, app) when not is_nil(user) do
+    def authorize(:join_app, nil, _app), do: false
+
+    def authorize(:join_app, user, app) do
       case Apps.fetch_user_env_access(
              environment_id: app.main_env.environment.id,
              user_id: user.id
