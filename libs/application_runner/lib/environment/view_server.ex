@@ -10,11 +10,11 @@ defmodule ApplicationRunner.Environment.ViewServer do
 
   require Logger
 
-  def group_name(env_id, coll, query, projection, options) do
+  def group_name(env_id, coll, query, projection, options \\ %{}) do
     {__MODULE__, env_id, coll, query, projection, options}
   end
 
-  def join_group(pid, env_id, coll, query, projection, options) do
+  def join_group(pid, env_id, coll, query, projection, options \\ %{}) do
     group = group_name(env_id, coll, query, projection, options)
     Swarm.join(group, pid)
   end
