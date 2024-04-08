@@ -31,7 +31,7 @@ defmodule ApplicationRunner.Environment.QueryDynSup do
 
   @spec ensure_child_started(term(), String.t() | nil, map() | nil, map() | nil, map(), map()) ::
           {:ok, pid()} | {:error, term()}
-  def ensure_child_started(env_id, coll, query_parsed, query_transformed, projection, options) do
+  def ensure_child_started(env_id, coll, query_parsed, query_transformed, projection, options \\ %{}) do
     Logger.debug(
       "#{__MODULE__} ensure query server started for #{inspect([env_id, coll, query_parsed, query_transformed])}"
     )

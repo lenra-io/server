@@ -181,7 +181,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -196,7 +195,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -222,7 +220,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           %{},
-          %{},
           %{}
         )
 
@@ -243,7 +240,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -257,7 +253,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           %{},
-          %{},
           %{}
         )
 
@@ -266,7 +261,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           @env_id,
           "test",
           Parser.parse!("{}"),
-          %{},
           %{},
           %{}
         )
@@ -294,7 +288,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -304,7 +297,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
     end
@@ -316,7 +308,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -332,7 +323,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -366,7 +356,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -403,8 +392,7 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           %{},
-          %{"name" => true},
-          %{}
+          %{"name" => true}
         )
 
       # View server with no projection
@@ -451,7 +439,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -474,7 +461,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -494,7 +480,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -523,7 +508,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
                  "test",
                  Parser.parse!("{}"),
                  Parser.replace_params(%{}, %{}),
-                 %{},
                  %{}
                )
 
@@ -549,7 +533,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -573,7 +556,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           @env_id,
           "test",
           Parser.parse!("{}"),
-          %{},
           %{},
           %{}
         )
@@ -628,7 +610,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -669,7 +650,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -697,7 +677,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -728,7 +707,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!(eq),
           Parser.replace_params(q, %{}),
-          %{},
           %{}
         )
 
@@ -758,7 +736,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -786,7 +763,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -817,7 +793,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!(eq),
           q,
-          %{},
           %{}
         )
 
@@ -847,7 +822,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -875,7 +849,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -903,7 +876,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -933,7 +905,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -949,7 +920,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -967,7 +937,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
@@ -1008,7 +977,6 @@ defmodule ApplicationRunner.Environment.QueryServerTest do
           "test",
           Parser.parse!("{}"),
           Parser.replace_params(%{}, %{}),
-          %{},
           %{}
         )
 
