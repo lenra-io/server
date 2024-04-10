@@ -54,6 +54,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
     view
   end
 
+  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
   @spec get_and_build_view(Session.Metadata.t(), Ui.Context.t(), ViewUid.t()) ::
           {:ok, Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
   defp get_and_build_view(
