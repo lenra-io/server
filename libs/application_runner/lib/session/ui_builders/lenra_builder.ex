@@ -8,7 +8,6 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
   alias ApplicationRunner.Environment.ViewUid
   alias ApplicationRunner.Session.RouteServer
   alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
-  alias ApplicationRunner.Session.UiBuilders.ViewBuilderHelper
   alias LenraCommon.Errors
 
   require Logger
@@ -22,7 +21,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
 
   @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
   def build_ui(session_metadata, view_uid) do
-    with {:ok, ui} <- ViewBuilderHelper.build_ui(__MODULE__, session_metadata, view_uid) do
+    with {:ok, ui} <- UiBuilderAdapter.build_ui(__MODULE__, session_metadata, view_uid) do
       {:ok, %{"root" => ui}}
     end
   end
@@ -41,7 +40,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
          {:ok, validation_data} <- validate_with_error(schema_path, component, view_uid) do
       case comp_type do
         "view" ->
-          ViewBuilderHelper.handle_view(__MODULE__, session_metadata, component, ui_context, view_uid)
+          UiBuilderAdapter.handle_view(__MODULE__, session_metadata, component, ui_context, view_uid)
 
         _ ->
           handle_component(

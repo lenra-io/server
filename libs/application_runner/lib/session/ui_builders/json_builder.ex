@@ -6,25 +6,24 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
 
   alias ApplicationRunner.Environment
   alias ApplicationRunner.Session.RouteServer
-  alias ApplicationRunner.Session.UiBuilders.ViewBuilderHelper
+  alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
   require Logger
 
   @type view :: map()
   @type component :: map()
 
-  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
+  @impl true
   def get_routes(env_id, roles) do
     Environment.ManifestHandler.get_routes(env_id, "json", roles)
   end
 
-  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
+  @impl true
   def build_ui(session_metadata, view_uid) do
-    ViewBuilderHelper.build_ui(__MODULE__, session_metadata, view_uid)
+    UiBuilderAdapter.build_ui(__MODULE__, session_metadata, view_uid)
   end
 
-  # Build the view result components.
-  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
+  @impl true
   def build_components(
         session_metadata,
         %{"_type" => comp_type} = component,
@@ -36,10 +35,10 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
     # TODO: validate component ?
     case comp_type do
       "view" ->
-        ViewBuilderHelper.handle_view(__MODULE__, session_metadata, component, ui_context, view_uid)
+        UiBuilderAdapter.handle_view(__MODULE__, session_metadata, component, ui_context, view_uid)
 
       "listener" ->
-        ViewBuilderHelper.handle_listener(__MODULE__, session_metadata, component, ui_context, view_uid)
+        UiBuilderAdapter.handle_listener(__MODULE__, session_metadata, component, ui_context, view_uid)
 
       _ ->
         Logger.warn("Unknown component type for JSON view: #{comp_type}")
