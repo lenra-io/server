@@ -212,7 +212,7 @@ defmodule ApplicationRunner.Session.RouteServer do
       query_params
       |> Map.merge(%{
         "me" => mongo_user_id,
-        "roles" => session_metadata.user_id
+        "roles" => session_metadata.roles
       })
 
     query_transformed = Parser.replace_params(query, params)
@@ -221,7 +221,7 @@ defmodule ApplicationRunner.Session.RouteServer do
       context
       |> Map.merge(%{
         "me" => mongo_user_id,
-        "roles" => session_metadata.user_id,
+        "roles" => session_metadata.roles,
         "pathParams" => query_params["route"]
       })
       |> project_map(context_projection)

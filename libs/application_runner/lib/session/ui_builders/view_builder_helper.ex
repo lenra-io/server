@@ -79,7 +79,7 @@ defmodule ApplicationRunner.Session.UiBuilders.ViewBuilderHelper do
              %{coll: coll, query: query, projection: projection},
              %{},
              props,
-             view_uid.context,
+             session_metadata.context,
              context_projection,
              view_uid.prefix_path
            ),
@@ -98,9 +98,9 @@ defmodule ApplicationRunner.Session.UiBuilders.ViewBuilderHelper do
   # - create the ID of the view with name/data/props
   # - Create a new viewContext corresponding to the view
   # - Recursively get_and_build_view.
-  @spec handle_listener(Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
+  @spec handle_listener(UiBuilderAdapter, Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
           {:ok, component(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
-  def handle_listener(session_metadata, component, ui_context, view_uid) do
+  def handle_listener(_adapter, session_metadata, component, ui_context, view_uid) do
     with {:ok, listener} <-
            RouteServer.build_listener(session_metadata, component) do
       {

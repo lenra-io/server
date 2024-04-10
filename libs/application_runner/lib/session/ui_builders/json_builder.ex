@@ -36,10 +36,10 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
     # TODO: validate component ?
     case comp_type do
       "view" ->
-        ViewBuilderHelper.handle_view(session_metadata, component, ui_context, view_uid)
+        ViewBuilderHelper.handle_view(__MODULE__, session_metadata, component, ui_context, view_uid)
 
       "listener" ->
-        ViewBuilderHelper.handle_listener(session_metadata, component, ui_context, view_uid)
+        ViewBuilderHelper.handle_listener(__MODULE__, session_metadata, component, ui_context, view_uid)
 
       _ ->
         Logger.warn("Unknown component type for JSON view: #{comp_type}")
@@ -79,6 +79,7 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
         view_uid
       )
       when is_list(component) do
+
     {new_context, new_component} =
       Enum.reduce(
         component,
