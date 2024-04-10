@@ -100,7 +100,7 @@ defmodule ApplicationRunner.Session.UiBuilders.ViewBuilderHelper do
   # - Recursively get_and_build_view.
   @spec handle_listener(UiBuilderAdapter, Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
           {:ok, component(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
-  def handle_listener(_adapter, session_metadata, component, ui_context, view_uid) do
+  def handle_listener(_adapter, session_metadata, component, ui_context, _view_uid) do
     with {:ok, listener} <-
            RouteServer.build_listener(session_metadata, component) do
       {
