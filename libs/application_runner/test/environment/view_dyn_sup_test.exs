@@ -76,7 +76,8 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
         query_transformed: %{},
         props: %{},
         context: %{},
-        projection: %{}
+        projection: %{},
+        options: %{}
       }
 
       assert :undefined != Swarm.whereis_name(Environment.ViewDynSup.get_name(env_id))

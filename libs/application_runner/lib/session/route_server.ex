@@ -98,12 +98,12 @@ defmodule ApplicationRunner.Session.RouteServer do
          props <- Map.get(base_view, "props", %{}),
          find <- Map.get(base_view, "find", %{}),
          context_projection <- Map.get(base_view, "context"),
-         {coll, query, projection} <- extract_find(base_view, find),
+         {coll, query, projection, options} <- extract_find(base_view, find),
          {:ok, view_uid} <-
            create_view_uid(
              session_metadata,
              name,
-             %{coll: coll, query: query, projection: projection},
+             %{coll: coll, query: query, projection: projection, options: options},
              %{"route" => route_params},
              props,
              session_metadata.context,
@@ -128,15 +128,16 @@ defmodule ApplicationRunner.Session.RouteServer do
     coll = Map.get(find, "coll")
     query = Map.get(find, "query", %{})
     projection = Map.get(find, "projection", %{})
+    options = Map.get(find, "options", %{})
 
     if find == %{} && coll_deprecated != nil do
       Logger.warning(
         "Definition of view #{name} is deprecated since applicationRunner beta 106 check https://docs.lenra.io/components-api/components/view.html."
       )
 
-      {coll_deprecated, query_deprecated, %{}}
+      {coll_deprecated, query_deprecated, %{}, %{}}
     else
-      {coll, query, projection}
+      {coll, query, projection, options}
     end
   end
 
@@ -195,6 +196,7 @@ defmodule ApplicationRunner.Session.RouteServer do
     coll = Map.get(find, :coll)
     query = Map.get(find, :query)
     projection = Map.get(find, :projection)
+    options = Map.get(find, :options)
 
     mongo_user_id =
       case session_metadata.user_id do
@@ -236,7 +238,8 @@ defmodule ApplicationRunner.Session.RouteServer do
          query_transformed: query_transformed,
          coll: coll,
          context: context,
-         projection: projection
+         projection: projection,
+         options: options
        }}
     end
   end
