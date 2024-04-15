@@ -222,6 +222,15 @@ defmodule ApplicationRunner.ApplicationServices do
     )
     |> Finch.request(AppHttp, receive_timeout: 1000)
     |> response(:deploy_app)
+    |> case do
+      {:ok, _} = res ->
+        Logger.debug("Openfaas application deployed")
+        res
+
+      err ->
+        Logger.error("Error while deploying application : #{inspect(err)}")
+        err
+    end
   end
 
   @doc """
@@ -316,6 +325,15 @@ defmodule ApplicationRunner.ApplicationServices do
         )
         |> Finch.request(AppHttp, receive_timeout: 5000)
         |> response(:update_app)
+        |> case do
+          {:ok, _} = res ->
+            Logger.debug("Openfaas application updated")
+            res
+
+          err ->
+            Logger.error("Error while updating application : #{inspect(err)}")
+            err
+        end
 
       _ ->
         TechnicalError.openfaas_not_reachable_tuple()
@@ -337,7 +355,6 @@ defmodule ApplicationRunner.ApplicationServices do
 
   defp response({:ok, %Finch.Response{status: status_code}}, :deploy_app)
        when status_code in [200, 202] do
-    Logger.debug("Openfaas application deployed")
     {:ok, status_code}
   end
 
@@ -350,10 +367,10 @@ defmodule ApplicationRunner.ApplicationServices do
     {:ok, Jason.decode!(body)}
   end
 
-  defp response({:error, %Mint.TransportError{reason: reason}}, _listener) do
+  defp response({:error, %Mint.TransportError{reason: reason}}, listener) do
     Telemetry.event(
       :alert,
-      %{},
+      %{listener: listener},
       TechnicalError.openfaas_not_reachable(reason)
     )
 
@@ -362,12 +379,12 @@ defmodule ApplicationRunner.ApplicationServices do
 
   defp response(
          {:ok, %Finch.Response{status: status_code, body: body}},
-         _listener
+         listener
        )
        when status_code not in [200, 202] do
     case status_code do
       400 ->
-        Telemetry.event(:alert, %{}, TechnicalError.bad_request(body))
+        Telemetry.event(:alert, %{listener: listener}, TechnicalError.bad_request(body))
         TechnicalError.bad_request_tuple(body)
 
       404 ->
@@ -380,7 +397,7 @@ defmodule ApplicationRunner.ApplicationServices do
           |> Errors.format_error_with_stacktrace()
           |> TechnicalError.error_500()
 
-        Telemetry.event(:alert, %{}, formated_error)
+        Telemetry.event(:alert, %{listener: listener}, formated_error)
         TechnicalError.error_500_tuple(body)
 
       504 ->
