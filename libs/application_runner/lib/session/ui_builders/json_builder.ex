@@ -78,7 +78,6 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
         view_uid
       )
       when is_list(component) do
-
     {new_context, new_component} =
       Enum.reduce(
         component,

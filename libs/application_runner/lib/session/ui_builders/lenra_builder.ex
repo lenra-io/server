@@ -55,11 +55,11 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
   end
 
   def build_components(
-         _session_metadata,
-         component,
-         _ui_context,
-         view_uid
-       ) do
+        _session_metadata,
+        component,
+        _ui_context,
+        view_uid
+      ) do
     ApplicationRunner.Errors.BusinessError.components_malformated_tuple(%{
       view: view_uid.name,
       at: view_uid.prefix_path,
