@@ -2,10 +2,11 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
   use ExUnit.Case
   doctest ApplicationRunner.Session.UiBuilders.LenraBuilder
 
-  alias ApplicationRunner.Session.UiBuilders.LenraBuilder
-  alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
   alias ApplicationRunner.Environment.ViewUid
   alias ApplicationRunner.Session.Metadata
+  alias ApplicationRunner.Session.RouteServer
+  alias ApplicationRunner.Session.UiBuilders.LenraBuilder
+  alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
   alias ApplicationRunner.Ui.Context
 
   import Mock
@@ -19,7 +20,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
          {:ok, %{"_type" => "view", "id" => "viewID"}, ui_context}
        end
      ]},
-    {ApplicationRunner.Session.RouteServer, [:passthrough],
+    {RouteServer, [:passthrough],
      [
        build_listener: fn _session_metadata, _component ->
          {:ok, %{"_type" => "listener", "code" => "listenerCode"}}
@@ -70,7 +71,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
       assert component == %{"_type" => "text", "value" => "coucou"}
 
       assert_not_called(UiBuilderAdapter.handle_view(:_, :_, :_, :_, :_))
-      assert_not_called(ApplicationRunner.Session.RouteServer.build_listener(:_, :_))
+      assert_not_called(RouteServer.build_listener(:_, :_))
     end
 
     test "simple view component" do
@@ -113,7 +114,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
       assert component == %{"_type" => "view", "id" => "viewID"}
 
       assert_called(UiBuilderAdapter.handle_view(:_, :_, :_, :_, :_))
-      assert_not_called(ApplicationRunner.Session.RouteServer.build_listener(:_, :_))
+      assert_not_called(RouteServer.build_listener(:_, :_))
     end
 
     test "complete view component" do
@@ -162,7 +163,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
       assert component == %{"_type" => "view", "id" => "viewID"}
 
       assert_called(UiBuilderAdapter.handle_view(:_, :_, :_, :_, :_))
-      assert_not_called(ApplicationRunner.Session.RouteServer.build_listener(:_, :_))
+      assert_not_called(RouteServer.build_listener(:_, :_))
     end
 
     test "simple listener component" do
@@ -211,7 +212,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
               }} = result
 
       assert_not_called(UiBuilderAdapter.handle_view(:_, :_, :_, :_, :_))
-      assert_not_called(ApplicationRunner.Session.RouteServer.build_listener(:_, :_))
+      assert_not_called(RouteServer.build_listener(:_, :_))
     end
 
     test "complete listener component" do
@@ -261,7 +262,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
               }} = result
 
       assert_not_called(UiBuilderAdapter.handle_view(:_, :_, :_, :_, :_))
-      assert_not_called(ApplicationRunner.Session.RouteServer.build_listener(:_, :_))
+      assert_not_called(RouteServer.build_listener(:_, :_))
     end
 
     test "complexe UI" do
@@ -336,7 +337,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilderTest do
              }
 
       assert_called(UiBuilderAdapter.handle_view(:_, :_, :_, :_, :_))
-      assert_called(ApplicationRunner.Session.RouteServer.build_listener(:_, :_))
+      assert_called(RouteServer.build_listener(:_, :_))
     end
   end
 end

@@ -3,10 +3,10 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
   ApplicationRunner.UiBuilderAdapter provides the callback nedded to build a given UI.
   """
 
-  alias ApplicationRunner.{Session, Ui}
   alias ApplicationRunner.Environment.ViewUid
   alias ApplicationRunner.Session
   alias ApplicationRunner.Session.RouteServer
+  alias ApplicationRunner.Ui
   alias LenraCommon.Errors
 
   require Logger

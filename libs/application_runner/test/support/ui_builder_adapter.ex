@@ -1,4 +1,7 @@
 defmodule ApplicationRunner.FakeUiBuilderAdapter do
+  @moduledoc """
+  This adapter emulate a builder adapter.
+  """
   @behaviour ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
   @impl true

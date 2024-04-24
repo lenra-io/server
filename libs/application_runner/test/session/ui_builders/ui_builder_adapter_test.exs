@@ -2,9 +2,10 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapterTest do
   use ExUnit.Case
   doctest ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
-  alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
   alias ApplicationRunner.Environment.ViewUid
   alias ApplicationRunner.Session.Metadata
+  alias ApplicationRunner.Session.RouteServer
+  alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
   alias ApplicationRunner.Ui.Context
 
   import Mock
@@ -13,7 +14,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapterTest do
 
   describe "build_ui/3" do
     test "basic component" do
-      with_mock ApplicationRunner.Session.RouteServer,
+      with_mock RouteServer,
         fetch_view: fn _session_metadata, _view_uid -> {:ok, %{"count" => 1}} end do
         # Prepare
         session_metadata = %Metadata{
@@ -47,7 +48,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapterTest do
         # Add your assertions here
         assert ui == %{"count" => 1}
 
-        assert called(ApplicationRunner.Session.RouteServer.fetch_view(:_, :_))
+        assert called(RouteServer.fetch_view(:_, :_))
       end
     end
   end
@@ -67,7 +68,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapterTest do
         projection: %{}
       }
 
-      with_mock ApplicationRunner.Session.RouteServer,
+      with_mock RouteServer,
         fetch_view: fn _session_metadata, _view_uid -> {:ok, view_result} end,
         extract_find: fn _component, _find -> {nil, nil, nil} end,
         create_view_uid: fn _session_metadata,
@@ -116,14 +117,14 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapterTest do
 
         assert updated_context.views_map[new_view_uid] == view_result
 
-        assert called(ApplicationRunner.Session.RouteServer.fetch_view(:_, :_))
+        assert called(RouteServer.fetch_view(:_, :_))
       end
     end
   end
 
   describe "handle_listener/5" do
     test "basic listener" do
-      with_mock ApplicationRunner.Session.RouteServer,
+      with_mock RouteServer,
         build_listener: fn _session_metadata, _component -> {:ok, %{"_type" => "listener", "code" => "the_code"}} end do
         # Prepare
         session_metadata = %Metadata{
@@ -159,7 +160,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapterTest do
         # Add your assertions here
         assert listener == %{"_type" => "listener", "code" => "the_code"}
 
-        assert called(ApplicationRunner.Session.RouteServer.build_listener(:_, component))
+        assert called(RouteServer.build_listener(:_, component))
       end
     end
   end
