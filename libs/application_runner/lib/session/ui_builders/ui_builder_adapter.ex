@@ -3,6 +3,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
   ApplicationRunner.UiBuilderAdapter provides the callback nedded to build a given UI.
   """
 
+  alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
   alias ApplicationRunner.Environment.ViewUid
   alias ApplicationRunner.Session
   alias ApplicationRunner.Session.RouteServer
@@ -22,8 +23,23 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
   @callback get_routes(number(), list(binary())) :: list(binary())
 
   @callback build_components(Session.Metadata.t(), map(), Ui.Context.t(), ViewUid.t()) ::
-              {:ok, map(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
+              {:ok, map(), Ui.Context.t()} | {:error, common_error()}
 
+  @spec build_ui(
+          module(),
+          ApplicationRunner.Session.Metadata.t(),
+          ApplicationRunner.Environment.ViewUid.t()
+        ) ::
+          {:error,
+           %{
+             __exception__: true,
+             __struct__: LenraCommon.Errors.BusinessError | LenraCommon.Errors.TechnicalError,
+             message: binary(),
+             metadata: any(),
+             reason: atom(),
+             status_code: integer()
+           }}
+          | {:ok, any()}
   def build_ui(adapter, session_metadata, view_uid) do
     Logger.debug("#{__MODULE__} build_ui with session_metadata: #{inspect(session_metadata)}")
 
@@ -51,7 +67,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
     view
   end
 
-  @spec get_and_build_view(UiBuilderAdapter, Session.Metadata.t(), Ui.Context.t(), ViewUid.t()) ::
+  @spec get_and_build_view(module(), Session.Metadata.t(), Ui.Context.t(), ViewUid.t()) ::
           {:ok, Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
   defp get_and_build_view(
          adapter,
@@ -72,7 +88,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
   # - create the ID of the view with name/data/props
   # - Create a new viewContext corresponding to the view
   # - Recursively get_and_build_view.
-  @spec handle_view(UiBuilderAdapter, Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
+  @spec handle_view(module(), Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
           {:ok, component(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
   def handle_view(adapter, session_metadata, component, ui_context, view_uid) do
     name = Map.get(component, "name")
@@ -108,7 +124,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
   # - create the ID of the view with name/data/props
   # - Create a new viewContext corresponding to the view
   # - Recursively get_and_build_view.
-  @spec handle_listener(UiBuilderAdapter, Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
+  @spec handle_listener(module(), Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
           {:ok, component(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
   def handle_listener(_adapter, session_metadata, component, ui_context, _view_uid) do
     with {:ok, listener} <-
