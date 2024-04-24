@@ -5,7 +5,6 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
   @behaviour ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
   alias ApplicationRunner.Environment
-  alias ApplicationRunner.Session.RouteServer
   alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
   require Logger

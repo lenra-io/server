@@ -3,7 +3,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapter do
   ApplicationRunner.UiBuilderAdapter provides the callback nedded to build a given UI.
   """
 
-  alias ApplicationRunner.{Environment, JsonSchemata, Session, Ui}
+  alias ApplicationRunner.{Session, Ui}
   alias ApplicationRunner.Environment.ViewUid
   alias ApplicationRunner.Session
   alias ApplicationRunner.Session.RouteServer

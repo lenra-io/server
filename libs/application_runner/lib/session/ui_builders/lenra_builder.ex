@@ -15,11 +15,12 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
   @type view :: map()
   @type component :: map()
 
+  @impl true
   def get_routes(env_id, roles) do
     Environment.ManifestHandler.get_routes(env_id, "lenra", roles)
   end
 
-  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
+  @impl true
   def build_ui(session_metadata, view_uid) do
     with {:ok, ui} <- UiBuilderAdapter.build_ui(__MODULE__, session_metadata, view_uid) do
       {:ok, %{"root" => ui}}
@@ -27,7 +28,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
   end
 
   # Build the view result components.
-  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
+  @impl true
   def build_components(
         session_metadata,
         %{"_type" => comp_type} = component,
