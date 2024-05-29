@@ -55,10 +55,10 @@ defmodule Lenra.Kubernetes.ApiServices do
       })
 
     case secret_response do
-      {:ok} ->
+      {:ok, _data} ->
         :ok
 
-      :secret_exist ->
+      {:error, :secret_exist} ->
         if retry < 1 do
           create_pipeline(
             service_name,
@@ -297,8 +297,8 @@ defmodule Lenra.Kubernetes.ApiServices do
       |> response(:secret)
 
     case secret_response do
-      {:ok, _secret} -> {:ok}
-      _other -> {:secret_not_found}
+      {:ok, secret} -> {:ok, secret}
+      _other -> {:error, :secret_not_found}
     end
   end
 
@@ -319,8 +319,8 @@ defmodule Lenra.Kubernetes.ApiServices do
       |> response(:secret)
 
     case secret_response do
-      {:ok, _secret} -> {:ok}
-      _error -> {:secret_not_found}
+      {:ok, _secret} -> {:ok, _secret}
+      _error -> {:error, :secret_not_found}
     end
   end
 
@@ -328,10 +328,8 @@ defmodule Lenra.Kubernetes.ApiServices do
     secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
 
-    case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
-      {:ok, secrets} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
-      {:error, :secret_not_found} -> {:error, :secret_not_found}
-      {:error, error} -> {:error, error}
+    with {:ok, secrets} <- get_k8s_secret(secret_name, kubernetes_apps_namespace) do
+      {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
     end
   end
 
@@ -365,16 +363,11 @@ defmodule Lenra.Kubernetes.ApiServices do
     secret_name = "#{service_name}-secret-#{env_id}"
     kubernetes_apps_namespace = Application.fetch_env!(:lenra, :kubernetes_apps_namespace)
 
-    case get_k8s_secret(secret_name, kubernetes_apps_namespace) do
-      {:ok, current_secrets} ->
-        case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.merge(current_secrets, secrets)) do
-          {:ok} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
-          {:secret_not_found} -> {:error, :secret_not_found}
-          _other -> {:error, :unexpected_response}
-        end
-
-      error ->
-        error
+    with {:ok, current_secrets} <- get_k8s_secret(secret_name, kubernetes_apps_namespace) do
+      case update_k8s_secret(secret_name, kubernetes_apps_namespace, Map.merge(current_secrets, secrets)) do
+        {:ok, _secret} -> {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
+        {:error, :secret_not_found} -> {:error, :secret_not_found}
+      end
     end
   end
 
@@ -411,29 +404,16 @@ defmodule Lenra.Kubernetes.ApiServices do
         {:error, :build_not_exist}
     end
 
-    case delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
-      {:ok} ->
-        {:ok, []}
-
-      {:ok, _secret} ->
-        {:ok, []}
-
-      {:secret_not_found} ->
-        {:error, :secret_not_found}
-        # _other -> {:error, :unexpected_response}
+    with {:ok, _secret} <- delete_k8s_secret(secret_name, kubernetes_apps_namespace) do
+      {:ok, []}
     end
   end
 
   defp handle_delete_when_multiple_secrets(current_secrets, key, secret_name, kubernetes_apps_namespace) do
     secrets = Map.drop(current_secrets, [key])
 
-    case update_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
-      {:ok} ->
-        {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
-
-      {:secret_not_found} ->
-        {:error, :secret_not_found}
-        # _other -> {:error, :unexpected_response}
+    with {:ok, _secret} <- update_k8s_secret(secret_name, kubernetes_apps_namespace, secrets) do
+      {:ok, Enum.map(secrets, fn {key, _value} -> key end)}
     end
   end
 end
