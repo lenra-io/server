@@ -147,18 +147,27 @@ defmodule IdentityWeb.UserAuthController do
 
       case Accounts.get_user(response.body["subject"]) do
         # In case the user from the token is nil, the token is invalid
-        nil -> {:error, {:invalid_token, "The token is invalid.", 403}}
-        res -> redirect_next_step(conn, res, login_challenge, true)
+        nil ->
+          conn
+          |> redirect_to_register(login_challenge)
+
+        res ->
+          redirect_next_step(conn, res, login_challenge, true)
       end
     else
       # client = response.body["client"]
       conn
-      |> delete_session(:user_id)
-      |> delete_session(:remember)
-      |> delete_session(:email)
-      |> put_session(:login_challenge, login_challenge)
-      |> redirect(to: Routes.user_auth_path(conn, :register_page))
+      |> redirect_to_register(login_challenge)
     end
+  end
+
+  defp redirect_to_register(conn, login_challenge) do
+    conn
+    |> delete_session(:user_id)
+    |> delete_session(:remember)
+    |> delete_session(:email)
+    |> put_session(:login_challenge, login_challenge)
+    |> redirect(to: Routes.user_auth_path(conn, :register_page))
   end
 
   def new(conn, _params),
