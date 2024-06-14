@@ -24,7 +24,9 @@ defmodule LenraWeb.RunnerController do
         try do
           GenServer.stop({:global, {Kubernetes.Status, build_id}})
         catch
-          :exit, {:noproc, _} -> :ok
+          :exit, {:noproc, _} ->
+            Logger.warning("Could not stop Kubernetes.Status with build_id : `#{build_id}` because it was already stopped or has crashed.")
+            :ok
         end
       end
 
