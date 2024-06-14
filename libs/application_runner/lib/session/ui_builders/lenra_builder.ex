@@ -15,78 +15,33 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
   @type view :: map()
   @type component :: map()
 
+  @impl true
   def get_routes(env_id, roles) do
     Environment.ManifestHandler.get_routes(env_id, "lenra", roles)
   end
 
+  @impl true
   def build_ui(session_metadata, view_uid) do
-    Logger.debug("#{__MODULE__} build_ui with session_metadata: #{inspect(session_metadata)}")
-
-    with {:ok, ui_context} <- get_and_build_view(session_metadata, Ui.Context.new(), view_uid) do
-      {:ok,
-       transform_ui(%{
-         "rootView" => view_id(view_uid),
-         "views" => ui_context.views_map
-       })}
+    with {:ok, ui} <- UiBuilderAdapter.build_ui(__MODULE__, session_metadata, view_uid) do
+      {:ok, %{"root" => ui}}
     end
   end
 
-  defp transform_ui(%{"rootView" => root_views, "views" => views}) do
-    transform(%{"root" => Map.fetch!(views, root_views)}, views)
-  end
-
-  defp transform(%{"type" => "view", "id" => id}, views) do
-    transform(Map.fetch!(views, id), views)
-  end
-
-  defp transform(view, views) when is_map(view) do
-    Enum.map(view, fn
-      {k, v} -> {k, transform(v, views)}
-    end)
-    |> Map.new()
-  end
-
-  defp transform(view, views) when is_list(view) do
-    Enum.map(view, &transform(&1, views))
-  end
-
-  defp transform(view, _views) do
-    view
-  end
-
-  @spec get_and_build_view(Session.Metadata.t(), Ui.Context.t(), ViewUid.t()) ::
-          {:ok, Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
-  defp get_and_build_view(
-         %Session.Metadata{} = session_metadata,
-         %Ui.Context{} = ui_context,
-         %ViewUid{} = view_uid
-       ) do
-    with {:ok, view} <- RouteServer.fetch_view(session_metadata, view_uid),
-         {:ok, component, new_app_context} <-
-           build_component(session_metadata, view, ui_context, view_uid) do
-      str_view_id = view_id(view_uid)
-      {:ok, put_in(new_app_context.views_map[str_view_id], component)}
-    end
-  end
-
-  # Build a component.
-  # If the component type is "view" this is considered a view and will be handled like one.
-  # Everything else will be handled as a simple component.
-  @spec build_component(Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
-          {:ok, component(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
-  defp build_component(
-         session_metadata,
-         %{"_type" => comp_type} = component,
-         ui_context,
-         view_uid
-       ) do
+  # Build the view result components.
+  @impl true
+  def build_components(
+        session_metadata,
+        %{"_type" => comp_type} = component,
+        ui_context,
+        view_uid
+      ) do
     Logger.debug("#{__MODULE__} build_component with component: #{inspect(component)}")
 
     with schema_path <- JsonSchemata.get_component_path(comp_type),
          {:ok, validation_data} <- validate_with_error(schema_path, component, view_uid) do
       case comp_type do
         "view" ->
-          handle_view(session_metadata, component, ui_context, view_uid)
+          UiBuilderAdapter.handle_view(__MODULE__, session_metadata, component, ui_context, view_uid)
 
         _ ->
           handle_component(
@@ -100,53 +55,17 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
     end
   end
 
-  defp build_component(
-         _session_metadata,
-         component,
-         _ui_context,
-         view_uid
-       ) do
+  def build_components(
+        _session_metadata,
+        component,
+        _ui_context,
+        view_uid
+      ) do
     ApplicationRunner.Errors.BusinessError.components_malformated_tuple(%{
       view: view_uid.name,
       at: view_uid.prefix_path,
       receive: component
     })
-  end
-
-  # Build a view means :
-  # - getting the name and props, coll and query of the view
-  # - create the ID of the view with name/data/props
-  # - Create a new viewContext corresponding to the view
-  # - Recursively get_and_build_view.
-  @spec handle_view(Session.Metadata.t(), view(), Ui.Context.t(), ViewUid.t()) ::
-          {:ok, component(), Ui.Context.t()} | {:error, UiBuilderAdapter.common_error()}
-  defp handle_view(session_metadata, component, ui_context, view_uid) do
-    name = Map.get(component, "name")
-    props = Map.get(component, "props")
-    find = Map.get(component, "find", %{})
-    context_projection = Map.get(component, "context")
-
-    {coll, query, projection} = RouteServer.extract_find(component, find)
-
-    with {:ok, new_view_uid} <-
-           RouteServer.create_view_uid(
-             session_metadata,
-             name,
-             %{coll: coll, query: query, projection: projection},
-             %{},
-             props,
-             view_uid.context,
-             context_projection,
-             view_uid.prefix_path
-           ),
-         {:ok, new_app_context} <-
-           get_and_build_view(session_metadata, ui_context, new_view_uid) do
-      {
-        :ok,
-        %{"type" => "view", "id" => view_id(new_view_uid), "name" => name},
-        new_app_context
-      }
-    end
   end
 
   # Build a components means to :
@@ -287,7 +206,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
          ui_context,
          view_uid
        ) do
-    case build_component(
+    case build_components(
            session_metadata,
            child_comp,
            ui_context,
@@ -401,7 +320,7 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
     |> Parallel.map(fn {child, index} ->
       children_path = "#{prefix_path}/#{index}"
 
-      build_component(
+      build_components(
         session_metadata,
         child,
         ui_context,
@@ -458,9 +377,5 @@ defmodule ApplicationRunner.Session.UiBuilders.LenraBuilder do
         end
       end
     )
-  end
-
-  defp view_id(%ViewUid{} = view_uid) do
-    Crypto.hash({view_uid.name, view_uid.coll, view_uid.query_parsed, view_uid.props})
   end
 end

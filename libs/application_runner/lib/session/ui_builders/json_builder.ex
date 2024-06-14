@@ -5,54 +5,102 @@ defmodule ApplicationRunner.Session.UiBuilders.JsonBuilder do
   @behaviour ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
   alias ApplicationRunner.Environment
-  alias ApplicationRunner.Session.RouteServer
+  alias ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
   require Logger
 
   @type view :: map()
   @type component :: map()
 
-  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
+  @impl true
   def get_routes(env_id, roles) do
     Environment.ManifestHandler.get_routes(env_id, "json", roles)
   end
 
-  @impl ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
+  @impl true
   def build_ui(session_metadata, view_uid) do
-    Logger.debug("#{__MODULE__} build_ui with session_metadata: #{inspect(session_metadata)}")
+    UiBuilderAdapter.build_ui(__MODULE__, session_metadata, view_uid)
+  end
 
-    with {:ok, json} <- RouteServer.fetch_view(session_metadata, view_uid) do
-      build_listeners(session_metadata, json)
+  @impl true
+  def build_components(
+        session_metadata,
+        %{"_type" => comp_type} = component,
+        ui_context,
+        view_uid
+      ) do
+    Logger.debug("#{__MODULE__} build_components with component: #{inspect(component)}")
+
+    # TODO: validate component ?
+    case comp_type do
+      "view" ->
+        UiBuilderAdapter.handle_view(__MODULE__, session_metadata, component, ui_context, view_uid)
+
+      "listener" ->
+        UiBuilderAdapter.handle_listener(__MODULE__, session_metadata, component, ui_context, view_uid)
+
+      _ ->
+        Logger.warn("Unknown component type for JSON view: #{comp_type}")
+        {:ok, component, ui_context}
     end
   end
 
-  def build_listeners(session_metadata, view) do
-    {:ok, do_build_listeners(session_metadata, view)}
-  rescue
-    err -> {:error, err}
+  def build_components(
+        session_metadata,
+        component,
+        ui_context,
+        view_uid
+      )
+      when is_map(component) do
+    {new_context, new_component} =
+      Enum.reduce(
+        component,
+        {ui_context, %{}},
+        fn {k, v}, {context, acc} ->
+          case build_components(session_metadata, v, context, view_uid) do
+            {:ok, new_sub_component, new_ui_context} ->
+              {new_ui_context, Map.put(acc, k, new_sub_component)}
+
+            _ ->
+              {context, Map.put(acc, k, v)}
+          end
+        end
+      )
+
+    {:ok, new_component, new_context}
   end
 
-  defp do_build_listeners(session_metadata, list) when is_list(list) do
-    Enum.map(list, &do_build_listeners(session_metadata, &1))
+  def build_components(
+        session_metadata,
+        component,
+        ui_context,
+        view_uid
+      )
+      when is_list(component) do
+    {new_context, new_component} =
+      Enum.reduce(
+        component,
+        {ui_context, []},
+        fn v, {context, acc} ->
+          case build_components(session_metadata, v, context, view_uid) do
+            {:ok, new_sub_component, new_ui_context} ->
+              {new_ui_context, [new_sub_component | acc]}
+
+            _ ->
+              {context, [v | acc]}
+          end
+        end
+      )
+
+    {:ok, Enum.reverse(new_component), new_context}
   end
 
-  defp do_build_listeners(session_metadata, %{"_type" => "listener"} = listener) do
-    case RouteServer.build_listener(session_metadata, listener) do
-      {:ok, built_listener} ->
-        built_listener
-
-      err ->
-        raise err
-    end
-  end
-
-  defp do_build_listeners(session_metadata, map) when is_map(map) do
-    map
-    |> Enum.map(fn {k, v} -> {k, do_build_listeners(session_metadata, v)} end)
-    |> Map.new()
-  end
-
-  defp do_build_listeners(_session_metadata, e) do
-    e
+  def build_components(
+        _session_metadata,
+        component,
+        ui_context,
+        _view_uid
+      ) do
+    {:ok, component, ui_context}
   end
 end

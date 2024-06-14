@@ -44,7 +44,7 @@ defmodule ApplicationRunner.Environment.ManifestHandler do
     {:ok, GenServer.call(get_full_name(env_id), {:get_routes, exposer})}
   end
 
-  defp get_routes(env_id, exposer) do
+  defp get_routes(_env_id, exposer) do
     {:error, "Exposer #{exposer} not supported"}
   end
 
