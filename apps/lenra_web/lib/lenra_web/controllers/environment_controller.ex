@@ -6,7 +6,8 @@ defmodule LenraWeb.EnvsController do
 
   alias Lenra.Apps
   alias Lenra.Errors.BusinessError
-  alias alias Lenra.Subscriptions
+  alias Lenra.Kubernetes.ApiServices
+  alias Lenra.Subscriptions
   alias Lenra.Subscriptions.Subscription
 
   defp get_app_and_allow(conn, %{"app_id" => app_id_str}) do
@@ -43,7 +44,7 @@ defmodule LenraWeb.EnvsController do
     end
   end
 
-  def update(conn, %{"env_id" => env_id, "is_public" => true} = params) do
+  def update(conn, %{"env_id" => _env_id, "is_public" => true} = params) do
     with {:ok, app, env} <- get_app_env_and_allow(conn, params),
          %Subscription{} = _subscription <- Subscriptions.get_subscription_by_app_id(app.id),
          {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
@@ -55,11 +56,89 @@ defmodule LenraWeb.EnvsController do
     end
   end
 
-  def update(conn, %{"env_id" => env_id} = params) do
+  def update(conn, %{"env_id" => _env_id} = params) do
     with {:ok, _app, env} <- get_app_env_and_allow(conn, params),
          {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
       conn
       |> reply(env)
+    end
+  end
+
+  def list_secrets(conn, %{"env_id" => env_id} = params) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, environment} <- Apps.fetch_env(env_id) do
+      case ApiServices.get_environment_secrets(app.service_name, environment.id) do
+        {:ok, secrets} -> conn |> reply(secrets)
+        {:error, :secret_not_found} -> conn |> reply([])
+        # {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
+        {:error, error} -> BusinessError.api_return_unexpected_response_tuple(error)
+      end
+    end
+  end
+
+  def create_secret(conn, %{"env_id" => env_id, "key" => key, "value" => value} = params) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, environment} <- Apps.fetch_env(env_id) do
+      case ApiServices.get_environment_secrets(app.service_name, environment.id) do
+        {:ok, secrets} ->
+          handle_secret_found(conn, secrets, app, environment, key, value)
+
+        {:error, :secret_not_found} ->
+          handle_secret_not_found(conn, app, environment, key, value)
+      end
+    end
+  end
+
+  defp handle_secret_found(conn, secrets, app, environment, key, value) do
+    case Enum.any?(secrets, fn s -> s == key end) do
+      false ->
+        case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
+          {:ok, updated_secrets} ->
+            conn |> reply(updated_secrets)
+
+          # Should never happen
+          {:error, :secret_not_found} ->
+            BusinessError.env_secret_not_found_tuple()
+        end
+
+      true ->
+        BusinessError.env_secret_already_exist_tuple()
+    end
+  end
+
+  defp handle_secret_not_found(conn, app, environment, key, value) do
+    case ApiServices.create_environment_secrets(app.service_name, environment.id, %{key => value}) do
+      {:ok, secrets} -> conn |> reply(secrets)
+      # This should never happen
+      {:error, :secret_exist} -> BusinessError.env_secret_already_exist_tuple()
+      # {:error, :kubernetes_error} -> BusinessError.kubernetes_unexpected_response_tuple()
+      {:error, :unexpected_response} -> BusinessError.api_return_unexpected_response_tuple()
+    end
+  end
+
+  def update_secret(conn, %{"env_id" => env_id, "key" => key, "value" => value} = params) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, environment} <- Apps.fetch_env(env_id) do
+      case ApiServices.update_environment_secrets(app.service_name, environment.id, %{key => value}) do
+        {:ok, secrets} ->
+          conn |> reply(secrets)
+
+        {:error, :secret_not_found} ->
+          BusinessError.env_secret_not_found_tuple()
+      end
+    end
+  end
+
+  def delete_secret(conn, %{"env_id" => env_id, "key" => key} = params) do
+    with {:ok, app} <- get_app_and_allow(conn, params),
+         {:ok, environment} <- Apps.fetch_env(env_id) do
+      case ApiServices.delete_environment_secrets(app.service_name, environment.id, key) do
+        {:ok, secrets} ->
+          conn |> reply(secrets)
+
+        {:error, :secret_not_found} ->
+          BusinessError.env_secret_not_found_tuple()
+      end
     end
   end
 end
@@ -81,6 +160,11 @@ defmodule LenraWeb.EnvsController.Policy do
       do: true
 
   def authorize(:update, %App{id: app_id}, %Subscription{application_id: app_id}), do: true
+
+  def authorize(:list_secrets, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:create_secret, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:update_secret, %User{id: user_id}, %App{creator_id: user_id}), do: true
+  def authorize(:delete_secret, %User{id: user_id}, %App{creator_id: user_id}), do: true
 
   # credo:disable-for-next-line Credo.Check.Readability.StrictModuleLayout
   use LenraWeb.Policy.Default
