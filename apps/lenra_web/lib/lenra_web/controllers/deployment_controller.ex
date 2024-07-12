@@ -11,7 +11,7 @@ defmodule LenraWeb.DeploymentsController do
          preloaded_app <- Repo.preload(app, main_env: [:environment]),
          :ok <- allow(conn, preloaded_app.main_env.environment) do
       conn
-      |> reply(Apps.all_deployements(app.id))
+      |> reply(Apps.all_deployments(app.id))
     end
   end
 

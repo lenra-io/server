@@ -321,15 +321,15 @@ defmodule Lenra.Apps do
   # Deployments #
   ###############
 
-  def all_deployements(app_id) do
+  def all_deployments(app_id) do
     Repo.all(from(d in Deployment, where: d.application_id == ^app_id, order_by: d.id))
   end
 
-  def get_deployement(build_id, env_id) do
+  def get_deployment(build_id, env_id) do
     Repo.one(from(d in Deployment, where: d.build_id == ^build_id and d.environment_id == ^env_id))
   end
 
-  def get_deployement_for_build(build_id) do
+  def get_deployment_for_build(build_id) do
     Repo.one(from(d in Deployment, where: d.build_id == ^build_id))
   end
 
@@ -337,21 +337,21 @@ defmodule Lenra.Apps do
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
          %Deployment{} = deployment <-
-           get_deployement(build.id, loaded_app.main_env.environment.id),
+           get_deployment(build.id, loaded_app.main_env.environment.id),
          {:ok, _status} <-
            OpenfaasServices.deploy_app(
              loaded_build.application.service_name,
              build.build_number,
              Subscriptions.get_max_replicas(loaded_build.application.id)
            ) do
-      update_deployement(deployment, status: :waitingForAppReady)
+      update_deployment(deployment, status: :waitingForAppReady)
 
       spawn(fn ->
         Logger.debug(
-          "#{__MODULE__} start waiting for app ready with params #{inspect(%{build: build, loaded_app: loaded_app, deployment: deployment})}"
+          "#{__MODULE__} waiting for app to be ready with params #{inspect(%{build: build, loaded_app: loaded_app, deployment: deployment})}"
         )
 
-        update_deployement_after_deploy(
+        update_deployment_after_deploy(
           deployment,
           loaded_app.main_env.environment,
           loaded_app.service_name,
@@ -384,10 +384,10 @@ defmodule Lenra.Apps do
     |> Repo.transaction()
   end
 
-  def update_deployement_after_deploy(deployment, env, service_name, build_number),
-    do: update_deployement_after_deploy(deployment, env, service_name, build_number, 0)
+  def update_deployment_after_deploy(deployment, env, service_name, build_number),
+    do: update_deployment_after_deploy(deployment, env, service_name, build_number, 0)
 
-  def update_deployement_after_deploy(deployment, env, service_name, build_number, retry)
+  def update_deployment_after_deploy(deployment, env, service_name, build_number, retry)
       when retry <= 120 do
     case OpenfaasServices.is_deploy(service_name, build_number) do
       true ->
@@ -411,27 +411,27 @@ defmodule Lenra.Apps do
       # To let openfaas deploy in case of overload, after 2 retry -> failure
       :error404 ->
         if retry == 3 do
-          Logger.critical("Function #{service_name} not deploy on openfaas, this should not appens")
+          Logger.critical("Function #{service_name} could not be deployed on openfaas")
 
-          update_deployement(deployment, status: :failure)
+          update_deployment(deployment, status: :failure)
         else
           Process.sleep(5000)
-          update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
+          update_deployment_after_deploy(deployment, env, service_name, build_number, retry + 1)
         end
 
         :error500
 
       _any ->
         Process.sleep(5000)
-        update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
+        update_deployment_after_deploy(deployment, env, service_name, build_number, retry + 1)
     end
   end
 
-  def update_deployement_after_deploy(deployment, _env, _service_name, _build_number, _retry),
-    do: update_deployement(deployment, status: :failure)
+  def update_deployment_after_deploy(deployment, _env, _service_name, _build_number, _retry),
+    do: update_deployment(deployment, status: :failure)
 
-  def update_deployement(deployement, change) do
-    deployement
+  def update_deployment(deployment, change) do
+    deployment
     |> Ecto.Changeset.change(change)
     |> Repo.update()
   end
