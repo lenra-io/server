@@ -12,6 +12,7 @@ defmodule Lenra.Application do
 
   def start(_type, _args) do
     Lenra.MigrationHelper.migrate()
+    Lenra.Monitor.setup()
 
     children = [
       # Start the ecto repository
@@ -62,7 +63,8 @@ defmodule Lenra.Application do
       ),
       {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
       Kubernetes.StatusDynSup,
-      {Kubernetes.StatusTask, []}
+      {Kubernetes.StatusTask, []},
+      Lenra.Monitor.ApplicationDeploymentMonitor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

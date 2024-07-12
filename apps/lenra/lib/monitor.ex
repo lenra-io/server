@@ -13,6 +13,7 @@ defmodule Lenra.Monitor do
       * `:duration` - The time took by the openfaas function in `:native` unit of time.
   """
 
+  alias Lenra.Monitor.ApplicationDeploymentMeasurement
   alias Lenra.Repo
 
   def setup do
@@ -38,7 +39,7 @@ defmodule Lenra.Monitor do
   def handle_event([:lenra, :app_deployment, :stop], measurements, metadata, _config) do
     application_id = Map.get(metadata, :application_id)
 
-    Repo.get_by!(ApplicationDeploymentMeasurement, uuid: application_id)
+    Repo.get_by!(ApplicationDeploymentMeasurement, application_id: application_id)
     |> ApplicationDeploymentMeasurement.update(measurements)
     |> Repo.update()
   end

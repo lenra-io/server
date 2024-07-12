@@ -10,11 +10,18 @@ defmodule Lenra.Monitor.ApplicationDeploymentMonitor do
 
   require Logger
 
-  def monitor(pid, metadata) do
-    GenServer.call(__MODULE__, {:monitor, pid, metadata})
+  def monitor(application_id, metadata) do
+    GenServer.call(__MODULE__, {:monitor, application_id, metadata})
   rescue
     e ->
       Logger.error("#{__MODULE__} fail in monitor with metadata #{inspect(metadata)} and error: #{inspect(e)}")
+  end
+
+  def stop(application_id, metadata) do
+    GenServer.call(__MODULE__, {:stop, application_id, metadata})
+  rescue
+    e ->
+      Logger.error("#{__MODULE__} fail in stop with metadata #{inspect(metadata)} and error: #{inspect(e)}")
   end
 
   def start_link(_opts) do
@@ -26,20 +33,18 @@ defmodule Lenra.Monitor.ApplicationDeploymentMonitor do
     {:ok, %{}}
   end
 
-  def handle_call({:monitor, pid, metadata}, _from, state) do
-    Logger.debug("#{__MODULE__} monitor #{inspect(pid)} with metadata #{inspect(metadata)}")
-
-    Process.monitor(pid)
+  def handle_call({:monitor, application_id, metadata}, _from, state) do
+    Logger.debug("#{__MODULE__} monitor #{inspect(application_id)} with metadata #{inspect(metadata)}")
 
     start_time = Map.get(metadata, :start_time)
 
-    {:reply, :ok, Map.put(state, pid, {start_time, metadata})}
+    {:reply, :ok, Map.put(state, application_id, {start_time, metadata})}
   end
 
-  def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    {{start_time, metadata}, new_state} = Map.pop(state, pid)
+  def handle_info({:stop, application_id, _metadata}, state) do
+    {{start_time, metadata}, new_state} = Map.pop(state, application_id)
 
-    Logger.debug("#{__MODULE__} handle down #{inspect(pid)} with metadata #{inspect(metadata)}")
+    Logger.debug("#{__MODULE__} handle down #{inspect(application_id)} with metadata #{inspect(metadata)}")
 
     Telemetry.stop(:app_deployment, start_time, metadata)
 
