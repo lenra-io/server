@@ -20,8 +20,7 @@ defmodule LenraWeb.BuildsController do
          {:ok, app} <- Apps.fetch_app(app_id),
          :ok <- allow(conn, app),
          {:ok, %{inserted_build: build}} <-
-           Apps.create_build_and_deploy(user.id, app.id, params),
-         _res <- Lenra.Monitor.ApplicationDeploymentMonitor.monitor(app_id, build.id) do
+           Apps.create_build_and_deploy(user.id, app.id, params) do
       conn
       |> reply(build)
     end

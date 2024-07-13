@@ -223,6 +223,8 @@ defmodule Lenra.Apps do
            creator_id
            |> create_build(app.id, params)
            |> Repo.transaction() do
+      Lenra.Monitor.ApplicationDeploymentMonitor.monitor(app_id, build.id)
+
       case create_deployment(
              preloaded_app.main_env.environment_id,
              build.id,
@@ -334,8 +336,6 @@ defmodule Lenra.Apps do
   end
 
   def deploy_in_main_env(%Build{} = build) do
-    Lenra.Monitor.ApplicationDeploymentMonitor.monitor(build.application_id, build.id)
-
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
          %Deployment{} = deployment <-
@@ -407,7 +407,7 @@ defmodule Lenra.Apps do
           |> Repo.transaction()
 
         ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
-        Lenra.Monitor.ApplicationDeploymentMonitor.stop(deployment.application_id, %{})
+        Lenra.Monitor.ApplicationDeploymentMonitor.stop(deployment.build_id)
         transaction
 
       # Function not found in openfaas, 30 retry (15s),
