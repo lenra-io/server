@@ -5,10 +5,11 @@ defmodule Lenra.Monitor.ApplicationDeploymentMeasurement do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Lenra.Apps.App
+  alias Lenra.Apps.{App, Build}
 
-  schema "session_measurement" do
+  schema "application_deployment_measurement" do
     belongs_to(:application, App)
+    belongs_to(:build, Build)
 
     field(:start_time, :utc_datetime)
     field(:end_time, :utc_datetime)
@@ -21,12 +22,12 @@ defmodule Lenra.Monitor.ApplicationDeploymentMeasurement do
   def changeset(application_deployment_measurement, params \\ %{}) do
     application_deployment_measurement
     |> cast(params, [:start_time, :end_time, :duration])
-    |> validate_required([:start_time, :application_id])
+    |> validate_required([:start_time, :application_id, :build_id])
     |> foreign_key_constraint(:application_id)
   end
 
-  def new(application_id, params \\ %{}) do
-    %__MODULE__{application_id: application_id}
+  def new(application_id, build_id, params \\ %{}) do
+    %__MODULE__{application_id: application_id, build_id: build_id}
     |> __MODULE__.changeset(params)
   end
 

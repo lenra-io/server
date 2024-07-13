@@ -19,7 +19,7 @@ defmodule Lenra.Monitor do
   def setup do
     events = [
       [:lenra, :app_deployment, :start],
-      [:lenra, :app_deployment, :stop],
+      [:lenra, :app_deployment, :stop]
     ]
 
     :telemetry.attach_many(
@@ -32,14 +32,16 @@ defmodule Lenra.Monitor do
 
   def handle_event([:lenra, :app_deployment, :start], measurements, metadata, _config) do
     application_id = Map.get(metadata, :application_id)
+    build_id = Map.get(metadata, :build_id)
 
-    Repo.insert(ApplicationDeploymentMeasurement.new(application_id, measurements))
+    Repo.insert(ApplicationDeploymentMeasurement.new(application_id, build_id, measurements))
   end
 
   def handle_event([:lenra, :app_deployment, :stop], measurements, metadata, _config) do
     application_id = Map.get(metadata, :application_id)
+    build_id = Map.get(metadata, :build_id)
 
-    Repo.get_by!(ApplicationDeploymentMeasurement, application_id: application_id)
+    Repo.get_by!(ApplicationDeploymentMeasurement, %{application_id: application_id, build_id: build_id})
     |> ApplicationDeploymentMeasurement.update(measurements)
     |> Repo.update()
   end

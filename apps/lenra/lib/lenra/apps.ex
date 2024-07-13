@@ -334,7 +334,7 @@ defmodule Lenra.Apps do
   end
 
   def deploy_in_main_env(%Build{} = build) do
-    Lenra.Telemetry.start(:app_deployment, build.application_id)
+    Lenra.Monitor.ApplicationDeploymentMonitor.monitor(build.application_id, %{})
 
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
@@ -407,7 +407,7 @@ defmodule Lenra.Apps do
           |> Repo.transaction()
 
         ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
-        Lenra.Telemetry.stop(:app_deployment, deployment.application_id)
+        Lenra.Monitor.ApplicationDeploymentMonitor.stop(deployment.application_id, %{})
         transaction
 
       # Function not found in openfaas, 30 retry (15s),
