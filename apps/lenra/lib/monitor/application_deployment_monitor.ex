@@ -23,9 +23,7 @@ defmodule Lenra.Monitor.ApplicationDeploymentMonitor do
     GenServer.call(__MODULE__, {:stop, build_id})
   rescue
     e ->
-      Logger.error(
-        "#{__MODULE__} fail in stop with build_id #{build_id} and error: #{inspect(e)}"
-      )
+      Logger.error("#{__MODULE__} fail in stop with build_id #{build_id} and error: #{inspect(e)}")
   end
 
   def start_link(_opts) do
