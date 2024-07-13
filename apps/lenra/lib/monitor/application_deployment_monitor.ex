@@ -10,18 +10,22 @@ defmodule Lenra.Monitor.ApplicationDeploymentMonitor do
 
   require Logger
 
-  def monitor(application_id, metadata) do
-    GenServer.call(__MODULE__, {:monitor, application_id, metadata})
+  def monitor(application_id, build_id) do
+    GenServer.call(__MODULE__, {:monitor, application_id, build_id})
   rescue
     e ->
-      Logger.error("#{__MODULE__} fail in monitor with metadata #{inspect(metadata)} and error: #{inspect(e)}")
+      Logger.error(
+        "#{__MODULE__} fail in monitor with application_id #{application_id}, build_id #{build_id} and error: #{inspect(e)}"
+      )
   end
 
-  def stop(application_id, metadata) do
-    GenServer.call(__MODULE__, {:stop, application_id, metadata})
+  def stop(build_id) do
+    GenServer.call(__MODULE__, {:stop, build_id})
   rescue
     e ->
-      Logger.error("#{__MODULE__} fail in stop with metadata #{inspect(metadata)} and error: #{inspect(e)}")
+      Logger.error(
+        "#{__MODULE__} fail in stop with build_id #{build_id} and error: #{inspect(e)}"
+      )
   end
 
   def start_link(_opts) do
@@ -33,20 +37,20 @@ defmodule Lenra.Monitor.ApplicationDeploymentMonitor do
     {:ok, %{}}
   end
 
-  def handle_call({:monitor, application_id, metadata}, _from, state) do
-    Logger.debug("#{__MODULE__} monitor #{inspect(application_id)} with metadata #{inspect(metadata)}")
+  def handle_call({:monitor, application_id, build_id}, _from, state) do
+    Logger.debug("#{__MODULE__} monitor #{inspect(application_id)} with build_id #{build_id}")
 
-    start_time = Map.get(metadata, :start_time)
+    start_time = Telemetry.start(:app_deployment, %{build_id: build_id})
 
-    {:reply, :ok, Map.put(state, application_id, {start_time, metadata})}
+    {:reply, :ok, Map.put(state, build_id, {application_id, start_time})}
   end
 
-  def handle_info({:stop, application_id, _metadata}, state) do
-    {{start_time, metadata}, new_state} = Map.pop(state, application_id)
+  def handle_info({:stop, build_id}, state) do
+    {{application_id, start_time}, new_state} = Map.pop(state, build_id)
 
-    Logger.debug("#{__MODULE__} handle down #{inspect(application_id)} with metadata #{inspect(metadata)}")
+    Logger.debug("#{__MODULE__} handle down #{inspect(application_id)} with build_id #{build_id}")
 
-    Telemetry.stop(:app_deployment, start_time, metadata)
+    Telemetry.stop(:app_deployment, start_time, %{build_id: build_id})
 
     {:noreply, new_state}
   end

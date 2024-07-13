@@ -334,7 +334,7 @@ defmodule Lenra.Apps do
   end
 
   def deploy_in_main_env(%Build{} = build) do
-    Lenra.Monitor.ApplicationDeploymentMonitor.monitor(build.application_id, %{})
+    Lenra.Monitor.ApplicationDeploymentMonitor.monitor(build.application_id, build.id)
 
     with loaded_build <- Repo.preload(build, :application),
          loaded_app <- Repo.preload(loaded_build.application, main_env: [:environment]),
