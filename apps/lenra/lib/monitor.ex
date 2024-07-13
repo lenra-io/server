@@ -6,7 +6,8 @@ defmodule Lenra.Monitor do
     #### Measurements
       * start_time.
     #### Metadata
-      * `:application_id` - The id of the application which is deploying.
+      * `:application_id` - The id of the deploying application.
+      * `:build_id` - The id of the deploying build.
   * `[:lenra, :app_deployment, :stop]` - Executed when the `available_replicas` parameter is not 0 or null on OpenFaaS.
     #### Measurements
       * end_time.
