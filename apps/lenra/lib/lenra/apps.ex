@@ -223,6 +223,8 @@ defmodule Lenra.Apps do
            creator_id
            |> create_build(app.id, params)
            |> Repo.transaction() do
+      Lenra.Monitor.ApplicationDeploymentMonitor.monitor(app_id, build.id)
+
       case create_deployment(
              preloaded_app.main_env.environment_id,
              build.id,
@@ -405,24 +407,25 @@ defmodule Lenra.Apps do
           |> Repo.transaction()
 
         ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
+        Lenra.Monitor.ApplicationDeploymentMonitor.stop(deployment.build_id)
         transaction
 
-      # Function not found in openfaas, 2 retry (10s),
-      # To let openfaas deploy in case of overload, after 2 retry -> failure
+      # Function not found in openfaas, 30 retry (15s),
+      # To let openfaas deploy in case of overload, after 30 retry -> failure
       :error404 ->
-        if retry == 3 do
+        if retry == 30 do
           Logger.critical("Function #{service_name} not deploy on openfaas, this should not appens")
 
           update_deployement(deployment, status: :failure)
         else
-          Process.sleep(5000)
+          Process.sleep(500)
           update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
         end
 
         :error500
 
       _any ->
-        Process.sleep(5000)
+        Process.sleep(500)
         update_deployement_after_deploy(deployment, env, service_name, build_number, retry + 1)
     end
   end
