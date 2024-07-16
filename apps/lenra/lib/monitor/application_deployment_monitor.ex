@@ -31,7 +31,7 @@ defmodule Lenra.Monitor.ApplicationDeploymentMonitor do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def init(_) do
+  def init(_args) do
     {:ok, %{}}
   end
 

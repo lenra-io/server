@@ -42,7 +42,8 @@ defmodule Lenra.Monitor do
     application_id = Map.get(metadata, :application_id)
     build_id = Map.get(metadata, :build_id)
 
-    Repo.get_by!(ApplicationDeploymentMeasurement, %{application_id: application_id, build_id: build_id})
+    ApplicationDeploymentMeasurement
+    |> Repo.get_by!(%{application_id: application_id, build_id: build_id})
     |> ApplicationDeploymentMeasurement.update(measurements)
     |> Repo.update()
   end
