@@ -8,7 +8,7 @@ defmodule ApplicationRunner.Errors.BusinessError do
     module: LenraCommon.Errors.BusinessError,
     inherit: true,
     errors: [
-      {:env_not_started, "Environment not stated."},
+      {:env_not_started, "Environment not started."},
       {:invalid_token, "Your token is invalid."},
       {:did_not_accept_cgs, "You must accept the CGS to use Lenra"},
       {:unknow_listener_code, "No listeners found for the given code"},

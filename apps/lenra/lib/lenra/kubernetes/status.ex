@@ -119,8 +119,8 @@ defmodule Lenra.Kubernetes.Status do
 
   def update_deployment(build) do
     build.id
-    |> Apps.get_deployement_for_build()
-    |> Apps.update_deployement(%{status: :failure})
+    |> Apps.get_deployment_for_build()
+    |> Apps.update_deployment(%{status: :failure})
   end
 
   defp response({:ok, %Finch.Response{status: 200, body: body}}) do

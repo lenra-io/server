@@ -9,8 +9,8 @@ defmodule LenraWeb.RunnerController do
 
   defp maybe_deploy_in_main_env(build, "failure") do
     build.id
-    |> Apps.get_deployement_for_build()
-    |> Apps.update_deployement(%{status: :failure})
+    |> Apps.get_deployment_for_build()
+    |> Apps.update_deployment(%{status: :failure})
 
     {:ok, :not_deployed}
   end

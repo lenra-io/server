@@ -225,7 +225,7 @@ defmodule Lenra.Kubernetes.ApiServices do
   end
 
   defp response({:ok, %Finch.Response{status: status_code, body: body}}, _atom) do
-    Logger.critical("#{__MODULE__} kubernetes return status code #{status_code} with message #{inspect(body)}")
+    Logger.critical("#{__MODULE__} kubernetes returned status code #{status_code} with message #{inspect(body)}")
 
     {:error, :kubernetes_error}
   end
