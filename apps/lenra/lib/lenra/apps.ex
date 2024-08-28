@@ -283,7 +283,7 @@ defmodule Lenra.Apps do
     res
   end
 
-  defp create_build(creator_id, app_id, params) do
+  def create_build(creator_id, app_id, params) do
     Logger.debug(
       "#{__MODULE__} create_build with params #{inspect(%{creator_id: creator_id, app_id: app_id, params: params})}"
     )
