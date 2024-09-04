@@ -24,9 +24,9 @@ defmodule Lenra.Apps do
   alias Lenra.Repo
   alias Lenra.Subscriptions
 
-  alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices}
+  alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices, DockerRunnerServices}
 
-  alias Lenra.Kubernetes.ApiServices
+  alias Lenra.Kubernetes
 
   alias Lenra.Apps.{
     App,
@@ -263,7 +263,16 @@ defmodule Lenra.Apps do
               )
 
             "kubernetes" ->
-              ApiServices.create_pipeline(
+              Kubernetes.ApiServices.create_pipeline(
+                app.service_name,
+                app.repository,
+                app.repository_branch,
+                build.id,
+                build.build_number
+              )
+
+            "docker" ->
+              DockerRunnerServices.create_pipeline(
                 app.service_name,
                 app.repository,
                 app.repository_branch,
@@ -272,7 +281,7 @@ defmodule Lenra.Apps do
               )
 
             _anything ->
-              BusinessError.pipeline_runner_unkown_service_tuple()
+              BusinessError.pipeline_runner_unknown_service_tuple()
           end
 
         build |> Build.changeset(%{"pipeline_id" => pipeline_id}) |> Repo.update()

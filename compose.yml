@@ -1,5 +1,37 @@
 version: "3.7"
 services:
+
+  server:
+    profiles: [server]
+    image: lenra/server
+    ports:
+      - "4000:4000" # Lenra API
+      - "4010:4010" # Identity Web
+
+  client:
+    profiles: [client]
+    image: lenra/client:beta
+    ports:
+      - "8080:8080"
+
+  backoffice:
+    profiles: [backoffice]
+    image: lenra/backoffice
+    ports:
+      - "8081:8080"
+
+  runner:
+    # image: docker:dind
+    image: lenra/docker-runner
+    privileged: true
+    network_mode: host
+
+  registry:
+    image: registry:2
+    network_mode: host
+    volumes:
+      - registry:/var/lib/registry
+  
   hydra:
     image: oryd/hydra:v2.0.3
     ports:
@@ -60,3 +92,4 @@ services:
 
 volumes:
   hydra-sqlite:
+  registry:

@@ -27,7 +27,7 @@ defmodule Lenra.Application do
          pools: %{
            Application.fetch_env!(:lenra, :faas_url) => [size: 32, count: 8]
          }},
-        id: :finch_faas_http
+        id: :finch_runner_http
       ),
       Supervisor.child_spec(
         {Finch,
@@ -42,23 +42,36 @@ defmodule Lenra.Application do
                  ]
                }
 
-             "kubernetes" ->
-               %{
-                 Application.fetch_env!(:lenra, :kubernetes_api_url) => [
-                   size: 10,
-                   count: 3,
-                   conn_opts: [
-                     transport_opts: [
-                       cacertfile: Application.fetch_env!(:lenra, :kubernetes_api_cert)
+               "kubernetes" ->
+                 %{
+                   Application.fetch_env!(:lenra, :kubernetes_api_url) => [
+                     size: 10,
+                     count: 3,
+                     conn_opts: [
+                       transport_opts: [
+                         cacertfile: Application.fetch_env!(:lenra, :kubernetes_api_cert)
+                       ]
                      ]
                    ]
-                 ]
-               }
+                 }
+
+                 "docker" ->
+                   %{
+                     Application.fetch_env!(:lenra, :kubernetes_api_url) => [
+                       size: 10,
+                       count: 3,
+                       conn_opts: [
+                         transport_opts: [
+                           cacertfile: Application.fetch_env!(:lenra, :kubernetes_api_cert)
+                         ]
+                       ]
+                     ]
+                   }
 
              _anything ->
-               BusinessError.pipeline_runner_unkown_service_tuple()
+               BusinessError.pipeline_runner_unknown_service_tuple()
            end},
-        id: :finch_gitlab_http
+        id: :finch_builder_http
       ),
       {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies), [name: Lenra.ClusterSupervisor]]},
       Kubernetes.StatusDynSup,

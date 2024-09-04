@@ -29,9 +29,9 @@ defmodule Lenra.Errors.BusinessError do
       {:no_env_found, "Environment not found", 404},
       {:invitation_wrong_email, "Cannot accept the invitation with this email."},
       {:application_not_built, "Your application has not been built yet."},
-      {:pipeline_runner_unkown_service,
-       "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes])"},
-      {:subscription_required, "You need a subscirption", 402},
+      {:pipeline_runner_unknown_service,
+       "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes, Docker])"},
+      {:subscription_required, "You need a subscription", 402},
       {:stripe_error, "Stripe error"},
       {:subscription_already_exist, "You already have a subscription for this app", 403}
     ]

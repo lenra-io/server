@@ -5,9 +5,9 @@ import Config
 
 if config_env() == :prod do
   config :lenra_web, LenraWeb.Endpoint,
-    http: [port: System.fetch_env!("PORT")],
+    http: [port: System.get_env!("PORT", "4000")],
     secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
-    url: [host: System.fetch_env!("API_ENDPOINT"), port: System.fetch_env!("PORT")]
+    url: [host: System.fetch_env!("API_ENDPOINT"), port: System.get_env!("PORT", "4000")]
 
   config :lenra_web,
     public_api_url: System.fetch_env!("LENRA_SERVER_URL")
@@ -34,7 +34,7 @@ if config_env() == :prod do
     runner_callback_url:
       System.get_env(
         "PIPELINE_CALLBACK_URL",
-        "http://#{System.fetch_env!("API_ENDPOINT")}:#{System.fetch_env!("PORT")}"
+        "http://#{System.fetch_env!("API_ENDPOINT")}:#{System.get_env!("PORT", "4000")}"
       ),
     lenra_env: System.fetch_env!("ENVIRONMENT"),
     gitlab_api_url: System.fetch_env!("GITLAB_API_URL"),
@@ -66,7 +66,7 @@ if config_env() == :prod do
     webhook_secret: System.get_env("WEBHOOK_SECRET")
 
   config :application_runner,
-    internal_api_url: "http://" <> System.fetch_env!("API_ENDPOINT") <> ":" <> System.fetch_env!("PORT"),
+    internal_api_url: "http://" <> System.fetch_env!("API_ENDPOINT") <> ":" <> System.get_env!("PORT", "4000"),
     faas_url: System.fetch_env!("FAAS_URL"),
     faas_auth: System.fetch_env!("FAAS_AUTH"),
     faas_registry: System.fetch_env!("FAAS_REGISTRY"),
