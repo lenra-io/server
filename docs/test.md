@@ -14,6 +14,12 @@ docker compose up -d
 mix setup
 ```
 
+If you want to reset the database, you can run the following command:
+
+```bash
+mix ecto.reset
+```
+
 ## Add an app in database
 
 First, you need to add an app in the database. You can do this by running the following command:
