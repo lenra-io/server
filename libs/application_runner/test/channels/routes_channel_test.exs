@@ -54,6 +54,7 @@ defmodule LenraWeb.RoutesChannelTest do
   end
 
   describe "join" do
+    @tag telemetry_listen: [:application_runner, :app_listener, :start]
     test("lenra not authenticated", %{socket: socket}) do
       join_result = subscribe_and_join(socket, FakeRoutesChannel, "routes", %{"mode" => "lenra"})
 
