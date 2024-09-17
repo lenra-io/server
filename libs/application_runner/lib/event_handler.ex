@@ -99,6 +99,7 @@ defmodule ApplicationRunner.EventHandler do
     Logger.debug(
       "#{__MODULE__} handle_call for listener: #{inspect(listener)} with props #{inspect(props)} and event #{inspect(event)}"
     )
+
     start = Time.utc_now()
 
     %{function_name: function_name, token: token} = get_metadata(mode, id) |> create_token(uuid)
@@ -106,6 +107,7 @@ defmodule ApplicationRunner.EventHandler do
     res = ApplicationServices.run_listener(function_name, listener, props, event, token)
 
     duration = Time.diff(Time.utc_now(), start, :millisecond)
+
     Logger.debug(
       "End #{__MODULE__} handle_call for listener: #{inspect(listener)} with props #{inspect(props)} and event #{inspect(event)} (#{duration} ms)"
     )
