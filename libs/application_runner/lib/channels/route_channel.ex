@@ -71,13 +71,18 @@ defmodule ApplicationRunner.RouteChannel do
         session_id = Map.fetch!(socket.assigns, :session_id)
 
         Logger.debug("Handle run #{code}")
+        start_time = Time.utc_now()
 
         case Session.send_client_event(session_id, code, event) do
           {:error, err} ->
+            duration = Time.diff(Time.utc_now(), start_time, :millisecond)
+            Logger.debug("/Handle run #{code} failed (#{duration} ms)")
             Phoenix.Channel.push(socket, "error", ErrorHelpers.translate_error(err))
             {:reply, {:error, %{"error" => err}}, socket}
 
           _ ->
+            duration = Time.diff(Time.utc_now(), start_time, :millisecond)
+            Logger.debug("/Handle run #{code} succeed (#{duration} ms)")
             {:reply, {:ok, %{}}, socket}
         end
       end

@@ -67,7 +67,7 @@ config :lenra_web,
   public_api_url: "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console, format: "$time [$level] $message\n"
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

@@ -30,7 +30,7 @@ defmodule ApplicationRunner.Telemetry do
     :telemetry.execute(
       [:application_runner, event, :stop],
       Map.merge(extra_measurements, %{
-        duration: DateTime.diff(end_time, start_time),
+        duration: DateTime.diff(end_time, start_time, :millisecond),
         end_time: end_time
       }),
       meta
