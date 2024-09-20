@@ -361,6 +361,14 @@ defmodule ApplicationRunner.ApplicationServices do
   end
 
   defp response(
+         {:ok, %Finch.Response{status: 500, body: body}},
+         listener
+       )
+       when listener in [:manifest, :view, :listener] do
+    TechnicalError.error_500_tuple(body)
+  end
+
+  defp response(
          {:ok, %Finch.Response{status: status_code, body: body}},
          _listener
        )

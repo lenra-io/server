@@ -1,7 +1,10 @@
 defmodule ApplicationRunner.ApplicationServicesTest do
   use ApplicationRunner.ConnCase, async: false
+  import TelemetryTest
 
   alias ApplicationRunner.ApplicationServices
+
+  setup [:telemetry_listen]
 
   @function_name Ecto.UUID.generate()
 
@@ -67,6 +70,7 @@ defmodule ApplicationRunner.ApplicationServicesTest do
     ApplicationServices.start_app(@function_name)
   end
 
+  @tag telemetry_listen: [:application_runner, :alert, :event]
   test "failing app info while stating app" do
     bypass = Bypass.open(port: 1234)
     Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &handle_error_resp/1)
@@ -79,8 +83,23 @@ defmodule ApplicationRunner.ApplicationServicesTest do
                reason: :openfaas_not_reachable
              }
            } = result
+
+    assert_received(
+      {:telemetry_event,
+       %{
+         event: [:application_runner, :alert, :event],
+         measurements: %LenraCommon.Errors.TechnicalError{
+           __exception__: true,
+           message: "Internal server error.",
+           reason: :error_500,
+           status_code: 500
+         },
+         metadata: %{}
+       }}
+    )
   end
 
+  @tag telemetry_listen: [:application_runner, :alert, :event]
   test "failing app info while stoping app" do
     bypass = Bypass.open(port: 1234)
     Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &handle_error_resp/1)
@@ -93,6 +112,20 @@ defmodule ApplicationRunner.ApplicationServicesTest do
                reason: :openfaas_not_reachable
              }
            } = result
+
+    assert_received(
+      {:telemetry_event,
+       %{
+         event: [:application_runner, :alert, :event],
+         measurements: %LenraCommon.Errors.TechnicalError{
+           __exception__: true,
+           message: "Internal server error.",
+           reason: :error_500,
+           status_code: 500
+         },
+         metadata: %{}
+       }}
+    )
   end
 
   test "fetch_view" do
@@ -141,5 +174,45 @@ defmodule ApplicationRunner.ApplicationServicesTest do
     )
 
     ApplicationServices.fetch_view(@function_name, "testé", %{}, %{}, %{})
+  end
+
+  @tag telemetry_listen: [:application_runner, :alert, :event]
+  test "failing fetch_view" do
+    bypass = Bypass.open(port: 1234)
+
+    Bypass.expect_once(
+      bypass,
+      "POST",
+      "/function/#{@function_name}",
+      &handle_error_resp/1
+    )
+
+    result = ApplicationServices.fetch_view(@function_name, "test", %{}, %{}, %{})
+
+    assert {
+             :error,
+             %LenraCommon.Errors.TechnicalError{
+               reason: :error_500,
+               __exception__: true,
+               message: "Internal server error.",
+               metadata: "error",
+               status_code: 500
+             }
+           } = result
+
+    refute_received(
+      {:telemetry_event,
+       %{
+         event: [:application_runner, :alert, :event],
+         measurements: %LenraCommon.Errors.TechnicalError{
+           __exception__: true,
+           message: "Internal server error.",
+           reason: :error_500,
+           status_code: 500
+         },
+         metadata: %{}
+       }},
+      "The alert event should not be sent when the fetch_view fails"
+    )
   end
 end
