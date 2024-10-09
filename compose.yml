@@ -20,27 +20,18 @@ services:
   #   ports:
   #     - "8081:8080"
 
-  # runner:
-  #   image: lenra/docker-runner
-  #   privileged: true
-  #   network_mode: host
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-    
+  runner:
+    image: lenra/docker-runner
+    privileged: true
+    network_mode: host
+    volumes:
+      - runner:/app/.db
 
-  # registry:
-  #   image: registry:2
-  #   network_mode: host
-  #   volumes:
-  #     - registry:/var/lib/registry
-    
-  # dns:
-  #   image: defreitas/dns-proxy-server
-  #   environment:
-  #     MG_RESOLVCONF_OVERRIDE_NAMESERVERS: "false"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - /etc/resolv.conf:/etc/resolv.conf
+  registry:
+    image: registry:2
+    network_mode: host
+    volumes:
+      - registry:/var/lib/registry
   
   hydra:
     image: oryd/hydra:v2.0.3
@@ -103,3 +94,4 @@ services:
 volumes:
   hydra-sqlite:
   registry:
+  runner:

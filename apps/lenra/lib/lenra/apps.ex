@@ -263,7 +263,7 @@ defmodule Lenra.Apps do
               )
 
             "kubernetes" ->
-              Kubernetes.ApiServices.create_pipeline(
+              Kubernetes.ApiServices.create_pipeline_runnerpipeline(
                 app.service_name,
                 app.repository,
                 app.repository_branch,

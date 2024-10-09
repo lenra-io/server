@@ -57,14 +57,9 @@ defmodule Lenra.Application do
 
                  "docker" ->
                    %{
-                     Application.fetch_env!(:lenra, :kubernetes_api_url) => [
+                     Application.fetch_env!(:lenra, :docker_runner_url) => [
                        size: 10,
-                       count: 3,
-                       conn_opts: [
-                         transport_opts: [
-                           cacertfile: Application.fetch_env!(:lenra, :kubernetes_api_cert)
-                         ]
-                       ]
+                       count: 3
                      ]
                    }
 
