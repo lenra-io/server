@@ -1,4 +1,4 @@
-defmodule Lenra.UserEnvironmentAccessServicesTest do
+defmodule Lenra.UserEnvironmentRoleServicesTest do
   @moduledoc """
     Test the user environment access services
   """
@@ -12,6 +12,8 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
 
   alias Lenra.Apps
   alias Lenra.Apps.{App, Environment}
+
+  @app_url_prefix "https://localhost:10000/app/invitations"
 
   setup do
     {:ok, create_and_return_application()}
@@ -30,7 +32,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   end
 
   describe "all" do
-    test "no user access role for environment", %{app: _app, env: env, user: _user} do
+    test "no user access for environment", %{app: _app, env: env, user: _user} do
       assert [] == Apps.all_user_env_access(env.id)
     end
 
@@ -57,8 +59,18 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
       assert access.email == user.email
     end
 
-    test "user access role but already exists", %{app: _app, env: env, user: user} do
-      Apps.create_user_access_role(env.id, %{"email" => user.email}, nil)
+    test "send email after invitation", %{app: app, env: env, user: user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+
+      app_link = "#{@app_url_prefix}/#{user_access.id}"
+
+      email = EmailService.create_invitation_email(user.email, app.name, app_link)
+
+      assert_delivered_email(email)
+    end
+
+    test "user environment access but already exists", %{app: _app, env: env, user: user} do
+      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
 
       error = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
 

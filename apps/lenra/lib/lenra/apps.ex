@@ -37,7 +37,8 @@ defmodule Lenra.Apps do
     Logo,
     MainEnv,
     OAuth2Client,
-    UserEnvironmentAccess
+    UserEnvironmentAccess,
+    UserEnvironmentRole
   }
 
   alias ApplicationRunner.MongoStorage.MongoUserLink
@@ -456,6 +457,15 @@ defmodule Lenra.Apps do
     )
   end
 
+  def all_user_env_access_and_roles(env_id) do
+    Repo.all(
+      from(a in UserEnvironmentAccess,
+        where: a.environment_id == ^env_id,
+        preload: :roles
+      )
+    )
+  end
+
   def fetch_user_env_access(clauses, error \\ TechnicalError.error_404_tuple()) do
     Repo.fetch_by(UserEnvironmentAccess, clauses, error)
   end
@@ -550,6 +560,52 @@ defmodule Lenra.Apps do
     end)
     |> Ecto.Multi.delete(:deleted_user_access, fn %{user_access: user_access} -> user_access end)
   end
+
+  def delete_user_env_access_invitation(env_id, email) do
+    from(a in UserEnvironmentAccess, where: a.environment_id == ^env_id and a.email == ^email)
+    |> Repo.delete_all()
+  end
+
+  #######################
+  # UserEnvironmentRole #
+  #######################
+
+  def all_access_roles(access_id) do
+    Repo.all(
+      from(r in UserEnvironmentRole,
+        where: r.access_id == ^access_id
+      )
+    )
+  end
+
+  def user_env_access_roles(user_id, env_id) do
+    Repo.all(
+      from(a in UserEnvironmentAccess,
+        join: r in UserEnvironmentRole,
+        on: a.id == r.access_id,
+        where: ^user_id == a.user_id and a.environment_id == ^env_id,
+        select: %{role: r.role}
+      )
+    )
+  end
+
+  defp create_user_env_role(access_id, role) do
+    Ecto.insert(
+      :inserted_user_role,
+      UserEnvironmentRole.new(access_id, %{
+        role: role
+      })
+    )
+  end
+
+  def delete_user_env_role(access_id, role) do
+    from(r in UserEnvironmentRole, where: r.access_id == ^access_id and r.role == ^role)
+    |> Repo.delete_all()
+  end
+
+  ################
+  # OAuth2Client #
+  ################
 
   def create_oauth2_client(params) do
     with %Ecto.Changeset{valid?: true} = changeset <- OAuth2Client.new(params),
