@@ -27,6 +27,7 @@ defmodule Lenra.Errors.BusinessError do
       {:did_not_accept_cgs, "You must accept the CGS to use Lenra"},
       {:no_app_found, "No application found for the current link"},
       {:no_env_found, "Environment not found", 404},
+      {:no_invitation_found, "Invitation not found", 404},
       {:invitation_wrong_email, "Cannot accept the invitation with this email."},
       {:application_not_built, "Your application has not been built yet."},
       {:pipeline_runner_unkown_service,

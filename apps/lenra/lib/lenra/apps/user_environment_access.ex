@@ -7,7 +7,7 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
   import Ecto.Changeset
 
   alias Lenra.Apps.Environment
-
+  alias Lenra.Apps.UserEnvironmentRole
   alias Lenra.Accounts.User
 
   @type t :: %__MODULE__{}
@@ -21,6 +21,7 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
     field(:email, :string)
     belongs_to(:user, User)
     belongs_to(:environment, Environment)
+    has_many(:roles, UserEnvironmentRole, foreign_key: :access_id)
 
     timestamps()
   end
