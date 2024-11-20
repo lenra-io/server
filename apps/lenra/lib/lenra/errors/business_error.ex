@@ -33,6 +33,10 @@ defmodule Lenra.Errors.BusinessError do
        "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes])"},
       {:subscription_required, "You need a subscirption", 402},
       {:stripe_error, "Stripe error"},
-      {:subscription_already_exist, "You already have a subscription for this app", 403}
+      {:subscription_already_exist, "You already have a subscription for this app", 403},
+      {:env_secret_already_exist, "You already have a secret with this key", 403},
+      {:env_secret_not_found, "The secret your tried to update didn't exist", 404},
+      {:api_return_unexpected_response, "A dependency API used in this call return an unexpected response", 500},
+      {:kubernetes_unexpected_response, "Kubernetes return an unexpected response", 500}
     ]
 end

@@ -6,6 +6,7 @@ defmodule Lenra.OpenfaasServices do
   alias ApplicationRunner.ApplicationServices
   alias Lenra.Apps
   alias Lenra.Errors.TechnicalError
+  alias Lenra.Subscriptions
   alias LenraCommon.Errors
 
   require Logger
@@ -50,6 +51,46 @@ defmodule Lenra.OpenfaasServices do
     |> response(:deploy_status)
   end
 
+  def update_secrets(service_name, build_number, secrets \\ []) do
+    {base_url, headers} = get_http_context()
+    function_name = get_function_name(service_name, build_number)
+    url = "#{base_url}/system/function/#{function_name}"
+
+    function =
+      case Finch.build(
+             :get,
+             url,
+             headers
+           )
+           |> Finch.request(FaasHttp, receive_timeout: 1000)
+           |> response(:get_function) do
+        {:ok, result} -> result
+        _other -> nil
+      end
+
+    if function != nil do
+      url = "#{base_url}/system/functions"
+
+      body =
+        function
+        |> Map.merge(%{
+          "secrets" => secrets
+        })
+        |> Jason.encode!()
+
+      Finch.build(
+        :put,
+        url,
+        headers,
+        body
+      )
+      |> Finch.request(FaasHttp, receive_timeout: 1000)
+      |> response(:deploy_status)
+    else
+      TechnicalError.openfaas_not_reachable_tuple()
+    end
+  end
+
   def delete_app_openfaas(service_name, build_number) do
     {base_url, headers} = get_http_context()
 
@@ -77,6 +118,14 @@ defmodule Lenra.OpenfaasServices do
     json_body = Jason.decode!(body)
     available_replicas = Map.get(json_body, "availableReplicas")
     available_replicas != 0 && available_replicas != nil
+  end
+
+  defp response(
+         {:ok, %Finch.Response{status: status_code, body: body}},
+         :get_function
+       )
+       when status_code in [200, 202] do
+    Jason.decode!(body)
   end
 
   defp response({:ok, %Finch.Response{status: status_code}}, :delete_app)
