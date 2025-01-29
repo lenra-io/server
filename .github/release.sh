@@ -60,8 +60,8 @@ docker buildx build \
   --output type=image,push=true \
   --platform "linux/amd64,linux/arm64" \
   ${tag} \
-  --build-arg CI=true \
-  --build-arg GH_PERSONNAL_TOKEN="${GITHUB_TOKEN}" \
   --cache-from type=local,src=~/cache/${DOCKER_IMAGE}-buildcache \
   --cache-to type=local,dest=~/cache/${DOCKER_IMAGE}-buildcache,mode=max \
+  --provenance=true \
+  --sbom=true \
   .
