@@ -43,7 +43,7 @@ defmodule LenraWeb.EnvsController do
     end
   end
 
-  def update(conn, %{"env_id" => env_id, "is_public" => true} = params) do
+  def update(conn, %{"env_id" => _env_id, "is_public" => true} = params) do
     with {:ok, app, env} <- get_app_env_and_allow(conn, params),
          %Subscription{} = _subscription <- Subscriptions.get_subscription_by_app_id(app.id),
          {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
@@ -55,7 +55,7 @@ defmodule LenraWeb.EnvsController do
     end
   end
 
-  def update(conn, %{"env_id" => env_id} = params) do
+  def update(conn, %{"env_id" => _env_id} = params) do
     with {:ok, _app, env} <- get_app_env_and_allow(conn, params),
          {:ok, %{updated_env: env}} <- Apps.update_env(env, params) do
       conn

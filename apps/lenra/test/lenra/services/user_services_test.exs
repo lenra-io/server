@@ -16,7 +16,7 @@ defmodule UserServicesTest do
 
     assert user.first_name == "John"
     assert user.last_name == "Doe"
-    assert user.email == "john.doe@lenra.fr"
+    assert user.email == "john.doe@lenra.io"
     assert user.role == :unverified_user
 
     assert String.length(registration_code.code) == 8
@@ -52,7 +52,7 @@ defmodule UserServicesTest do
   end
 
   test "register should fail if email malformated" do
-    {:error, _step, changeset, _changes_so_far} = register_john_doe(%{"email" => "johnlenra.fr"})
+    {:error, _step, changeset, _changes_so_far} = register_john_doe(%{"email" => "johnlenra.io"})
 
     assert not changeset.valid?
 
@@ -74,12 +74,12 @@ defmodule UserServicesTest do
   test "login user should succeed event with caps" do
     {:ok, _} = register_john_doe()
 
-    {:ok, user} = Accounts.login_user("john.doe@lenra.fr", "Johndoe@thefirst")
+    {:ok, user} = Accounts.login_user("john.doe@lenra.io", "Johndoe@thefirst")
 
     assert %User{
              first_name: "John",
              last_name: "Doe",
-             email: "john.doe@lenra.fr"
+             email: "john.doe@lenra.io"
            } = user
   end
 
@@ -87,14 +87,14 @@ defmodule UserServicesTest do
     {:ok, _} = register_john_doe()
 
     assert {:error, %LenraCommon.Errors.BusinessError{reason: :incorrect_email_or_password}} =
-             Accounts.login_user("John@Lenra.FR", "Johndoe@thefirst")
+             Accounts.login_user("John@lenra.io", "Johndoe@thefirst")
   end
 
   test "sign_in user should fail with wrong password" do
     {:ok, _} = register_john_doe()
 
     assert {:error, %LenraCommon.Errors.BusinessError{reason: :incorrect_email_or_password}} =
-             Accounts.login_user("john.doe@lenra.fr", "johndoethesecond")
+             Accounts.login_user("john.doe@lenra.io", "johndoethesecond")
   end
 
   test "validate dev" do

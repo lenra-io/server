@@ -24,9 +24,11 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       env = Enum.at(envs, 0)
 
+      %{assigns: %{user: %{email: email}}} = user
+
       creator! =
         post(creator!, Routes.user_environment_access_path(creator!, :create, app["id"], env["id"]), %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => email
         })
 
       assert %{} = json_response(creator!, 200)
@@ -66,31 +68,27 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       creator! =
         post(creator!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => "creator.test@lenra.io"
         })
 
       admin! =
         post(admin!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => "admin.test@lenra.io"
         })
 
       user! =
         post(user!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => "user.test@lenra.io"
         })
 
       other_dev! =
         post(other_dev!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => "other-user.test@lenra.io"
         })
 
       assert %{} = json_response(creator!, 200)
 
-      assert %{
-               "message" => "user_id has already been taken",
-               "reason" => "invalid_user_id"
-             } ==
-               json_response(admin!, 400)
+      assert %{} = json_response(admin!, 200)
 
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(user!, 403)
       assert %{"message" => "Forbidden", "reason" => "forbidden"} = json_response(other_dev!, 403)
@@ -99,7 +97,7 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
   describe "add_user_env_access_from_email" do
     @tag auth_users_with_cgs: [:dev, :user, :dev, :admin]
-    test "successfull authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
+    test "successful authenticated", %{users: [creator!, user!, other_dev!, admin!]} do
       %{conn: creator!, app: app} = create_app(creator!)
 
       assert envs = json_response(get(creator!, Routes.envs_path(creator!, :index, app["id"])), 200)
@@ -108,24 +106,26 @@ defmodule LenraWeb.UserEnvironmentAccessControllerTest do
 
       create_user_access = Routes.user_environment_access_path(creator!, :create, app["id"], env["id"])
 
+      %{assigns: %{user: %{email: email}}} = user!
+
       creator! =
         post(creator!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => email
         })
 
       admin! =
         post(admin!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => email
         })
 
       user! =
         post(user!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => email
         })
 
       other_dev! =
         post(other_dev!, create_user_access, %{
-          "email" => LenraWeb.Auth.current_resource(creator!).email
+          "email" => email
         })
 
       assert %{} = json_response(creator!, 200)

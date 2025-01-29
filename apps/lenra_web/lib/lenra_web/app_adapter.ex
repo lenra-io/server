@@ -66,7 +66,7 @@ defmodule LenraWeb.AppAdapter do
          user_id = String.to_integer(subject),
          {:ok, resp} <- HydraApi.get_hydra_client(client_id),
          {:ok, app_name} <- get_app_name(resp.body, params) do
-      {:ok, user_id, ["user"], app_name, ApplicationRunner.AppSocket.extract_context(params)}
+      {:ok, user_id, get_user_roles(user_id, app_name), app_name, ApplicationRunner.AppSocket.extract_context(params)}
     else
       error ->
         Logger.error(error)
@@ -106,6 +106,20 @@ defmodule LenraWeb.AppAdapter do
 
       %App{} = app ->
         Repo.preload(app, main_env: preload)
+    end
+  end
+
+  defp get_user_roles(user_id, app_name) do
+    with %App{} = application <- get_app(app_name),
+         roles <- Apps.user_env_access_roles(user_id, application.main_env.environment.id) do
+      # Add the owner role if the user is the creator of the app
+      roles =
+        if application.creator_id == user_id do
+          ["owner" | roles]
+        end
+
+      # Add the user role anyway
+      ["user" | roles]
     end
   end
 

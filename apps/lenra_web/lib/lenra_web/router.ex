@@ -113,8 +113,15 @@ defmodule LenraWeb.Router do
     resources("/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/:app_id/environments/:env_id", EnvsController, :update)
 
-    # Invitations to env
+    # Invitations to env and roles
     resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
+    delete("/:app_id/environments/:env_id/invitations/:access_id", UserEnvironmentAccessController, :delete)
+
+    resources("/:app_id/environments/:env_id/invitations/:access_id/roles", UserEnvironmentRoleController,
+      only: [:index, :create]
+    )
+
+    delete("/:app_id/environments/:env_id/invitations/:access_id/roles/:role", UserEnvironmentRoleController, :delete)
 
     # App logo
     get("/:app_id/logo", LogosController, :get_logo)

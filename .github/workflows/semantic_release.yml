@@ -7,12 +7,26 @@ on:
       - alpha
       - "*.x"
 jobs:
+  get-next-version:
+    name: Get next version
+    uses: lenra-io/github-actions/.github/workflows/get-version.yml@main
+  
   release:
     name: Release
+    needs: [get-next-version]
+    uses: lenra-io/github-actions/.github/workflows/release.yml@main
+  
+  publish-docker:
+    name: Publish Docker
+    needs: [get-next-version, release]
+    if: github.ref_name == 'main' || github.ref_name == 'rc' || github.ref_name == 'beta'
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      VERSION: ${{ needs.get-next-version.outputs.version }}
     steps:
       - name: Checkout
+        if: ${{ needs.get-next-version.outputs.will-release }}
         uses: actions/checkout@v3
         with:
           submodules: true
@@ -21,26 +35,31 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "18"
+
       - name: Set up QEMU
+        if: ${{ needs.get-next-version.outputs.will-release }}
         uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
+        if: ${{ needs.get-next-version.outputs.will-release }}
         id: buildx
         uses: docker/setup-buildx-action@v1
+
       - name: Cache
+        if: ${{ needs.get-next-version.outputs.will-release }}
         uses: actions/cache@v3
         with:
           path: |
             ~/cache
           key: ${{ runner.os }}-${{ hashFiles('./Dockerfile') }}
-      - name: Release
+
+      - name: Build Docker images
+        if: ${{ needs.get-next-version.outputs.will-release }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PERSONNAL_TOKEN }}
-          DOCKER_IMAGE: lenra/server
+          DOCKER_IMAGE: lenra/dofigen
+          VERSION: ${{ env.VERSION }}
         run: |
           sudo chown $USER:$USER .github/release.sh
           sudo chmod +x .github/release.sh
-          npx npx --force -p conventional-changelog-conventionalcommits@5 -p @semantic-release/exec -p @semantic-release/git -p https://github.com/Tlepel/semantic-release.git#fix-versions-share-head semantic-release
+          .github/release.sh ${VERSION}

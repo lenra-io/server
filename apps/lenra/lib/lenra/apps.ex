@@ -1,6 +1,6 @@
 defmodule Lenra.Apps do
   @moduledoc """
-    This Lenra.Apps context is responsible for the management of the developper apps.
+    This Lenra.Apps context is responsible for the management of the developer apps.
     An app can have any number of Builds.
     An app can have one or more Environments
     A Deployment is an association between a build and an Environment
@@ -37,7 +37,8 @@ defmodule Lenra.Apps do
     Logo,
     MainEnv,
     OAuth2Client,
-    UserEnvironmentAccess
+    UserEnvironmentAccess,
+    UserEnvironmentRole
   }
 
   alias ApplicationRunner.MongoStorage.MongoUserLink
@@ -272,7 +273,7 @@ defmodule Lenra.Apps do
               )
 
             _anything ->
-              BusinessError.pipeline_runner_unkown_service_tuple()
+              BusinessError.pipeline_runner_unknown_service_tuple()
           end
 
         build |> Build.changeset(%{"pipeline_id" => pipeline_id}) |> Repo.update()
@@ -444,7 +445,7 @@ defmodule Lenra.Apps do
   end
 
   #########################
-  # USerEnvironmentAccess #
+  # UserEnvironmentAccess #
   #########################
 
   def all_user_env_access(env_id) do
@@ -452,6 +453,15 @@ defmodule Lenra.Apps do
       from(e in UserEnvironmentAccess,
         where: e.environment_id == ^env_id,
         select: %{environment_id: e.environment_id, email: e.email}
+      )
+    )
+  end
+
+  def all_user_env_access_and_roles(env_id) do
+    Repo.all(
+      from(a in UserEnvironmentAccess,
+        where: a.environment_id == ^env_id,
+        preload: :roles
       )
     )
   end
@@ -485,29 +495,36 @@ defmodule Lenra.Apps do
   end
 
   def create_user_env_access(env_id, %{"email" => email}, subscription) do
-    if subscription == nil do
-      nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
+    case env_id
+         |> get_env()
+         |> Repo.preload(application: :creator) do
+      %{application: app} ->
+        if email == app.creator.email do
+          BusinessError.cannot_add_creator_as_user_tuple()
+        else
+          if subscription == nil do
+            nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
 
-      if length(nb_user_env_access) >= 3 do
-        BusinessError.subscription_required_tuple()
-      else
-        create_user_env_access_transaction(env_id, email)
-      end
-    else
-      create_user_env_access_transaction(env_id, email)
+            if length(nb_user_env_access) >= 3 do
+              BusinessError.subscription_required_tuple()
+            else
+              create_user_env_access_transaction(app, env_id, email)
+            end
+          else
+            create_user_env_access_transaction(app, env_id, email)
+          end
+        end
+
+      nil ->
+        BusinessError.no_env_found_tuple()
     end
   end
 
-  defp create_user_env_access_transaction(env_id, email) do
+  defp create_user_env_access_transaction(app, env_id, email) do
     Accounts.User
     |> Lenra.Repo.get_by(email: email)
     |> handle_create_user_env_access(env_id, email)
-    |> Ecto.Multi.run(:add_invitation_events, fn repo, %{inserted_user_access: inserted_user_access} ->
-      %{application: app} =
-        env_id
-        |> get_env()
-        |> repo.preload(:application)
-
+    |> Ecto.Multi.run(:add_invitation_events, fn _repo, %{inserted_user_access: inserted_user_access} ->
       add_invitation_events(app, inserted_user_access, email)
     end)
     |> Repo.transaction()
@@ -543,13 +560,66 @@ defmodule Lenra.Apps do
     EmailWorker.add_email_invitation_event(email, app.name, invitation_link)
   end
 
-  def delete_user_env_access(%{environment_id: env_id, user_id: user_id} = _params) do
+  def delete_user_env_access(%{environment_id: env_id, user_id: user_id} = _params) when is_binary(user_id) do
     Ecto.Multi.new()
     |> Ecto.Multi.run(:user_access, fn _repo, _changes ->
       fetch_user_env_access(environment_id: env_id, user_id: user_id)
     end)
     |> Ecto.Multi.delete(:deleted_user_access, fn %{user_access: user_access} -> user_access end)
+    |> Repo.transaction()
   end
+
+  def delete_user_env_access(%{environment_id: env_id, email: email} = _params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:user_access, fn _repo, _changes ->
+      fetch_user_env_access(environment_id: env_id, email: email)
+    end)
+    |> Ecto.Multi.delete(:deleted_user_access, fn %{user_access: user_access} -> user_access end)
+    |> Repo.transaction()
+  end
+
+  #######################
+  # UserEnvironmentRole #
+  #######################
+
+  def all_access_roles(access_id) do
+    Repo.all(
+      from(r in UserEnvironmentRole,
+        where: r.access_id == ^access_id
+      )
+    )
+  end
+
+  def user_env_access_roles(user_id, env_id) do
+    Repo.all(
+      from(a in UserEnvironmentAccess,
+        join: r in UserEnvironmentRole,
+        on: a.id == r.access_id,
+        where: ^user_id == a.user_id and a.environment_id == ^env_id,
+        select: %{role: r.role}
+      )
+    )
+  end
+
+  def create_user_env_role(access_id, creator_id, role) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_user_role,
+      UserEnvironmentRole.new(access_id, %{
+        creator_id: creator_id,
+        role: role
+      })
+    )
+    |> Repo.transaction()
+  end
+
+  def delete_user_env_role(access_id, role) do
+    Repo.delete_all(from(r in UserEnvironmentRole, where: r.access_id == ^access_id and r.role == ^role))
+  end
+
+  ################
+  # OAuth2Client #
+  ################
 
   def create_oauth2_client(params) do
     with %Ecto.Changeset{valid?: true} = changeset <- OAuth2Client.new(params),

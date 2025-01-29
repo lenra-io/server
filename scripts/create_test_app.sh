@@ -3,7 +3,7 @@
 # Add your code here
 echo "Creating a test user"
 user_id="$(mix run -e '
-	{:ok, %{inserted_user: user}} = Lenra.Accounts.register_user(%{"email" => "john.doe@lenra.fr","password" => "Johndoe@thefirst","password_confirmation" => "Johndoe@thefirst"}, :dev);
+	{:ok, %{inserted_user: user}} = Lenra.Accounts.register_user(%{"email" => "john.doe@lenra.io","password" => "Johndoe@thefirst","password_confirmation" => "Johndoe@thefirst"}, :dev);
 	IO.inspect "user_id=" <> to_string(user.id)' | grep -E '^"user_id=' | sed -E 's/^"user_id=(.+)"$/\1/')"
 echo "User created with id: $user_id"
 

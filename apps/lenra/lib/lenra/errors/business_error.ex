@@ -27,12 +27,14 @@ defmodule Lenra.Errors.BusinessError do
       {:did_not_accept_cgs, "You must accept the CGS to use Lenra"},
       {:no_app_found, "No application found for the current link"},
       {:no_env_found, "Environment not found", 404},
+      {:no_invitation_found, "Invitation not found", 404},
       {:invitation_wrong_email, "Cannot accept the invitation with this email."},
       {:application_not_built, "Your application has not been built yet."},
-      {:pipeline_runner_unkown_service,
+      {:pipeline_runner_unknown_service,
        "Currently not capable to handle this type of pipeline. (`pipeline_runner` can be: [GitLab, Kubernetes])"},
-      {:subscription_required, "You need a subscirption", 402},
+      {:subscription_required, "You need a subscription", 402},
       {:stripe_error, "Stripe error"},
-      {:subscription_already_exist, "You already have a subscription for this app", 403}
+      {:subscription_already_exist, "You already have a subscription for this app", 403},
+      {:cannot_add_creator_as_user, "The application creator can not be invited as user", 403}
     ]
 end

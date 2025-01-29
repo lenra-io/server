@@ -25,7 +25,7 @@ mix ecto.reset
 First, you need to add an app in the database. You can do this by running the following command:
 
 ```bash
-./scripts/create_test_user.sh
+./scripts/create_test_app.sh
 ```
 
 ## Run the server
