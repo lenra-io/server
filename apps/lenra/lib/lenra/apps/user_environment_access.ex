@@ -6,9 +6,9 @@ defmodule Lenra.Apps.UserEnvironmentAccess do
   use Lenra.Schema
   import Ecto.Changeset
 
+  alias Lenra.Accounts.User
   alias Lenra.Apps.Environment
   alias Lenra.Apps.UserEnvironmentRole
-  alias Lenra.Accounts.User
 
   @type t :: %__MODULE__{}
 

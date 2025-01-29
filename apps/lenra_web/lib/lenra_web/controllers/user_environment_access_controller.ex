@@ -20,7 +20,8 @@ defmodule LenraWeb.UserEnvironmentAccessController do
   def index(conn, %{"env_id" => env_id} = params) do
     with {:ok, _app, _env} <- get_app_env_and_allow(conn, params) do
       access =
-        Apps.all_user_env_access_and_roles(env_id)
+        env_id
+        |> Apps.all_user_env_access_and_roles()
         |> Enum.map(fn access ->
           %{
             id: access.id,

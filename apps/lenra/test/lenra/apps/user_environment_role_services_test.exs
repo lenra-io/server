@@ -45,9 +45,10 @@ defmodule Lenra.UserEnvironmentRoleServicesTest do
     end
 
     test "one user role for environment", %{app: _app, env: env, user: user} do
-      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
+      {:ok, %{inserted_user_access: created_user_access}} =
+        Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
-      {:ok, _} = Apps.create_user_env_role(user_access.id, user.id, "admin")
+      {:ok, _} = Apps.create_user_env_role(created_user_access.id, user.id, "admin")
 
       access_list = Apps.all_user_env_access_and_roles(env.id)
 
@@ -81,10 +82,12 @@ defmodule Lenra.UserEnvironmentRoleServicesTest do
 
   describe "delete" do
     test "user environment role successfully", %{app: _app, env: env, user: user} do
-      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
-      {:ok, %{inserted_user_role: _user_role}} = Apps.create_user_env_role(user_access.id, user.id, "admin")
+      {:ok, %{inserted_user_access: created_user_access}} =
+        Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
-      {1, _} = Apps.delete_user_env_role(user_access.id, "admin")
+      {:ok, %{inserted_user_role: _user_role}} = Apps.create_user_env_role(created_user_access.id, user.id, "admin")
+
+      {1, _} = Apps.delete_user_env_role(created_user_access.id, "admin")
 
       [user_access] = Apps.all_user_env_access_and_roles(env.id)
 

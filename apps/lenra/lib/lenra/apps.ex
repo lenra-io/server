@@ -495,26 +495,26 @@ defmodule Lenra.Apps do
   end
 
   def create_user_env_access(env_id, %{"email" => email}, subscription) do
-    with %{application: app} <-
-           env_id
-           |> get_env()
-           |> Repo.preload(application: :creator) do
-      if email == app.creator.email do
-        BusinessError.cannot_add_creator_as_user_tuple()
-      else
-        if subscription == nil do
-          nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
+    case env_id
+         |> get_env()
+         |> Repo.preload(application: :creator) do
+      %{application: app} ->
+        if email == app.creator.email do
+          BusinessError.cannot_add_creator_as_user_tuple()
+        else
+          if subscription == nil do
+            nb_user_env_access = Repo.all(from(u in UserEnvironmentAccess, where: u.environment_id == ^env_id))
 
-          if length(nb_user_env_access) >= 3 do
-            BusinessError.subscription_required_tuple()
+            if length(nb_user_env_access) >= 3 do
+              BusinessError.subscription_required_tuple()
+            else
+              create_user_env_access_transaction(app, env_id, email)
+            end
           else
             create_user_env_access_transaction(app, env_id, email)
           end
-        else
-          create_user_env_access_transaction(app, env_id, email)
         end
-      end
-    else
+
       nil ->
         BusinessError.no_env_found_tuple()
     end
@@ -560,7 +560,7 @@ defmodule Lenra.Apps do
     EmailWorker.add_email_invitation_event(email, app.name, invitation_link)
   end
 
-  def delete_user_env_access(%{environment_id: env_id, user_id: user_id} = _params) when not is_nil(user_id) do
+  def delete_user_env_access(%{environment_id: env_id, user_id: user_id} = _params) when is_binary(user_id) do
     Ecto.Multi.new()
     |> Ecto.Multi.run(:user_access, fn _repo, _changes ->
       fetch_user_env_access(environment_id: env_id, user_id: user_id)
@@ -614,8 +614,7 @@ defmodule Lenra.Apps do
   end
 
   def delete_user_env_role(access_id, role) do
-    from(r in UserEnvironmentRole, where: r.access_id == ^access_id and r.role == ^role)
-    |> Repo.delete_all()
+    Repo.delete_all(from(r in UserEnvironmentRole, where: r.access_id == ^access_id and r.role == ^role))
   end
 
   ################

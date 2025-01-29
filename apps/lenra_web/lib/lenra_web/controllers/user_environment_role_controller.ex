@@ -4,10 +4,10 @@ defmodule LenraWeb.UserEnvironmentRoleController do
   use LenraWeb.Policy,
     module: LenraWeb.UserEnvironmentRoleController.Policy
 
-  alias Lenra.Repo
   alias Lenra.Apps
   alias Lenra.Apps.{Environment, UserEnvironmentAccess}
   alias Lenra.Errors.BusinessError
+  alias Lenra.Repo
   alias LenraWeb.Auth
 
   defp get_access_and_allow(conn, %{
@@ -31,14 +31,15 @@ defmodule LenraWeb.UserEnvironmentRoleController do
     |> case do
       # Check that the app id matches the app id in the environment
       %UserEnvironmentAccess{environment: %Environment{application_id: ^app_id}} = access -> {:ok, access}
-      _ -> BusinessError.no_invitation_found_tuple()
+      _error -> BusinessError.no_invitation_found_tuple()
     end
   end
 
   def index(conn, params) do
     with {:ok, access} <- get_access_and_allow(conn, params) do
       roles =
-        Apps.all_access_roles(access.id)
+        access.id
+        |> Apps.all_access_roles()
         |> Enum.map(fn role ->
           role.role
         end)
