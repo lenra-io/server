@@ -8,7 +8,6 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
   }
 
   alias ApplicationRunner.{Contract, Environment}
-  alias ApplicationRunner.Guardian.AppGuardian
   alias QueryParser.Parser
 
   @manifest %{

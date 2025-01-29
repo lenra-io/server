@@ -155,7 +155,7 @@ defmodule ApplicationRunner.Session.UiBuilders.UiBuilderAdapterTest do
         result = UiBuilderAdapter.handle_listener(adapter, session_metadata, component, ui_context, view_uid)
 
         # Assert
-        assert {:ok, listener, updated_context} = result
+        assert {:ok, listener, _updated_context} = result
 
         # Add your assertions here
         assert listener == %{"_type" => "listener", "code" => "the_code"}
