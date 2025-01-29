@@ -11,9 +11,9 @@ defmodule ApplicationRunner.FakeRouteChannel do
   This module provides a fake route channel for testing purposes.
   """
 
-  def join("route:" <> route, params, socket) do
+  def join("route:" <> _route, _params, socket) do
     {:ok, socket}
   end
 
-  use ApplicationRunner.RouteChannel
+  # use ApplicationRunner.RouteChannel
 end

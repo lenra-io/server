@@ -2,7 +2,6 @@ defmodule ApplicationRunner.FakeUiBuilderAdapter do
   @moduledoc """
   This adapter emulate a builder adapter.
   """
-  alias ApplicationRunner.Errors.TechnicalError
   @behaviour ApplicationRunner.Session.UiBuilders.UiBuilderAdapter
 
   @impl true

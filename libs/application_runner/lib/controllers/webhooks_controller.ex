@@ -1,7 +1,6 @@
 defmodule ApplicationRunner.Webhooks.WebhooksController do
   use ApplicationRunner, :controller
 
-  alias ApplicationRunner.Errors.BusinessError
   alias ApplicationRunner.Webhooks.WebhookServices
 
   require Logger

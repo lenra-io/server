@@ -63,7 +63,7 @@ defmodule ApplicationRunner.Webhooks.ControllerTest do
 
     Environment.TokenAgent.add_token(env.id, uuid, token)
 
-    {:ok, %{mongo_pid: pid, token: token, doc_id: doc_id, env_id: env.id, token: token}}
+    {:ok, %{mongo_pid: pid, token: token, doc_id: doc_id, env_id: env.id}}
   end
 
   defp setup_env_token do
@@ -91,7 +91,7 @@ defmodule ApplicationRunner.Webhooks.ControllerTest do
 
     Environment.TokenAgent.add_token(env.id, uuid, token)
 
-    {:ok, %{mongo_pid: pid, token: token, doc_id: doc_id, env_id: env.id, token: token}}
+    {:ok, %{mongo_pid: pid, token: token, doc_id: doc_id, env_id: env.id}}
   end
 
   test "Create webhook in env should work properly", %{conn: conn} do
@@ -133,24 +133,5 @@ defmodule ApplicationRunner.Webhooks.ControllerTest do
     assert [webhook] = WebhookServices.get(response["environment_id"])
 
     assert webhook.listener == "test"
-  end
-
-  defp handle_request(conn, callback) do
-    {:ok, body, conn} = Plug.Conn.read_body(conn)
-
-    body_decoded =
-      if String.length(body) != 0 do
-        Jason.decode!(body)
-      else
-        ""
-      end
-
-    callback.(body_decoded)
-
-    case body_decoded do
-      # Listeners "listener" in body
-      %{"listener" => _listener} ->
-        Plug.Conn.resp(conn, 200, "")
-    end
   end
 end
