@@ -57,8 +57,8 @@ defmodule LenraWeb.UserEnvironmentAccessController do
 
   def delete(conn, %{"env_id" => env_id, "email" => email} = params) do
     with {:ok, _app, _env} <- get_app_env_and_allow(conn, params),
-         {:ok, _} <-
-           Apps.delete_user_env_access_invitation(env_id, email) do
+         {1, _} <-
+           Apps.delete_user_env_access(%{environment_id: env_id, email: email}) do
       conn
       |> reply(%{})
     end

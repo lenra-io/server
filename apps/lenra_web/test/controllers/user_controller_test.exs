@@ -11,7 +11,7 @@ defmodule LenraWeb.UserControllerTest do
   @john_doe_user_params %{
     "first_name" => "John",
     "last_name" => "Doe",
-    "email" => "john.doe@lenra.fr",
+    "email" => "john.doe@lenra.io",
     "password" => "Johndoe@thefirst",
     "password_confirmation" => "Johndoe@thefirst"
   }
@@ -58,7 +58,7 @@ defmodule LenraWeb.UserControllerTest do
 
     assert %{} = json_response(conn2, 200)
 
-    assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.fr", new_password)
+    assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.io", new_password)
   end
 
   @tag :auth_user_with_cgs
@@ -260,7 +260,7 @@ defmodule LenraWeb.UserControllerTest do
       })
     )
 
-    assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.fr", "Johndoe@thefirst")
+    assert {:ok, _user} = Lenra.Accounts.login_user("john.doe@lenra.io", "Johndoe@thefirst")
   end
 
   @tag :auth_user_with_cgs

@@ -10,6 +10,9 @@ defmodule Lenra.Apps.UserEnvironmentRole do
 
   alias Lenra.Accounts.User
 
+  @role_regex ~r/^[a-zA-Z0-9][a-zA-Z0-9+@:.#_-]{1,49}$/
+  @reserved_roles ["owner", "user"]
+
   @type t :: %__MODULE__{}
 
   @derive {Jason.Encoder,
@@ -29,9 +32,11 @@ defmodule Lenra.Apps.UserEnvironmentRole do
     user_env_role
     |> cast(params, [:creator_id, :access_id, :role])
     |> validate_required([:access_id, :role])
+    |> validate_format(:role, @role_regex)
+    |> validate_exclusion(:role, @reserved_roles)
     |> foreign_key_constraint(:access_id)
     |> foreign_key_constraint(:creator_id)
-    |> unique_constraint([:access_id, :role])
+    |> unique_constraint([:access_id, :role], error_key: :role)
   end
 
   def new(access_id, params) do

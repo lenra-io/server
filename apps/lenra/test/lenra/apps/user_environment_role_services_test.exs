@@ -5,15 +5,11 @@ defmodule Lenra.UserEnvironmentRoleServicesTest do
   use Lenra.RepoCase, async: false
   use Bamboo.Test, shared: true
 
-  alias Lenra.{
-    EmailService,
-    Repo
-  }
-
   alias Lenra.Apps
   alias Lenra.Apps.{App, Environment}
+  alias Lenra.Repo
 
-  @app_url_prefix "https://localhost:10000/app/invitations"
+  @email "test@lenra.io"
 
   setup do
     {:ok, create_and_return_application()}
@@ -33,97 +29,74 @@ defmodule Lenra.UserEnvironmentRoleServicesTest do
 
   describe "all" do
     test "no user access for environment", %{app: _app, env: env, user: _user} do
-      assert [] == Apps.all_user_env_access(env.id)
+      assert [] == Apps.all_user_env_access_and_roles(env.id)
     end
 
-    test "one user access for environment", %{app: _app, env: env, user: user} do
-      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "no user role for environment", %{app: _app, env: env, user: _user} do
+      Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
-      assert 1 ==
-               env.id
-               |> Apps.all_user_env_access()
-               |> Enum.count()
+      access_list = Apps.all_user_env_access_and_roles(env.id)
+
+      assert 1 == Enum.count(access_list)
+
+      user_access = Enum.at(access_list, 0)
+
+      assert [] == user_access.roles
+    end
+
+    test "one user role for environment", %{app: _app, env: env, user: user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
+
+      {:ok, _} = Apps.create_user_env_role(user_access.id, user.id, "admin")
+
+      access_list = Apps.all_user_env_access_and_roles(env.id)
+
+      assert 1 == Enum.count(access_list)
+      user_access = Enum.at(access_list, 0)
+
+      [%{role: role}] = user_access.roles
+      assert role == "admin"
     end
   end
 
   describe "create" do
-    test "user environment access successfully", %{app: _app, env: env, user: user} do
-      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "user environment role successfully", %{app: _app, env: env, user: user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
-      access =
-        env.id
-        |> Apps.all_user_env_access()
-        |> Enum.at(0)
+      {:ok, %{inserted_user_role: user_role}} = Apps.create_user_env_role(user_access.id, user.id, "admin")
 
-      assert access.environment_id == env.id
-      assert access.email == user.email
+      assert user_role.access_id == user_access.id
+      assert user_role.role == "admin"
     end
 
-    test "send email after invitation", %{app: app, env: env, user: user} do
-      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "user environment role but already exists", %{app: _app, env: env, user: user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
+      Apps.create_user_env_role(user_access.id, user.id, "admin")
 
-      app_link = "#{@app_url_prefix}/#{user_access.id}"
+      error = Apps.create_user_env_role(user_access.id, user.id, "admin")
 
-      email = EmailService.create_invitation_email(user.email, app.name, app_link)
-
-      assert_delivered_email(email)
-    end
-
-    test "user environment access but already exists", %{app: _app, env: env, user: user} do
-      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
-
-      error = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
-
-      assert {:error, :inserted_user_access, _failed_value, _changes_so_far} = error
-    end
-
-    test "user environment access but invalid params", %{app: _app, env: env, user: _user} do
-      assert {:error, :inserted_user_access, _failed_value, _changes_so_far} =
-               Apps.create_user_env_access(env.id + 1, %{"email" => ""}, nil)
-    end
-  end
-
-  describe "create user env access from email" do
-    test "successfully", %{app: _app, env: env, user: user} do
-      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
-
-      access =
-        env.id
-        |> Apps.all_user_env_access()
-        |> Enum.at(0)
-
-      assert access.environment_id == env.id
-      assert access.email == user.email
-    end
-
-    test "unknown email", %{app: _app, env: env, user: _user} do
-      assert {:ok, %{inserted_user_access: user_access}} =
-               Apps.create_user_env_access(env.id, %{"email" => "test@lenra.io"}, nil)
-
-      assert user_access.environment_id == env.id
-      assert user_access.user_id == nil
-
-      {:ok, %{inserted_user: user}} = UserTestHelper.register_john_doe(%{"email" => "test@lenra.io"})
-
-      Apps.accept_invitation(user_access.id, user)
-
-      access = Repo.get_by(Apps.UserEnvironmentAccess, id: user_access.id)
-
-      assert access.environment_id == env.id
-      assert access.user_id == user.id
+      assert {:error, :inserted_user_role, _failed_value, _changes_so_far} = error
     end
   end
 
   describe "delete" do
-    test "user environment access successfully", %{app: _app, env: env, user: user} do
-      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "user environment role successfully", %{app: _app, env: env, user: user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
+      {:ok, %{inserted_user_role: _user_role}} = Apps.create_user_env_role(user_access.id, user.id, "admin")
 
-      Apps.UserEnvironmentAccess
-      |> Repo.get_by(id: user_access.id)
-      |> Apps.delete_user_env_access()
-      |> Repo.transaction()
+      {1, _} = Apps.delete_user_env_role(user_access.id, "admin")
 
-      assert [] == Apps.all_user_env_access(env.id)
+      [user_access] = Apps.all_user_env_access_and_roles(env.id)
+
+      assert [] == user_access.roles
+    end
+
+    test "user environment role unexisting", %{app: _app, env: env, user: _user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
+
+      error = Apps.delete_user_env_role(user_access.id, "admin")
+
+      assert {0, _} = error
     end
   end
 end

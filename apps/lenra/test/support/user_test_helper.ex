@@ -8,7 +8,7 @@ defmodule UserTestHelper do
   @john_doe_user_params %{
     "first_name" => "John",
     "last_name" => "Doe",
-    "email" => "john.doe@lenra.fr",
+    "email" => "john.doe@lenra.io",
     "password" => "Johndoe@thefirst",
     "password_confirmation" => "Johndoe@thefirst"
   }
@@ -18,7 +18,7 @@ defmodule UserTestHelper do
     %{
       "first_name" => "John #{idx}",
       "last_name" => "Doe #{idx}",
-      "email" => "john.doe#{idx}@lenra.fr",
+      "email" => "john.doe#{idx}@lenra.io",
       "password" => "Johndoe@thefirst",
       "password_confirmation" => "Johndoe@thefirst"
     }

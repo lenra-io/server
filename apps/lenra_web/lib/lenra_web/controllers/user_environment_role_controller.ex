@@ -5,8 +5,10 @@ defmodule LenraWeb.UserEnvironmentRoleController do
     module: LenraWeb.UserEnvironmentRoleController.Policy
 
   alias Lenra.Repo
-  alias Lenra.Apps.Environment
-  alias Lenra.Apps.UserEnvironmentAccess
+  alias Lenra.Apps
+  alias Lenra.Apps.{Environment, UserEnvironmentAccess}
+  alias Lenra.Errors.BusinessError
+  alias LenraWeb.Auth
 
   defp get_access_and_allow(conn, %{
          "app_id" => app_id_str,
@@ -48,8 +50,9 @@ defmodule LenraWeb.UserEnvironmentRoleController do
 
   def create(conn, %{"role" => role} = params) do
     with {:ok, access} <- get_access_and_allow(conn, params),
+         user <- Auth.current_resource(conn),
          {:ok, %{inserted_user_role: user_env_role}} <-
-           Apps.create_user_env_role(access.id, role) do
+           Apps.create_user_env_role(access.id, user.id, role) do
       conn
       |> reply(user_env_role)
     end

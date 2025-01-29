@@ -10,7 +10,7 @@ defmodule Lenra.Legal.UserAcceptCGSVersionTest do
   @user %{
     "first_name" => "Test",
     "last_name" => "test",
-    "email" => "test.test@lenra.fr",
+    "email" => "test.test@lenra.io",
     "password" => "Testtest@thefirst",
     "password_confirmation" => "Testtest@thefirst"
   }

@@ -111,7 +111,7 @@ defmodule LenraWeb.EnvironmentControllerTest do
 
       creator! = patch(creator!, update_env_path, public_body)
 
-      assert %{"message" => "You need a subscirption", "reason" => "subscription_required"} =
+      assert %{"message" => "You need a subscription", "reason" => "subscription_required"} =
                json_response(creator!, 402)
 
       assert [%{"is_public" => false}] =

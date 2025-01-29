@@ -13,6 +13,9 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   alias Lenra.Apps
   alias Lenra.Apps.{App, Environment}
 
+  @email "test@lenra.io"
+  @app_url_prefix "https://localhost:10000/app/invitations"
+
   setup do
     {:ok, create_and_return_application()}
   end
@@ -30,12 +33,12 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   end
 
   describe "all" do
-    test "no user access role for environment", %{app: _app, env: env, user: _user} do
+    test "no user access for environment", %{app: _app, env: env, user: _user} do
       assert [] == Apps.all_user_env_access(env.id)
     end
 
-    test "one user access for environment", %{app: _app, env: env, user: user} do
-      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "one user access for environment", %{app: _app, env: env, user: _user} do
+      Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
       assert 1 ==
                env.id
@@ -45,8 +48,8 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   end
 
   describe "create" do
-    test "user environment access successfully", %{app: _app, env: env, user: user} do
-      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "user environment access successfully", %{app: _app, env: env, user: _user} do
+      Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
       access =
         env.id
@@ -54,26 +57,43 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
         |> Enum.at(0)
 
       assert access.environment_id == env.id
-      assert access.email == user.email
+      assert access.email == @email
     end
 
-    test "user access role but already exists", %{app: _app, env: env, user: user} do
-      Apps.create_user_access_role(env.id, %{"email" => user.email}, nil)
+    test "send email after invitation", %{app: app, env: env, user: _user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
-      error = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+      app_link = "#{@app_url_prefix}/#{user_access.id}"
+
+      email = EmailService.create_invitation_email(@email, app.name, app_link)
+
+      assert_delivered_email(email)
+    end
+
+    test "user environment access but already exists", %{app: _app, env: env, user: _user} do
+      Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
+
+      error = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
       assert {:error, :inserted_user_access, _failed_value, _changes_so_far} = error
     end
 
+    test "user environment access for current user", %{app: _app, env: env, user: user} do
+      error = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+
+      assert {:error, %{reason: :cannot_add_creator_as_user, status_code: 403}} = error
+    end
+
     test "user environment access but invalid params", %{app: _app, env: env, user: _user} do
-      assert {:error, :inserted_user_access, _failed_value, _changes_so_far} =
-               Apps.create_user_env_access(env.id + 1, %{"email" => ""}, nil)
+      error = Apps.create_user_env_access(env.id + 1, %{"email" => ""}, nil)
+
+      assert {:error, %{reason: :no_env_found, metadata: %{}, status_code: 404}} = error
     end
   end
 
   describe "create user env access from email" do
-    test "successfully", %{app: _app, env: env, user: user} do
-      Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "successfully", %{app: _app, env: env, user: _user} do
+      Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
       access =
         env.id
@@ -81,7 +101,7 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
         |> Enum.at(0)
 
       assert access.environment_id == env.id
-      assert access.email == user.email
+      assert access.email == @email
     end
 
     test "unknown email", %{app: _app, env: env, user: _user} do
@@ -103,13 +123,12 @@ defmodule Lenra.UserEnvironmentAccessServicesTest do
   end
 
   describe "delete" do
-    test "user environment access successfully", %{app: _app, env: env, user: user} do
-      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => user.email}, nil)
+    test "user environment access successfully", %{app: _app, env: env, user: _user} do
+      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env.id, %{"email" => @email}, nil)
 
       Apps.UserEnvironmentAccess
       |> Repo.get_by(id: user_access.id)
       |> Apps.delete_user_env_access()
-      |> Repo.transaction()
 
       assert [] == Apps.all_user_env_access(env.id)
     end
