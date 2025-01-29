@@ -111,12 +111,12 @@ defmodule LenraWeb.AppAdapter do
 
   defp get_user_roles(user_id, app_name) do
     with %App{} = application <- get_app(app_name),
-      roles <- Apps.user_env_access_roles(user_id, application.main_env.environment.id) do
-
+         roles <- Apps.user_env_access_roles(user_id, application.main_env.environment.id) do
       # Add the owner role if the user is the creator of the app
-      roles = if application.creator_id == user_id do
-        ["owner" | roles]
-      end
+      roles =
+        if application.creator_id == user_id do
+          ["owner" | roles]
+        end
 
       # Add the user role anyway
       ["user" | roles]

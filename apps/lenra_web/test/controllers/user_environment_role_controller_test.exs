@@ -105,7 +105,8 @@ defmodule LenraWeb.UserEnvironmentRoleControllerTest do
 
       env = Enum.at(envs, 0)
 
-      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env["id"], %{"email" => "test@lenra.io"}, nil)
+      {:ok, %{inserted_user_access: user_access}} =
+        Apps.create_user_env_access(env["id"], %{"email" => "test@lenra.io"}, nil)
 
       create_user_role = Routes.user_environment_role_path(creator!, :create, app["id"], env["id"], user_access.id)
 
@@ -132,7 +133,8 @@ defmodule LenraWeb.UserEnvironmentRoleControllerTest do
 
       env = Enum.at(envs, 0)
 
-      {:ok, %{inserted_user_access: user_access}} = Apps.create_user_env_access(env["id"], %{"email" => "test@lenra.io"}, nil)
+      {:ok, %{inserted_user_access: user_access}} =
+        Apps.create_user_env_access(env["id"], %{"email" => "test@lenra.io"}, nil)
 
       create_user_role = Routes.user_environment_role_path(creator!, :create, app["id"], env["id"], user_access.id)
 
@@ -151,6 +153,7 @@ defmodule LenraWeb.UserEnvironmentRoleControllerTest do
         "lowercase",
         "123"
       ]
+
       wrong_roles = [
         "",
         "user",
@@ -158,7 +161,7 @@ defmodule LenraWeb.UserEnvironmentRoleControllerTest do
         "with space",
         "with;semicolon",
         "with*wildcard",
-        "tooLongRoleNameSinceWeHaveToDefineALimitInOrderToAvoidSQLInjection",
+        "tooLongRoleNameSinceWeHaveToDefineALimitInOrderToAvoidSQLInjection"
       ]
 
       for role <- valid_roles do

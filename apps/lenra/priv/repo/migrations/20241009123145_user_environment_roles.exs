@@ -10,8 +10,6 @@ defmodule Lenra.Repo.Migrations.UserEnvironmentRoles do
       timestamps()
     end
 
-    create(
-      unique_index(:users_environments_roles, [:access_id, :role])
-    )
+    create(unique_index(:users_environments_roles, [:access_id, :role]))
   end
 end

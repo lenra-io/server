@@ -22,7 +22,12 @@ defmodule LenraWeb.UserEnvironmentAccessController do
       access =
         Apps.all_user_env_access_and_roles(env_id)
         |> Enum.map(fn access ->
-          %{id: access.id, environment_id: access.environment_id, email: access.email, roles: access.roles |> Enum.map(& &1.role)}
+          %{
+            id: access.id,
+            environment_id: access.environment_id,
+            email: access.email,
+            roles: access.roles |> Enum.map(& &1.role)
+          }
         end)
 
       conn
