@@ -37,11 +37,12 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
     base_url = Application.fetch_env!(:application_runner, :faas_url)
     auth = Application.fetch_env!(:application_runner, :faas_auth)
 
-    # env_id = Map.get(metadata, :env_id)
-    function_name = Map.get(metadata, :function_name)
     Logger.debug("#{__MODULE__} handle down #{inspect(pid)} with metadata #{inspect(metadata)}")
 
-    if Application.fetch_env!(:application_runner, :scale_to_zero) do
+    min_scale = Map.get(metadata, :min_scale, 0)
+
+    if Application.fetch_env!(:application_runner, :scale_to_zero) && min_scale == 0 do
+      function_name = Map.get(metadata, :function_name)
       ApplicationServices.stop_app(function_name)
     end
 

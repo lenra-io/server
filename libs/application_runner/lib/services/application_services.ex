@@ -259,7 +259,15 @@ defmodule ApplicationRunner.ApplicationServices do
   end
 
   @doc """
-  Set the maximum scale of an OpenFaaS application.
+  Set the scale values of an OpenFaaS application.
+  """
+  @spec set_app_scale(String.t(), integer(), integer()) :: :ok | {:error, struct} | {:ok, any}
+  def set_app_scale(function_name, min_scale, max_scale) do
+    set_app_labels(function_name, %{@min_scale_label => to_string(min_scale), @max_scale_label => to_string(max_scale)})
+  end
+
+  @doc """
+  Set the scale factor of an OpenFaaS application.
   """
   @spec set_app_scale_factor(String.t(), integer()) :: :ok | {:error, struct} | {:ok, any}
   def set_app_scale_factor(function_name, scale_factor) when scale_factor in [0, 100] do

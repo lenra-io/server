@@ -9,6 +9,7 @@ defmodule LenraWeb.AppAdapter do
   alias Lenra.{Apps, Repo}
   alias Lenra.Apps.{App, Environment, MainEnv}
   alias Lenra.Errors.BusinessError
+  alias Lenra.Subscriptions
 
   require Logger
 
@@ -35,7 +36,13 @@ defmodule LenraWeb.AppAdapter do
 
     case get_app(app_name, environment: [deployment: [:build]]) do
       %App{} = application ->
-        build = application.main_env.environment.deployment.build
+        build =
+          get_in(application, [
+            Access.key(:main_env),
+            Access.key(:environment),
+            Access.key(:deployment),
+            Access.key(:build)
+          ])
 
         if build do
           String.downcase("#{lenra_env}-#{app_name}-#{build.build_number}")
@@ -54,9 +61,19 @@ defmodule LenraWeb.AppAdapter do
     application =
       App
       |> Repo.get_by(service_name: app_name)
-      |> Repo.preload(:environments)
+      |> Repo.preload(:main_env)
 
-    List.first(application.environments).id
+    application.main_env.environment_id
+  end
+
+  @impl ApplicationRunner.Adapter
+  def get_scale_options(app_name) do
+    application =
+      App
+      |> Repo.get_by(service_name: app_name)
+      |> Repo.preload(main_env: [:environment])
+
+    Apps.effective_env_scale_options(application.main_env.environment)
   end
 
   @impl ApplicationRunner.Adapter

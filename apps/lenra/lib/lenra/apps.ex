@@ -19,6 +19,7 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
+  alias Lenra.Apps.EnvironmentScaleOptions
   alias ApplicationRunner.ApplicationServices
 
   alias Lenra.Repo
@@ -405,7 +406,10 @@ defmodule Lenra.Apps do
           end)
           |> Repo.transaction()
 
-        ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
+        if Application.fetch_env!(:application_runner, :scale_to_zero) do
+          ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
+        end
+
         transaction
 
       # Function not found in openfaas, 2 retry (10s),
@@ -786,5 +790,72 @@ defmodule Lenra.Apps do
 
   def get_image(image_id) do
     Repo.get(Image, image_id)
+  end
+
+  ###############
+  # Environment Scale Options #
+  ###############
+
+  def effective_env_scale_options(env) when is_map(env) do
+    env_scale_options_for_subscription(env, Subscriptions.get_subscription_by_app_id(env.application_id))
+  end
+
+  defp env_scale_options_for_subscription(_env, nil) do
+    %{
+      scale_min: Application.fetch_env!(:lenra, :scale_free_min),
+      scale_max: Application.fetch_env!(:lenra, :scale_free_max)
+    }
+  end
+
+  defp env_scale_options_for_subscription(env, %Subscriptions.Subscription{}) do
+    env =
+      env
+      |> Repo.preload(:scale_options)
+
+    scale_min = Application.fetch_env!(:lenra, :scale_paid_min)
+    scale_max = Application.fetch_env!(:lenra, :scale_paid_max)
+
+    scale_options = env.scale_options || %{}
+
+    scale_min =
+      (scale_options
+       |> Map.get(:min) || scale_min)
+      |> max(scale_min)
+      |> min(scale_max)
+
+    scale_max =
+      (scale_options
+       |> Map.get(:max) || scale_max)
+      |> max(1)
+      |> max(scale_min)
+      |> min(scale_max)
+
+    %{
+      scale_min: scale_min,
+      scale_max: scale_max
+    }
+  end
+
+  def get_env_scale_options(env_id) do
+    Repo.get_by(EnvironmentScaleOptions, environment_id: env_id)
+  end
+
+  def fetch_env_scale_options(env_id) do
+    Repo.fetch_by(EnvironmentScaleOptions, environment_id: env_id)
+  end
+
+  def create_env_scale_options(env_id, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_env_scale_options,
+      EnvironmentScaleOptions.new(env_id, params)
+    )
+    |> Repo.transaction()
+  end
+
+  def update_env_scale_options(env_scale_options, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:updated_env_scale_options, EnvironmentScaleOptions.changeset(env_scale_options, params))
+    |> Repo.transaction()
   end
 end
