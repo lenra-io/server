@@ -269,7 +269,6 @@ defmodule ApplicationRunner.ApplicationServices do
   @doc """
   Set the scale values of an OpenFaaS application.
   """
-  @spec set_app_scale_options(String.t(), map()) :: :ok | {:error, struct} | {:ok, any}
   def set_app_scale_options(function_name, scale_options) do
     labels =
       scale_options
@@ -282,6 +281,7 @@ defmodule ApplicationRunner.ApplicationServices do
          end, to_string(value)}
       end)
       |> Enum.filter(fn {key, _} -> key != nil end)
+      |> Map.new()
 
     set_app_labels(function_name, labels)
   end
