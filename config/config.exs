@@ -122,7 +122,7 @@ config :application_runner, ApplicationRunner.Scheduler, storage: ApplicationRun
 # additional_env_modules: {LenraWeb.ApplicationRunnerAdapter, :additional_env_modules}
 
 config :lenra,
-kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build")
+  kubernetes_build_namespace: System.get_env("KUBERNETES_BUILD_NAMESPACE", "lenra-build")
 
 # Scaling configuration
 config :lenra,

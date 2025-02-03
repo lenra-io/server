@@ -30,7 +30,7 @@ defmodule ApplicationRunner.FakeAppAdapter do
 
   @impl ApplicationRunner.Adapter
   def get_scale_options(_app_name) do
-    %{scale_min: 0, scale_max: 1}
+    %{min: 0, max: 1}
   end
 
   @impl ApplicationRunner.Adapter

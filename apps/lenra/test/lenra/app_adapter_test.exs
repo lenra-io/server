@@ -30,7 +30,8 @@ defmodule LenraWeb.AppAdapterTest do
   describe "get_function_name/1" do
     test "returns function name when app is built", %{app: app, env: env} do
       {:ok, %{inserted_build: build}} =
-        Apps.create_build(app.creator_id, app.id, %{
+        app.creator_id
+        |> Apps.create_build(app.id, %{
           commit_hash: "abcdef"
         })
         |> Repo.transaction()
@@ -68,7 +69,7 @@ defmodule LenraWeb.AppAdapterTest do
 
   describe "get_scale_options/1" do
     test "returns scale options without subscription nor scale options", %{app: app} do
-      assert AppAdapter.get_scale_options(app.service_name) == %{scale_min: 0, scale_max: 1}
+      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 1}
     end
 
     test "returns scale options without subscription with scale options", %{app: app, env: env} do
@@ -77,7 +78,7 @@ defmodule LenraWeb.AppAdapterTest do
         max: 5
       })
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{scale_min: 0, scale_max: 1}
+      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 1}
     end
 
     test "returns scale options with subscription without scale options", %{app: app} do
@@ -91,13 +92,14 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{scale_min: 0, scale_max: 5}
+      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 5}
     end
 
     test "returns scale options with subscription with min scale options", %{app: app, env: env} do
-      {:ok, _} = Apps.create_env_scale_options(env.id, %{
-        min: 2
-      })
+      {:ok, _} =
+        Apps.create_env_scale_options(env.id, %{
+          min: 2
+        })
 
       subscription =
         Subscription.new(%{
@@ -109,13 +111,14 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{scale_min: 2, scale_max: 5}
+      assert AppAdapter.get_scale_options(app.service_name) == %{min: 2, max: 5}
     end
 
     test "returns scale options with subscription with max scale options", %{app: app, env: env} do
-      {:ok, _} = Apps.create_env_scale_options(env.id, %{
-        max: 5
-      })
+      {:ok, _} =
+        Apps.create_env_scale_options(env.id, %{
+          max: 5
+        })
 
       subscription =
         Subscription.new(%{
@@ -127,14 +130,15 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{scale_min: 0, scale_max: 5}
+      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 5}
     end
 
     test "returns scale options with subscription with min and max scale options", %{app: app, env: env} do
-      {:ok, _} = Apps.create_env_scale_options(env.id, %{
-        min: 2,
-        max: 5
-      })
+      {:ok, _} =
+        Apps.create_env_scale_options(env.id, %{
+          min: 2,
+          max: 5
+        })
 
       subscription =
         Subscription.new(%{
@@ -146,14 +150,15 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{scale_min: 2, scale_max: 5}
+      assert AppAdapter.get_scale_options(app.service_name) == %{min: 2, max: 5}
     end
 
     test "returns scale options with subscription with reversed min and max scale options", %{app: app, env: env} do
-      {:ok, _} = Apps.create_env_scale_options(env.id, %{
-        min: 2,
-        max: 1
-      })
+      {:ok, _} =
+        Apps.create_env_scale_options(env.id, %{
+          min: 2,
+          max: 1
+        })
 
       subscription =
         Subscription.new(%{
@@ -165,7 +170,7 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{scale_min: 2, scale_max: 2}
+      assert AppAdapter.get_scale_options(app.service_name) == %{min: 2, max: 2}
     end
   end
 end

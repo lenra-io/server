@@ -126,14 +126,12 @@ defmodule ApplicationRunner.AppSocket do
         context: context
       }
 
-      env_metadata =
-        Map.merge(
-          %Environment.Metadata{
-            env_id: env_id,
-            function_name: function_name
-          },
-          scale_options
-        )
+      env_metadata = %Environment.Metadata{
+        env_id: env_id,
+        function_name: function_name,
+        scale_min: scale_options.min,
+        scale_max: scale_options.max
+      }
 
       {:ok, env_metadata, session_metadata}
     else

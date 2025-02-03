@@ -19,14 +19,11 @@ defmodule Lenra.Apps do
   """
   import Ecto.Query
 
-  alias Lenra.Apps.EnvironmentScaleOptions
   alias ApplicationRunner.ApplicationServices
-
+  alias ApplicationRunner.MongoStorage.MongoUserLink
   alias Lenra.Repo
   alias Lenra.Subscriptions
-
   alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices}
-
   alias Lenra.Kubernetes.ApiServices
 
   alias Lenra.Apps.{
@@ -34,6 +31,7 @@ defmodule Lenra.Apps do
     Build,
     Deployment,
     Environment,
+    EnvironmentScaleOptions,
     Image,
     Logo,
     MainEnv,
@@ -41,8 +39,6 @@ defmodule Lenra.Apps do
     UserEnvironmentAccess,
     UserEnvironmentRole
   }
-
-  alias ApplicationRunner.MongoStorage.MongoUserLink
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
@@ -343,8 +339,7 @@ defmodule Lenra.Apps do
          {:ok, _status} <-
            OpenfaasServices.deploy_app(
              loaded_build.application.service_name,
-             build.build_number,
-             Subscriptions.get_max_replicas(loaded_build.application.id)
+             build.build_number
            ) do
       update_deployment(deployment, status: :waitingForAppReady)
 
@@ -406,9 +401,9 @@ defmodule Lenra.Apps do
           end)
           |> Repo.transaction()
 
-        if Application.fetch_env!(:application_runner, :scale_to_zero) do
-          ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
-        end
+        service_name
+        |> OpenfaasServices.get_function_name(build_number)
+        |> ApplicationServices.set_app_scale_options(effective_env_scale_options(env))
 
         transaction
 
@@ -802,8 +797,8 @@ defmodule Lenra.Apps do
 
   defp env_scale_options_for_subscription(_env, nil) do
     %{
-      scale_min: Application.fetch_env!(:lenra, :scale_free_min),
-      scale_max: Application.fetch_env!(:lenra, :scale_free_max)
+      min: Application.fetch_env!(:lenra, :scale_free_min),
+      max: Application.fetch_env!(:lenra, :scale_free_max)
     }
   end
 
@@ -812,27 +807,27 @@ defmodule Lenra.Apps do
       env
       |> Repo.preload(:scale_options)
 
-    scale_min = Application.fetch_env!(:lenra, :scale_paid_min)
-    scale_max = Application.fetch_env!(:lenra, :scale_paid_max)
+    default_scale_min = Application.fetch_env!(:lenra, :scale_paid_min)
+    default_scale_max = Application.fetch_env!(:lenra, :scale_paid_max)
 
     scale_options = env.scale_options || %{}
 
     scale_min =
       (scale_options
-       |> Map.get(:min) || scale_min)
-      |> max(scale_min)
-      |> min(scale_max)
+       |> Map.get(:min) || default_scale_min)
+      |> max(default_scale_min)
+      |> min(default_scale_max)
 
     scale_max =
       (scale_options
-       |> Map.get(:max) || scale_max)
+       |> Map.get(:max) || default_scale_max)
       |> max(1)
       |> max(scale_min)
-      |> min(scale_max)
+      |> min(default_scale_max)
 
     %{
-      scale_min: scale_min,
-      scale_max: scale_max
+      min: scale_min,
+      max: scale_max
     }
   end
 

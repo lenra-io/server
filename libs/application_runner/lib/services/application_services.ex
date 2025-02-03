@@ -14,9 +14,9 @@ defmodule ApplicationRunner.ApplicationServices do
   @min_scale_label "com.openfaas.scale.min"
   @max_scale_label "com.openfaas.scale.max"
   @scale_factor_label "com.openfaas.scale.factor"
-  @min_scale_default "1"
-  @max_scale_default "5"
-  @scale_factor_default "10"
+  @min_scale_default 1
+  @max_scale_default 5
+  @scale_factor_default 10
 
   defp get_http_context do
     base_url = Application.fetch_env!(:application_runner, :faas_url)
@@ -191,8 +191,8 @@ defmodule ApplicationRunner.ApplicationServices do
   @doc """
   Deploy an application to OpenFaaS.
   """
-  @spec deploy_app(String.t(), String.t(), integer()) :: :ok | {:error, struct} | {:ok, any}
-  def deploy_app(function_name, image_name, replicas) do
+  @spec deploy_app(String.t(), String.t()) :: :ok | {:error, struct} | {:ok, any}
+  def deploy_app(function_name, image_name, scale_options \\ %{}) when is_map(scale_options) do
     Logger.info("Deploy Openfaas application #{function_name} with image #{image_name}")
 
     {base_url, headers} = get_http_context()
@@ -205,9 +205,9 @@ defmodule ApplicationRunner.ApplicationServices do
           function_name,
           image_name,
           %{
-            @min_scale_label => @min_scale_default,
-            @max_scale_label => to_string(replicas),
-            @scale_factor_label => @scale_factor_default
+            @min_scale_label => to_string(Map.get(scale_options, :min, @min_scale_default)),
+            @max_scale_label => to_string(Map.get(scale_options, :max, @max_scale_default)),
+            @scale_factor_label => to_string(Map.get(scale_options, :factor, @scale_factor_default))
           }
         )
       )
@@ -227,19 +227,19 @@ defmodule ApplicationRunner.ApplicationServices do
   @doc """
   Start an OpenFaaS application.
   """
-  @spec start_app(String.t()) :: :ok | {:error, struct} | {:ok, any}
-  def start_app(function_name) do
+  @spec start_app(String.t(), integer()) :: :ok | {:error, struct} | {:ok, any}
+  def start_app(function_name, scale_min \\ 0) do
     Logger.info("Start Openfaas application #{function_name}")
-    set_app_min_scale(function_name, 1)
+    set_app_min_scale(function_name, max(scale_min, 1))
   end
 
   @doc """
   Stop an OpenFaaS application.
   """
-  @spec stop_app(String.t()) :: :ok | {:error, struct} | {:ok, any}
-  def stop_app(function_name) do
+  @spec stop_app(String.t(), integer()) :: :ok | {:error, struct} | {:ok, any}
+  def stop_app(function_name, scale_min \\ 0) do
     Logger.info("Stop Openfaas application #{function_name}")
-    set_app_min_scale(function_name, 0)
+    set_app_min_scale(function_name, max(scale_min, 0))
   end
 
   @doc """
@@ -259,19 +259,31 @@ defmodule ApplicationRunner.ApplicationServices do
   end
 
   @doc """
-  Set the scale values of an OpenFaaS application.
-  """
-  @spec set_app_scale(String.t(), integer(), integer()) :: :ok | {:error, struct} | {:ok, any}
-  def set_app_scale(function_name, min_scale, max_scale) do
-    set_app_labels(function_name, %{@min_scale_label => to_string(min_scale), @max_scale_label => to_string(max_scale)})
-  end
-
-  @doc """
   Set the scale factor of an OpenFaaS application.
   """
   @spec set_app_scale_factor(String.t(), integer()) :: :ok | {:error, struct} | {:ok, any}
   def set_app_scale_factor(function_name, scale_factor) when scale_factor in [0, 100] do
     set_app_labels(function_name, %{@scale_factor_label => to_string(scale_factor)})
+  end
+
+  @doc """
+  Set the scale values of an OpenFaaS application.
+  """
+  @spec set_app_scale_options(String.t(), map()) :: :ok | {:error, struct} | {:ok, any}
+  def set_app_scale_options(function_name, scale_options) do
+    labels =
+      scale_options
+      |> Enum.map(fn {key, value} ->
+        {case key do
+           :scale_min -> @min_scale_label
+           :scale_max -> @max_scale_label
+           :scale_factor -> @scale_factor_label
+           _ -> nil
+         end, to_string(value)}
+      end)
+      |> Enum.filter(fn {key, _} -> key != nil end)
+
+    set_app_labels(function_name, labels)
   end
 
   @doc """
