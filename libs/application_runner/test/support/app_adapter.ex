@@ -29,6 +29,11 @@ defmodule ApplicationRunner.FakeAppAdapter do
   end
 
   @impl ApplicationRunner.Adapter
+  def get_scale_options(_app_name) do
+    %{min: 0, max: 1}
+  end
+
+  @impl ApplicationRunner.Adapter
   def resource_from_params(%{"connect_result" => connect_result}) do
     connect_result
   end

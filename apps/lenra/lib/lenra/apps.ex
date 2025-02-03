@@ -20,12 +20,10 @@ defmodule Lenra.Apps do
   import Ecto.Query
 
   alias ApplicationRunner.ApplicationServices
-
+  alias ApplicationRunner.MongoStorage.MongoUserLink
   alias Lenra.Repo
   alias Lenra.Subscriptions
-
   alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices}
-
   alias Lenra.Kubernetes.ApiServices
 
   alias Lenra.Apps.{
@@ -33,6 +31,7 @@ defmodule Lenra.Apps do
     Build,
     Deployment,
     Environment,
+    EnvironmentScaleOptions,
     Image,
     Logo,
     MainEnv,
@@ -40,8 +39,6 @@ defmodule Lenra.Apps do
     UserEnvironmentAccess,
     UserEnvironmentRole
   }
-
-  alias ApplicationRunner.MongoStorage.MongoUserLink
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
@@ -342,8 +339,7 @@ defmodule Lenra.Apps do
          {:ok, _status} <-
            OpenfaasServices.deploy_app(
              loaded_build.application.service_name,
-             build.build_number,
-             Subscriptions.get_max_replicas(loaded_build.application.id)
+             build.build_number
            ) do
       update_deployment(deployment, status: :waitingForAppReady)
 
@@ -405,7 +401,10 @@ defmodule Lenra.Apps do
           end)
           |> Repo.transaction()
 
-        ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
+        service_name
+        |> OpenfaasServices.get_function_name(build_number)
+        |> ApplicationServices.set_app_scale_options(effective_env_scale_options(env))
+
         transaction
 
       # Function not found in openfaas, 2 retry (10s),
@@ -786,5 +785,72 @@ defmodule Lenra.Apps do
 
   def get_image(image_id) do
     Repo.get(Image, image_id)
+  end
+
+  ###############
+  # Environment Scale Options #
+  ###############
+
+  def effective_env_scale_options(env) when is_map(env) do
+    env_scale_options_for_subscription(env, Subscriptions.get_subscription_by_app_id(env.application_id))
+  end
+
+  defp env_scale_options_for_subscription(_env, nil) do
+    %{
+      min: Application.fetch_env!(:lenra, :scale_free_min),
+      max: Application.fetch_env!(:lenra, :scale_free_max)
+    }
+  end
+
+  defp env_scale_options_for_subscription(env, %Subscriptions.Subscription{}) do
+    env =
+      env
+      |> Repo.preload(:scale_options)
+
+    default_scale_min = Application.fetch_env!(:lenra, :scale_paid_min)
+    default_scale_max = Application.fetch_env!(:lenra, :scale_paid_max)
+
+    scale_options = env.scale_options || %{}
+
+    scale_min =
+      (scale_options
+       |> Map.get(:min) || default_scale_min)
+      |> max(default_scale_min)
+      |> min(default_scale_max)
+
+    scale_max =
+      (scale_options
+       |> Map.get(:max) || default_scale_max)
+      |> max(1)
+      |> max(scale_min)
+      |> min(default_scale_max)
+
+    %{
+      min: scale_min,
+      max: scale_max
+    }
+  end
+
+  def get_env_scale_options(env_id) do
+    Repo.get_by(EnvironmentScaleOptions, environment_id: env_id)
+  end
+
+  def fetch_env_scale_options(env_id) do
+    Repo.fetch_by(EnvironmentScaleOptions, environment_id: env_id)
+  end
+
+  def create_env_scale_options(env_id, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_env_scale_options,
+      EnvironmentScaleOptions.new(env_id, params)
+    )
+    |> Repo.transaction()
+  end
+
+  def update_env_scale_options(env_scale_options, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:updated_env_scale_options, EnvironmentScaleOptions.changeset(env_scale_options, params))
+    |> Repo.transaction()
   end
 end

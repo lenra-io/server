@@ -28,11 +28,11 @@ defmodule Lenra.OpenfaasServices do
     String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
   end
 
-  def deploy_app(service_name, build_number, replicas) do
+  def deploy_app(service_name, build_number, scale_options \\ %{}) when is_map(scale_options) do
     ApplicationServices.deploy_app(
       get_function_name(service_name, build_number),
       Apps.image_name(service_name, build_number),
-      replicas
+      scale_options
     )
   end
 

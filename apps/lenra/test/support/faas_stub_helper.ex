@@ -118,4 +118,10 @@ defmodule Lenra.FaasStub do
   def push(app_name, call_result) do
     Agent.update(__MODULE__, &Map.put(&1, app_name, Map.get(&1, app_name, []) ++ [call_result]))
   end
+
+  def get_function_name(service_name, build_number) do
+    lenra_env = Application.fetch_env!(:lenra, :lenra_env)
+
+    String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
+  end
 end

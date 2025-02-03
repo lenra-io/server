@@ -46,7 +46,7 @@ defmodule ApplicationRunner.ApplicationServicesTest do
     ApplicationServices.start_app(@function_name)
   end
 
-  test "stop app" do
+  test "start app with min scale" do
     bypass = Bypass.open(port: 1234)
     Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", app_info_handler())
     Bypass.stub(bypass, "PUT", "/system/functions", &handle_resp/1)
@@ -60,14 +60,38 @@ defmodule ApplicationRunner.ApplicationServicesTest do
         {:ok, body, conn} = Plug.Conn.read_body(conn)
         app = Jason.decode!(body)
 
-        assert "1" = app["labels"]["com.openfaas.scale.min"]
+        assert "2" = app["labels"]["com.openfaas.scale.min"]
 
         conn
         |> send_resp(200, "ok")
       end
     )
 
-    ApplicationServices.start_app(@function_name)
+    ApplicationServices.start_app(@function_name, 2)
+  end
+
+  test "stop app with min scale" do
+    bypass = Bypass.open(port: 1234)
+    Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", app_info_handler())
+    Bypass.stub(bypass, "PUT", "/system/functions", &handle_resp/1)
+
+    # Check scale up
+    Bypass.expect_once(
+      bypass,
+      "PUT",
+      "/system/functions",
+      fn conn ->
+        {:ok, body, conn} = Plug.Conn.read_body(conn)
+        app = Jason.decode!(body)
+
+        assert "2" = app["labels"]["com.openfaas.scale.min"]
+
+        conn
+        |> send_resp(200, "ok")
+      end
+    )
+
+    ApplicationServices.stop_app(@function_name, 2)
   end
 
   @tag telemetry_listen: [:application_runner, :alert, :event]
@@ -100,7 +124,7 @@ defmodule ApplicationRunner.ApplicationServicesTest do
   end
 
   @tag telemetry_listen: [:application_runner, :alert, :event]
-  test "failing app info while stoping app" do
+  test "failing app info while stopping app" do
     bypass = Bypass.open(port: 1234)
     Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &handle_error_resp/1)
 
