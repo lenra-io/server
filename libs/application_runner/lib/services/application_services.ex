@@ -403,12 +403,12 @@ defmodule ApplicationRunner.ApplicationServices do
         TechnicalError.error_404_tuple(body)
 
       500 ->
-        formated_error =
+        formatted_error =
           body
           |> Errors.format_error_with_stacktrace()
           |> TechnicalError.error_500()
 
-        Telemetry.event(:alert, %{}, formated_error)
+        Telemetry.event(:alert, %{}, formatted_error)
         TechnicalError.error_500_tuple(body)
 
       504 ->

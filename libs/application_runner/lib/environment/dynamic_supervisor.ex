@@ -30,10 +30,10 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
 
   @spec start_env(term()) ::
           {:error, {:already_started, pid()}} | {:ok, pid()} | {:error, term()}
-  defp start_env(%Environment.Metadata{} = env_metadata) do
+  defp start_env(%Environment.Metadata{scale_min: scale_min} = env_metadata) do
     Logger.debug("#{__MODULE__} Start Environment Supervisor with env_metadata: #{inspect(env_metadata)}")
 
-    with {:ok, _status} <- ApplicationServices.start_app(env_metadata.function_name),
+    with {:ok, _status} <- ApplicationServices.start_app(env_metadata.function_name, scale_min),
          {:ok, pid} <-
            DynamicSupervisor.start_child(
              __MODULE__,
