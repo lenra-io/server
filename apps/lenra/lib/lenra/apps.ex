@@ -848,9 +848,37 @@ defmodule Lenra.Apps do
     |> Repo.transaction()
   end
 
-  def update_env_scale_options(env_scale_options, params) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:updated_env_scale_options, EnvironmentScaleOptions.changeset(env_scale_options, params))
-    |> Repo.transaction()
+  def set_env_scale_options(env_id, params) do
+    with {:ok, scale_opt} <-
+           Repo.insert(
+             EnvironmentScaleOptions.new(env_id, params),
+             on_conflict: [set: env_scale_opt_to_list(params)]
+           ),
+         %{
+           environment:
+             %Environment{
+               application: %App{service_name: service_name},
+               deployment: %Deployment{build: %Build{build_number: build_number}}
+             } = env
+         } <- Repo.preload(scale_opt, environment: [:application, deployment: [:build]]),
+         function_name <- OpenfaasServices.get_function_name(service_name, build_number),
+         effective_scale_opts <- effective_env_scale_options(env),
+         {:ok} <- Environment.DynamicSupervisor.update_env_scale_options(env_id, effective_scale_opts),
+         {:ok} <- ApplicationServices.set_app_scale_options(function_name, effective_scale_opts) do
+      {:ok, scale_opt}
+    end
+  end
+
+  defp env_scale_opt_to_list(params) do
+    []
+    |> add_present(params, :min)
+    |> add_present(params, :max)
+  end
+
+  defp add_present(list, map, key) do
+    case Map.has_key?(map, key) do
+      nil -> list
+      value -> [{key, value} | list]
+    end
   end
 end

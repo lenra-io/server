@@ -44,10 +44,20 @@ defmodule Lenra.Apps.DeploymentTest do
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
 
+      function_name = FaasStub.get_function_name(app.service_name, build.build_number)
+
       FaasStub.expect_get_function_once(
         bypass,
         %{"ok" => "200"},
-        FaasStub.get_function_name(app.service_name, build.build_number)
+        function_name
+      )
+      # Not found since spawn in another process
+      FaasStub.expect_update_function_once(bypass, %{"ok" => "200"})
+
+      FaasStub.expect_get_function_once(
+        bypass,
+        %{"ok" => "200"},
+        function_name
       )
 
       Apps.create_deployment(env.id, build.id, app.creator_id)

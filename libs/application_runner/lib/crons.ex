@@ -22,13 +22,12 @@ defmodule ApplicationRunner.Crons do
             env_id,
             function_name
           ) do
-        scale_options = @adapter_mod.get_scale_options(app_name)
+        scale_options = @adapter_mod.get_scale_options(env_id)
 
         with {:ok, _pid} <-
                Environment.ensure_env_started(%Environment.Metadata{
                  env_id: env_id,
                  function_name: function_name,
-                 # TODO: Get real scale_min and scale_max from the environment.
                  scale_min: scale_options.min,
                  scale_max: scale_options.max
                }) do

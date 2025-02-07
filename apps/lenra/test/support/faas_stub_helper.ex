@@ -34,6 +34,10 @@ defmodule Lenra.FaasStub do
     expect_once("/system/function/#{service_name}", "GET", bypass, result)
   end
 
+  def expect_update_function_once(bypass, result) do
+    expect_once("/system/functions", "PUT", bypass, result)
+  end
+
   def expect_deploy_app_once(bypass, result) do
     expect_once("/system/functions", "POST", bypass, result)
   end

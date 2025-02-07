@@ -67,13 +67,12 @@ defmodule LenraWeb.AppAdapter do
   end
 
   @impl ApplicationRunner.Adapter
-  def get_scale_options(app_name) do
-    application =
-      App
-      |> Repo.get_by(service_name: app_name)
-      |> Repo.preload(main_env: [:environment])
+  def get_scale_options(env_id) do
+    environment =
+      Environment
+      |> Repo.get(env_id)
 
-    Apps.effective_env_scale_options(application.main_env.environment)
+    Apps.effective_env_scale_options(environment)
   end
 
   @impl ApplicationRunner.Adapter

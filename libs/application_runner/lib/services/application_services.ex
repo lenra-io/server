@@ -274,9 +274,9 @@ defmodule ApplicationRunner.ApplicationServices do
       scale_options
       |> Enum.map(fn {key, value} ->
         {case key do
-           :scale_min -> @min_scale_label
-           :scale_max -> @max_scale_label
-           :scale_factor -> @scale_factor_label
+           :min -> @min_scale_label
+           :max -> @max_scale_label
+           :factor -> @scale_factor_label
            _ -> nil
          end, to_string(value)}
       end)

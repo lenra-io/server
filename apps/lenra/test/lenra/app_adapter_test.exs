@@ -68,20 +68,20 @@ defmodule LenraWeb.AppAdapterTest do
   end
 
   describe "get_scale_options/1" do
-    test "returns scale options without subscription nor scale options", %{app: app} do
-      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 1}
+    test "returns scale options without subscription nor scale options", %{env: env} do
+      assert AppAdapter.get_scale_options(env.id) == %{min: 0, max: 1}
     end
 
-    test "returns scale options without subscription with scale options", %{app: app, env: env} do
+    test "returns scale options without subscription with scale options", %{env: env} do
       Apps.create_env_scale_options(env.id, %{
         min: 2,
         max: 5
       })
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 1}
+      assert AppAdapter.get_scale_options(env.id) == %{min: 0, max: 1}
     end
 
-    test "returns scale options with subscription without scale options", %{app: app} do
+    test "returns scale options with subscription without scale options", %{app: app, env: env} do
       subscription =
         Subscription.new(%{
           application_id: app.id,
@@ -92,7 +92,7 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 5}
+      assert AppAdapter.get_scale_options(env.id) == %{min: 0, max: 5}
     end
 
     test "returns scale options with subscription with min scale options", %{app: app, env: env} do
@@ -111,7 +111,7 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{min: 2, max: 5}
+      assert AppAdapter.get_scale_options(env.id) == %{min: 2, max: 5}
     end
 
     test "returns scale options with subscription with max scale options", %{app: app, env: env} do
@@ -130,7 +130,7 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{min: 0, max: 5}
+      assert AppAdapter.get_scale_options(env.id) == %{min: 0, max: 5}
     end
 
     test "returns scale options with subscription with min and max scale options", %{app: app, env: env} do
@@ -150,7 +150,7 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{min: 2, max: 5}
+      assert AppAdapter.get_scale_options(env.id) == %{min: 2, max: 5}
     end
 
     test "returns scale options with subscription with reversed min and max scale options", %{app: app, env: env} do
@@ -170,7 +170,7 @@ defmodule LenraWeb.AppAdapterTest do
 
       Repo.insert(subscription)
 
-      assert AppAdapter.get_scale_options(app.service_name) == %{min: 2, max: 2}
+      assert AppAdapter.get_scale_options(env.id) == %{min: 2, max: 2}
     end
   end
 end

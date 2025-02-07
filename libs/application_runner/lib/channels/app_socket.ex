@@ -115,7 +115,7 @@ defmodule ApplicationRunner.AppSocket do
     with function_name when is_bitstring(function_name) <-
            adapter_mod.get_function_name(app_name),
          env_id <- adapter_mod.get_env_id(app_name),
-         scale_options <- adapter_mod.get_scale_options(app_name) do
+         scale_options <- adapter_mod.get_scale_options(env_id) do
       # prepare the assigns to the session/environment
       session_metadata = %Session.Metadata{
         env_id: env_id,
