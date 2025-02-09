@@ -20,12 +20,11 @@ defmodule Lenra.Apps do
   import Ecto.Query
 
   alias ApplicationRunner.ApplicationServices
-
+  alias ApplicationRunner.Environment.DynamicSupervisor
+  alias ApplicationRunner.MongoStorage.MongoUserLink
   alias Lenra.Repo
   alias Lenra.Subscriptions
-
   alias Lenra.{Accounts, EmailWorker, GitlabApiServices, OpenfaasServices}
-
   alias Lenra.Kubernetes.ApiServices
 
   alias Lenra.Apps.{
@@ -33,6 +32,7 @@ defmodule Lenra.Apps do
     Build,
     Deployment,
     Environment,
+    EnvironmentScaleOptions,
     Image,
     Logo,
     MainEnv,
@@ -40,8 +40,6 @@ defmodule Lenra.Apps do
     UserEnvironmentAccess,
     UserEnvironmentRole
   }
-
-  alias ApplicationRunner.MongoStorage.MongoUserLink
 
   alias Lenra.Errors.{BusinessError, TechnicalError}
 
@@ -304,14 +302,6 @@ defmodule Lenra.Apps do
     end)
   end
 
-  defp update_build_after_pipeline(multi) do
-    multi
-    |> Ecto.Multi.update(:update_build_after_pipeline, fn
-      %{inserted_build: %Build{} = build, gitlab_pipeline: pipeline} ->
-        Build.changeset(build, %{"pipeline_id" => pipeline["id"]})
-    end)
-  end
-
   def update_build(build, params) do
     Ecto.Multi.new()
     |> Ecto.Multi.update(:updated_build, Build.update(build, params))
@@ -342,8 +332,7 @@ defmodule Lenra.Apps do
          {:ok, _status} <-
            OpenfaasServices.deploy_app(
              loaded_build.application.service_name,
-             build.build_number,
-             Subscriptions.get_max_replicas(loaded_build.application.id)
+             build.build_number
            ) do
       update_deployment(deployment, status: :waitingForAppReady)
 
@@ -392,21 +381,23 @@ defmodule Lenra.Apps do
       when retry <= 120 do
     case OpenfaasServices.is_deploy(service_name, build_number) do
       true ->
-        transaction =
-          Ecto.Multi.new()
-          |> Ecto.Multi.update(
-            :updated_deployment,
-            Ecto.Changeset.change(deployment, status: :success)
-          )
-          |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
-            env
-            |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
-            |> Repo.update()
-          end)
-          |> Repo.transaction()
+        scale_opts = effective_env_scale_options(env)
 
-        ApplicationServices.stop_app("#{OpenfaasServices.get_function_name(service_name, build_number)}")
-        transaction
+        service_name
+        |> OpenfaasServices.get_function_name(build_number)
+        |> ApplicationServices.set_app_scale_options(scale_opts)
+
+        Ecto.Multi.new()
+        |> Ecto.Multi.update(
+          :updated_deployment,
+          Ecto.Changeset.change(deployment, status: :success)
+        )
+        |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
+          env
+          |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
+          |> Repo.update()
+        end)
+        |> Repo.transaction()
 
       # Function not found in openfaas, 2 retry (10s),
       # To let openfaas deploy in case of overload, after 2 retry -> failure
@@ -786,5 +777,102 @@ defmodule Lenra.Apps do
 
   def get_image(image_id) do
     Repo.get(Image, image_id)
+  end
+
+  ###############
+  # Environment Scale Options #
+  ###############
+
+  def effective_env_scale_options(env) when is_map(env) do
+    env_scale_options_for_subscription(env, Subscriptions.get_subscription_by_app_id(env.application_id))
+  end
+
+  defp env_scale_options_for_subscription(_env, nil) do
+    %{
+      min: Application.fetch_env!(:lenra, :scale_free_min),
+      max: Application.fetch_env!(:lenra, :scale_free_max)
+    }
+  end
+
+  defp env_scale_options_for_subscription(env, %Subscriptions.Subscription{}) do
+    env =
+      env
+      |> Repo.preload(:scale_options)
+
+    default_scale_min = Application.fetch_env!(:lenra, :scale_paid_min)
+    default_scale_max = Application.fetch_env!(:lenra, :scale_paid_max)
+
+    scale_options = env.scale_options || %{}
+
+    scale_min =
+      (scale_options
+       |> Map.get(:min) || default_scale_min)
+      |> max(default_scale_min)
+      |> min(default_scale_max)
+
+    scale_max =
+      (scale_options
+       |> Map.get(:max) || default_scale_max)
+      |> max(1)
+      |> max(scale_min)
+      |> min(default_scale_max)
+
+    %{
+      min: scale_min,
+      max: scale_max
+    }
+  end
+
+  def get_env_scale_options(env_id) do
+    Repo.get_by(EnvironmentScaleOptions, environment_id: env_id)
+  end
+
+  def fetch_env_scale_options(env_id) do
+    Repo.fetch_by(EnvironmentScaleOptions, environment_id: env_id)
+  end
+
+  def create_env_scale_options(env_id, params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :inserted_env_scale_options,
+      EnvironmentScaleOptions.new(env_id, params)
+    )
+    |> Repo.transaction()
+  end
+
+  def set_env_scale_options(env_id, params) do
+    with {:ok, scale_opt} <-
+           Repo.insert(
+             EnvironmentScaleOptions.new(env_id, params),
+             on_conflict: [set: env_scale_opt_to_list(params)]
+           ),
+         %{
+           environment:
+             %Environment{
+               application: %App{service_name: service_name},
+               deployment: %Deployment{build: %Build{build_number: build_number}}
+             } = env
+         } <- Repo.preload(scale_opt, environment: [:application, deployment: [:build]]),
+         function_name <- OpenfaasServices.get_function_name(service_name, build_number),
+         effective_scale_opts <- effective_env_scale_options(env),
+         :ok <- DynamicSupervisor.update_env_scale_options(env_id, effective_scale_opts),
+         {:ok, _} <- ApplicationServices.set_app_scale_options(function_name, effective_scale_opts) do
+      {:ok, scale_opt}
+    end
+  end
+
+  defp env_scale_opt_to_list(params) do
+    []
+    |> add_present(params, :min)
+    |> add_present(params, :max)
+  end
+
+  @spec add_present(list :: list, map :: map, key :: atom) :: list
+  defp add_present(list, map, key) do
+    if Map.has_key?(map, key) do
+      [{key, Map.fetch(map, key)} | list]
+    else
+      list
+    end
   end
 end

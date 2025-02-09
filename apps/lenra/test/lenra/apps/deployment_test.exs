@@ -2,7 +2,7 @@ defmodule Lenra.Apps.DeploymentTest do
   @moduledoc """
     Test the deployment services
   """
-  use Lenra.RepoCase, async: true
+  use Lenra.RepoCase, async: false
 
   alias Lenra.{
     FaasStub,
@@ -36,12 +36,6 @@ defmodule Lenra.Apps.DeploymentTest do
     app
   end
 
-  def get_function_name(service_name, build_number) do
-    lenra_env = Application.fetch_env!(:lenra, :lenra_env)
-
-    String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
-  end
-
   describe "create" do
     test "deployment successfully", %{app: app} do
       bypass = FaasStub.create_faas_stub()
@@ -50,11 +44,14 @@ defmodule Lenra.Apps.DeploymentTest do
       env = Enum.at(Repo.all(Environment), 0)
       build = Enum.at(Repo.all(Build), 0)
 
-      FaasStub.expect_get_function_once(
-        bypass,
-        %{"ok" => "200"},
-        get_function_name(app.service_name, build.build_number)
-      )
+      function_name = FaasStub.get_function_name(app.service_name, build.build_number)
+
+      Bypass.stub(bypass, "GET", "/system/function/#{function_name}", fn conn ->
+        conn
+        |> Plug.Conn.resp(200, Jason.encode!(%{"availableReplicas" => 1}))
+      end)
+
+      FaasStub.expect_update_function_once(bypass, %{"ok" => "200"})
 
       Apps.create_deployment(env.id, build.id, app.creator_id)
 
@@ -62,6 +59,8 @@ defmodule Lenra.Apps.DeploymentTest do
 
       assert nil != Enum.at(Repo.all(Deployment), 0)
       assert nil != Repo.get_by(Deployment, environment_id: env.id, build_id: build.id)
+      # Wait for async deployment check (spawned process)
+      Process.sleep(5)
     end
 
     test "deployment but wrong environment", %{app: app} do

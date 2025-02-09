@@ -34,6 +34,10 @@ defmodule Lenra.FaasStub do
     expect_once("/system/function/#{service_name}", "GET", bypass, result)
   end
 
+  def expect_update_function_once(bypass, result) do
+    expect_once("/system/functions", "PUT", bypass, result)
+  end
+
   def expect_deploy_app_once(bypass, result) do
     expect_once("/system/functions", "POST", bypass, result)
   end
@@ -117,5 +121,11 @@ defmodule Lenra.FaasStub do
 
   def push(app_name, call_result) do
     Agent.update(__MODULE__, &Map.put(&1, app_name, Map.get(&1, app_name, []) ++ [call_result]))
+  end
+
+  def get_function_name(service_name, build_number) do
+    lenra_env = Application.fetch_env!(:lenra, :lenra_env)
+
+    String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
   end
 end

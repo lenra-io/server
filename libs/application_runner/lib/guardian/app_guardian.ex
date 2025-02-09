@@ -6,14 +6,8 @@ defmodule ApplicationRunner.Guardian.AppGuardian do
   use Guardian, otp_app: :application_runner
 
   alias ApplicationRunner.Environment.TokenAgent
-
-  alias ApplicationRunner.{
-    Environment,
-    MongoStorage,
-    Session
-  }
-
-  alias ApplicationRunner.Errors.{BusinessError, TechnicalError}
+  alias ApplicationRunner.Errors.BusinessError
+  alias ApplicationRunner.MongoStorage
 
   require Logger
 

@@ -24,8 +24,6 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
     }
   }
   @view %{"_type" => "text", "value" => "test"}
-
-  @function_name Ecto.UUID.generate()
   @session_id 1337
 
   setup do
@@ -36,16 +34,16 @@ defmodule ApplicationRunner.Environment.ViewDynSupTest do
 
     env_metadata = %Environment.Metadata{
       env_id: env_id,
-      function_name: "env_#{env_id}"
+      function_name: "env_#{env_id}",
+      scale_min: 0,
+      scale_max: 1
     }
 
     {:ok, _pid} = start_supervised({Environment.Supervisor, env_metadata})
 
-    # TODO: This is causing the tests to fail because the app
-    # (or something in the test environment) is already closed by the time this line runs
-    # on_exit(fn ->
-    #   Swarm.unregister_name(Environment.Supervisor.get_name(env_id))
-    # end)
+    on_exit(fn ->
+      Swarm.unregister_name(Environment.Supervisor.get_name(env_id))
+    end)
 
     {:ok, env_id: env_id}
   end

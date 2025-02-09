@@ -7,7 +7,6 @@ defmodule Lenra.Apps.App do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-
   alias Lenra.Apps.{Build, Environment, MainEnv}
 
   @type t :: %__MODULE__{}

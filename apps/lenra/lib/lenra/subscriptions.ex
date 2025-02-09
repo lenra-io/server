@@ -30,6 +30,7 @@ defmodule Lenra.Subscriptions do
     end
   end
 
+  @deprecated "Use Lenra.Apps.effective_env_scale_options/1"
   def get_max_replicas(application_id) do
     if get_subscription_by_app_id(application_id) != nil do
       5

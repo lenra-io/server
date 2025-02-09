@@ -18,5 +18,10 @@ defmodule ApplicationRunner.Adapter do
   """
   @callback get_env_id(String.t()) :: number()
 
+  @doc """
+    Override this function to return the scale options from the env id to the server/devtools needs
+  """
+  @callback get_scale_options(integer()) :: %{min: number(), max: number()}
+
   @callback resource_from_params(map()) :: {:ok, number, any(), map()} | {:error, any()}
 end

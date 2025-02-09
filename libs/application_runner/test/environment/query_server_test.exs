@@ -1,5 +1,5 @@
 defmodule ApplicationRunner.Environment.QueryServerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
   alias ApplicationRunner.Environment.{
     MongoInstance,

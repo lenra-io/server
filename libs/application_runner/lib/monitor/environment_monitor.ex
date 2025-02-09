@@ -15,6 +15,15 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
       Logger.error("#{__MODULE__} fail in monitor with metadata #{inspect(metadata)} and error: #{inspect(e)}")
   end
 
+  def update_scale_options(pid, scale_opts) do
+    GenServer.call(__MODULE__, {:update_scale_opts, pid, scale_opts})
+  rescue
+    e ->
+      Logger.error(
+        "#{__MODULE__} fail in updating scale options with scale_opts #{inspect(scale_opts)} and error: #{inspect(e)}"
+      )
+  end
+
   def start_link(_opts) do
     Logger.debug("Start #{__MODULE__}")
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -32,18 +41,29 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
     {:reply, :ok, Map.put(state, pid, {metadata})}
   end
 
+  def handle_call({:update_scale_opts, pid, scale_opts}, _from, state) do
+    {metadata} = Map.get(state, pid)
+
+    Logger.debug(
+      "#{__MODULE__} update scale options #{inspect(pid)} with metadata #{inspect(metadata)} and scale_opts #{inspect(scale_opts)}"
+    )
+
+    metadata =
+      metadata
+      |> Map.put(:scale_min, scale_opts.min)
+      |> Map.put(:scale_max, scale_opts.max)
+
+    {:reply, :ok, Map.put(state, pid, {metadata})}
+  end
+
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
     {{metadata}, new_state} = Map.pop(state, pid)
-    base_url = Application.fetch_env!(:application_runner, :faas_url)
-    auth = Application.fetch_env!(:application_runner, :faas_auth)
 
-    # env_id = Map.get(metadata, :env_id)
-    function_name = Map.get(metadata, :function_name)
     Logger.debug("#{__MODULE__} handle down #{inspect(pid)} with metadata #{inspect(metadata)}")
 
-    if Application.fetch_env!(:application_runner, :scale_to_zero) do
-      ApplicationServices.stop_app(function_name)
-    end
+    metadata
+    |> Map.get(:function_name)
+    |> ApplicationServices.stop_app(Map.get(metadata, :scale_min, 0))
 
     {:noreply, new_state}
   end

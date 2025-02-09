@@ -2,27 +2,38 @@ defmodule ApplicationRunner.Crons do
   @moduledoc """
     ApplicationRunner.Crons delegates methods to the corresponding service.
   """
-
   import Ecto.Query, only: [from: 2, from: 1]
 
   alias ApplicationRunner.Crons.Cron
   alias ApplicationRunner.Errors.{BusinessError, TechnicalError}
-  alias ApplicationRunner.{AppSocket, Environment, EventHandler, Repo}
+  alias ApplicationRunner.{Environment, EventHandler, Repo}
   alias Crontab.CronExpression.{Composer, Parser}
 
-  def run_env_cron(
-        listener,
-        props,
-        event,
-        env_id,
-        function_name
-      ) do
-    with {:ok, _pid} <-
-           Environment.ensure_env_started(%Environment.Metadata{
-             env_id: env_id,
-             function_name: function_name
-           }) do
-      EventHandler.send_env_event(env_id, listener, props, event)
+  defmacro __using__(opts) do
+    adapter_mod = Keyword.fetch!(opts, :adapter)
+
+    quote do
+      @adapter_mod unquote(adapter_mod)
+
+      def run_env_cron(
+            listener,
+            props,
+            event,
+            env_id,
+            function_name
+          ) do
+        scale_options = @adapter_mod.get_scale_options(env_id)
+
+        with {:ok, _pid} <-
+               Environment.ensure_env_started(%Environment.Metadata{
+                 env_id: env_id,
+                 function_name: function_name,
+                 scale_min: scale_options.min,
+                 scale_max: scale_options.max
+               }) do
+          EventHandler.send_env_event(env_id, listener, props, event)
+        end
+      end
     end
   end
 

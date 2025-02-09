@@ -30,17 +30,10 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
 
   @spec start_env(term()) ::
           {:error, {:already_started, pid()}} | {:ok, pid()} | {:error, term()}
-  defp start_env(%Environment.Metadata{} = env_metadata) do
+  defp start_env(%Environment.Metadata{scale_min: scale_min} = env_metadata) do
     Logger.debug("#{__MODULE__} Start Environment Supervisor with env_metadata: #{inspect(env_metadata)}")
 
-    start_result =
-      if Application.fetch_env!(:application_runner, :scale_to_zero) do
-        ApplicationServices.start_app(env_metadata.function_name)
-      else
-        {:ok, nil}
-      end
-
-    with {:ok, _status} <- start_result,
+    with {:ok, _status} <- ApplicationServices.start_app(env_metadata.function_name, scale_min),
          {:ok, pid} <-
            DynamicSupervisor.start_child(
              __MODULE__,
@@ -92,18 +85,23 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
   @spec stop_env(number()) :: :ok | {:error, LC.BusinessError.t()}
   def stop_env(env_id) do
     Logger.debug("Stopping environment for env_id: #{env_id}")
-    name = Environment.Supervisor.get_name(env_id)
 
-    case Swarm.whereis_name(name) do
+    case get_env_pid(env_id) do
       :undefined ->
-        Logger.error("Failed to find supervision tree for name: #{inspect(name)}")
+        Logger.error("Failed to find supervision tree for env_id: #{inspect(env_id)}")
         BusinessError.env_not_started_tuple()
 
       pid ->
-        Logger.info("Stopping environment supervision tree for name: #{inspect(name)}")
+        Logger.info("Stopping environment supervision tree for env_id: #{inspect(env_id)}")
         DynamicSupervisor.terminate_child(__MODULE__, pid)
         # Supervisor.stop(pid)
     end
+  end
+
+  defp get_env_pid(env_id) do
+    env_id
+    |> Environment.Supervisor.get_name()
+    |> Swarm.whereis_name()
   end
 
   def session_stopped(env_id) do
@@ -132,6 +130,18 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
       )
 
       stop_env(env_id)
+    end
+  end
+
+  @spec update_env_scale_options(integer(), map()) :: :ok
+  def update_env_scale_options(env_id, scale_opts) do
+    case get_env_pid(env_id) do
+      :undefined ->
+        :ok
+
+      pid ->
+        Logger.info("Updating environment scale options in EnvironmentMonitor for env_id: #{inspect(env_id)}")
+        EnvironmentMonitor.update_scale_options(pid, scale_opts)
     end
   end
 end

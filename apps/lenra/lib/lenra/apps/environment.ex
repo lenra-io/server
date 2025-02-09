@@ -7,8 +7,7 @@ defmodule Lenra.Apps.Environment do
   import Ecto.Changeset
 
   alias Lenra.Accounts.User
-  alias Lenra.Apps.{App, Deployment}
-  alias Lenra.Apps.UserEnvironmentAccess
+  alias Lenra.Apps.{App, Deployment, EnvironmentScaleOptions, UserEnvironmentAccess}
 
   @type t :: %__MODULE__{}
 
@@ -30,6 +29,7 @@ defmodule Lenra.Apps.Environment do
     belongs_to(:creator, User)
     belongs_to(:deployment, Deployment)
     many_to_many(:shared_with, User, join_through: UserEnvironmentAccess)
+    has_one(:scale_options, EnvironmentScaleOptions, foreign_key: :environment_id)
 
     timestamps()
   end

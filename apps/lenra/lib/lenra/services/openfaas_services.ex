@@ -10,10 +10,6 @@ defmodule Lenra.OpenfaasServices do
 
   require Logger
 
-  @min_scale_label "com.openfaas.scale.min"
-  @max_scale_label "com.openfaas.scale.max"
-  @min_scale_default "1"
-
   defp get_http_context do
     base_url = Application.fetch_env!(:lenra, :faas_url)
     auth = Application.fetch_env!(:lenra, :faas_auth)
@@ -28,11 +24,11 @@ defmodule Lenra.OpenfaasServices do
     String.downcase("#{lenra_env}-#{service_name}-#{build_number}")
   end
 
-  def deploy_app(service_name, build_number, replicas) do
+  def deploy_app(service_name, build_number, scale_options \\ %{}) when is_map(scale_options) do
     ApplicationServices.deploy_app(
       get_function_name(service_name, build_number),
       Apps.image_name(service_name, build_number),
-      replicas
+      scale_options
     )
   end
 
