@@ -862,8 +862,8 @@ defmodule Lenra.Apps do
          } <- Repo.preload(scale_opt, environment: [:application, deployment: [:build]]),
          function_name <- OpenfaasServices.get_function_name(service_name, build_number),
          effective_scale_opts <- effective_env_scale_options(env),
-         {:ok} <- Environment.DynamicSupervisor.update_env_scale_options(env_id, effective_scale_opts),
-         {:ok} <- ApplicationServices.set_app_scale_options(function_name, effective_scale_opts) do
+         :ok <- ApplicationRunner.Environment.DynamicSupervisor.update_env_scale_options(env_id, effective_scale_opts),
+         {:ok, _} <- ApplicationServices.set_app_scale_options(function_name, effective_scale_opts) do
       {:ok, scale_opt}
     end
   end
@@ -874,10 +874,12 @@ defmodule Lenra.Apps do
     |> add_present(params, :max)
   end
 
+  @spec add_present(list :: list, map :: map, key :: atom) :: list
   defp add_present(list, map, key) do
-    case Map.has_key?(map, key) do
-      nil -> list
-      value -> [{key, value} | list]
+    if Map.has_key?(map, key) do
+      [{key, Map.fetch(map, key)} | list]
+    else
+      list
     end
   end
 end
