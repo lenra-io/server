@@ -1,6 +1,6 @@
 defmodule ApplicationRunner.Session do
   @moduledoc """
-    ApplicationRunner.Session manage all lenra session fonctionnality
+    ApplicationRunner.Session manage all lenra session functionality
   """
 
   alias ApplicationRunner.Session
