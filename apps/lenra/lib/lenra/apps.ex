@@ -20,6 +20,7 @@ defmodule Lenra.Apps do
   import Ecto.Query
 
   alias ApplicationRunner.ApplicationServices
+  alias ApplicationRunner.Environment.DynamicSupervisor
   alias ApplicationRunner.MongoStorage.MongoUserLink
   alias Lenra.Repo
   alias Lenra.Subscriptions
@@ -298,14 +299,6 @@ defmodule Lenra.Apps do
     end)
     |> Ecto.Multi.insert(:inserted_build, fn %{build_number: build_number} ->
       Build.new(creator_id, app_id, build_number, params)
-    end)
-  end
-
-  defp update_build_after_pipeline(multi) do
-    multi
-    |> Ecto.Multi.update(:update_build_after_pipeline, fn
-      %{inserted_build: %Build{} = build, gitlab_pipeline: pipeline} ->
-        Build.changeset(build, %{"pipeline_id" => pipeline["id"]})
     end)
   end
 
@@ -862,7 +855,7 @@ defmodule Lenra.Apps do
          } <- Repo.preload(scale_opt, environment: [:application, deployment: [:build]]),
          function_name <- OpenfaasServices.get_function_name(service_name, build_number),
          effective_scale_opts <- effective_env_scale_options(env),
-         :ok <- ApplicationRunner.Environment.DynamicSupervisor.update_env_scale_options(env_id, effective_scale_opts),
+         :ok <- DynamicSupervisor.update_env_scale_options(env_id, effective_scale_opts),
          {:ok, _} <- ApplicationServices.set_app_scale_options(function_name, effective_scale_opts) do
       {:ok, scale_opt}
     end
