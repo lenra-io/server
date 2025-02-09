@@ -7,6 +7,20 @@ defmodule ApplicationRunner.Environment.DynamixSupervisorTest do
 
   @function_name Ecto.UUID.generate()
 
+  setup do
+    {:ok, %{id: env_id}} = Repo.insert(Contract.Environment.new())
+
+    bypass = Bypass.open(port: 1234)
+    Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &handle_app_info_resp/1)
+    Bypass.stub(bypass, "POST", "/function/#{@function_name}", &handle_resp/1)
+
+    on_exit(fn ->
+      Swarm.unregister_name(Environment.Supervisor.get_name(env_id))
+    end)
+
+    {:ok, env_id: env_id, bypass: bypass}
+  end
+
   defp handle_resp(conn) do
     {:ok, body, conn} = Plug.Conn.read_body(conn)
 
@@ -27,14 +41,45 @@ defmodule ApplicationRunner.Environment.DynamixSupervisorTest do
     Plug.Conn.resp(conn, 200, Jason.encode!(%{name: @function_name}))
   end
 
-  test "should scale to one on environment start and to zero on environment exit" do
-    {:ok, %{id: env_id}} = Repo.insert(Contract.Environment.new())
+  defp handle_min_scale_to_0(conn) do
+    {:ok, body, conn} = Plug.Conn.read_body(conn)
+    app = Jason.decode!(body)
 
-    bypass = Bypass.open(port: 1234)
-    Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &handle_app_info_resp/1)
-    Bypass.stub(bypass, "PUT", "/system/functions", &handle_resp/1)
-    Bypass.stub(bypass, "POST", "/function/#{@function_name}", &handle_resp/1)
+    assert "0" = app["labels"]["com.openfaas.scale.min"]
 
+    conn
+    |> send_resp(200, "ok")
+  end
+
+  defp handle_min_scale_to_1(conn) do
+    {:ok, body, conn} = Plug.Conn.read_body(conn)
+    app = Jason.decode!(body)
+
+    assert "1" = app["labels"]["com.openfaas.scale.min"]
+
+    conn
+    |> send_resp(200, "ok")
+  end
+
+  defp check_scale_up(bypass) do
+    Bypass.expect_once(
+      bypass,
+      "PUT",
+      "/system/functions",
+      &handle_min_scale_to_1/1
+    )
+  end
+
+  defp check_scale_down(bypass) do
+    Bypass.expect_once(
+      bypass,
+      "PUT",
+      "/system/functions",
+      &handle_min_scale_to_0/1
+    )
+  end
+
+  test "should scale to one on environment start and to zero on environment exit", %{env_id: env_id, bypass: bypass} do
     env_metadata = %Environment.Metadata{
       env_id: env_id,
       function_name: @function_name,
@@ -42,61 +87,19 @@ defmodule ApplicationRunner.Environment.DynamixSupervisorTest do
       scale_max: 1
     }
 
-    on_exit(fn ->
-      Swarm.unregister_name(Environment.Supervisor.get_name(env_id))
-    end)
-
-    # Check scale up
-    Bypass.expect_once(
-      bypass,
-      "PUT",
-      "/system/functions",
-      fn conn ->
-        {:ok, body, conn} = Plug.Conn.read_body(conn)
-        app = Jason.decode!(body)
-
-        assert "1" = app["labels"]["com.openfaas.scale.min"]
-
-        conn
-        |> send_resp(200, "ok")
-      end
-    )
+    check_scale_up(bypass)
 
     {:ok, _pid} = DynamicSupervisor.ensure_env_started(env_metadata)
 
-    my_pid = self()
+    check_scale_down(bypass)
 
-    # Check scale down
-    Bypass.expect_once(
-      bypass,
-      "PUT",
-      "/system/functions",
-      fn conn ->
-        send(my_pid, :lookup)
+    :ok = DynamicSupervisor.stop_env(env_id)
 
-        {:ok, body, conn} = Plug.Conn.read_body(conn)
-        app = Jason.decode!(body)
-
-        assert "0" = app["labels"]["com.openfaas.scale.min"]
-
-        conn
-        |> send_resp(200, "ok")
-      end
-    )
-
-    DynamicSupervisor.stop_env(env_id)
-
-    assert_receive(:lookup, 500)
+    # Await for async environment stop
+    Process.sleep(5)
   end
 
-  test "should scale to 1 on environment start and stay at 1 on environment exit" do
-    {:ok, %{id: env_id}} = Repo.insert(Contract.Environment.new())
-
-    bypass = Bypass.open(port: 1234)
-    Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &handle_app_info_resp/1)
-    Bypass.stub(bypass, "PUT", "/system/functions", &handle_resp/1)
-    Bypass.stub(bypass, "POST", "/function/#{@function_name}", &handle_resp/1)
-
+  test "should scale to 1 on environment start and stay at 1 on environment exit", %{env_id: env_id, bypass: bypass} do
     env_metadata = %Environment.Metadata{
       env_id: env_id,
       function_name: @function_name,
@@ -104,61 +107,19 @@ defmodule ApplicationRunner.Environment.DynamixSupervisorTest do
       scale_max: 5
     }
 
-    on_exit(fn ->
-      Swarm.unregister_name(Environment.Supervisor.get_name(env_id))
-    end)
-
-    # Check scale up
-    Bypass.expect_once(
-      bypass,
-      "PUT",
-      "/system/functions",
-      fn conn ->
-        {:ok, body, conn} = Plug.Conn.read_body(conn)
-        app = Jason.decode!(body)
-
-        assert "1" = app["labels"]["com.openfaas.scale.min"]
-
-        conn
-        |> send_resp(200, "ok")
-      end
-    )
+    check_scale_up(bypass)
 
     {:ok, _pid} = DynamicSupervisor.ensure_env_started(env_metadata)
 
-    my_pid = self()
+    check_scale_up(bypass)
 
-    # Check scale down
-    Bypass.expect_once(
-      bypass,
-      "PUT",
-      "/system/functions",
-      fn conn ->
-        send(my_pid, :lookup)
+    :ok = DynamicSupervisor.stop_env(env_id)
 
-        {:ok, body, conn} = Plug.Conn.read_body(conn)
-        app = Jason.decode!(body)
-
-        assert "1" = app["labels"]["com.openfaas.scale.min"]
-
-        conn
-        |> send_resp(200, "ok")
-      end
-    )
-
-    DynamicSupervisor.stop_env(env_id)
-
-    assert_receive(:lookup, 500)
+    # Await for async environment stop
+    Process.sleep(5)
   end
 
-  test "update env scale options while env open" do
-    {:ok, %{id: env_id}} = Repo.insert(Contract.Environment.new())
-
-    bypass = Bypass.open(port: 1234)
-    Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", &handle_app_info_resp/1)
-    Bypass.stub(bypass, "PUT", "/system/functions", &handle_resp/1)
-    Bypass.stub(bypass, "POST", "/function/#{@function_name}", &handle_resp/1)
-
+  test "update env scale options while env open", %{env_id: env_id, bypass: bypass} do
     env_metadata = %Environment.Metadata{
       env_id: env_id,
       function_name: @function_name,
@@ -166,52 +127,20 @@ defmodule ApplicationRunner.Environment.DynamixSupervisorTest do
       scale_max: 1
     }
 
-    on_exit(fn ->
-      Swarm.unregister_name(Environment.Supervisor.get_name(env_id))
-    end)
-
-    # Check scale up
-    Bypass.expect_once(
-      bypass,
-      "PUT",
-      "/system/functions",
-      fn conn ->
-        {:ok, body, conn} = Plug.Conn.read_body(conn)
-        app = Jason.decode!(body)
-
-        assert "1" = app["labels"]["com.openfaas.scale.min"]
-
-        conn
-        |> send_resp(200, "ok")
-      end
-    )
+    check_scale_up(bypass)
 
     {:ok, _pid} = DynamicSupervisor.ensure_env_started(env_metadata)
 
+    # Check scale update
+    check_scale_up(bypass)
+
     :ok = DynamicSupervisor.update_env_scale_options(env_id, %{min: 1, max: 5})
 
-    my_pid = self()
+    check_scale_up(bypass)
 
-    # Check scale down
-    Bypass.expect_once(
-      bypass,
-      "PUT",
-      "/system/functions",
-      fn conn ->
-        send(my_pid, :lookup)
+    :ok = DynamicSupervisor.stop_env(env_id)
 
-        {:ok, body, conn} = Plug.Conn.read_body(conn)
-        app = Jason.decode!(body)
-
-        assert "1" = app["labels"]["com.openfaas.scale.min"]
-
-        conn
-        |> send_resp(200, "ok")
-      end
-    )
-
-    DynamicSupervisor.stop_env(env_id)
-
-    assert_receive(:lookup, 500)
+    # Await for async environment stop
+    Process.sleep(5)
   end
 end

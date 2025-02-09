@@ -22,6 +22,15 @@ defmodule ApplicationRunner.ApplicationServicesTest do
     end
   end
 
+  test "get app status" do
+    bypass = Bypass.open(port: 1234)
+    Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", app_info_handler())
+
+    {:ok, app} = ApplicationServices.get_app_status(@function_name)
+
+    assert %{"name" => @function_name} == app
+  end
+
   test "start app" do
     bypass = Bypass.open(port: 1234)
     Bypass.stub(bypass, "GET", "/system/function/#{@function_name}", app_info_handler())

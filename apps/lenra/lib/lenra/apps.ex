@@ -388,24 +388,23 @@ defmodule Lenra.Apps do
       when retry <= 120 do
     case OpenfaasServices.is_deploy(service_name, build_number) do
       true ->
-        transaction =
-          Ecto.Multi.new()
-          |> Ecto.Multi.update(
-            :updated_deployment,
-            Ecto.Changeset.change(deployment, status: :success)
-          )
-          |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
-            env
-            |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
-            |> Repo.update()
-          end)
-          |> Repo.transaction()
+        scale_opts = effective_env_scale_options(env)
 
         service_name
         |> OpenfaasServices.get_function_name(build_number)
-        |> ApplicationServices.set_app_scale_options(effective_env_scale_options(env))
+        |> ApplicationServices.set_app_scale_options(scale_opts)
 
-        transaction
+        Ecto.Multi.new()
+        |> Ecto.Multi.update(
+          :updated_deployment,
+          Ecto.Changeset.change(deployment, status: :success)
+        )
+        |> Ecto.Multi.run(:updated_env, fn _repo, %{updated_deployment: updated_deployment} ->
+          env
+          |> Ecto.Changeset.change(deployment_id: updated_deployment.id)
+          |> Repo.update()
+        end)
+        |> Repo.transaction()
 
       # Function not found in openfaas, 2 retry (10s),
       # To let openfaas deploy in case of overload, after 2 retry -> failure
