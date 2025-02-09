@@ -58,8 +58,6 @@ defmodule ApplicationRunner.Monitor.EnvironmentMonitor do
 
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
     {{metadata}, new_state} = Map.pop(state, pid)
-    base_url = Application.fetch_env!(:application_runner, :faas_url)
-    auth = Application.fetch_env!(:application_runner, :faas_auth)
 
     Logger.debug("#{__MODULE__} handle down #{inspect(pid)} with metadata #{inspect(metadata)}")
 

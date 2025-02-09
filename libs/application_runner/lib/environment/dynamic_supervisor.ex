@@ -133,6 +133,7 @@ defmodule ApplicationRunner.Environment.DynamicSupervisor do
     end
   end
 
+  @spec update_env_scale_options(integer(), map()) :: :ok
   def update_env_scale_options(env_id, scale_opts) do
     case get_env_pid(env_id) do
       :undefined ->

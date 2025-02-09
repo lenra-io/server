@@ -6,7 +6,7 @@ defmodule ApplicationRunner.Crons do
 
   alias ApplicationRunner.Crons.Cron
   alias ApplicationRunner.Errors.{BusinessError, TechnicalError}
-  alias ApplicationRunner.{AppSocket, Environment, EventHandler, Repo}
+  alias ApplicationRunner.{Environment, EventHandler, Repo}
   alias Crontab.CronExpression.{Composer, Parser}
 
   defmacro __using__(opts) do

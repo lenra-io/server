@@ -337,8 +337,7 @@ defmodule ApplicationRunner.ApplicationServices do
         |> Finch.request(AppHttp, receive_timeout: 5000)
         |> response(:update_app)
 
-      e ->
-        # {:error, TechnicalError.app_not_found()}
+      _ ->
         TechnicalError.openfaas_not_reachable_tuple()
     end
   end
@@ -371,7 +370,7 @@ defmodule ApplicationRunner.ApplicationServices do
     {:ok, Jason.decode!(body)}
   end
 
-  defp response({:error, %Mint.TransportError{reason: reason}}, listener) do
+  defp response({:error, %Mint.TransportError{reason: reason}}, _listener) do
     Telemetry.event(
       :alert,
       %{},
