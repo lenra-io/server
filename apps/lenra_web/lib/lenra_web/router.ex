@@ -113,6 +113,12 @@ defmodule LenraWeb.Router do
     resources("/:app_id/environments", EnvsController, only: [:index, :create])
     patch("/:app_id/environments/:env_id", EnvsController, :update)
 
+    # Environment's Secrets
+    get("/:app_id/environments/:env_id/secrets", EnvsController, :list_secrets)
+    post("/:app_id/environments/:env_id/secrets", EnvsController, :create_secret)
+    put("/:app_id/environments/:env_id/secrets/:key", EnvsController, :update_secret)
+    delete("/:app_id/environments/:env_id/secrets/:key", EnvsController, :delete_secret)
+
     # Invitations to env
     resources("/:app_id/environments/:env_id/invitations", UserEnvironmentAccessController, only: [:index, :create])
 
